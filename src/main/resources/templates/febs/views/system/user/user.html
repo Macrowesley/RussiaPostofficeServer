@@ -14,6 +14,12 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">姓名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="realname" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">创建时间</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="createTime" id="user-createTime" class="layui-input">
@@ -36,7 +42,7 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">部门</label>
+                                        <label class="layui-form-label layui-form-label-sm">机构</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="dept" id="dept" lay-filter="dept"
                                                    class="layui-input">
@@ -172,7 +178,7 @@
                             usernames.push(item.username)
                         });
                         febs.post(ctx + 'user/password/reset/' + usernames.join(','), null, function () {
-                            febs.alert.success('所选用户密码已重置为1234qwer');
+                            febs.alert.success('所选用户密码已重置为123456');
                         });
                     }
                 }
@@ -207,7 +213,7 @@
             type: 'get',
             data: ctx + 'dept/select/tree',
             placeholder: '请选择',
-            search: false
+            search: true
         });
 
         table.on('tool(userTable)', function (obj) {
@@ -271,8 +277,9 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'username', title: '用户名', minWidth: 100},
+                    {field: 'realname', title: '姓名', minWidth: 100},
                     {title: '性别', templet: '#user-sex'},
-                    {field: 'deptName', title: '部门'},
+                    {field: 'deptName', title: '机构'},
                     {field: 'mobile', title: '手机', minWidth: 165},
                     {field: 'email', title: '邮箱', minWidth: 180},
                     {title: '状态', templet: '#user-status'},
@@ -292,6 +299,7 @@
                 createTimeFrom: createTimeFrom,
                 createTimeTo: createTimeTo,
                 username: $searchForm.find('input[name="username"]').val().trim(),
+                realname: $searchForm.find('input[name="realname"]').val().trim(),
                 status: $searchForm.find("select[name='status']").val(),
                 sex: $searchForm.find("select[name='sex']").val(),
                 mobile: $searchForm.find("input[name='mobile']").val().trim(),

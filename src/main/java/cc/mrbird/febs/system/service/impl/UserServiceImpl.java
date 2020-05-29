@@ -3,10 +3,12 @@ package cc.mrbird.febs.system.service.impl;
 import cc.mrbird.febs.common.authentication.ShiroRealm;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.Md5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
+import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserDataPermission;
 import cc.mrbird.febs.system.entity.UserRole;
@@ -15,12 +17,14 @@ import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -32,7 +36,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -48,18 +52,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public IPage<User> findUserDetailList(User user, QueryRequest request) {
+    public IPage<User> findUserDetailList(User user, QueryRequest request){
         if (StringUtils.isNotBlank(user.getCreateTimeFrom()) &&
                 StringUtils.equals(user.getCreateTimeFrom(), user.getCreateTimeTo())) {
             user.setCreateTimeFrom(user.getCreateTimeFrom() + " 00:00:00");
             user.setCreateTimeTo(user.getCreateTimeTo() + " 23:59:59");
         }
+        log.info("用户查询信息" + user.toString());
+
+        /*try {
+            User currentUser = FebsUtil.getCurrentUser();
+            log.info("当前用户信息：" + currentUser.toString());
+            List<String> roles = Arrays.asList(user.getRoleId().split(StringPool.COMMA));
+        }catch (Exception e){
+            throw new FebsException("没有权限");
+        }*/
+        /*if (roles.contains(RoleType.systemManager)){
+
+        }else if (roles.contains(RoleType.organizationManager)){
+
+        }else{
+            throw new FebsException("没有权限");
+        }*/
+
+        //判断角色 如果是系统管理者 查询所有用户
+
+        //如果是 机构管理员  查询上级id为自己的用户
         Page<User> page = new Page<>(request.getPageNum(), request.getPageSize());
         page.setSearchCount(false);
         page.setTotal(baseMapper.countUserDetail(user));
         SortUtil.handlePageSort(request, page, "userId", FebsConstant.ORDER_ASC, false);
         return this.baseMapper.findUserDetailPage(page, user);
     }
+
 
     @Override
     public User findUserDetailList(String username) {
@@ -86,6 +111,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setTheme(User.THEME_BLACK);
         user.setIsTab(User.TAB_OPEN);
         user.setPassword(Md5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
+
+        User curUser = FebsUtil.getCurrentUser();
+        long parentId = 0;
+        if (curUser.getRoleId().equals(RoleType.organizationManager)){
+            parentId = curUser.getUserId();
+        }
+        user.setParentId(parentId);
         save(user);
         // 保存用户角色
         String[] roles = user.getRoleId().split(StringPool.COMMA);

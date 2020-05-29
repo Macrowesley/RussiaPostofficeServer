@@ -34,6 +34,11 @@ public class RoleController extends BaseController {
         return new FebsResponse().success().data(roleService.findRoles(role));
     }
 
+    @GetMapping("selectRole")
+    public FebsResponse findSelectsRoleByUser() {
+        return new FebsResponse().success().data(roleService.findSelectsRoleByUser());
+    }
+
     @GetMapping("list")
     @RequiresPermissions("role:view")
     public FebsResponse roleList(Role role, QueryRequest request) {

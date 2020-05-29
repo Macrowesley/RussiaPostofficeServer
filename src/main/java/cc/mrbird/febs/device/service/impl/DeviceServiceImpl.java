@@ -41,6 +41,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public List<Device> findDevices(Device device) {
 	    LambdaQueryWrapper<Device> queryWrapper = new LambdaQueryWrapper<>();
 		// TODO 设置查询条件
+
 		return this.baseMapper.selectList(queryWrapper);
     }
 

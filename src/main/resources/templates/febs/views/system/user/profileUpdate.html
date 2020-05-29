@@ -16,6 +16,12 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">姓名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="realname"  minlength="2" maxlength="10" lay-verify="range|username" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">手机：</label>
             <div class="layui-input-block">
                 <input type="tel" name="mobile" lay-verify="phone" autocomplete="off" class="layui-input">
@@ -86,6 +92,7 @@
         function initUserValue() {
             form.val("profile-update-form", {
                 "username": user.username,
+                "realname": user.realname,
                 "mobile": user.mobile,
                 "email": user.email,
                 "sex": user.sex,

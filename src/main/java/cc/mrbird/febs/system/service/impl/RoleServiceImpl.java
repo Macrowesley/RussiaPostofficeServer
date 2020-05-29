@@ -3,13 +3,17 @@ package cc.mrbird.febs.system.service.impl;
 import cc.mrbird.febs.common.authentication.ShiroRealm;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.RoleMenu;
+import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.mapper.RoleMapper;
 import cc.mrbird.febs.system.service.IRoleMenuService;
 import cc.mrbird.febs.system.service.IRoleService;
 import cc.mrbird.febs.system.service.IUserRoleService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -93,6 +97,17 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 
         this.roleMenuService.deleteRoleMenusByRoleId(list);
         this.userRoleService.deleteUserRolesByRoleId(list);
+    }
+
+    @Override
+    public List<Role> findSelectsRoleByUser() {
+        User curUser = FebsUtil.getCurrentUser();
+        String curRole = curUser.getRoleId();
+        if (curRole.equals(RoleType.systemManager)){
+           return baseMapper.selectList(new LambdaQueryWrapper<Role>().le(Role::getRoleId, RoleType.organizationManager));
+        }else{
+            return baseMapper.selectList(new LambdaQueryWrapper<Role>().gt(Role::getRoleId, curRole));
+        }
     }
 
     private void saveRoleMenus(Role role) {

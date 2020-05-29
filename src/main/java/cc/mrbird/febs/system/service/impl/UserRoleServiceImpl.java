@@ -27,4 +27,15 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     public void deleteUserRolesByUserId(List<String> userIds) {
         this.baseMapper.delete(new QueryWrapper<UserRole>().lambda().in(UserRole::getUserId, userIds));
     }
+
+    /**
+     * 通过用户id获取权限列表
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<UserRole> queryRoleListByUserId(Long userId) {
+        return baseMapper.selectList(new QueryWrapper<UserRole>().lambda().eq(UserRole::getUserId, userId));
+    }
 }

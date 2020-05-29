@@ -2,9 +2,11 @@
     #user-add {
         padding: 20px 25px 25px 0;
     }
+
     #user-add .layui-treeSelect .ztree li a, .ztree li span {
         margin: 0 0 2px 3px !important;
     }
+
     #user-add #data-permission-tree-block {
         border: 1px solid #eee;
         border-radius: 2px;
@@ -17,6 +19,13 @@
             <label class="layui-form-label febs-form-item-require">用户名：</label>
             <div class="layui-input-block">
                 <input type="text" name="username" minlength="2" maxlength="10" lay-verify="range|username"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="username"
                        autocomplete="off" class="layui-input">
             </div>
         </div>
@@ -36,16 +45,12 @@
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require">角色：</label>
             <div class="layui-input-block">
-                <select name="roleId"
-                        lay-verify="required"
-                        xm-select-direction="down"
-                        xm-select="user-add-role"
-                        xm-select-skin="default">
+                <select name="roleId" id="roleId" lay-verify="">
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">部门：</label>
+            <label class="layui-form-label">机构：</label>
             <div class="layui-input-block">
                 <input type="text" name="deptId" id="user-add-dept" class="layui-input">
             </div>
@@ -65,12 +70,7 @@
                 <input type="radio" name="sex" value="2" title="保密" checked="">
             </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">数据权限：</label>
-            <div class="layui-input-block" id="data-permission-tree-block">
-                <div class="data-permission-tree" lay-filter="dataPermissionTree" style="margin-left: 1rem"></div>
-            </div>
-        </div>
+
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">备注：</label>
             <div class="layui-input-block">
@@ -100,8 +100,17 @@
         form.verify(validate);
         form.render();
 
-        formSelects.render();
-        renderDeptTree();
+        //处理下拉框
+        $.ajax({
+            url: ctx + "role/selectRole",
+            type: 'get',
+            success: function (data) {
+                $.each(data.data, function (index, item) {
+                    $('#roleId').append("<option value=" + item.roleId + ">" + item.roleName + "</option>");
+                });
+                layui.form.render("select");
+            }
+        });
 
         treeSelect.render({
             elem: $view.find('#user-add-dept'),
@@ -111,30 +120,7 @@
             search: false
         });
 
-        function renderDeptTree() {
-            _deptTree = eleTree.render({
-                elem: $view.find('.data-permission-tree'),
-                url: ctx + 'dept/tree',
-                accordion: true,
-                highlightCurrent: true,
-                showCheckbox: true,
-                checkStrictly: true,
-                renderAfterExpand: false,
-                request: {
-                    name: 'name',
-                    key: "id",
-                    checked: "checked",
-                    data: 'data'
-                },
-                response: {
-                    statusName: "code",
-                    statusCode: 200,
-                    dataName: "data"
-                }
-            });
-            return _deptTree;
-        }
-
+        /*formSelects.render();
         formSelects.config('user-add-role', {
             searchUrl: ctx + 'role',
             response: {
@@ -156,18 +142,13 @@
                 console.error(err);
                 febs.alert.error('获取角色列表失败');
             }
-        });
+        });*/
 
         form.on('submit(user-add-form-submit)', function (data) {
-            var checked = _deptTree.getChecked(false, true);
-            var deptIds = [];
-            layui.each(checked, function (key, item) {
-                deptIds.push(item.id)
-            });
-            data.deptIds = deptIds.join(",");
+
             febs.post(ctx + 'user', data.field, function () {
                 layer.closeAll();
-                febs.alert.success('新增用户成功，初始密码为 1234qwer');
+                febs.alert.success('新增用户成功，初始密码为 123456');
                 $('#febs-user').find('#query').click();
             });
             return false;

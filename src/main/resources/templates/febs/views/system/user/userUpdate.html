@@ -29,6 +29,13 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">姓名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="username"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">手机：</label>
             <div class="layui-input-block">
                 <input type="tel" name="mobile" lay-verify="phone" autocomplete="off" class="layui-input">
@@ -44,16 +51,12 @@
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require">角色：</label>
             <div class="layui-input-block">
-                <select name="roleId"
-                        lay-verify="required"
-                        xm-select-direction="down"
-                        xm-select="user-update-role"
-                        xm-select-skin="default">
+                <select name="roleId" id="roleId" lay-verify="">
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">部门：</label>
+            <label class="layui-form-label">机构：</label>
             <div class="layui-input-block">
                 <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
                        class="layui-input">
@@ -72,12 +75,6 @@
                 <input type="radio" name="sex" value="0" title="男性">
                 <input type="radio" name="sex" value="1" title="女性">
                 <input type="radio" name="sex" value="2" title="保密">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">数据权限：</label>
-            <div class="layui-input-block" id="data-permission-tree-block">
-                <div class="data-permission-tree" lay-filter="dataPermissionTree" style="margin-left: 1rem"></div>
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
@@ -111,36 +108,22 @@
         form.render();
 
         initUserValue();
-        renderDeptTree();
 
-        formSelects.render();
-
-        function renderDeptTree() {
-            _deptTree = eleTree.render({
-                elem: $view.find('.data-permission-tree'),
-                url: ctx + 'dept/tree',
-                accordion: true,
-                highlightCurrent: true,
-                showCheckbox: true,
-                checkStrictly: true,
-                renderAfterExpand: false,
-                request: {
-                    name: 'name',
-                    key: "id",
-                    checked: "checked",
-                    data: 'data'
-                },
-                response: {
-                    statusName: "code",
-                    statusCode: 200,
-                    dataName: "data"
-                },
-                done: function (r) {
-                    _deptTree.setChecked(user.deptIds.split(","), true);
-                }
-            });
-            return _deptTree;
-        }
+        //处理下拉框
+        $.ajax({
+            url: ctx + "role/selectRole",
+            type: 'get',
+            success: function (data) {
+                $.each(data.data, function (index, item) {
+                    if (user.roleId == item.roleId) {
+                        $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
+                    }else{
+                        $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
+                    }
+                });
+                layui.form.render("select");
+            }
+        });
 
         treeSelect.render({
             elem: $view.find('#user-update-dept'),
@@ -153,31 +136,7 @@
             }
         });
 
-        formSelects.config('user-update-role', {
-            searchUrl: ctx + 'role',
-            response: {
-                statusCode: 200
-            },
-            beforeSuccess: function (id, url, searchVal, result) {
-                var data = result.data;
-                var tranData = [];
-                for (var i = 0; i < data.length; i++) {
-                    tranData.push({
-                        name: data[i].roleName,
-                        value: data[i].roleId
-                    })
-                }
-                result.data = tranData;
-                return result;
-            },
-            success: function () {
-                formSelects.value('user-update-role', user.roleId.split(','));
-            },
-            error: function (id, url, searchVal, err) {
-                console.error(err);
-                febs.alert.error('获取角色列表失败');
-            }
-        });
+
 
         function initUserValue() {
             form.val("user-update-form", {
@@ -191,12 +150,6 @@
         }
 
         form.on('submit(user-update-form-submit)', function (data) {
-            var checked = _deptTree.getChecked(false, true);
-            var deptIds = [];
-            layui.each(checked, function (key, item) {
-                deptIds.push(item.id)
-            });
-            data.field.deptIds = deptIds.join(",");
             if (febs.nativeEqual(data.field, user)) {
                 febs.alert.warn('数据未作任何修改！');
                 return false;

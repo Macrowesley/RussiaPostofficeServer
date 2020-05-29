@@ -65,4 +65,10 @@ public interface IRoleService extends IService<Role> {
      * @param roleIds 待删除角色的 id
      */
     void deleteRoles(String roleIds);
+
+    /**
+     * 根据用户判断角色下拉框中的角色
+     * @return
+     */
+    List<Role> findSelectsRoleByUser();
 }

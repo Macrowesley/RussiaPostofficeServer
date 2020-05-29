@@ -40,7 +40,7 @@ public class User implements Serializable {
     /**
      * 默认密码
      */
-    public static final String DEFAULT_PASSWORD = "1234qwer";
+    public static final String DEFAULT_PASSWORD = "123456";
     /**
      * 性别男
      */
@@ -90,6 +90,18 @@ public class User implements Serializable {
      */
     @TableField("PASSWORD")
     private String password;
+
+
+
+    @TableField("REALNAME")
+    @ExcelField(value = "真实姓名")
+    private String realname;
+
+    /**
+     * 上级用户 ID
+     */
+    @TableField("PARENT_ID")
+    private Long parentId;
 
     /**
      * 部门 ID
