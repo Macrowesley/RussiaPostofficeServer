@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 设备表 Service接口
@@ -52,4 +53,18 @@ public interface IDeviceService extends IService<Device> {
      * @param device device
      */
     void deleteDevice(Device device);
+
+    /**
+     * 获取重复表头号信息
+     * @param acnumList
+     * @return
+     */
+    Map<String, Object> getRepetitionInfo(String acnumList);
+
+    /**
+     * 批量添加设备
+     * @param device
+     * @param acnumList
+     */
+    void saveDeviceList(Device device, String acnumList);
 }

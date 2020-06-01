@@ -17,4 +17,16 @@ public class ViewController {
         return FebsUtil.view("device/device");
     }
 
+    @GetMapping("add")
+    @RequiresPermissions("device:add")
+    public String deviceAdd() {
+        return FebsUtil.view("device/deviceAdd");
+    }
+
+    @GetMapping("update")
+    @RequiresPermissions("device:update")
+    public String deviceUpdate() {
+        return FebsUtil.view("device/deviceUpdate");
+    }
+
 }

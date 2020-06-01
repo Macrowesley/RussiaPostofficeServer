@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 设备表 Entity
  *
@@ -27,6 +29,7 @@ public class Device {
     /**
      * 表头号
      */
+    @NotBlank(message = "{required}")
     @TableField("acnum")
     private String acnum;
 
@@ -63,6 +66,7 @@ public class Device {
     /**
      * 状态：1正常 0冻结
      */
+    @NotBlank(message = "{required}")
     @TableField("device_status")
     private String deviceStatus;
 

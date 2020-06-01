@@ -1,0 +1,117 @@
+<style>
+    #device-add {
+        padding: 20px 25px 25px 0;
+    }
+
+    #device-add .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #device-add #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+
+    .left-label {
+        width: 20%;
+    }
+
+    .rigth-view {
+        width: 80%;
+    }
+
+</style>
+<div class="layui-fluid" id="device-add">
+    <form class="layui-form" action="" lay-filter="device-add-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label">表头号(可批量)：</label>
+            <div class="layui-input-block ">
+                <textarea type="text" name="acnumList" placeholder="多个表头号请用英文逗号隔开"
+                          autocomplete="off" class="layui-input rigth-view" style="height: 100px;"></textarea>
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <label class="layui-form-label left-label">设备昵称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="nickname"
+                       autocomplete="off" class="layui-input rigth-view">
+            </div>
+        </div>-->
+        <div class="layui-form-item ">
+            <label class="layui-form-label left-label">默认警告金额(分)：</label>
+            <div class="layui-input-block">
+                <input type="number" name="warnAmount" lay-verify="number" autocomplete="off"
+                       class="layui-input rigth-view" value="1000000">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label">最大金额(分)：</label>
+            <div class="layui-input-block">
+                <input type="number" name="maxAmount" lay-verify="number" autocomplete="off"
+                       class="layui-input rigth-view" value="10000000">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label">有效天数：</label>
+            <div class="layui-input-block">
+                <input type="number" name="validDays" lay-verify="number" autocomplete="off"
+                       class="layui-input rigth-view" value="7">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label">状态：</label>
+            <div class="layui-input-block">
+                <input type="radio" name="deviceStatus" value="1" title="正常" checked="">
+                <input type="radio" name="deviceStatus" value="0" title="冻结">
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="device-add-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            $view = $('#device-add'),
+            validate = layui.validate;
+
+        form.verify(validate);
+        form.render();
+
+        form.on('submit(device-add-form-submit)', function (data) {
+            var acnumList = data.field.acnumList;
+            if (acnumList.length > 8) {
+                if (acnumList.indexOf(",") <= 0) {
+                    febs.alert.warn('多个表头号请用英文逗号隔开')
+                    return false;
+                }
+            }
+            //检查是否重复
+            febs.post(ctx + "device/checkIsExist/" + acnumList, null, function (res) {
+                console.log(res)
+                var res = res.data;
+                if (res.isExist == 1) {
+                    febs.alert.warn('表头号' + res.data + '已存在')
+                    return false;
+                }
+                return false;
+
+                //开始添加
+                febs.post(ctx + 'device/add', data.field, function () {
+                    layer.closeAll();
+                    febs.alert.success('新增设备成功');
+                    $('#febs-device').find('#query').click();
+                });
+            })
+            return false;
+        });
+    });
+</script>
