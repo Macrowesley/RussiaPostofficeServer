@@ -2,4 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.device.mapper.DeviceMapper">
 
+    <select id="selectListByUserId" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.*
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+            c.user_id = #{userId}
+        <if test="device.acnum != null and device.acnum != ''">
+            and d.acnum = #{device.acnum}
+        </if>
+        <if test="device.nickname != null and device.nickname != ''">
+            and d.nickname = #{device.nickname}
+        </if>
+        <if test="device.deviceStatus != null and device.deviceStatus != ''">
+            and d.deviceStatus = #{device.deviceStatus}
+        </if>
+
+
+    </select>
+    <select id="selectAllListByUserId" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.device_id,d.acnum
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+        c.user_id = #{userId}
+        order by
+        d.device_id asc
+    </select>
 </mapper>

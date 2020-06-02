@@ -105,7 +105,8 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/add")
     @RequiresPermissions("user:add")
-    public String systemUserAdd() {
+    public String systemUserAdd(Model model) {
+        model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
         return FebsUtil.view("system/user/userAdd");
     }
 
@@ -120,7 +121,15 @@ public class ViewController extends BaseController {
     @RequiresPermissions("user:update")
     public String systemUserUpdate(@PathVariable String username, Model model) {
         resolveUserModel(username, model, false);
+        model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
         return FebsUtil.view("system/user/userUpdate");
+    }
+
+    @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/device/{username}")
+    @RequiresPermissions("user:device")
+    public String systemUserDevice(@PathVariable String username, Model model) {
+        resolveUserModel(username, model, false);
+        return FebsUtil.view("system/user/userDevice");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/role")

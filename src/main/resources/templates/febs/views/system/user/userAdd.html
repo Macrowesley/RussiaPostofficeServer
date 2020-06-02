@@ -49,12 +49,14 @@
                 </select>
             </div>
         </div>
-        <div class="layui-form-item">
+
+        <div class="layui-form-item" th:if="${roleId} eq 1">
             <label class="layui-form-label">机构：</label>
             <div class="layui-input-block">
                 <input type="text" name="deptId" id="user-add-dept" class="layui-input">
             </div>
         </div>
+
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require">状态：</label>
             <div class="layui-input-block">
@@ -120,29 +122,6 @@
             search: false
         });
 
-        /*formSelects.render();
-        formSelects.config('user-add-role', {
-            searchUrl: ctx + 'role',
-            response: {
-                statusCode: 200
-            },
-            beforeSuccess: function (id, url, searchVal, result) {
-                var data = result.data;
-                var tranData = [];
-                for (var i = 0; i < data.length; i++) {
-                    tranData.push({
-                        name: data[i].roleName,
-                        value: data[i].roleId
-                    })
-                }
-                result.data = tranData;
-                return result;
-            },
-            error: function (id, url, searchVal, err) {
-                console.error(err);
-                febs.alert.error('获取角色列表失败');
-            }
-        });*/
 
         form.on('submit(user-add-form-submit)', function (data) {
 

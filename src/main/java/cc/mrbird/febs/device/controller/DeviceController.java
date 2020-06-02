@@ -9,11 +9,14 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,15 +41,36 @@ import java.util.Map;
 @RequestMapping("device")
 public class DeviceController extends BaseController {
 
+    @Autowired
     private final IDeviceService deviceService;
 
-    @ControllerEndpoint(operation = "获取列表", exceptionMessage = "获取列表失败")
+    @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "获取页面列表失败")
     @GetMapping("list")
     @RequiresPermissions("device:list")
-    public FebsResponse deviceList(QueryRequest request, Device device) {
+    public FebsResponse devicePageList(QueryRequest request, Device device) {
         log.info("request = " + request.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
         return new FebsResponse().success().data(dataTable);
+    }
+
+    @ControllerEndpoint(operation = "获取列表", exceptionMessage = "获取列表失败")
+    @GetMapping("allList/{bindUserId}")
+    public FebsResponse allList(@NotBlank(message = "{required}") @PathVariable String bindUserId) {
+        Map<String, Object> data = new HashMap<>(2);
+        data.put("allDevices", deviceService.findDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
+        Long[] res = deviceService.findDeviceIdArrByUserId(Long.valueOf(bindUserId));
+        data.put("bindDevices", res);
+        return new FebsResponse().success().data(data);
+    }
+
+    @ControllerEndpoint(operation = "分配设备", exceptionMessage = "分配设备失败")
+    @PostMapping("sendDevice/{deviceIds}/{bindUserId}")
+//    @RequiresPermissions("device:add")
+    public FebsResponse sendDevice(@NotBlank(message = "{required}") @PathVariable String deviceIds,
+                                   @NotBlank(message = "{required}") @PathVariable String bindUserId) {
+        log.info("获取的分配设备id = " + deviceIds + " 绑定的userId = " + bindUserId);
+        deviceService.bindDevicesToUser(deviceIds, Long.valueOf(bindUserId));
+        return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "新增Device", exceptionMessage = "新增Device失败")

@@ -104,6 +104,7 @@
         initTable();
         initTableTool();
 
+
         /**
          * 初始化搜索栏
          */
@@ -161,6 +162,8 @@
                         var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
                         params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
                         params.pageNum = $view.find(".layui-laypage-em").next().html();
+                        /*console.log(params)
+                        return;*/
                         febs.download(ctx + 'device/excel', params, '设备信息表.xlsx');
                     }
                 },
@@ -196,7 +199,7 @@
                     {field: 'maxAmount', title: '最大金额(分)', minWidth: 165},
                     {field: 'validDays', title: '有效天数', minWidth: 180},
                     {title: '状态', templet: '#device-status'},
-                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: true},
+                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
                     {title: '操作', toolbar: '#device-option', minWidth: 140}
                 ]]
             });
@@ -220,7 +223,7 @@
                     });
                 }*/
                 if (layEvent === 'edit') {
-                    febs.modal.open('修改设备', 'system/device/update/' + data.devicename, {
+                    febs.modal.open('修改设备', 'device/update/' + data.deviceId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
                         btn: ['提交', '取消'],
@@ -251,14 +254,14 @@
          * 获取查询信息
          */
         function getQueryParams() {
-            var createTime = $searchForm.find('input[name="createTime"]').val();
+            /*var createTime = $searchForm.find('input[name="createTime"]').val();
             if (createTime) {
                 createTimeFrom = createTime.split(' - ')[0];
                 createTimeTo = createTime.split(' - ')[1];
-            }
+            }*/
             return {
-                createTimeFrom: createTimeFrom,
-                createTimeTo: createTimeTo,
+                // createTimeFrom: createTimeFrom,
+                // createTimeTo: createTimeTo,
                 acnum: $searchForm.find('input[name="acnum"]').val().trim(),
                 nickname: $searchForm.find('input[name="nickname"]').val().trim(),
                 deviceStatus: $searchForm.find("select[name='deviceStatus']").val(),

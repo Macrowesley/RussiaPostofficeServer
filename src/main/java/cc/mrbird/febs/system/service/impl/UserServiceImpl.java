@@ -58,22 +58,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             user.setCreateTimeFrom(user.getCreateTimeFrom() + " 00:00:00");
             user.setCreateTimeTo(user.getCreateTimeTo() + " 23:59:59");
         }
+
+        addUserInfo(user);
         log.info("用户查询信息" + user.toString());
-
-        /*try {
-            User currentUser = FebsUtil.getCurrentUser();
-            log.info("当前用户信息：" + currentUser.toString());
-            List<String> roles = Arrays.asList(user.getRoleId().split(StringPool.COMMA));
-        }catch (Exception e){
-            throw new FebsException("没有权限");
-        }*/
-        /*if (roles.contains(RoleType.systemManager)){
-
-        }else if (roles.contains(RoleType.organizationManager)){
-
-        }else{
-            throw new FebsException("没有权限");
-        }*/
 
         //判断角色 如果是系统管理者 查询所有用户
 
@@ -85,11 +72,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return this.baseMapper.findUserDetailPage(page, user);
     }
 
+    private void addUserInfo(User user) {
+        User currentUser = FebsUtil.getCurrentUser();
+        user.setUserId(currentUser.getUserId());
+        user.setRoleId(currentUser.getRoleId());
+    }
+
 
     @Override
     public User findUserDetailList(String username) {
         User param = new User();
         param.setUsername(username);
+        addUserInfo(param);
         List<User> users = this.baseMapper.findUserDetail(param);
         return CollectionUtils.isNotEmpty(users) ? users.get(0) : null;
     }
@@ -105,6 +99,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createUser(User user) {
+
         user.setCreateTime(new Date());
         user.setStatus(User.STATUS_VALID);
         user.setAvatar(User.DEFAULT_AVATAR);
@@ -116,6 +111,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         long parentId = 0;
         if (curUser.getRoleId().equals(RoleType.organizationManager)){
             parentId = curUser.getUserId();
+            user.setDeptId(curUser.getDeptId());
         }
         user.setParentId(parentId);
         save(user);

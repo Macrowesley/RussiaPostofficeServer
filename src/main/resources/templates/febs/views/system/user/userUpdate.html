@@ -55,13 +55,13 @@
                 </select>
             </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">机构：</label>
-            <div class="layui-input-block">
-                <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
-                       class="layui-input">
-            </div>
+
+        <label class="layui-form-label">机构：</label>
+        <div class="layui-input-block">
+            <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
+                   class="layui-input">
         </div>
+
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require">状态：</label>
             <div class="layui-input-block">
@@ -141,6 +141,7 @@
         function initUserValue() {
             form.val("user-update-form", {
                 "username": user.username,
+                "realname": user.realname,
                 "mobile": user.mobile,
                 "email": user.email,
                 "status": user.status,

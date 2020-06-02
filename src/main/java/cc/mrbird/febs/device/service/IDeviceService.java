@@ -26,14 +26,6 @@ public interface IDeviceService extends IService<Device> {
     IPage<Device> findDevices(QueryRequest request, Device device);
 
     /**
-     * 查询（所有）
-     *
-     * @param device device
-     * @return List<Device>
-     */
-    List<Device> findDevices(Device device);
-
-    /**
      * 新增
      *
      * @param device device
@@ -67,4 +59,38 @@ public interface IDeviceService extends IService<Device> {
      * @param acnumList
      */
     void saveDeviceList(Device device, String acnumList);
+
+    /**
+     * 根据id查询device
+     * @param deviceId
+     * @return
+     */
+    Device findDeviceById(Long deviceId);
+
+    /**
+     * 把设备列表绑定到用户上
+     * @param deviceIds
+     * @param sendUserId
+     */
+    void bindDevicesToUser(String deviceIds, Long sendUserId);
+
+    /**
+     * 通过绑定的userId删除所有的关系
+     * @param userId
+     */
+    void deleteDevicesByBindUserId(Long userId);
+
+    /**
+     * 根据用户获取设备列表
+     * @param bindUserId
+     * @return
+     */
+    List<Device> findDeviceListByUserId(Long bindUserId);
+
+    /**
+     * 根据用户获取设备id数组
+     * @param bindUserId
+     * @return
+     */
+    Long[] findDeviceIdArrByUserId(Long bindUserId);
 }

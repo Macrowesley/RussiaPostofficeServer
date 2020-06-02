@@ -1,5 +1,6 @@
 package cc.mrbird.febs.device.service;
 
+import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 
 import cc.mrbird.febs.common.entity.QueryRequest;

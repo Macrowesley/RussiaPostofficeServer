@@ -1,6 +1,7 @@
 package cc.mrbird.febs.device.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.UserDeviceMapper;
 import cc.mrbird.febs.device.service.IUserDeviceService;
@@ -61,6 +62,7 @@ public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDev
     public void deleteUserDevice(UserDevice userDevice) {
         LambdaQueryWrapper<UserDevice> wrapper = new LambdaQueryWrapper<>();
 	    // TODO 设置删除条件
+        wrapper.eq(UserDevice::getUserId, userDevice.getUserId());
 	    this.remove(wrapper);
 	}
 }
