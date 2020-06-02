@@ -3,6 +3,8 @@ package cc.mrbird.febs.audit.service;
 
 import cc.mrbird.febs.audit.entity.Audit;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.order.entity.Order;
+import cc.mrbird.febs.order.entity.OrderVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,7 +24,7 @@ public interface IAuditService extends IService<Audit> {
      * @param audit audit
      * @return IPage<Audit>
      */
-    IPage<Audit> findAudits(QueryRequest request, Audit audit);
+    IPage<Audit> findPageAudits(QueryRequest request, Audit audit);
 
     /**
      * 查询（所有）
@@ -30,14 +32,21 @@ public interface IAuditService extends IService<Audit> {
      * @param audit audit
      * @return List<Audit>
      */
-    List<Audit> findAudits(Audit audit);
+    List<Audit> findAuditList(Audit audit);
+
+    /**
+     * 查询记录
+     *
+     * @return List<Audit>
+     */
+    List<Audit> findAuditListByOrderId(Long orderId);
 
     /**
      * 新增
      *
      * @param audit audit
      */
-    void createAudit(Audit audit);
+    void createAudit(Order order, String auditType);
 
     /**
      * 修改
@@ -52,4 +61,44 @@ public interface IAuditService extends IService<Audit> {
      * @param audit audit
      */
     void deleteAudit(Audit audit);
+
+    /**
+     * 订单被撤销
+     * @param orderId
+     */
+    void cancelOrder(Long orderId);
+
+    /**
+     * 根据orderId获取该订单最新的审核数据
+     * @param orderId
+     * @return
+     */
+    Audit getNewestOneByOrderId(Long orderId);
+
+    /**
+     * 冻结订单
+     * @param orderId
+     */
+    void freezeOrder(Long orderId);
+
+    /**
+     * 审核通过(批量)
+     */
+    void auditListSuccess(String auditIds);
+
+    /**
+     * 审核通过(单个)
+     * @param audit
+     */
+    void auditOneSuccess(Audit audit);
+
+    /**
+     * 审核失败(批量)
+     */
+    void auditListFail(String auditIds);
+
+    /**
+     * 审核失败(单个)
+     */
+    void auditOneFail(Audit audit);
 }

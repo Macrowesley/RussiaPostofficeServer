@@ -3,7 +3,17 @@ package cc.mrbird.febs.audit.service.impl;
 import cc.mrbird.febs.audit.entity.Audit;
 import cc.mrbird.febs.audit.mapper.AuditMapper;
 import cc.mrbird.febs.audit.service.IAuditService;
+import cc.mrbird.febs.common.entity.AuditType;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.enums.AuditStatusEnum;
+import cc.mrbird.febs.common.enums.OrderStatusEnum;
+import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.order.entity.Order;
+import cc.mrbird.febs.order.entity.OrderVo;
+import cc.mrbird.febs.order.service.IOrderService;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -14,6 +24,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,24 +41,65 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
 
     private final AuditMapper auditMapper;
 
+    @Autowired
+    IOrderService orderService;
+
     @Override
-    public IPage<Audit> findAudits(QueryRequest request, Audit audit) {
+    public IPage<Audit> findPageAudits(QueryRequest request, Audit audit) {
         LambdaQueryWrapper<Audit> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
+
         Page<Audit> page = new Page<>(request.getPageNum(), request.getPageSize());
+        if (StringUtils.isNotBlank(audit.getAuditType())){
+            queryWrapper.eq(Audit::getAuditType, audit.getAuditType());
+        }
+
+        if (StringUtils.isNotBlank(audit.getAcnum())){
+            queryWrapper.eq(Audit::getAcnum, audit.getAcnum());
+        }
+
+        if (StringUtils.isNotBlank(audit.getStatus())){
+            queryWrapper.eq(Audit::getStatus, audit.getStatus());
+        }
+
+        if (StringUtils.isNotBlank(audit.getOrderNumber())){
+            queryWrapper.eq(Audit::getOrderNumber, audit.getOrderNumber());
+        }
+        queryWrapper.orderByDesc(Audit::getAuditId);
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<Audit> findAudits(Audit audit) {
+    public List<Audit> findAuditList(Audit audit) {
 	    LambdaQueryWrapper<Audit> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 查询记录
+     *
+     * @param orderId
+     * @return List<Audit>
+     */
+    @Override
+    public List<Audit> findAuditListByOrderId(Long orderId) {
+        LambdaQueryWrapper<Audit> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Audit::getOrderId, orderId);
+        queryWrapper.orderByDesc(Audit::getAuditId);
+        return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createAudit(Audit audit) {
+    public void createAudit(Order order, String auditType) {
+        Audit audit = new Audit();
+        audit.setOrderId(order.getOrderId());
+        audit.setOrderNumber(order.getOrderNumber());
+        audit.setAcnum(order.getAcnum());
+        audit.setAmount(order.getAmount());
+        audit.setAuditType(AuditType.injection);
+        audit.setFUserId(order.getApplyUserId());
+        audit.setStatus(AuditStatusEnum.notBegin.getStatus());
+        audit.setCreateTime(new Date());
         this.save(audit);
     }
 
@@ -63,4 +116,121 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelOrder(Long orderId) {
+        Audit audit = getNewestOneByOrderId(orderId);
+        audit.setOldStatus(audit.getStatus());
+        audit.setStatus(AuditStatusEnum.orderRepeal.getStatus());
+        updateAudit(audit);
+    }
+
+    /**
+     * 根据orderId获取该订单最新的审核数据
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Audit getNewestOneByOrderId(Long orderId) {
+        LambdaQueryWrapper<Audit> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Audit::getOrderId, orderId);
+        queryWrapper.last("limit 1");
+        queryWrapper.orderByDesc(Audit::getAuditId);
+        List<Audit> list = this.baseMapper.selectList(queryWrapper);
+        if (list.size() == 1){
+            return list.get(0);
+        }
+        throw new FebsException("审核表中没有订单id为"+orderId+"的订单信息");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void freezeOrder(Long orderId) {
+        Audit audit = getNewestOneByOrderId(orderId);
+        audit.setOldStatus(audit.getStatus());
+        audit.setStatus(AuditStatusEnum.orderFreezeing.getStatus());
+        updateAudit(audit);
+    }
+
+    /**
+     * 审核通过(批量)
+     *
+     * @param auditIds
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditListSuccess(String auditIds) {
+        List<String> auditIdList = Arrays.asList(auditIds.split(StringPool.COMMA));
+        auditIdList.stream().forEach(auditId ->{
+            //更新审核状态
+            Audit bean =  baseMapper.selectById(auditId);
+            auditOneSuccess(bean);
+        });
+    }
+
+    /**
+     * 审核通过(单个)
+     *
+     * @param audit
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditOneSuccess(Audit audit) {
+        audit.setOldStatus(null);
+        audit.setStatus(AuditStatusEnum.success.getStatus());
+        updateAudit(audit);
+
+        //更新订单状态
+        Order order = orderService.findOrderByOrderId(audit.getOrderId());
+        order.setOrderStatus(OrderStatusEnum.auditPass.getStatus());
+        orderService.updateOrder(order);
+    }
+
+    /**
+     * 审核失败(批量)
+     *
+     * @param auditIds
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditListFail(String auditIds) {
+        List<String> auditIdList = Arrays.asList(auditIds.split(StringPool.COMMA));
+        auditIdList.stream().forEach(auditId ->{
+            //更新审核状态
+            Audit bean = baseMapper.selectById(auditId);
+            auditOneFail(bean);
+        });
+    }
+
+    /**
+     * 审核失败(单个)
+     *
+     * @param audit
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void auditOneFail(Audit audit) {
+        audit.setOldStatus(null);
+        audit.setStatus(AuditStatusEnum.notPass.getStatus());
+        updateAudit(audit);
+
+        //更新订单状态
+        Order order = orderService.findOrderByOrderId(audit.getOrderId());
+        switch (audit.getAuditType()){
+            case AuditType.injection:
+                order.setOrderStatus(OrderStatusEnum.auditNotPass.getStatus());
+                break;
+            case AuditType.closedCycle:
+                order.setOrderStatus(OrderStatusEnum.orderCloseApplyNotPass.getStatus());
+                break;
+            default:
+                throw new FebsException("类型不正确，无法操作");
+        }
+
+        orderService.updateOrder(order);
+    }
+
+
 }

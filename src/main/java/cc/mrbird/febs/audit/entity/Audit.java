@@ -64,10 +64,16 @@ public class Audit {
     private String submitInfo;
 
     /**
-     * 审核状态 0 未开始 1 成功 2 驳回
+     * 审核状态 0 未开始 1 成功 2 驳回  3 冻结中  4 已注销
      */
     @TableField("status")
     private String status;
+
+    /**
+     * 冻结前的状态
+     */
+    @TableField("old_status")
+    private String oldStatus;
 
     /**
      * 审核备注

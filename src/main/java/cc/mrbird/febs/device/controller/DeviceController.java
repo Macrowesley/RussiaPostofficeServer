@@ -41,7 +41,6 @@ import java.util.Map;
 @RequestMapping("device")
 public class DeviceController extends BaseController {
 
-    @Autowired
     private final IDeviceService deviceService;
 
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "获取页面列表失败")
