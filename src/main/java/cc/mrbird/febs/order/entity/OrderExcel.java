@@ -1,26 +1,19 @@
 package cc.mrbird.febs.order.entity;
 
-import java.util.Date;
-
 import cc.mrbird.febs.common.converter.TimeConverter;
-import com.wuwenze.poi.annotation.Excel;
-import com.wuwenze.poi.annotation.ExcelField;
-import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.wuwenze.poi.annotation.Excel;
+import com.wuwenze.poi.annotation.ExcelField;
+import lombok.Data;
 
-/**
- * 订单表 Entity
- *
- *
- * @date 2020-05-27 14:56:29
- */
+import java.util.Date;
+
 @Data
 @Excel("注资报表")
-@TableName("t_order")
-public class Order {
+public class OrderExcel {
+
 
     /**
      * 订单id
@@ -57,16 +50,16 @@ public class Order {
     String amount;
 
     /**
-     *  订单进度
-        1.创建订单
-        2.审核中
-        3.审核通过   4 驳回
-        5.机器获取数据包
-        6.机器注资成功
-        7.撤销
-        8.冻结
-        9.闭环申请中
-        10.闭环申请审核失败
+     * 订单进度
+     * 1.创建订单
+     * 2.审核中
+     * 3.审核通过   4 驳回
+     * 5.机器获取数据包
+     * 6.机器注资成功
+     * 7.撤销
+     * 8.冻结
+     * 9.闭环申请中
+     * 10.闭环申请审核失败
      */
 /*    @ExcelField("订单进度 \t\n" +
             "        1.创建订单\n" +
@@ -107,7 +100,6 @@ public class Order {
     Long closeUserId;
 
 
-
     /**
      * 过期天数
      */
@@ -118,7 +110,7 @@ public class Order {
     /**
      * 是否过期 0 未过期 1过期
      */
-    @ExcelField  (value = "是否过期", writeConverterExp = "0=未过期,1=已过期")
+    @ExcelField(value = "是否过期", writeConverterExp = "0=未过期,1=已过期")
     @TableField("is_expire")
     String isExpire;
 
@@ -136,4 +128,55 @@ public class Order {
     @TableField("create_time")
     Date createTime;
 
+
+    /**
+     * 设备昵称
+     */
+    @ExcelField(value = "设备昵称")
+    String nickname;
+    /**
+     * 审核类型 1 请求注资  2 请求闭环
+     */
+    String auditType;
+
+    /**
+     * 申请人
+     */
+    @ExcelField(value = "申请人")
+    String applyUserName;
+
+    /**
+     * 审核人
+     */
+    @ExcelField(value = "审核人")
+    String auditUserName;
+
+    /**
+     * 闭环人
+     */
+//    @ExcelField("闭环人")
+    String closeUserName;
+
+    @Override
+    public String toString() {
+        return "OrderVo{" +
+                "acnum='" + acnum + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", auditType='" + auditType + '\'' +
+                ", applyUserName='" + applyUserName + '\'' +
+                ", auditUserName=" + auditUserName +
+                ", closeUserName=" + closeUserName +
+                ", orderId=" + orderId +
+                ", deviceId=" + deviceId +
+                ", orderNumber='" + orderNumber + '\'' +
+                ", amount='" + amount + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", applyUserId=" + applyUserId +
+                ", auditUserId=" + auditUserId +
+                ", closeUserId=" + closeUserId +
+                ", expireDays=" + expireDays +
+                ", endTime=" + endTime +
+                ", createTime=" + createTime +
+                '}';
+    }
 }

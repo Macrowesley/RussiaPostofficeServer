@@ -1,4 +1,4 @@
-package cc.mrbird.febs.order.service.impl;
+package cc.mrbird.febs;
 
 import cc.mrbird.febs.common.entity.AuditType;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -6,7 +6,9 @@ import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.IdUtil;
 import cc.mrbird.febs.common.utils.Md5Util;
+import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
+import cc.mrbird.febs.order.service.impl.OrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -58,23 +60,39 @@ class OrderServiceImplTest {
         }
     }
 
+    @Test
+    void createOrder() {
+    }
 
     @Test
     void submitAuditApply() {
-        //        long curUserId = 14;
+    }
+
+    @Test
+    void createOrderAndSubmitApply() {
         OrderVo orderVo = new OrderVo();
-        orderVo.setOrderStatus(OrderStatusEnum.beginApply.getStatus());
+        orderVo.setOrderStatus(OrderStatusEnum.createOrder.getStatus());
         orderVo.setAmount("90000");
 
         orderVo.setDeviceId(5L);
         orderVo.setExpireDays(7);
+        orderVo.setAuditUserId(15L);
         orderVo.setEndTime(DateUtil.getDateAfter(new Date(), orderVo.getExpireDays()));
 
 
         orderVo.setAcnum("CPU111");
         orderVo.setOrderNumber(IdUtil.cureateId());
         orderVo.setAuditType(AuditType.injection);
-//        orderService.submitAuditApply(orderVo);
+        orderService.createOrderAndSubmitApply(orderVo);
+    }
+
+    @Test
+    void machineRequestData() {
+
+    }
+
+    @Test
+    void updateMachineInjectionStatus() {
     }
 
     @Test
@@ -90,10 +108,16 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findOrderByMachine() {
+    void findOrderByOrderId() {
+       Order order = orderService.findOrderByOrderId(8L);
+       log.info(order.toString());
     }
 
     @Test
     void updateOrder() {
+        Order order = new Order();
+        order.setOrderId(8L);
+        order.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
+        orderService.updateOrder(order);
     }
 }

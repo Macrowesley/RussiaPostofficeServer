@@ -18,9 +18,33 @@ import java.util.List;
 public interface OrderMapper extends BaseMapper<Order> {
 
 
-    IPage<OrderVo> selectByDeviceId(Page<OrderVo> page, @Param("curUserId") long curUserId, @Param("order") OrderVo order);
+    /**
+     * 系统管理员查看订单列表
+     * @param page
+     * @param orderVo
+     * @return
+     */
+    IPage<OrderVo> selectBySystemManager(Page<OrderVo> page, OrderVo orderVo);
+    List<OrderVo> selectBySystemManager(OrderVo orderVo);
 
-    List<OrderVo> selectByDeviceId(@Param("curUserId") long curUserId, @Param("order") OrderVo order);
+    /**
+     * 机构管理员查看订单列表
+     * @param page
+     * @param curUserId
+     * @param order
+     * @return
+     */
+    IPage<OrderVo> selectByOrganizationManager(Page<OrderVo> page, @Param("curUserId") long curUserId, @Param("order") OrderVo order);
+    List<OrderVo> selectByOrganizationManager(@Param("curUserId") long curUserId, @Param("order") OrderVo order);
 
+    /**
+     * 设备管理员查看订单列表
+     * @param page
+     * @param curUserId
+     * @param orderVo
+     * @return
+     */
     IPage<OrderVo> selectByUserId(Page<OrderVo> page, @Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
+    List<OrderVo> selectByUserId(@Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
+
 }

@@ -5,12 +5,15 @@ import cc.mrbird.febs.audit.mapper.AuditMapper;
 import cc.mrbird.febs.audit.service.IAuditService;
 import cc.mrbird.febs.common.entity.AuditType;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.enums.AuditStatusEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
+import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +67,20 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         if (StringUtils.isNotBlank(audit.getOrderNumber())){
             queryWrapper.eq(Audit::getOrderNumber, audit.getOrderNumber());
         }
+
+        //todo
+        String roleId = FebsUtil.getCurrentUser().getRoleId();
+        switch (roleId){
+            case RoleType.systemManager:
+                break;
+            case RoleType.organizationManager:
+                break;
+            default:
+
+                break;
+        }
+
+
         queryWrapper.orderByDesc(Audit::getAuditId);
         return this.page(page, queryWrapper);
     }
@@ -93,6 +110,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     public void createAudit(Order order, String auditType) {
         Audit audit = new Audit();
         audit.setOrderId(order.getOrderId());
+        audit.setUserId(order.getAuditUserId());
         audit.setOrderNumber(order.getOrderNumber());
         audit.setAcnum(order.getAcnum());
         audit.setAmount(order.getAmount());
@@ -178,6 +196,10 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void auditOneSuccess(Audit audit) {
+        //验证
+        checkCanUpdate(audit);
+
+        //更新审核状态
         audit.setOldStatus(null);
         audit.setStatus(AuditStatusEnum.success.getStatus());
         updateAudit(audit);
@@ -212,6 +234,10 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void auditOneFail(Audit audit) {
+        //验证
+        checkCanUpdate(audit);
+
+        //更新状态
         audit.setOldStatus(null);
         audit.setStatus(AuditStatusEnum.notPass.getStatus());
         updateAudit(audit);
@@ -230,6 +256,16 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         }
 
         orderService.updateOrder(order);
+    }
+
+    /**
+     * 验证是否可以审核
+     * @param audit
+     */
+    private void checkCanUpdate(Audit audit) {
+        if (audit.getStatus().equals(AuditStatusEnum.orderFreezeing) || audit.getStatus().equals(AuditStatusEnum.orderFreezeing)){
+            throw new FebsException("该订单已被冻结或者注销，无法审核");
+        }
     }
 
 

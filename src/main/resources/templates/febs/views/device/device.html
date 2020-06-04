@@ -47,6 +47,7 @@
                                      id="reset">
                                     <i class="layui-icon">&#xe79b;</i>
                                 </div>
+
                                 <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
                                      shiro:hasAnyPermissions="device:add,device:update,device:delete,device:export">
                                     <i class="layui-icon">&#xe875;</i>
@@ -195,8 +196,8 @@
                     {type: 'checkbox'},
                     {field: 'acnum', title: '表头号', minWidth: 100},
                     {field: 'nickname', title: '设备昵称', minWidth: 100},
-                    {field: 'warnAmount', title: '默认警告金额(分)'},
-                    {field: 'maxAmount', title: '最大金额(分)', minWidth: 165},
+                    {field: 'warnAmount', title: '默认警告金额'},
+                    {field: 'maxAmount', title: '最大金额', minWidth: 165},
                     {field: 'validDays', title: '有效天数', minWidth: 180},
                     {title: '状态', templet: '#device-status'},
                     {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},

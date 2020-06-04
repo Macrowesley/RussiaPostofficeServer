@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
@@ -101,12 +102,14 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createDevice(Device device) {
+        editMoney(device);
         this.save(device);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateDevice(Device device) {
+        editMoney(device);
         this.saveOrUpdate(device);
     }
 
@@ -158,7 +161,9 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                     device.setAcnum(acnum);
                     device.setNickname(acnum);
                     device.setCreateTime(new Date());
-                    this.baseMapper.insert(device);
+                    editMoney(device);
+
+            this.baseMapper.insert(device);
 
                     UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
@@ -168,6 +173,15 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         );
 
         userDeviceService.saveBatch(userDeviceList);
+    }
+
+    /**
+     * 金额保留2位
+     * @param device
+     */
+    private void editMoney(Device device) {
+        device.setMaxAmount(MoneyUtils.moneySaveTwoDecimal(device.getMaxAmount()));
+        device.setWarnAmount(MoneyUtils.moneySaveTwoDecimal(device.getWarnAmount()));
     }
 
     /**

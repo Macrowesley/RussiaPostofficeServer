@@ -28,6 +28,13 @@ public class Audit {
     private Long orderId;
 
     /**
+     * 审核员的userID
+     */
+    @TableField("user_id")
+    private Long userId;
+
+
+    /**
      * 订单号
      */
     @TableField("order_number")

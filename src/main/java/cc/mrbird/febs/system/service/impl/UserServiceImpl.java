@@ -105,6 +105,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setAvatar(User.DEFAULT_AVATAR);
         user.setTheme(User.THEME_BLACK);
         user.setIsTab(User.TAB_OPEN);
+        if (StringUtils.isEmpty(user.getRealname())){
+            user.setRealname(user.getUsername());
+        }
         user.setPassword(Md5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
 
         User curUser = FebsUtil.getCurrentUser();

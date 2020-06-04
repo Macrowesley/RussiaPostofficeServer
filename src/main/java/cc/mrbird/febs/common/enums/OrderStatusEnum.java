@@ -1,17 +1,19 @@
 package cc.mrbird.febs.common.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 public enum OrderStatusEnum {
-    createOrder("0","创建订单"),
-    beginApply("1","发起申请"),
-    auditIng("2","审核中"),
-    auditPass("3","审核通过"),
-    auditNotPass("4","驳回"),
+    createOrder("1","创建订单"),
+    auditIng("2","注资审核中"),
+    auditPass("3","注资审核通过"),
+    auditNotPass("4","注资审核失败"),
     machineGetData("5","机器获取数据包"),
-    machineInjectionSuccess("6","机器注资成功"),
-    orderRepeal("7","撤销"),
-    orderFreeze("8","冻结"),
-    orderCloseApplyIng("9","闭环申请中"),
-    orderCloseApplyNotPass("10","闭环申请审核失败");//（闭环申请成功就是状态3）
+    machineInjectionSuccess("6","闭环成功"),//机器注资成功
+    machineInjectionFail("7","机器注资失败"),
+    orderRepeal("8","撤销"),
+    orderFreeze("9","冻结"),
+    orderCloseApplyIng("10","闭环申请中"),
+    orderCloseApplyNotPass("11","闭环申请审核失败");//（闭环申请成功就是状态6）
 
     private String status;
     private String msg;
@@ -29,9 +31,9 @@ public enum OrderStatusEnum {
         return msg;
     }
 
-    public static OrderStatusEnum getByStatus(int status) throws Exception {
+    public static OrderStatusEnum getByStatus(String status) throws Exception {
         for (OrderStatusEnum item: OrderStatusEnum.values()){
-            if (item.getStatus().equals(String.valueOf(status))){
+            if (item.getStatus().equals(status)){
                 return item;
             }
         }
@@ -40,6 +42,6 @@ public enum OrderStatusEnum {
 
     public static void main(String[] args) throws Exception {
         int status = 1;
-        System.out.println(OrderStatusEnum.getByStatus(status));
+        System.out.println(OrderStatusEnum.getByStatus("1"));
     }
 }

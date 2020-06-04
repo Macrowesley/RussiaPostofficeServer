@@ -47,7 +47,7 @@ public class UserController extends BaseController {
 
     @GetMapping("list")
     @RequiresPermissions("user:view")
-    @ControllerEndpoint(operation = "用户列表", exceptionMessage = "新增用户失败")
+    @ControllerEndpoint(operation = "用户列表", exceptionMessage = "获取用户列表失败")
     public FebsResponse userList(User user, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);

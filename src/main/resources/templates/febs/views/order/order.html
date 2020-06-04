@@ -1,1 +1,351 @@
-我是注资管理
+<style>
+    .layui-unselect dl { max-height:600px; }
+</style>
+
+<div class="layui-fluid layui-anim febs-anim" id="febs-order" lay-title="注资管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="order-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">表头号</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="acnum" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">注资金额</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="amount" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <!--<div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">创建时间</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="createTime" id="order-createTime" class="layui-input">
+                                        </div>
+                                    </div>-->
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">状态</label>
+                                        <div class="layui-input-inline">
+                                            <select name="orderStatus" id="orderStatus" style="width: 300px;">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">是否过期</label>
+                                        <div class="layui-input-inline">
+                                            <select name="isExpire">
+                                                <option value=""></option>
+                                                <option value="0">未过期</option>
+                                                <option value="1">已过期</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">注资编号</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="orderNumber" autocomplete="off"
+                                                   class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action"
+                                     id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="add" shiro:hasAnyPermissions="order:add">
+                                    <i class="layui-icon">&#xe891;</i>
+                                </div>
+
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="download" shiro:hasAnyPermissions="order:export">
+                                    <i class="layui-icon">&#xe82a;</i>
+                                </div>
+
+                                <!--下拉框-->
+                                <!--<div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="order:export">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>-->
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="orderTable" lay-data="{id: 'orderTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="order-expire">
+    {{#
+    var status = {
+    0: {title: '未过期', color: 'green'},
+    1: {title: '已过期', color: 'red'}
+    }[d.isExpire];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+
+<script type="text/html" id="order-status">
+    {{#
+    var status = {
+    1: {title: '创建订单', color: 'blue'},
+    2: {title: '注资审核中', color: 'blue'},
+    3: {title: '注资审核通过', color: 'blue'},
+    4: {title: '注资审核失败', color: 'red'},
+    5: {title: '机器获取数据包', color: 'blue'},
+    6: {title: '闭环', color: 'green'},
+    7: {title: '机器注资失败', color: 'red'},
+    8: {title: '撤销', color: 'gold'},
+    9: {title: '冻结', color: 'gold'},
+    10: {title: '闭环申请中', color: 'blue'},
+    11: {title: '闭环申请审核失败', color: 'red'},
+    }[d.orderStatus];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+
+<script type="text/html" id="order-option">
+<!--    {{#
+       layui.each(d.btnList, function(index, item){
+    }}
+    <a lay-event="{{ item.event }}">{{ item.title }} </a>
+    {{#  }); }}
+
+    {{#  if(d.btnList.length === 0){ }}
+    <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    {{#  } }}-->
+
+    <!--<span class="layui-badge-dot febs-bg-orange"></span> 无权限-->
+    <a lay-event="editBtn">修改</a>
+    <a lay-event="submitInjectionBtn">注资审核</a>
+    <a lay-event="submitCloseBtn">闭环审核</a>
+    <a lay-event="auditDetail">审核详情</a>
+    <a lay-event="repealBtn">撤销</a>
+    <a lay-event="freezeBtn">冻结</a>
+    <a lay-event="unfreezeBtn">解冻</a>
+
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        var $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-order'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $add = $view.find('#add'),
+            $download = $view.find('#download'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns,
+            createTimeFrom,
+            createTimeTo;
+
+        form.render();
+        initSearchView();
+        initTable();
+        initTableTool();
+        initSelect();
+
+
+        /**
+         * 初始化搜索栏
+         */
+        function initSearchView() {
+
+            //搜索点击事件
+            $query.on('click', function () {
+                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                tableIns.reload({where: params, page: {curr: 1}});
+            });
+
+            //刷新点击事件
+            $reset.on('click', function () {
+                $searchForm[0].reset();
+                sortObject.type = 'null';
+                createTimeTo = null;
+                createTimeFrom = null;
+                tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
+            });
+
+            //添加点击事件
+            $add.on('click', function () {
+                febs.modal.open('添加注资', 'order/add', {
+                    btn: ['提交', '重置'],
+                    area: $(window).width() <= 750 ? '95%' : '50%',
+                    offset: '30px',
+                    yes: function (index, layero) {
+                        $('#order-add').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        $('#order-add').find('#reset').trigger('click');
+                        return false;
+                    }
+                });
+            });
+
+            //导出报表
+            $download.on('click', function () {
+                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                params.pageNum = $view.find(".layui-laypage-em").next().html();
+                febs.download(ctx + 'order/excel', params, '注资报表.xlsx');
+            });
+
+            /*//更多——弹出窗
+            dropdown.render({
+                elem: $view.find('.action-more'),
+                click: function (name, elem, event) {
+                    var checkStatus = table.checkStatus('orderTable');
+                    if (name === 'add') {
+                        febs.modal.open('新增设备', 'order/add', {
+                            btn: ['提交', '重置'],
+                            area: $(window).width() <= 750 ? '95%' : '50%',
+                            offset: '30px',
+                            yes: function (index, layero) {
+                                $('#order-add').find('#submit').trigger('click');
+                            },
+                            btn2: function () {
+                                $('#order-add').find('#reset').trigger('click');
+                                return false;
+                            }
+                        });
+                    }
+                    if (name === 'export') {
+                        var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                        params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                        params.pageNum = $view.find(".layui-laypage-em").next().html();
+                        febs.download(ctx + 'order/excel', params, '设备信息表.xlsx');
+                    }
+                },
+                options: [/!*{
+                    name: 'add',
+                    title: '新增注资',
+                    perms: 'order:add'
+                },*!/  {
+                    name: 'export',
+                    title: '导出报表',
+                    perms: 'order:export'
+                }]
+            });*/
+        }
+
+        /**
+         *初始化表格
+         */
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'orderTable',
+                url: ctx + 'order/list',
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'acnum', title: '表头号', width: 90},
+                    {field: 'orderNumber', title: '订单号', minWidth: 180},
+                    {field: 'amount', title: '注资金额', width: 110},
+                    {field: 'applyUserName', title: '申请人', width: 90},
+                    {field: 'auditUserName', title: '审核人', width: 90},
+                    {title: '注资状态', templet: '#order-status'},
+                    {title: '是否过期', width: 90, templet: '#order-expire'},
+                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
+                    {field: 'endTime', title: '截止日期', minWidth: 180, sort: false},
+                    {title: '操作', toolbar: '#order-option', minWidth: 350}
+                ]]
+            });
+        }
+
+        /**
+         * 初始化表格工具栏
+         */
+        function initTableTool() {
+            table.on('tool(orderTable)', function (obj) {
+                var data = obj.data,
+                    layEvent = obj.event;
+                if (layEvent === 'editBtn') {
+                    febs.modal.open('修改注资', 'order/update/' + data.orderId, {
+                        area: $(window).width() <= 750 ? '90%' : '50%',
+                        offset: '30px',
+                        btn: ['提交', '取消'],
+                        yes: function (index, layero) {
+                            $('#order-update').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+            });
+
+            table.on('sort(orderTable)', function (obj) {
+                sortObject = obj;
+                tableIns.reload({
+                    initSort: obj,
+                    where: $.extend(getQueryParams(), {
+                        field: obj.field,
+                        order: obj.type
+                    })
+                });
+            });
+        }
+
+
+        /**
+         * 获取查询信息
+         */
+        function getQueryParams() {
+            /*var createTime = $searchForm.find('input[name="createTime"]').val();
+            if (createTime) {
+                createTimeFrom = createTime.split(' - ')[0];
+                createTimeTo = createTime.split(' - ')[1];
+            }*/
+            return {
+                // createTimeFrom: createTimeFrom,
+                // createTimeTo: createTimeTo,
+                acnum: $searchForm.find('input[name="acnum"]').val().trim(),
+                amount: $searchForm.find('input[name="amount"]').val().trim(),
+                orderStatus: $searchForm.find("select[name='orderStatus']").val(),
+                isExpire: $searchForm.find("select[name='isExpire']").val(),
+                orderNumber: $searchForm.find('input[name="orderNumber"]').val().trim(),
+                invalidate_ie_cache: new Date()
+            };
+        }
+
+        /**
+         * 处理下拉框
+         */
+        function initSelect() {
+            $.ajax({
+                url: ctx + "order/selectStatus",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        $('#orderStatus').append("<option value=" + item.status + ">" + item.title + "</option>");
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
+    })
+</script>

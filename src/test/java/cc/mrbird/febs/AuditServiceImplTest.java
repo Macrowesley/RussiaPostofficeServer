@@ -1,4 +1,4 @@
-package cc.mrbird.febs.audit.service.impl;
+package cc.mrbird.febs;
 
 import cc.mrbird.febs.audit.service.IAuditService;
 import cc.mrbird.febs.common.utils.FebsUtil;

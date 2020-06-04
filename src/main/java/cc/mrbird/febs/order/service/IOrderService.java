@@ -7,6 +7,7 @@ import cc.mrbird.febs.order.entity.OrderVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface IOrderService extends IService<Order> {
      */
     IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo);
 
+    public List<OrderVo> findAllOrders(QueryRequest request, OrderVo orderVo);
 
     /**
      * 单纯创建一个订单
@@ -46,6 +48,19 @@ public interface IOrderService extends IService<Order> {
     void createOrderAndSubmitApply(OrderVo orderVo);
 
     /**
+     * 机器获取数据包
+     * @param orderId
+     * @return
+     */
+    Order machineRequestData(Long orderId);
+
+    /**
+     * 更新机器注资状态
+     * @param orderVo
+     */
+    void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus);
+
+    /**
      * 提交闭环订单申请
      * @param order
      */
@@ -64,54 +79,19 @@ public interface IOrderService extends IService<Order> {
     void freezeOrder(Long orderId);
 
     /**
+     * 解冻注资
+     *
+     * @param order
+     */
+    public void unfreezeOrder(Long orderId);
+
+    /**
      * 机器查询数据包
      * @param order
      * @return
      */
     Order findOrderByOrderId(Long orderId);
 
-
     void updateOrder(Order orderVo);
 
-    /**
-     * 判断是否可以修改订单信息
-     * @param orderVo
-     * @return
-     */
-    boolean checkCanEditOrder(OrderVo orderVo);
-
-    /**
-     * 判断是否可以申请注资
-     * @param orderStatus
-     * @return
-     */
-    boolean checkCanApplyInjection(int orderStatus);
-
-    /**
-     * 判断是否可以申请闭环
-     * @param orderStatus
-     * @return
-     */
-    boolean checkCanApplyClose(int orderStatus);
-
-    /**
-     * 判断是否可以点击撤销
-     * @param orderStatus
-     * @return
-     */
-    boolean checkCanRepeal(int orderStatus);
-
-    /**
-     * 判断是否可以冻结
-     * @param orderStatus
-     * @return
-     */
-    boolean checkCanFreeze(int orderStatus);
-
-    /**
-     * 判断是否可以修改订单信息
-     * @param orderStatus
-     * @return
-     */
-    boolean checkCanEdit(int orderStatus);
 }
