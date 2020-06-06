@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -237,6 +234,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         } else {
             throw new FebsException("您无权修改别人的账号信息！");
         }
+    }
+
+    /**
+     * 根据deviceId得到对应的审核员列表
+     *
+     * @param deviceId
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> findAuditListByDeviceId(String deviceId) {
+        return baseMapper.findAuditListByDeviceId(deviceId);
     }
 
     private void setUserRoles(User user, String[] roles) {

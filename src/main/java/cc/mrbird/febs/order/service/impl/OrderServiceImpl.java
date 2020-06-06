@@ -5,9 +5,8 @@ import cc.mrbird.febs.common.entity.*;
 
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
-import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.common.utils.MoneyUtils;
-import cc.mrbird.febs.common.utils.SortUtil;
+import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.utils.*;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.mapper.OrderMapper;
@@ -92,7 +91,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createOrder(OrderVo orderVo) {
-        orderVo.setApplyUserId(FebsUtil.getCurrentUser().getUserId());
         orderVo.setOrderStatus(OrderStatusEnum.createOrder.getStatus());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
@@ -104,9 +102,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * @param orderVo
      */
     private void addOtherParams(OrderVo orderVo) {
+        orderVo.setApplyUserId(FebsUtil.getCurrentUser().getUserId());
         orderVo.setIsExpire("0");
+        orderVo.setOrderNumber(IdUtil.cureateId());
         orderVo.setAmount(MoneyUtils.moneySaveTwoDecimal(orderVo.getAmount()));
         orderVo.setCreateTime(new Date());
+        orderVo.setEndTime(DateUtil.getDateAfter(new Date(), orderVo.getExpireDays()));
     }
 
     /**
@@ -136,7 +137,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createOrderAndSubmitApply(OrderVo orderVo) {
-        orderVo.setApplyUserId(FebsUtil.getCurrentUser().getUserId());
+
         orderVo.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);

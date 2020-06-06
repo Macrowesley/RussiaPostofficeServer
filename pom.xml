@@ -6,7 +6,7 @@
     <artifactId>FEBS-Shiro</artifactId>
     <version>2.0</version>
     <name>febs</name>
-    <description>Spring Boot,Shiro 权限管理系统，https://github.com/wuyouzhuguli/FEBS-Shiro</description>
+    <description>注资管理服务器</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

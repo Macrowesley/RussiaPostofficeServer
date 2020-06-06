@@ -17,6 +17,12 @@ import java.util.Map;
 public class OrderVo extends Order {
 
     /**
+     * 表头号
+     */
+    @ExcelField(value = "表头号")
+    String acnum;
+
+    /**
      * 设备昵称
      */
     @ExcelField(value = "设备昵称")
@@ -59,7 +65,6 @@ public class OrderVo extends Order {
                 ", auditUserName=" + auditUserName +
                 ", closeUserName=" + closeUserName +
                 ", orderId=" + orderId +
-                ", deviceId=" + deviceId +
                 ", orderNumber='" + orderNumber + '\'' +
                 ", amount='" + amount + '\'' +
                 ", orderStatus='" + orderStatus + '\'' +

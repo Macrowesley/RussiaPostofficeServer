@@ -68,7 +68,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
             queryWrapper.eq(Audit::getOrderNumber, audit.getOrderNumber());
         }
 
-        //todo
+        //todo 需要重新写sql
         String roleId = FebsUtil.getCurrentUser().getRoleId();
         switch (roleId){
             case RoleType.systemManager:
@@ -112,7 +112,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         audit.setOrderId(order.getOrderId());
         audit.setUserId(order.getAuditUserId());
         audit.setOrderNumber(order.getOrderNumber());
-        audit.setAcnum(order.getAcnum());
+        audit.setDeviceId(order.getDeviceId());
         audit.setAmount(order.getAmount());
         audit.setAuditType(AuditType.injection);
         audit.setFUserId(order.getApplyUserId());

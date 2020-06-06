@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.scheduling.annotation.Async;
 
+import java.util.List;
+import java.util.Map;
+
 
 public interface IUserService extends IService<User> {
 
@@ -110,4 +113,11 @@ public interface IUserService extends IService<User> {
      * @param user 个人信息
      */
     void updateProfile(User user);
+
+    /**
+     * 根据deviceId得到对应的审核员列表
+     * @param deviceId
+     * @return
+     */
+    List<Map<String, Object>> findAuditListByDeviceId(String deviceId);
 }

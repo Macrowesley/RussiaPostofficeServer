@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface UserMapper extends BaseMapper<User> {
@@ -38,4 +39,5 @@ public interface UserMapper extends BaseMapper<User> {
      */
     List<User> findUserDetail(@Param("user") User user);
 
+    List<Map<String, Object>> findAuditListByDeviceId(@Param("deviceId") String deviceId);
 }

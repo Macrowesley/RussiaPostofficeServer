@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.system.mapper.UserMapper">
-    <sql id="countUserDetailSql" >
+    <sql id="countUserDetailSql">
         SELECT
         COUNT(1)
         FROM
@@ -89,35 +89,37 @@
             And u.create_time &lt; #{user.createTimeTo}
         </if>
         GROUP BY
-            u.username,
-            u.user_id,
-            u.realname,
-            u.parent_id,
-            u.email,
-            u.mobile,
-            u.status,
-            u.create_time,
-            u.ssex,
-            u.dept_id,
-            u.last_login_time,
-            u.modify_time,
-            u.description,
-            u.avatar
+        u.username,
+        u.user_id,
+        u.realname,
+        u.parent_id,
+        u.email,
+        u.mobile,
+        u.status,
+        u.create_time,
+        u.ssex,
+        u.dept_id,
+        u.last_login_time,
+        u.modify_time,
+        u.description,
+        u.avatar
     </sql>
 
-    <select id="countUserDetail" parameterType="user" resultType="long">
+    <select id="countUserDetail" parameterType="cc.mrbird.febs.system.entity.User" resultType="long">
         <include refid="countUserDetailSql"/>
     </select>
 
-    <select id="findUserDetailPage" parameterType="user" resultType="user">
+    <select id="findUserDetailPage" parameterType="cc.mrbird.febs.system.entity.User"
+            resultType="cc.mrbird.febs.system.entity.User">
         <include refid="findUserDetailSql"/>
     </select>
 
-    <select id="findUserDetail" parameterType="user" resultType="user">
+    <select id="findUserDetail" parameterType="cc.mrbird.febs.system.entity.User"
+            resultType="cc.mrbird.febs.system.entity.User">
         <include refid="findUserDetailSql"/>
     </select>
 
-    <select id="findByName" parameterType="string" resultType="user">
+    <select id="findByName" parameterType="string" resultType="cc.mrbird.febs.system.entity.User">
         SELECT
         u.user_id userId,
         u.username,
@@ -165,8 +167,22 @@
             u.is_tab
     </select>
 
-    <select id="findUserDataPermissions" parameterType="long" resultType="userDataPermission">
+    <!--<select id="findUserDataPermissions" parameterType="long" resultType="userDataPermission">
         select user_id userId, dept_id deptId from t_user_data_permission
         where user_id = #{userId}
+    </select>-->
+
+
+    <select id="findAuditListByDeviceId" resultType="java.util.Map">
+        select
+            u.username, u.realname, u.user_id as userId, d.warn_amount as warnAmount,d.max_amount as maxAmount
+        from
+            t_user_device ud
+            left join t_user_role ur on (ur.user_id = ud.user_id)
+            left join t_user u on (u.user_id = ud.user_id)
+            left join t_device d on (d.device_id = ud.device_id)
+            where
+                ur.role_id = 3 and ud.device_id = #{deviceId}
     </select>
+
 </mapper>

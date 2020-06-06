@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 审核表 Entity
  */
@@ -24,12 +26,21 @@ public class Audit {
     /**
      * 订单id
      */
+    @NotBlank
     @TableField("order_id")
     private Long orderId;
 
     /**
+     * 设备id
+     */
+    @NotBlank
+    @TableField("device_id")
+    private Long deviceId;
+
+    /**
      * 审核员的userID
      */
+    @NotBlank
     @TableField("user_id")
     private Long userId;
 
@@ -52,11 +63,6 @@ public class Audit {
     @TableField("audit_type")
     private String auditType;
 
-    /**
-     * 表头号
-     */
-    @TableField("acnum")
-    private String acnum;
 
     /**
      * 提交人id
@@ -93,5 +99,8 @@ public class Audit {
      */
     @TableField("create_time")
     private Date createTime;
+
+    //————————————————————————额外添加的字段————————————————————————
+    private String acnum;
 
 }

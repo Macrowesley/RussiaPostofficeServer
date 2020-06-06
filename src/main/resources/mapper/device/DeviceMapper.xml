@@ -33,4 +33,5 @@
         order by
         d.device_id asc
     </select>
+
 </mapper>

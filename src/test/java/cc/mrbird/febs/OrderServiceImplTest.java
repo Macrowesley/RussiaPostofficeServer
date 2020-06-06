@@ -8,7 +8,9 @@ import cc.mrbird.febs.common.utils.IdUtil;
 import cc.mrbird.febs.common.utils.Md5Util;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
+import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.service.impl.OrderServiceImpl;
+import cc.mrbird.febs.system.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -31,7 +33,10 @@ class OrderServiceImplTest {
     org.apache.shiro.mgt.SecurityManager securityManager;
 
     @Autowired
-    OrderServiceImpl orderService;
+    IOrderService orderService;
+
+    @Autowired
+    IUserService userService;
 
     @BeforeEach
     public void login(){
@@ -119,5 +124,11 @@ class OrderServiceImplTest {
         order.setOrderId(8L);
         order.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
         orderService.updateOrder(order);
+    }
+
+    @Test
+    void findAuditListByDeviceId(){
+        String deviceId = "1";
+        userService.findAuditListByDeviceId(deviceId).stream().forEach(user -> log.info(user.toString()));
     }
 }

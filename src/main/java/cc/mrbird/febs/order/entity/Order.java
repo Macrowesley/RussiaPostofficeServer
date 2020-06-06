@@ -11,6 +11,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 订单表 Entity
  *
@@ -36,13 +38,6 @@ public class Order {
     Long deviceId;
 
     /**
-     * 设备id
-     */
-    @ExcelField(value = "表头号")
-    @TableField("acnum")
-    String acnum;
-
-    /**
      * 订单号
      */
     @ExcelField(value = "订单号")
@@ -52,6 +47,7 @@ public class Order {
     /**
      * 订单金额
      */
+    @NotBlank
     @ExcelField(value = "订单金额")
     @TableField("amount")
     String amount;

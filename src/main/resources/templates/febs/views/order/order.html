@@ -50,7 +50,7 @@
                                     </div>
 
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">注资编号</label>
+                                        <label class="layui-form-label layui-form-label-sm">订单号</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="orderNumber" autocomplete="off"
                                                    class="layui-input">
@@ -193,7 +193,7 @@
             $add.on('click', function () {
                 febs.modal.open('添加注资', 'order/add', {
                     btn: ['提交', '重置'],
-                    area: $(window).width() <= 750 ? '95%' : '50%',
+                    area: $(window).width() <= 750 ? ['95%', '90%'] : ['50%', '90%'],
                     offset: '30px',
                     yes: function (index, layero) {
                         $('#order-add').find('#submit').trigger('click');
