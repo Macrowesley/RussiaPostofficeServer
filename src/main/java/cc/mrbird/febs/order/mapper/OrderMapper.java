@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 订单表 Mapper
@@ -47,4 +48,5 @@ public interface OrderMapper extends BaseMapper<Order> {
     IPage<OrderVo> selectByUserId(Page<OrderVo> page, @Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
     List<OrderVo> selectByUserId(@Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
 
+    Map<String, Object> findOrderDetailByOrderId(String orderId);
 }

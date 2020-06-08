@@ -10,6 +10,7 @@ import org.aspectj.weaver.ast.Or;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 订单表 Service接口
@@ -94,4 +95,7 @@ public interface IOrderService extends IService<Order> {
 
     void updateOrder(Order orderVo);
 
+    Map<String, Object> findOrderDetailByOrderId(String orderId);
+
+    void editOrder(OrderVo order);
 }

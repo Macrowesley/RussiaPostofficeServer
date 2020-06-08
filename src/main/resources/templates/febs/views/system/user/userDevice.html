@@ -63,7 +63,7 @@
             febs.post(ctx + 'device/sendDevice/' + deviceIds.join(",") + '/' + user.userId, null, function () {
                 layer.closeAll();
                 febs.alert.success(user.username + ' 用户数据修改成功');
-                $('#febs-user').find('#query').click();
+                $('#febs-user').find('#refreshQuery').click();
             });
             return false;
         });

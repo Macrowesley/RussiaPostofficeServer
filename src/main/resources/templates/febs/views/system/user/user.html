@@ -62,6 +62,7 @@
                                 </div>
                             </div>
                             <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="febs-hide" id="refreshQuery"></div>
                                 <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
                                     <i class="layui-icon">&#xe848;</i>
                                 </div>
@@ -123,6 +124,7 @@
             dropdown = layui.dropdown,
             $view = $('#febs-user'),
             $query = $view.find('#query'),
+            $refreshQuery = $view.find('#refreshQuery'),
             $reset = $view.find('#reset'),
             $searchForm = $view.find('form'),
             sortObject = {field: 'createTime', type: null},
@@ -272,10 +274,29 @@
             });
         });
 
-        $query.on('click', function () {
+        /**
+         * 查询表单数据
+         */
+        function queryTable(isFirstQuery){
             var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-            tableIns.reload({where: params, page: {curr: 1}});
+            if (isFirstQuery == 1){
+                tableIns.reload({where: params, page: {curr: 1}});
+            }else{
+                var pageNum = $view.find(".layui-laypage-em").next().html();
+                tableIns.reload({where: params, page: {curr: pageNum}});
+            }
+        }
+
+        $query.on('click', function () {
+            /*var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});*/
+            queryTable(1);
         });
+
+        //修改参数后，返回主页，刷新，回到指定页面
+        $refreshQuery.on('click', function () {
+            queryTable(0);
+        })
 
         $reset.on('click', function () {
             $searchForm[0].reset();

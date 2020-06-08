@@ -108,7 +108,7 @@
                 febs.post(ctx + 'device/add', data.field, function () {
                     layer.closeAll();
                     febs.alert.success('新增设备成功');
-                    $('#febs-device').find('#query').click();
+                    $('#febs-device').find('#refreshQuery').click();
                 });
             })
             return false;

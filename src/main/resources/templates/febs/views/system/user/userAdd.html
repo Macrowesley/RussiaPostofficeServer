@@ -128,7 +128,7 @@
             febs.post(ctx + 'user', data.field, function () {
                 layer.closeAll();
                 febs.alert.success('新增用户成功，初始密码为 123456');
-                $('#febs-user').find('#query').click();
+                $('#febs-user').find('#refreshQuery').click();
             });
             return false;
         });

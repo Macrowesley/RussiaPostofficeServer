@@ -540,6 +540,9 @@ layui.extend({
                     "count": res.data.total,
                     "data": res.data.rows
                 }
+            },
+            done: function (res, curr, count) {
+                this.where={};
             }
         };
         return layuiTable.render(

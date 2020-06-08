@@ -116,7 +116,7 @@
             febs.post(ctx + 'device/update', data.field, function () {
                 layer.closeAll();
                 febs.alert.success('设备' + device.acnum + '数据修改成功');
-                $('#febs-device').find('#query').click();
+                $('#febs-device').find('#refreshQuery').click();
             });
 
             return false;

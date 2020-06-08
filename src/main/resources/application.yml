@@ -19,6 +19,11 @@ spring:
   aop:
     proxy-target-class: true
 
+
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+
 mybatis-plus:
   type-aliases-package: cc.mrbird.febs.*.entity
   mapper-locations: classpath:mapper/*/*.xml

@@ -7,7 +7,7 @@
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body febs-table-full">
-                    <form class="layui-form layui-table-form" lay-filter="order-table-form">
+                    <form class="layui-form layui-table-form" id="order-table-form" lay-filter="order-table-form">
                         <div class="layui-row">
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
@@ -59,6 +59,7 @@
                                 </div>
                             </div>
                             <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="febs-hide" id="refreshQuery"></div>
                                 <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action"
                                      id="query">
                                     <i class="layui-icon">&#xe848;</i>
@@ -123,6 +124,11 @@
 </script>
 
 <script type="text/html" id="order-option">
+    <span shiro:lacksPermission="order:update">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+
+    <div shiro:hasPermission="order:update">
 <!--    {{#
        layui.each(d.btnList, function(index, item){
     }}
@@ -141,7 +147,7 @@
     <a lay-event="repealBtn">撤销</a>
     <a lay-event="freezeBtn">冻结</a>
     <a lay-event="unfreezeBtn">解冻</a>
-
+    </div>
 </script>
 <script data-th-inline="none" type="text/javascript">
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
@@ -153,6 +159,7 @@
             dropdown = layui.dropdown,
             $view = $('#febs-order'),
             $query = $view.find('#query'),
+            $refreshQuery = $view.find('#refreshQuery'),
             $reset = $view.find('#reset'),
             $add = $view.find('#add'),
             $download = $view.find('#download'),
@@ -168,6 +175,18 @@
         initTableTool();
         initSelect();
 
+        /**
+         * 查询表单数据
+         */
+        function queryTable(isFirstQuery){
+            var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            if (isFirstQuery == 1){
+                tableIns.reload({where: params, page: {curr: 1}});
+            }else{
+                var pageNum = $view.find(".layui-laypage-em").next().html();
+                tableIns.reload({where: params, page: {curr: pageNum}});
+            }
+        }
 
         /**
          * 初始化搜索栏
@@ -175,17 +194,33 @@
         function initSearchView() {
 
             //搜索点击事件
-            $query.on('click', function () {
-                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-                tableIns.reload({where: params, page: {curr: 1}});
+            $query.on('click',function () {
+                queryTable(1);
             });
+
+            //修改参数后，返回主页，刷新，回到指定页面
+            $refreshQuery.on('click', function () {
+                queryTable(0);
+            })
 
             //刷新点击事件
             $reset.on('click', function () {
+
                 $searchForm[0].reset();
+
                 sortObject.type = 'null';
                 createTimeTo = null;
                 createTimeFrom = null;
+
+             /*   //就在当前页面刷新
+                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                //每页内容
+                params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                //第几页
+                params.pageNum = $view.find(".layui-laypage-em").next().html();
+                tableIns.reload(params);*/
+
+                //直接刷新到第一页
                 tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
             });
 
@@ -282,6 +317,7 @@
             table.on('tool(orderTable)', function (obj) {
                 var data = obj.data,
                     layEvent = obj.event;
+                //修改
                 if (layEvent === 'editBtn') {
                     febs.modal.open('修改注资', 'order/update/' + data.orderId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
@@ -295,6 +331,48 @@
                         }
                     });
                 }
+
+                //注资审核 有个一备注栏，可填写
+                if(layEvent == 'submitInjectionBtn'){
+                    febs.alert.success("注资审核")
+                    febs.modal.open("提交注资审核", 'order/submitInjection/' + data.orderId, {
+                        area: $(window).width() <= 750 ? '90%' : '50%',
+                        offset: '30px',
+                        btn: ['提交', '取消'],
+                        yes: function (index, layero) {
+                            $('#order-submit-injection').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+
+                //闭环审核
+                if(layEvent == 'submitCloseBtn'){
+                    febs.alert.success("闭环审核")
+                }
+
+                //审核详情
+                if(layEvent == 'auditDetail'){
+                    febs.alert.success("审核详情")
+                }
+
+                //撤销
+                if(layEvent == 'repealBtn'){
+                    febs.alert.success("撤销")
+                }
+
+                //冻结
+                if(layEvent == 'freezeBtn'){
+                    febs.alert.success("冻结")
+                }
+
+                //解冻
+                if(layEvent == 'unfreezeBtn'){
+                    febs.alert.success("解冻")
+                }
+
             });
 
             table.on('sort(orderTable)', function (obj) {

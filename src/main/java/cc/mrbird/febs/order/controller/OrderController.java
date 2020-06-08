@@ -56,6 +56,7 @@ public class OrderController extends BaseController {
     @GetMapping("list")
     @RequiresPermissions("order:list")
     public FebsResponse orderList(QueryRequest request, OrderVo order) {
+        log.info("请求参数：order={} , request={}", order.toString(), request.toString());
         IPage<OrderVo> pageInfo = this.orderService.findPageOrders(request, order);
         pageInfo.getRecords().stream().forEach(bean -> {
             bean.setBtnList(StatusUtils.getBtnMapList(bean.getOrderStatus()));
@@ -100,81 +101,61 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-
-/*
-
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "修改Order", exceptionMessage = "修改Order失败")
+    @PostMapping("update")
+    @RequiresPermissions("order:update")
+    public FebsResponse editOrder(OrderVo order) {
+        this.orderService.editOrder(order);
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "提交注资审核失败")
+    @PostMapping("submitInjection")
+    @RequiresPermissions("order:update")
+    public FebsResponse submitInjectionOrder(OrderVo order) {
+        log.info("提交注资审核 order = {}", order.toString());
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "提交闭环审核", exceptionMessage = "提交闭环审核失败")
+    @PostMapping("submitClose")
+    @RequiresPermissions("order:update")
+    public FebsResponse submitClose(OrderVo order) {
+        //TODO
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "显示审核详情失败")
+    @PostMapping("auditDetail")
+    @RequiresPermissions("order:update")
+    public FebsResponse auditDetail(OrderVo order) {
+        //TODO
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "撤销", exceptionMessage = "撤销失败")
+    @PostMapping("repeal")
+    @RequiresPermissions("order:update")
+    public FebsResponse repealOrder(OrderVo order) {
+        //TODO
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "冻结", exceptionMessage = "冻结失败")
+    @PostMapping("freeze")
+    @RequiresPermissions("order:update")
+    public FebsResponse freezeOrder(OrderVo order) {
+        //TODO
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
+    @ControllerEndpoint(operation = "解冻", exceptionMessage = "解冻失败")
+    @PostMapping("unfreeze")
+    @RequiresPermissions("order:update")
+    public FebsResponse unfreezeOrder(OrderVo order) {
+        //TODO
         return new FebsResponse().success();
     }
-
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
-        return new FebsResponse().success();
-    }
-
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
-    @PostMapping("add")
-    @RequiresPermissions("order:add")
-    public FebsResponse addOrder(@Valid OrderVo order) {
-        this.orderService.createOrder(order);
-        return new FebsResponse().success();
-    }*/
-
 
     @ControllerEndpoint(operation = "导出Order", exceptionMessage = "导出Excel失败")
     @GetMapping("excel")

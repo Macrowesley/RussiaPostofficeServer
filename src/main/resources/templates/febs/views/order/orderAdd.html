@@ -104,7 +104,7 @@
                         febs.post(ctx + 'order/add', data.field, function (result) {
                             layer.closeAll();
                             febs.alert.success('新增注资成功');
-                            $('#febs-order').find('#query').click();
+                            $('#febs-order').find('#refreshQuery').click();
                         });
                     });
                 }else{
@@ -112,7 +112,7 @@
                     febs.post(ctx + 'order/add', data.field, function (result) {
                         layer.closeAll();
                         febs.alert.success('新增注资成功');
-                        $('#febs-order').find('#query').click();
+                        $('#febs-order').find('#refreshQuery').click();
                     });
                 }
             }

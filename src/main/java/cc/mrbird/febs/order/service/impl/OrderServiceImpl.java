@@ -1,5 +1,6 @@
 package cc.mrbird.febs.order.service.impl;
 
+import cc.mrbird.febs.audit.service.IAuditService;
 import cc.mrbird.febs.audit.service.impl.AuditServiceImpl;
 import cc.mrbird.febs.common.entity.*;
 
@@ -7,6 +8,8 @@ import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.*;
+import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.mapper.OrderMapper;
@@ -25,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 订单表 Service实现
@@ -38,7 +42,8 @@ import java.util.List;
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
     private final OrderMapper orderMapper;
-    private final AuditServiceImpl auditService;
+    private final IAuditService auditService;
+    private final IDeviceService deviceService;
 
     @Override
     public IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo) {
@@ -50,7 +55,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String roleId = curUser.getRoleId();
         long curUserId = curUser.getUserId();
 
-        switch (roleId){
+        switch (roleId) {
             case RoleType.systemManager:
                 return this.orderMapper.selectBySystemManager(page, orderVo);
             case RoleType.organizationManager:
@@ -70,7 +75,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String roleId = curUser.getRoleId();
         long curUserId = curUser.getUserId();
 
-        switch (roleId){
+        switch (roleId) {
             case RoleType.systemManager:
                 return this.orderMapper.selectBySystemManager(orderVo);
             case RoleType.organizationManager:
@@ -91,14 +96,50 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createOrder(OrderVo orderVo) {
+        //验证金额
+        checkAmountIsOk(orderVo);
+
         orderVo.setOrderStatus(OrderStatusEnum.createOrder.getStatus());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
         return orderVo.getOrderId();
     }
 
+    @Override
+    public void editOrder(OrderVo order) {
+        //验证金额
+        Order oldOrder = findOrderByOrderId(order.getOrderId());
+        order.setDeviceId(oldOrder.getDeviceId());
+
+        checkAmountIsOk(order);
+
+
+        //修改截止日期 、 截止天数、 金额
+        oldOrder.setEndTime(DateUtil.getDateAfter(oldOrder.getCreateTime(), order.getExpireDays()));
+        oldOrder.setExpireDays(order.getExpireDays());
+        oldOrder.setAmount(order.getAmount());
+        updateOrder(oldOrder);
+    }
+
+    /**
+     * 验证金额
+     *
+     * @param orderVo
+     */
+    private void checkAmountIsOk(OrderVo orderVo) {
+        Device device = deviceService.findDeviceById(orderVo.getDeviceId());
+        if (device == null) {
+            throw new FebsException("没有该设备");
+        }
+        String maxAmount = device.getMaxAmount();
+        if (Float.valueOf(orderVo.getAmount()) > Float.valueOf(maxAmount)) {
+            throw new FebsException("金额超过" + maxAmount + "，无法注资");
+        }
+    }
+
     /**
      * 添加其他默认参数
+     *
      * @param orderVo
      */
     private void addOtherParams(OrderVo orderVo) {
@@ -119,7 +160,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public void submitAuditApply(Long orderId) {
         Order order = findOrderByOrderId(orderId);
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn,order.getOrderStatus());
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
 
         //修改订单状态
         order.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
@@ -170,9 +211,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
-        if (injectionStatus){
+        if (injectionStatus) {
             order.setOrderStatus(OrderStatusEnum.machineInjectionSuccess.getStatus());
-        }else{
+        } else {
             order.setOrderStatus(OrderStatusEnum.machineInjectionFail.getStatus());
         }
         updateOrder(order);
@@ -259,4 +300,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void updateOrder(Order order) {
         saveOrUpdate(order);
     }
+
+    @Override
+    public Map<String, Object> findOrderDetailByOrderId(String orderId) {
+        return this.baseMapper.findOrderDetailByOrderId(orderId);
+    }
+
 }

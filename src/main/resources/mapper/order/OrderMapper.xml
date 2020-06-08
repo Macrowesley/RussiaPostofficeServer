@@ -79,4 +79,20 @@
         <include refid="pageSelectCondition"/>
     </select>
 
+    <select id="findOrderDetailByOrderId" resultType="java.util.Map">
+        select
+            o.order_id as orderId,
+            o.expire_days as expireDays,
+            o.amount,
+            u.realname as auditUserName,
+            d.acnum,
+			d.max_amount as maxAmount
+        from
+            t_order o
+        left join t_device d on (d.device_id = o.device_id)
+        left join t_user u on (u.user_id = o.audit_user_id)
+        where
+            o.order_id = #{orderId};
+    </select>
+
 </mapper>
