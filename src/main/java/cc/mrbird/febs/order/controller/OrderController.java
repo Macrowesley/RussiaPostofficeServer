@@ -2,8 +2,10 @@ package cc.mrbird.febs.order.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
+import cc.mrbird.febs.common.entity.AuditType;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -85,7 +87,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success().data(userList);
     }
 
-    @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
+    @ControllerEndpoint(operation = "新增", exceptionMessage = "新增失败")
     @PostMapping("add")
     @RequiresPermissions("order:add")
     public FebsResponse addOrder(@Valid OrderVo order) {
@@ -93,7 +95,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改Order", exceptionMessage = "修改Order失败")
+    @ControllerEndpoint(operation = "修改", exceptionMessage = "修改失败")
     @PostMapping("update")
     @RequiresPermissions("order:update")
     public FebsResponse editOrder(OrderVo order) {
@@ -101,20 +103,18 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "提交注资审核失败")
-    @PostMapping("submitInjection")
+    @ControllerEndpoint(operation = "提交审核", exceptionMessage = "提交审核失败")
+    @PostMapping("submitApply/{auditType}")
     @RequiresPermissions("order:update")
-    public FebsResponse submitInjectionOrder(OrderVo order) {
-        log.info("提交注资审核 order = {}", order.toString());
-        orderService.submitAuditApply(order);
-        return new FebsResponse().success();
-    }
+    public FebsResponse submitApply(OrderVo orderVo, @NotBlank @PathVariable String auditType) {
+        if (auditType.equals(AuditType.injection)){
+            orderService.submitAuditApply(orderVo);
+        }else if (auditType.equals(AuditType.closedCycle)){
+            orderService.submitEndOrderApply(orderVo);
+        }else{
+            throw new FebsException("审核类型出错");
+        }
 
-    @ControllerEndpoint(operation = "提交闭环审核", exceptionMessage = "提交闭环审核失败")
-    @PostMapping("submitClose")
-    @RequiresPermissions("order:update")
-    public FebsResponse submitClose(OrderVo order) {
-        //TODO
         return new FebsResponse().success();
     }
 
@@ -126,27 +126,27 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "撤销", exceptionMessage = "撤销失败")
-    @PostMapping("repeal")
+    @ControllerEndpoint(operation = "注销", exceptionMessage = "注销失败")
+    @PostMapping("cancel/{orderId}")
     @RequiresPermissions("order:update")
-    public FebsResponse repealOrder(OrderVo order) {
-        //TODO
+    public FebsResponse cancelOrder(@NotBlank @PathVariable String orderId) {
+        orderService.cancelOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "冻结", exceptionMessage = "冻结失败")
-    @PostMapping("freeze")
+    @PostMapping("freeze/{orderId}")
     @RequiresPermissions("order:update")
-    public FebsResponse freezeOrder(OrderVo order) {
-        //TODO
+    public FebsResponse freezeOrder(@NotBlank @PathVariable String orderId) {
+        orderService.freezeOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "解冻", exceptionMessage = "解冻失败")
-    @PostMapping("unfreeze")
+    @PostMapping("unfreeze/{orderId}")
     @RequiresPermissions("order:update")
-    public FebsResponse unfreezeOrder(OrderVo order) {
-        //TODO
+    public FebsResponse unfreezeOrder(@NotBlank @PathVariable String orderId) {
+        orderService.unfreezeOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
     }
 

@@ -50,10 +50,13 @@ public class ViewController {
     }
 
     @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "提交注资审核失败")
-    @GetMapping("submitInjection/{orderId}")
+    @GetMapping("submitApply/{orderId}/{audityType}")
     @RequiresPermissions("order:update")
-    public String submitInjectionOrder(@NotBlank @PathVariable String orderId, Model model) {
+    public String submitApply(@NotBlank @PathVariable String orderId,
+                                       @NotBlank @PathVariable String audityType,
+                                       Model model) {
         model.addAttribute("orderId", orderId);
+        model.addAttribute("audityType",audityType);
         return FebsUtil.view("order/orderSubmitInjection");
     }
 

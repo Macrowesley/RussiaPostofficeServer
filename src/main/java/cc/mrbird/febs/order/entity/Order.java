@@ -59,7 +59,7 @@ public class Order {
         3.审核通过   4 驳回
         5.机器获取数据包
         6.机器注资成功
-        7.撤销
+        7.注销
         8.冻结
         9.闭环申请中
         10.闭环申请审核失败
@@ -71,7 +71,7 @@ public class Order {
             "        5.机器获取数据包\n" +
             "        6.机器注资成功\n" +
             "        7.机器注资失败\n" +
-            "        8.撤销\n" +
+            "        8.注销\n" +
             "        9.冻结\n" +
             "        10.闭环申请中\n" +
             "        11.闭环申请审核失败")*/
@@ -131,11 +131,4 @@ public class Order {
     @ExcelField(value = "添加时间", writeConverter = TimeConverter.class)
     @TableField("create_time")
     Date createTime;
-
-
-    /**
-     * 提交备注
-     */
-    String submitInfo;
-
 }

@@ -12,7 +12,7 @@ public enum OrderStatusEnum {
     machineInjectionFail("7","机器注资失败"),
     orderCloseApplyIng("10","闭环申请中"),
     orderCloseApplyNotPass("11","闭环申请审核失败"),//（闭环申请成功就是状态6）
-    orderRepeal("8","撤销"),
+    orderRepeal("8","注销"),
     orderFreeze("9","冻结");
 
     private String status;

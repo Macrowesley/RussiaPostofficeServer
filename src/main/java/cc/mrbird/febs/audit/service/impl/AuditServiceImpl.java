@@ -56,9 +56,9 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
             queryWrapper.eq(Audit::getAuditType, audit.getAuditType());
         }
 
-        if (StringUtils.isNotBlank(audit.getAcnum())){
+        /*if (StringUtils.isNotBlank(audit.getAcnum())){
             queryWrapper.eq(Audit::getAcnum, audit.getAcnum());
-        }
+        }*/
 
         if (StringUtils.isNotBlank(audit.getStatus())){
             queryWrapper.eq(Audit::getStatus, audit.getStatus());
@@ -107,18 +107,18 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createAudit(Order order, String auditType) {
+    public void createAudit(OrderVo orderVo, String auditType) {
         Audit audit = new Audit();
-        audit.setOrderId(order.getOrderId());
-        audit.setUserId(order.getAuditUserId());
-        audit.setOrderNumber(order.getOrderNumber());
-        audit.setDeviceId(order.getDeviceId());
-        audit.setAmount(order.getAmount());
+        audit.setOrderId(orderVo.getOrderId());
+        audit.setUserId(orderVo.getAuditUserId());
+        audit.setOrderNumber(orderVo.getOrderNumber());
+        audit.setDeviceId(orderVo.getDeviceId());
+        audit.setAmount(orderVo.getAmount());
         audit.setAuditType(AuditType.injection);
-        audit.setFUserId(order.getApplyUserId());
+        audit.setFUserId(orderVo.getApplyUserId());
         audit.setStatus(AuditStatusEnum.notBegin.getStatus());
         audit.setCreateTime(new Date());
-        audit.setSubmitInfo(order.getSubmitInfo());
+        audit.setSubmitInfo(orderVo.getSubmitInfo());
         this.save(audit);
     }
 
@@ -170,6 +170,19 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         Audit audit = getNewestOneByOrderId(orderId);
         audit.setOldStatus(audit.getStatus());
         audit.setStatus(AuditStatusEnum.orderFreezeing.getStatus());
+        updateAudit(audit);
+    }
+
+    /**
+     * 解冻订单
+     *
+     * @param orderId
+     */
+    @Override
+    public void unFreezeOrder(Long orderId) {
+        Audit audit = getNewestOneByOrderId(orderId);
+        audit.setStatus(audit.getOldStatus());
+        audit.setOldStatus(null);
         updateAudit(audit);
     }
 

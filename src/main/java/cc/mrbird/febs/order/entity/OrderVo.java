@@ -52,6 +52,12 @@ public class OrderVo extends Order {
 
 
     /**
+     * 提交备注
+     */
+    String submitInfo;
+
+
+    /**
      * 这个订单的操作列表
      */
     List<Map<String, String>> btnList = new ArrayList<>();

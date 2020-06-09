@@ -4,14 +4,14 @@ public enum OrderBtnEnum {
     //修改
     //提交注资审核
     //提交闭环
-    //撤销
+    //注销
     //冻结
 
     editBtn(1,"editBtn","修改"),
     submitInjectionBtn(2,"submitInjectionBtn","注资审核"),
     submitCloseBtn(3,"submitCloseBtn","闭环审核"),
     auditDetail(7,"auditDetail","审核详情"),
-    repealBtn(4,"repealBtn","撤销"),
+    cancelBtn(4,"repealBtn","注销"),
     freezeBtn(5,"freezeBtn","冻结"),
     unfreezeBtn(6,"unfreezeBtn","解冻");
 

@@ -101,6 +101,6 @@ public class Audit {
     private Date createTime;
 
     //————————————————————————额外添加的字段————————————————————————
-    private String acnum;
+//    private String acnum;
 
 }

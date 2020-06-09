@@ -65,10 +65,10 @@ public interface IOrderService extends IService<Order> {
      * 提交闭环订单申请
      * @param order
      */
-    void submitEndOrderApply(Long orderId);
+    void submitEndOrderApply(OrderVo orderVo);
 
     /**
-     * 撤销注资
+     * 注销注资
      * @param order
      */
     void cancelOrder(Long orderId);
@@ -86,11 +86,6 @@ public interface IOrderService extends IService<Order> {
      */
     public void unfreezeOrder(Long orderId);
 
-    /**
-     * 机器查询数据包
-     * @param order
-     * @return
-     */
     Order findOrderByOrderId(Long orderId);
 
     void updateOrder(Order orderVo);

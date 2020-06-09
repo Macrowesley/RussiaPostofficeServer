@@ -41,8 +41,27 @@ class OrderServiceImplTest {
     @BeforeEach
     public void login(){
         log.error("开始登陆");
-        String username = "shebei";
-        String password = "123456";
+        String username = "";
+        String password = "";
+
+        int type = 1;
+        switch (type){
+            case 1:
+                //系统管理员
+                username = "admin";
+                password = "111111";
+                break;
+            case 2:
+                //机构管理员
+                username = "jigou";
+                password = "111111";
+                break;
+            case 3:
+                //设备管理员
+                username = "shebei";
+                password = "123456";
+                break;
+        }
 
         SecurityUtils.setSecurityManager(securityManager);
         password = Md5Util.encrypt(username.toLowerCase(), password);

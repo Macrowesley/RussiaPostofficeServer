@@ -5,7 +5,7 @@ public enum AuditStatusEnum {
     success("1","审核通过"),
     notPass("2","审核不通过"),
     orderFreezeing("3","冻结中"),
-    orderRepeal("4","已撤销");
+    orderRepeal("4","已注销");
 
     private String status;
     private String msg;

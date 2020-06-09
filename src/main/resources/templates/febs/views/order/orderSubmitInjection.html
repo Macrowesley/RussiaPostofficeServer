@@ -58,7 +58,8 @@
             $textarea = $("#submitInfo"),
             $limitText = $("#limitText"),
             $maxLen = 100,
-            $order = [[${order}]];
+            $order = [[${order}]],
+            $audityType = [[${audityType}]];
 
         validate = layui.validate;
 
@@ -68,15 +69,14 @@
         form.on('submit(order-audit-form-submit)', function (data) {
 
             //验证字数是否超标
-            if ($textarea.val().length > $maxLen){
+            if ($textarea.val().length > $maxLen) {
                 febs.alert.warn("字数不能超过" + $maxLen);
                 return false;
             }
 
-            //开始添加
-            febs.post(ctx + 'order/submitInjection', data.field, function (result) {
+            febs.post(ctx + 'order/submitApply/' + $audityType, data.field, function (result) {
                 layer.closeAll();
-                febs.alert.success('注资申请提交成功');
+                febs.alert.success('申请提交成功');
                 $('#febs-order').find('#refreshQuery').click();
             });
             return false;

@@ -1,7 +1,6 @@
 package cc.mrbird.febs.order.service.impl;
 
 import cc.mrbird.febs.audit.service.IAuditService;
-import cc.mrbird.febs.audit.service.impl.AuditServiceImpl;
 import cc.mrbird.febs.common.entity.*;
 
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
@@ -17,6 +16,7 @@ import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -63,7 +63,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 return this.orderMapper.selectByOrganizationManager(page, curUserId, orderVo);
             default:
                 //根据userid获取order列表
-                log.info(orderVo.toString());
                 return this.orderMapper.selectByUserId(page, curUserId, orderVo);
         }
     }
@@ -105,6 +104,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderVo.getOrderId();
     }
 
+    /**
+     * 修改订单
+     * @param orderVo
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void editOrder(OrderVo orderVo) {
@@ -112,7 +115,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = findOrderByOrderId(orderVo.getOrderId());
         orderVo.setDeviceId(order.getDeviceId());
 
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.editBtn, order.getOrderStatus());
         checkAmountIsOk(orderVo);
 
 
@@ -169,8 +172,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         updateOrder(order);
 
         //添加注资申请
-        order.setSubmitInfo(orderVo.getSubmitInfo());
-        auditService.createAudit(order, AuditType.injection);
+        BeanUtils.copyProperties(order, orderVo);
+        auditService.createAudit(orderVo, AuditType.injection);
+    }
+
+
+    /**
+     * 提交闭环订单申请
+     *
+     * @param order
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void submitEndOrderApply(OrderVo orderVo) {
+        Order order = findOrderByOrderId(orderVo.getOrderId());
+
+        //验证是否可以执行
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitCloseBtn, order.getOrderStatus());
+
+        //修改订单状态
+        order.setOrderStatus(OrderStatusEnum.orderCloseApplyIng.getStatus());
+        updateOrder(order);
+
+        //添加闭环申请
+        BeanUtils.copyProperties(order, orderVo);
+        auditService.createAudit(orderVo, AuditType.closedCycle);
     }
 
     /**
@@ -214,6 +240,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
+
         if (injectionStatus) {
             order.setOrderStatus(OrderStatusEnum.machineInjectionSuccess.getStatus());
         } else {
@@ -223,31 +250,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
 
-    /**
-     * 提交闭环订单申请
-     *
-     * @param order
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void submitEndOrderApply(Long orderId) {
-        Order orderVo = findOrderByOrderId(orderId);
-        //修改订单状态
-        orderVo.setOrderStatus(OrderStatusEnum.orderCloseApplyIng.getStatus());
-        updateOrder(orderVo);
-
-        //添加闭环申请
-        auditService.createAudit(orderVo, AuditType.closedCycle);
-    }
 
     /**
-     * 撤销注资
+     * 注销注资
      *
      * @param order
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelOrder(Long orderId) {
+        Order order = findOrderByOrderId(orderId);
+        //验证是否可以执行
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.cancelBtn, order.getOrderStatus());
+
         //修改订单状态
         OrderVo orderVo = new OrderVo();
         orderVo.setOrderId(orderId);
@@ -267,8 +282,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public void freezeOrder(Long orderId) {
         Order order = this.baseMapper.selectById(orderId);
+
+        //验证是否可以执行
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.freezeBtn, order.getOrderStatus());
+
         order.setOldStatus(order.getOrderStatus());
-        order.setOrderStatus(OrderStatusEnum.orderRepeal.getStatus());
+        order.setOrderStatus(OrderStatusEnum.orderFreeze.getStatus());
         updateOrder(order);
 
         //修改审核订单状态
@@ -283,15 +302,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void unfreezeOrder(Long orderId) {
-        //TODO 待写
+        Order order = this.baseMapper.selectById(orderId);
+
+        //验证是否可以执行
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.unfreezeBtn, order.getOrderStatus());
+
+        order.setOrderStatus(order.getOldStatus());
+        order.setOldStatus(null);
+        updateOrder(order);
+
+        //修改审核订单状态
+        auditService.freezeOrder(orderId);
     }
 
-    /**
-     * 机器查询数据包
-     *
-     * @param order
-     * @return
-     */
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Order findOrderByOrderId(Long orderId) {

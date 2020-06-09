@@ -65,11 +65,11 @@ public class StatusUtils {
             case createOrder:
                 btnList.add(OrderBtnEnum.editBtn);
                 btnList.add(OrderBtnEnum.submitInjectionBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case auditIng:
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case auditPass:
@@ -79,40 +79,36 @@ public class StatusUtils {
                 btnList.add(OrderBtnEnum.editBtn);
                 btnList.add(OrderBtnEnum.submitInjectionBtn);
                 btnList.add(OrderBtnEnum.submitCloseBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case machineGetData:
                 btnList.add(OrderBtnEnum.submitCloseBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case machineInjectionSuccess:
                 break;
             case machineInjectionFail:
                 btnList.add(OrderBtnEnum.submitCloseBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case orderRepeal:
-                btnList.add(OrderBtnEnum.editBtn);
-                btnList.add(OrderBtnEnum.submitInjectionBtn);
-                btnList.add(OrderBtnEnum.submitCloseBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
-                btnList.add(OrderBtnEnum.freezeBtn);
+
                 break;
             case orderFreeze:
                 btnList.add(OrderBtnEnum.unfreezeBtn);
                 break;
             case orderCloseApplyIng:
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case orderCloseApplyNotPass:
                 btnList.add(OrderBtnEnum.editBtn);
                 btnList.add(OrderBtnEnum.submitInjectionBtn);
                 btnList.add(OrderBtnEnum.submitCloseBtn);
-                btnList.add(OrderBtnEnum.repealBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
         }

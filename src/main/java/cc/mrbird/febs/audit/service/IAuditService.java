@@ -46,7 +46,7 @@ public interface IAuditService extends IService<Audit> {
      *
      * @param audit audit
      */
-    void createAudit(Order order, String auditType);
+    void createAudit(OrderVo orderVo, String auditType);
 
     /**
      * 修改
@@ -63,7 +63,7 @@ public interface IAuditService extends IService<Audit> {
     void deleteAudit(Audit audit);
 
     /**
-     * 订单被撤销
+     * 订单被注销
      * @param orderId
      */
     void cancelOrder(Long orderId);
@@ -80,6 +80,12 @@ public interface IAuditService extends IService<Audit> {
      * @param orderId
      */
     void freezeOrder(Long orderId);
+
+    /**
+     * 解冻订单
+     * @param orderId
+     */
+    void unFreezeOrder(Long orderId);
 
     /**
      * 审核通过(批量)

@@ -25,8 +25,8 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param orderVo
      * @return
      */
-    IPage<OrderVo> selectBySystemManager(Page<OrderVo> page, OrderVo orderVo);
-    List<OrderVo> selectBySystemManager(OrderVo orderVo);
+    IPage<OrderVo> selectBySystemManager(Page<OrderVo> page, @Param("order") OrderVo orderVo);
+    List<OrderVo> selectBySystemManager(@Param("order") OrderVo orderVo);
 
     /**
      * 机构管理员查看订单列表
