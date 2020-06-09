@@ -118,6 +118,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         audit.setFUserId(order.getApplyUserId());
         audit.setStatus(AuditStatusEnum.notBegin.getStatus());
         audit.setCreateTime(new Date());
+        audit.setSubmitInfo(order.getSubmitInfo());
         this.save(audit);
     }
 

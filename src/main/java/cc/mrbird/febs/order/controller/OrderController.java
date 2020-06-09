@@ -85,14 +85,6 @@ public class OrderController extends BaseController {
         return new FebsResponse().success().data(userList);
     }
 
-    @ControllerEndpoint(operation = "提交审核", exceptionMessage = "提交审核失败")
-    @PostMapping("submitAuditApply/{orderId}")
-    @RequiresPermissions("order:submitAuditApply")
-    public FebsResponse submitAuditApply(@NotBlank @PathVariable String orderId) {
-        this.orderService.submitAuditApply(Long.valueOf(orderId));
-        return new FebsResponse().success();
-    }
-
     @ControllerEndpoint(operation = "新增Order", exceptionMessage = "新增Order失败")
     @PostMapping("add")
     @RequiresPermissions("order:add")
@@ -114,6 +106,7 @@ public class OrderController extends BaseController {
     @RequiresPermissions("order:update")
     public FebsResponse submitInjectionOrder(OrderVo order) {
         log.info("提交注资审核 order = {}", order.toString());
+        orderService.submitAuditApply(order);
         return new FebsResponse().success();
     }
 

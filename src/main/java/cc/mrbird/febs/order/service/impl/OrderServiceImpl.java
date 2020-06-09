@@ -106,19 +106,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public void editOrder(OrderVo order) {
+    @Transactional(rollbackFor = Exception.class)
+    public void editOrder(OrderVo orderVo) {
         //验证金额
-        Order oldOrder = findOrderByOrderId(order.getOrderId());
-        order.setDeviceId(oldOrder.getDeviceId());
+        Order order = findOrderByOrderId(orderVo.getOrderId());
+        orderVo.setDeviceId(order.getDeviceId());
 
-        checkAmountIsOk(order);
+        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
+        checkAmountIsOk(orderVo);
 
 
         //修改截止日期 、 截止天数、 金额
-        oldOrder.setEndTime(DateUtil.getDateAfter(oldOrder.getCreateTime(), order.getExpireDays()));
-        oldOrder.setExpireDays(order.getExpireDays());
-        oldOrder.setAmount(order.getAmount());
-        updateOrder(oldOrder);
+        order.setEndTime(DateUtil.getDateAfter(order.getCreateTime(), orderVo.getExpireDays()));
+        order.setExpireDays(orderVo.getExpireDays());
+        order.setAmount(orderVo.getAmount());
+        updateOrder(order);
     }
 
     /**
@@ -158,8 +160,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void submitAuditApply(Long orderId) {
-        Order order = findOrderByOrderId(orderId);
+    public void submitAuditApply(OrderVo orderVo) {
+        Order order = findOrderByOrderId(orderVo.getOrderId());
         StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
 
         //修改订单状态
@@ -167,6 +169,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         updateOrder(order);
 
         //添加注资申请
+        order.setSubmitInfo(orderVo.getSubmitInfo());
         auditService.createAudit(order, AuditType.injection);
     }
 

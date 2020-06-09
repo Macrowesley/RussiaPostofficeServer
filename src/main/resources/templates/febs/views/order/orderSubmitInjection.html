@@ -30,13 +30,14 @@
                         name="submitInfo"
                         id="submitInfo"
                         placeholder="选填"
+                        value=""
                         class="layui-textarea"
                         rows="3"
-                        maxlength="200"
-                        οnchange="this.value=this.value.substring(0, 200)"
-                        οnkeydοwn="this.value=this.value.substring(0, 200)"
-                        οnkeyup="this.value=this.value.substring(0, 200)"/>
-                <span id="limitText">2/100</span>
+                        maxlength="100"
+                        οnchange="this.value=this.value.substring(0, 100)"
+                        οnkeydοwn="this.value=this.value.substring(0, 100)"
+                        οnkeyup="this.value=this.value.substring(0, 100)"/>
+                <span id="limitText">0/100</span>
             </div>
         </div>
         <div class="layui-form-item febs-hide">
@@ -56,7 +57,7 @@
             $view = $('#order-submit-injection'),
             $textarea = $("#submitInfo"),
             $limitText = $("#limitText"),
-            $maxLen = 200,
+            $maxLen = 100,
             $order = [[${order}]];
 
         validate = layui.validate;
@@ -67,14 +68,6 @@
         form.on('submit(order-audit-form-submit)', function (data) {
 
             //验证字数是否超标
-            console.log($textarea.val())
-            console.log($textarea.val().length)
-
-            layer.closeAll();
-            $('#febs-order').find('#refreshQuery').click();
-            return false;
-
-
             if ($textarea.val().length > $maxLen){
                 febs.alert.warn("字数不能超过" + $maxLen);
                 return false;
@@ -92,7 +85,5 @@
         $("#submitInfo").bind("input propertychange keyup", function () {
             $limitText.html($(this).val().length + '/' + $maxLen)
         });
-
-
     });
 </script>

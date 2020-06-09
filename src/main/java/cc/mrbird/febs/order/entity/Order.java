@@ -132,4 +132,10 @@ public class Order {
     @TableField("create_time")
     Date createTime;
 
+
+    /**
+     * 提交备注
+     */
+    String submitInfo;
+
 }

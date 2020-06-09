@@ -205,20 +205,11 @@
 
             //刷新点击事件
             $reset.on('click', function () {
-
                 $searchForm[0].reset();
 
                 sortObject.type = 'null';
                 createTimeTo = null;
                 createTimeFrom = null;
-
-             /*   //就在当前页面刷新
-                var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-                //每页内容
-                params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
-                //第几页
-                params.pageNum = $view.find(".layui-laypage-em").next().html();
-                tableIns.reload(params);*/
 
                 //直接刷新到第一页
                 tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
@@ -334,7 +325,6 @@
 
                 //注资审核 有个一备注栏，可填写
                 if(layEvent == 'submitInjectionBtn'){
-                    febs.alert.success("注资审核")
                     febs.modal.open("提交注资审核", 'order/submitInjection/' + data.orderId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',

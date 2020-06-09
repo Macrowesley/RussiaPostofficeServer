@@ -130,7 +130,7 @@ public class StatusUtils {
      */
     public static void checkBtnPermissioin(OrderBtnEnum btnEnum, String orderStatus) {
         if (!getBtnList(orderStatus).contains(btnEnum)){
-            throw new FebsException("没有权限进行该操作");
+            throw new FebsException("当前注资状态无法执行该操作");
         }
     }
 

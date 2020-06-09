@@ -50,6 +50,7 @@ public class OrderVo extends Order {
 //    @ExcelField("闭环人")
     String closeUserName;
 
+
     /**
      * 这个订单的操作列表
      */
@@ -75,6 +76,7 @@ public class OrderVo extends Order {
                 ", endTime=" + endTime +
                 ", createTime=" + createTime +
                 ", btnList=" + btnList.toString() +
+                ", submitInfo=" + submitInfo +
                 '}';
     }
 }

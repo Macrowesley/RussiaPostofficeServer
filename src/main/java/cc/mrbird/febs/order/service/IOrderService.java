@@ -40,7 +40,7 @@ public interface IOrderService extends IService<Order> {
      * 提交审核
      * @param order
      */
-    void submitAuditApply(Long orderId);
+    void submitAuditApply(OrderVo orderVo);
 
     /**
      * 添加订单的时候就直接发起申请
