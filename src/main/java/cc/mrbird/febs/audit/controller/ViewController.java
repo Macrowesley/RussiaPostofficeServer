@@ -28,7 +28,6 @@ public class ViewController {
      * @return
      */
     @GetMapping("selectByOrderId/{orderId}")
-    @RequiresPermissions("order:update")
     public String selectByOrderId(@NotBlank @PathVariable String orderId, Model model){
         model.addAttribute("orderId", orderId);
         return FebsUtil.view("audit/listByOrderId");

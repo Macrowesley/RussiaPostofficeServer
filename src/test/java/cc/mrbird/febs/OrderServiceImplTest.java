@@ -59,7 +59,7 @@ class OrderServiceImplTest {
             case 3:
                 //设备管理员
                 username = "shebei";
-                password = "123456";
+                password = "111111";
                 break;
         }
 

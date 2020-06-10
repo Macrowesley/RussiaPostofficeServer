@@ -35,7 +35,7 @@ public interface IAuditService extends IService<Audit> {
     List<Audit> findAuditList(Audit audit);
 
     /**
-     * 查询记录
+     * 根据一个orderId获取列表
      *
      * @return List<Audit>
      */

@@ -52,7 +52,7 @@ public class Audit {
     private String orderNumber;
 
     /**
-     * 订单金额（单位为分）
+     * 注资金额
      */
     @TableField("amount")
     private String amount;
@@ -77,7 +77,7 @@ public class Audit {
     private String submitInfo;
 
     /**
-     * 审核状态 0 未开始 1 成功 2 驳回  3 冻结中  4 已注销
+     * 审核状态 0 未审核 1 成功 2 驳回  3 冻结中  4 已注销
      */
     @TableField("status")
     private String status;

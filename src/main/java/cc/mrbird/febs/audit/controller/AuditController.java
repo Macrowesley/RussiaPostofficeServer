@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,16 @@ public class AuditController extends BaseController {
     public FebsResponse auditList(QueryRequest request, Audit audit) {
         Map<String, Object> dataTable = getDataTable(this.auditService.findPageAudits(request, audit));
         return new FebsResponse().success().data(dataTable);
+    }
+
+    /**
+     * 根据一个orderId获取列表
+     * @param orderId
+     * @return
+     */
+    @GetMapping("selectByOrderId/{orderId}")
+    public FebsResponse selectByOrderId(@NotBlank @PathVariable String orderId) {
+        return new FebsResponse().success().data(this.auditService.findAuditListByOrderId(Long.valueOf(orderId)));
     }
 
     @ControllerEndpoint(operation = "删除Audit", exceptionMessage = "删除Audit失败")

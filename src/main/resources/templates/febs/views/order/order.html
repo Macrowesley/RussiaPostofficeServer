@@ -131,24 +131,23 @@
     </span>
 
     <div shiro:hasPermission="order:update">
-        <!--    {{#
-               layui.each(d.btnList, function(index, item){
-            }}
-            <a lay-event="{{ item.event }}">{{ item.title }} </a>
-            {{#  }); }}
+        {{#
+        layui.each(d.btnList, function(index, item){
+        }}
+        <a lay-event="{{ item.event }}">{{ item.title }} </a>
+        {{# }); }}
 
-            {{#  if(d.btnList.length === 0){ }}
-            <span class="layui-badge-dot febs-bg-orange"></span> 无权限
-            {{#  } }}-->
+        {{# if(d.btnList.length === 0){ }}
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        {{# } }}
 
-        <!--<span class="layui-badge-dot febs-bg-orange"></span> 无权限-->
-        <a lay-event="editBtn">修改</a>
+        <!--<a lay-event="editBtn">修改</a>
         <a lay-event="submitInjectionBtn">注资审核</a>
         <a lay-event="submitCloseBtn">闭环审核</a>
         <a lay-event="auditDetail">审核详情</a>
         <a lay-event="repealBtn">注销</a>
         <a lay-event="freezeBtn">冻结</a>
-        <a lay-event="unfreezeBtn">解冻</a>
+        <a lay-event="unfreezeBtn">解冻</a>-->
     </div>
 </script>
 <script data-th-inline="none" type="text/javascript">

@@ -92,7 +92,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     }
 
     /**
-     * 查询记录
+     * 根据一个orderId获取列表
      *
      * @param orderId
      * @return List<Audit>
