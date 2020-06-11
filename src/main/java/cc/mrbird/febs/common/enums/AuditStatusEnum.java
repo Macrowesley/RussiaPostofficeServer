@@ -31,9 +31,9 @@ public enum AuditStatusEnum {
         this.msg = msg;
     }
 
-    public static AuditStatusEnum getByStatus(int status) throws Exception {
+    public static AuditStatusEnum getByStatus(String status) throws Exception {
         for (AuditStatusEnum item: AuditStatusEnum.values()){
-            if (item.getStatus().equals(String.valueOf(status))){
+            if (item.getStatus().equals(status)){
                 return item;
             }
         }
@@ -41,7 +41,6 @@ public enum AuditStatusEnum {
     }
 
     public static void main(String[] args) throws Exception {
-        int status = 1;
-        System.out.println(AuditStatusEnum.getByStatus(status));
+        System.out.println(AuditStatusEnum.getByStatus("1"));
     }
 }

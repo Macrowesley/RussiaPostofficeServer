@@ -6,16 +6,19 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.order.entity.OrderVo;
+import cc.mrbird.febs.order.utils.StatusUtils;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wuwenze.poi.ExcelKit;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 
+import lombok.val;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +38,11 @@ public class AuditController extends BaseController {
     @GetMapping("list")
     @RequiresPermissions("audit:list")
     public FebsResponse auditList(QueryRequest request, Audit audit) {
-        Map<String, Object> dataTable = getDataTable(this.auditService.findPageAudits(request, audit));
+        IPage<Audit> pageInfo = this.auditService.findPageAudits(request, audit);
+        pageInfo.getRecords().stream().forEach(bean -> {
+            bean.setBtnList(StatusUtils.getAuditBtnMapList(bean.getStatus()));
+        });
+        Map<String, Object> dataTable = getDataTable(pageInfo);
         return new FebsResponse().success().data(dataTable);
     }
 
@@ -45,31 +52,49 @@ public class AuditController extends BaseController {
      * @return
      */
     @GetMapping("selectByOrderId/{orderId}")
-    public FebsResponse selectByOrderId(@NotBlank @PathVariable String orderId) {
-        return new FebsResponse().success().data(this.auditService.findAuditListByOrderId(Long.valueOf(orderId)));
-    }
-
-    @ControllerEndpoint(operation = "删除Audit", exceptionMessage = "删除Audit失败")
-    @GetMapping("audit/delete")
-    @RequiresPermissions("audit:delete")
-    public FebsResponse deleteAudit(Audit audit) {
-        this.auditService.deleteAudit(audit);
-        return new FebsResponse().success();
+    public FebsResponse selectByOrderId(@NotBlank @PathVariable String orderId, QueryRequest request) {
+        Audit audit = new Audit();
+        audit.setOrderId(Long.valueOf(orderId));
+        Map<String, Object> dataTable = getDataTable(this.auditService.findPageAudits(request, audit));
+        return new FebsResponse().success().data(dataTable);
     }
 
     @ControllerEndpoint(operation = "修改Audit", exceptionMessage = "修改Audit失败")
-    @PostMapping("audit/update")
+    @PostMapping("update")
     @RequiresPermissions("audit:update")
     public FebsResponse updateAudit(Audit audit) {
         this.auditService.updateAudit(audit);
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改Audit", exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(operation = "审核通过", exceptionMessage = "审核通过操作失败")
+    @PostMapping("pass/{auditId}")
+    @RequiresPermissions("audit:update")
+    public FebsResponse passAudit(@NotBlank @PathVariable String auditId) {
+        this.auditService.auditOneSuccess(auditId);
+        return new FebsResponse().success();
+    }
+
+    @ControllerEndpoint(operation = "审核不通过", exceptionMessage = "驳回操作失败")
+    @PostMapping("noPass")
+    @RequiresPermissions("audit:update")
+    public FebsResponse noPassAudit(Audit audit) {
+        this.auditService.auditOneFail(String.valueOf(audit.getAuditId()), audit.getCheckRemark());
+        return new FebsResponse().success();
+    }
+
+    @ControllerEndpoint(operation = "获取审核状态列表", exceptionMessage = "获取审核状态列表失败")
+    @GetMapping("selectStatus")
+    public FebsResponse selectStatus() {
+        return new FebsResponse().success().data(StatusUtils.getAuditStatusList());
+    }
+
+
+/*    @ControllerEndpoint(operation = "修改Audit", exceptionMessage = "导出Excel失败")
     @PostMapping("audit/excel")
     @RequiresPermissions("audit:export")
     public void export(QueryRequest queryRequest, Audit audit, HttpServletResponse response) {
         List<Audit> audits = this.auditService.findPageAudits(queryRequest, audit).getRecords();
         ExcelKit.$Export(Audit.class, response).downXlsx(audits, false);
-    }
+    }*/
 }

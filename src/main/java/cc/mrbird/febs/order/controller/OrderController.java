@@ -13,14 +13,12 @@ import cc.mrbird.febs.order.entity.OrderExcel;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
-import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.jsoup.select.Collector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 订单表 Controller
@@ -61,7 +57,7 @@ public class OrderController extends BaseController {
         log.info("请求参数：order={} , request={}", order.toString(), request.toString());
         IPage<OrderVo> pageInfo = this.orderService.findPageOrders(request, order);
         pageInfo.getRecords().stream().forEach(bean -> {
-            bean.setBtnList(StatusUtils.getBtnMapList(bean.getOrderStatus()));
+            bean.setBtnList(StatusUtils.getOrderBtnMapList(bean.getOrderStatus()));
         });
         Map<String, Object> dataTable = getDataTable(pageInfo);
         return new FebsResponse().success().data(dataTable);

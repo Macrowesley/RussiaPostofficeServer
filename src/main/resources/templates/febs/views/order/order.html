@@ -357,7 +357,7 @@
                 //审核详情
                 if (layEvent == 'auditDetail') {
                     febs.modal.open("审核详情", 'audit/selectByOrderId/' + data.orderId, {
-                        area: $(window).width() <= 750 ? '90%' : '50%',
+                        area: $(window).width() <= 750 ? '90%' : '70%',
                         offset: '30px',
                         btn: ['关闭'],
                         yes: function () {
@@ -368,7 +368,7 @@
 
                 //注销
                 if (layEvent == 'repealBtn') {
-                    febs.modal.confirm("提示", "确定注销吗？", function () {
+                    febs.modal.confirm("提示", "确定注销吗？该操作不可逆！", function () {
                         $.post(ctx + "order/cancel/" + data.orderId, null, function (res) {
                             if (res.code === 200) {
                                 febs.alert.info("注销成功");

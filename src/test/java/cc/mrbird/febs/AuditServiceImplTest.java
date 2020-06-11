@@ -1,8 +1,11 @@
 package cc.mrbird.febs;
 
+import cc.mrbird.febs.audit.entity.Audit;
 import cc.mrbird.febs.audit.service.IAuditService;
+import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.Md5Util;
+import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.system.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -14,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +37,32 @@ class AuditServiceImplTest {
         try {
             User user = FebsUtil.getCurrentUser();
         }catch (Exception e){
-            log.error("开始登陆");
-            String username = "shebei";
-            String password = "123456";
+            String username = "";
+            String password = "";
+
+            int type = 1;
+            switch (type){
+                case 1:
+                    //系统管理员
+                    username = "admin";
+                    password = "111111";
+                    break;
+                case 2:
+                    //机构管理员
+                    username = "jigou";
+                    password = "111111";
+                    break;
+                case 3:
+                    //审核管理员
+                    username = "shebei";
+                    password = "111111";
+                    break;
+                case 4:
+                    //设备管理员
+                    username = "shebei";
+                    password = "111111";
+                    break;
+            }
 
             SecurityUtils.setSecurityManager(securityManager);
             password = Md5Util.encrypt(username.toLowerCase(), password);
@@ -47,6 +75,15 @@ class AuditServiceImplTest {
 
     @Test
     void findPageAudits() {
+        QueryRequest request = new QueryRequest();
+        request.setPageNum(1);
+        request.setPageSize(10);
+
+        Audit audit = new Audit();
+        List<Audit> list =  auditService.findPageAudits(request,audit).getRecords();
+        for (Audit bean : list) {
+            log.info(bean.toString());
+        }
     }
 
     @Test

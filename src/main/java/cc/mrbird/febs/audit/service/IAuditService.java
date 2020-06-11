@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -34,12 +35,6 @@ public interface IAuditService extends IService<Audit> {
      */
     List<Audit> findAuditList(Audit audit);
 
-    /**
-     * 根据一个orderId获取列表
-     *
-     * @return List<Audit>
-     */
-    List<Audit> findAuditListByOrderId(Long orderId);
 
     /**
      * 新增
@@ -94,9 +89,9 @@ public interface IAuditService extends IService<Audit> {
 
     /**
      * 审核通过(单个)
-     * @param audit
+     * @param auditId
      */
-    void auditOneSuccess(Audit audit);
+    void auditOneSuccess(String auditId);
 
     /**
      * 审核失败(批量)
@@ -106,5 +101,5 @@ public interface IAuditService extends IService<Audit> {
     /**
      * 审核失败(单个)
      */
-    void auditOneFail(Audit audit);
+    void auditOneFail(String auditId, String checkRemark);
 }

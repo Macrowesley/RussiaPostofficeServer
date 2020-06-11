@@ -1,7 +1,11 @@
 package cc.mrbird.febs.audit.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import com.wuwenze.poi.annotation.Excel;
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -101,6 +105,27 @@ public class Audit {
     private Date createTime;
 
     //————————————————————————额外添加的字段————————————————————————
-//    private String acnum;
+    /**
+     * 表头号
+     */
+    @TableField(exist = false)
+    private String acnum;
 
+    /**
+     * 审核员姓名
+     */
+    @TableField(exist = false)
+    private String auditRealName;
+
+    /**
+     * 提交人姓名
+     */
+    @TableField(exist = false)
+    private String submitRealName;
+
+    /**
+     * 这个订单的操作列表
+     */
+    @TableField(exist = false)
+    List<Map<String, String>> btnList = new ArrayList<>();
 }

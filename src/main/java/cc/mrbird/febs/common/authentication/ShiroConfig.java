@@ -111,6 +111,7 @@ public class ShiroConfig {
         securityManager.setCacheManager(cacheManager());
         // 配置 rememberMeCookie
         securityManager.setRememberMeManager(rememberMeManager());
+
         return securityManager;
     }
 
@@ -182,6 +183,21 @@ public class ShiroConfig {
         sessionManager.setSessionListeners(listeners);
         sessionManager.setSessionDAO(redisSessionDAO());
         sessionManager.setSessionIdUrlRewritingEnabled(false);
+        sessionManager.setSessionIdCookie(sessionIdCookie());//设置SimpleCookie
         return sessionManager;
+    }
+
+    @Bean(name = "simpleCookie")
+    public SimpleCookie sessionIdCookie() {
+        //DefaultSecurityManager
+        SimpleCookie simpleCookie = new SimpleCookie();
+        //sessionManager.setCacheManager(ehCacheManager());
+        //如果在Cookie中设置了"HttpOnly"属性，那么通过程序(JS脚本、Applet等)将无法读取到Cookie信息，这样能有效的防止XSS攻击。
+        simpleCookie.setHttpOnly(true);
+//		simpleCookie.setName("SHRIOSESSIONID");
+        simpleCookie.setName("shiro.sesssion");
+        //单位秒
+//        simpleCookie.setMaxAge(3600);
+        return simpleCookie;
     }
 }

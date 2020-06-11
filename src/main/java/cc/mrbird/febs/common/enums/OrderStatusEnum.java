@@ -31,13 +31,17 @@ public enum OrderStatusEnum {
         return msg;
     }
 
-    public static OrderStatusEnum getByStatus(String status) throws Exception {
+    public static OrderStatusEnum getByStatus(String status)  {
         for (OrderStatusEnum item: OrderStatusEnum.values()){
             if (item.getStatus().equals(status)){
                 return item;
             }
         }
-        throw new Exception("查无此订单类型");
+        try {
+            throw new Exception("查无此订单类型");
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void main(String[] args) throws Exception {

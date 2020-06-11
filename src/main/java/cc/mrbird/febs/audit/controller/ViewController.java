@@ -21,6 +21,13 @@ public class ViewController {
         return FebsUtil.view("audit/audit");
     }
 
+    @GetMapping("reject/{auditId}")
+    @RequiresPermissions("audit:update")
+    public String reject(@NotBlank @PathVariable String auditId, Model model){
+        model.addAttribute("auditId", auditId);
+        return FebsUtil.view("audit/reject");
+    }
+
     /**
      * 注资列表中，查看注资审核详情
      * @param orderId

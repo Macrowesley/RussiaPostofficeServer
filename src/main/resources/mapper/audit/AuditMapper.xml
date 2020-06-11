@@ -1,5 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.audit.mapper.AuditMapper">
+    <sql id="selectAllAudit">
+        select
+            a.*, d.acnum, u1.realname as auditRealName, u2.realname as submitRealName
+        from
+            t_audit a
+        left join
+            t_device d on (d.device_id = a.device_id)
+        left join
+            t_user u1 on (u1.user_id = a.user_id)
+        left join
+            t_user u2 on (u2.user_id = a.f_user_id)
+        where
+            1=1
+    </sql>
 
+    <sql id="pageSelectCondition">
+        <if test="audit.acnum != null and audit.acnum != ''">
+            and d.acnum = #{audit.acnum}
+        </if>
+        <if test="audit.amount != null and audit.amount != ''">
+            and a.amount = #{audit.amount}
+        </if>
+        <if test="audit.status != null and audit.status != ''">
+            and a.status = #{audit.status}
+        </if>
+        <if test="audit.auditType != null and audit.auditType != ''">
+            and a.audit_type = #{audit.auditType}
+        </if>
+        <if test="audit.orderNumber != null and audit.orderNumber != ''">
+            and a.order_number = #{audit.orderNumber}
+        </if>
+        <if test="audit.orderId != null and audit.orderId != ''">
+            and a.order_id = #{audit.orderId}
+        </if>
+    </sql>
+
+    <select id="selectBySystemManager" resultType="cc.mrbird.febs.audit.entity.Audit">
+        <include refid="selectAllAudit"/>
+        <include refid="pageSelectCondition"/>
+        group by
+            a.audit_id
+    </select>
+    <select id="selectByOrganizationManager" resultType="cc.mrbird.febs.audit.entity.Audit">
+        select
+            a.*, d.acnum, u1.realname as auditRealName, u2.realname as submitRealName
+        from
+            t_user_device ud
+        inner join
+            t_audit a on (a.device_id = ud.device_id)
+        left join
+            t_device d on (d.device_id = a.device_id)
+        left join
+            t_user u1 on (u1.user_id = a.user_id)
+        left join
+            t_user u2 on (u2.user_id = a.f_user_id)
+        where
+            ud.user_id = #{curUserId}
+        <include refid="pageSelectCondition"/>
+        group by
+        a.audit_id
+    </select>
+    <select id="selectByUserId" resultType="cc.mrbird.febs.audit.entity.Audit">
+        <include refid="selectAllAudit"/>
+        and a.user_id = #{curUserId}
+        <include refid="pageSelectCondition"/>
+        group by
+            a.audit_id
+    </select>
 </mapper>

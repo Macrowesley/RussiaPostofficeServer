@@ -37,6 +37,12 @@ public interface IOrderService extends IService<Order> {
     long createOrder(OrderVo orderVo);
 
     /**
+     * 判断这个表头号的最新订单是否已经闭环/撤销，只有闭环/撤销了才能继续操作
+     * @param deviceId
+     */
+    public void checkOrderIsFinish(Long deviceId);
+
+    /**
      * 提交审核
      * @param order
      */

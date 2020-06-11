@@ -15,6 +15,7 @@ import cc.mrbird.febs.order.mapper.OrderMapper;
 import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createOrder(OrderVo orderVo) {
+        checkOrderIsFinish(orderVo.getDeviceId());
+
         //验证金额
         checkAmountIsOk(orderVo);
 
@@ -102,6 +105,38 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
         return orderVo.getOrderId();
+    }
+
+    /**
+     * 判断这个表头号的最新订单是否已经闭环/撤销，只有闭环/撤销了才能继续操作
+     * @param deviceId
+     */
+    @Override
+    public void checkOrderIsFinish(Long deviceId) {
+        Order oldOrder = findNewestOrderByDeviceId(deviceId);
+        if (oldOrder != null){
+            OrderStatusEnum statusEnum = OrderStatusEnum.getByStatus(oldOrder.getOrderStatus());
+            if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)){
+                throw new FebsException("订单没有闭环/撤销，无法操作");
+            }
+        }
+    }
+
+    /**
+     * 根据设备Id获取最新的订单
+     * @param deviceId
+     * @return
+     */
+    private Order findNewestOrderByDeviceId(Long deviceId) {
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getDeviceId, deviceId);
+        queryWrapper.last("limit 1");
+        queryWrapper.orderByDesc(Order::getOrderId);
+        List<Order> list = this.baseMapper.selectList(queryWrapper);
+        if (list.size() == 1){
+            return list.get(0);
+        }
+        return null;
     }
 
     /**
@@ -115,7 +150,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = findOrderByOrderId(orderVo.getOrderId());
         orderVo.setDeviceId(order.getDeviceId());
 
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.editBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.editBtn, order.getOrderStatus());
         checkAmountIsOk(orderVo);
 
 
@@ -165,7 +200,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public void submitAuditApply(OrderVo orderVo) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.submitInjectionBtn, order.getOrderStatus());
 
         //修改订单状态
         order.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
@@ -188,7 +223,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = findOrderByOrderId(orderVo.getOrderId());
 
         //验证是否可以执行
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.submitCloseBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.submitCloseBtn, order.getOrderStatus());
 
         //修改订单状态
         order.setOrderStatus(OrderStatusEnum.orderCloseApplyIng.getStatus());
@@ -235,13 +270,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * 更新机器注资状态
      *
      * @param orderVo
-     * @param injectionStatus
+     * @param injectionStatus 0 失败 1成功
      */
     @Override
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
 
         if (injectionStatus) {
+            order.setIsExpire("0");
             order.setOrderStatus(OrderStatusEnum.machineInjectionSuccess.getStatus());
         } else {
             order.setOrderStatus(OrderStatusEnum.machineInjectionFail.getStatus());
@@ -261,12 +297,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void cancelOrder(Long orderId) {
         Order order = findOrderByOrderId(orderId);
         //验证是否可以执行
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.cancelBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.cancelBtn, order.getOrderStatus());
 
         //修改订单状态
         OrderVo orderVo = new OrderVo();
         orderVo.setOrderId(orderId);
         orderVo.setOrderStatus(OrderStatusEnum.orderRepeal.getStatus());
+        orderVo.setIsExpire("0");
         updateOrder(orderVo);
 
         //修改审核订单状态
@@ -284,7 +321,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = this.baseMapper.selectById(orderId);
 
         //验证是否可以执行
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.freezeBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.freezeBtn, order.getOrderStatus());
 
         order.setOldStatus(order.getOrderStatus());
         order.setOrderStatus(OrderStatusEnum.orderFreeze.getStatus());
@@ -305,14 +342,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order order = this.baseMapper.selectById(orderId);
 
         //验证是否可以执行
-        StatusUtils.checkBtnPermissioin(OrderBtnEnum.unfreezeBtn, order.getOrderStatus());
+        StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.unfreezeBtn, order.getOrderStatus());
 
         order.setOrderStatus(order.getOldStatus());
         order.setOldStatus(null);
         updateOrder(order);
 
         //修改审核订单状态
-        auditService.freezeOrder(orderId);
+        auditService.unFreezeOrder(orderId);
     }
 
 

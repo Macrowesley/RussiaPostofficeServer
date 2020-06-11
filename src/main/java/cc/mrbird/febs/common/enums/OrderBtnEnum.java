@@ -8,8 +8,8 @@ public enum OrderBtnEnum {
     //冻结
 
     editBtn(1,"editBtn","修改"),
-    submitInjectionBtn(2,"submitInjectionBtn","注资审核"),
-    submitCloseBtn(3,"submitCloseBtn","闭环审核"),
+    submitInjectionBtn(2,"submitInjectionBtn","申请注资"),
+    submitCloseBtn(3,"submitCloseBtn","申请闭环"),
     auditDetail(7,"auditDetail","审核详情"),
     cancelBtn(4,"repealBtn","注销"),
     freezeBtn(5,"freezeBtn","冻结"),

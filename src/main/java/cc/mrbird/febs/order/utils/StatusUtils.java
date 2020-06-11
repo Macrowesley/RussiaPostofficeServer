@@ -1,5 +1,7 @@
 package cc.mrbird.febs.order.utils;
 
+import cc.mrbird.febs.common.enums.AuditBtnEnum;
+import cc.mrbird.febs.common.enums.AuditStatusEnum;
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
@@ -18,9 +20,9 @@ public class StatusUtils {
      * @param orderStatus
      * @return
      */
-    public static List<Map<String, String>> getBtnMapList(String orderStatus) {
+    public static List<Map<String, String>> getOrderBtnMapList(String orderStatus) {
         List<Map<String, String>> resList = new ArrayList<>();
-        List<OrderBtnEnum> list = getBtnList(orderStatus);
+        List<OrderBtnEnum> list = getOrderBtnList(orderStatus);
         list.stream().forEach(bean->{
             Map<String, String> map = new HashMap<>();
             map.put("event", bean.getEvent());
@@ -29,6 +31,25 @@ public class StatusUtils {
         });
         return resList;
     }
+
+    /**
+     * 获取map形式的按钮列表
+     * @param auditStatus
+     * @return
+     */
+    public static List<Map<String, String>> getAuditBtnMapList(String auditStatus) {
+        List<Map<String, String>> resList = new ArrayList<>();
+        List<AuditBtnEnum> list = getAuditBtnList(auditStatus);
+        list.stream().forEach(bean->{
+            Map<String, String> map = new HashMap<>();
+            map.put("event", bean.getEvent());
+            map.put("title", bean.getTitle());
+            resList.add(map);
+        });
+        return resList;
+    }
+
+
 
     /**
      * 获取订单状态列表
@@ -46,13 +67,29 @@ public class StatusUtils {
         return resList;
     }
 
+    /**
+     * 获取审核状态列表
+     * @return
+     */
+    public static List<Map<String,String>> getAuditStatusList(){
+        List<Map<String, String>> resList = new ArrayList<>();
+        List<AuditStatusEnum> list = Arrays.asList(AuditStatusEnum.values());
+        list.stream().forEach(bean->{
+            Map<String, String> map = new HashMap<>();
+            map.put("status", bean.getStatus());
+            map.put("title", bean.getMsg());
+            resList.add(map);
+        });
+        return resList;
+    }
+
 
     /**
-     * 根据状态获取按钮列表
+     * 根据状态获取订单页面的按钮列表
      * @param orderStatus
      * @return
      */
-    public static List<OrderBtnEnum> getBtnList(String orderStatus)  {
+    public static List<OrderBtnEnum> getOrderBtnList(String orderStatus)  {
 //        List<OrderBtnEnum> btnList = Arrays.asList(OrderBtnEnum.values());
         List<OrderBtnEnum> btnList = new ArrayList<>();
         OrderStatusEnum orderStatusEnum = null;
@@ -73,7 +110,9 @@ public class StatusUtils {
                 btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case auditPass:
-
+                btnList.add(OrderBtnEnum.submitCloseBtn);
+                btnList.add(OrderBtnEnum.cancelBtn);
+                btnList.add(OrderBtnEnum.freezeBtn);
                 break;
             case auditNotPass:
                 btnList.add(OrderBtnEnum.editBtn);
@@ -117,6 +156,36 @@ public class StatusUtils {
         return btnList;
     }
 
+    private static List<AuditBtnEnum> getAuditBtnList(String auditStatus) {
+        List<AuditBtnEnum> btnList = new ArrayList<>();
+        AuditStatusEnum statusEnum = null;
+        try {
+            statusEnum = AuditStatusEnum.getByStatus(auditStatus);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        /*notBegin("0","未审核"),
+                success("1","审核通过"),
+                notPass("2","审核不通过"),
+                orderFreezeing("3","冻结中"),
+                orderRepeal("4","已注销");*/
+        switch (statusEnum){
+            case notBegin:
+                btnList.add(AuditBtnEnum.passBtn);
+                btnList.add(AuditBtnEnum.noPassBtn);
+                break;
+            case success:
+                break;
+            case notPass:
+                break;
+            case orderFreezeing:
+                break;
+            case orderRepeal:
+                break;
+        }
+        return btnList;
+    }
+
 
     /**
      * 判断订单是否能执行某个操作
@@ -124,9 +193,24 @@ public class StatusUtils {
      * @param orderStatus
      * @return
      */
-    public static void checkBtnPermissioin(OrderBtnEnum btnEnum, String orderStatus) {
-        if (!getBtnList(orderStatus).contains(btnEnum)){
+    public static void checkOrderBtnPermissioin(OrderBtnEnum btnEnum, String orderStatus) {
+        if (!getOrderBtnList(orderStatus).contains(btnEnum)){
             throw new FebsException("当前注资状态无法执行该操作");
+        }
+    }
+
+    /**
+     * 判断审核是否可以执行某个操作
+     * @param btnEnum
+     * @param status
+     */
+    public static void checkAuditBtnPermissioin(AuditBtnEnum btnEnum, String status) {
+        if (!getAuditBtnList(status).contains(btnEnum)){
+            throw new FebsException("当前审核状态无法执行该操作");
+        }
+
+        if (status.equals(AuditStatusEnum.orderFreezeing) || status.equals(AuditStatusEnum.orderRepeal)){
+            throw new FebsException("该订单已被冻结或者注销，无法审核");
         }
     }
 
@@ -138,7 +222,7 @@ public class StatusUtils {
             checkBtnPermissioin(btnEnum, OrderStatusEnum.orderCloseApplyIng.getStatus());
         }*/
         OrderBtnEnum btnEnum = OrderBtnEnum.unfreezeBtn;
-        checkBtnPermissioin(btnEnum, OrderStatusEnum.auditIng.getStatus());
+        checkOrderBtnPermissioin(btnEnum, OrderStatusEnum.auditIng.getStatus());
 
         log.info("结果：" + res + " ，耗时：" + (System.currentTimeMillis() - time1));
     }
