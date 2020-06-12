@@ -150,4 +150,9 @@ class OrderServiceImplTest {
         String deviceId = "1";
         userService.findAuditListByDeviceId(deviceId).stream().forEach(user -> log.info(user.toString()));
     }
+
+    @Test
+    void selectAllExpireOrderAndUpdateAndNoticeUser(){
+        orderService.selectAllExpireOrderAndUpdateAndNoticeUser();
+    }
 }

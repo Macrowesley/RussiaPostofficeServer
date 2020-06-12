@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.notice.service.INoticeService;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserService;
@@ -32,6 +33,7 @@ public class ViewController extends BaseController {
     private final IUserService userService;
     private final ShiroHelper shiroHelper;
     private final IUserDataPermissionService userDataPermissionService;
+    private final INoticeService noticeService;
 
     @GetMapping("login")
     @ResponseBody
@@ -65,6 +67,10 @@ public class ViewController extends BaseController {
         model.addAttribute("user", currentUserDetail);
         model.addAttribute("permissions", authorizationInfo.getStringPermissions());
         model.addAttribute("roles", authorizationInfo.getRoles());
+
+        //判断是否有新消息
+        boolean hasNew = noticeService.findHasNewNotices();
+        model.addAttribute("hasNewNotice", hasNew ? "1":"0");
 
         log.error("获取权限 user = " + currentUserDetail.toString());
         log.error("获取权限 permissions = " + authorizationInfo.getStringPermissions());

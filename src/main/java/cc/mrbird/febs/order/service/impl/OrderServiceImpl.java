@@ -9,6 +9,8 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.*;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.notice.entity.Notice;
+import cc.mrbird.febs.notice.service.INoticeService;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.mapper.OrderMapper;
@@ -17,6 +19,7 @@ import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +29,13 @@ import lombok.RequiredArgsConstructor;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.util.unit.DataUnit;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 订单表 Service实现
@@ -45,6 +51,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final OrderMapper orderMapper;
     private final IAuditService auditService;
     private final IDeviceService deviceService;
+    private final INoticeService noticeService;
 
     @Override
     public IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo) {
@@ -109,14 +116,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     /**
      * 判断这个表头号的最新订单是否已经闭环/撤销，只有闭环/撤销了才能继续操作
+     *
      * @param deviceId
      */
     @Override
     public void checkOrderIsFinish(Long deviceId) {
         Order oldOrder = findNewestOrderByDeviceId(deviceId);
-        if (oldOrder != null){
+        if (oldOrder != null) {
             OrderStatusEnum statusEnum = OrderStatusEnum.getByStatus(oldOrder.getOrderStatus());
-            if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)){
+            if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)) {
                 throw new FebsException("订单没有闭环/撤销，无法操作");
             }
         }
@@ -124,6 +132,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     /**
      * 根据设备Id获取最新的订单
+     *
      * @param deviceId
      * @return
      */
@@ -133,7 +142,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.last("limit 1");
         queryWrapper.orderByDesc(Order::getOrderId);
         List<Order> list = this.baseMapper.selectList(queryWrapper);
-        if (list.size() == 1){
+        if (list.size() == 1) {
             return list.get(0);
         }
         return null;
@@ -141,6 +150,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     /**
      * 修改订单
+     *
      * @param orderVo
      */
     @Override
@@ -286,7 +296,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
 
-
     /**
      * 注销注资
      *
@@ -370,4 +379,44 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return this.baseMapper.findOrderDetailByOrderId(orderId);
     }
 
+    /**
+     * 查询到所有过期的订单，然后批量更新过期状态
+     * 把过期订单信息，和创建者信息，插入到提醒表中
+     */
+    @Override
+    public void selectAllExpireOrderAndUpdateAndNoticeUser() {
+        log.info("查询到所有过期的订单");
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        //不过期  没有注销  没有闭环   到期时间大于现在时间
+        queryWrapper.ne(Order::getOrderStatus, OrderStatusEnum.orderRepeal.getStatus());
+        queryWrapper.ne(Order::getOrderStatus, OrderStatusEnum.machineInjectionSuccess.getStatus());
+        queryWrapper.ne(Order::getIsExpire, "1");
+//        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_SPLIT_PATTERN));
+        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(DateUtil.getDateAfter(new Date(), 7), DateUtil.FULL_TIME_SPLIT_PATTERN));
+        List<Order> orderList = baseMapper.selectList(queryWrapper);
+        List<Order> list = orderList.stream().map(order -> {
+            order.setIsExpire("1");
+//            order.setOrderStatus(OrderStatusEnum.orderFreeze.getStatus());
+            return order;
+        }).collect(Collectors.toList());
+
+        List<Notice> noticeList = new ArrayList<>();
+        list.stream().forEach(order -> {
+                    Notice notice = new Notice();
+                    notice.setUserId(order.getApplyUserId());
+                    notice.setOrderId(order.getOrderId());
+                    notice.setDeviceId(order.getDeviceId());
+                    notice.setOrderNumber(order.getOrderNumber());
+                    notice.setAmount(order.getAmount());
+                    notice.setIsRead("0");
+                    notice.setContent("过期了");
+                    notice.setCreateTime(new Date());
+                    noticeList.add(notice);
+                }
+        );
+
+        saveOrUpdateBatch(list);
+
+        noticeService.saveOrUpdateBatch(noticeList);
+    }
 }

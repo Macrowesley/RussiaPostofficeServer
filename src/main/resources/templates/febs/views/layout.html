@@ -12,6 +12,11 @@
                  <span class="febs-breadcrumb"></span>
             </ul>
             <ul class="layui-nav layui-layout-right" lay-filter="febs-header">
+                <li class="layui-nav-item layui-hide-xs" id="noticeList" lay-unselect>
+                    <a title="消息提醒" style="display: none;">
+                        <i class="layui-icon layui-icon-notice"><span class="layui-badge-dot" id="hot-dot" style="position: relative; top: -2px; left: -4px;"></span></i>
+                    </a>
+                </li>
                 <li class="layui-nav-item layui-hide-xs" id="fullscreen" lay-unselect>
                     <a title="切换全屏">
                         <i class="layui-icon layui-icon-screen-full"></i>
@@ -151,6 +156,18 @@
                 ico.removeClass(activeCls).addClass(normalCls)
             }
         });
+
+        $("#hot-dot").hide();
+        echo("hasNewNotice = " + hasNewNotice)
+        if (hasNewNotice == "1"){
+            echo("666")
+            $("#hot-dot").show();
+        }
+
+        $view.on('click', '#noticeList', function () {
+            $("#hot-dot").hide();
+            febs.view.tab.change("/notice/notice");
+        })
 
         $view.on('click', '#password-update', function () {
             febs.modal.view('密码修改', 'password/update', {

@@ -99,4 +99,10 @@ public interface IOrderService extends IService<Order> {
     Map<String, Object> findOrderDetailByOrderId(String orderId);
 
     void editOrder(OrderVo order);
+
+    /**
+     * 查询到所有过期的订单，然后批量更新过期状态
+     * 把过期订单信息，和创建者信息，插入到提醒表中
+     */
+    void selectAllExpireOrderAndUpdateAndNoticeUser();
 }
