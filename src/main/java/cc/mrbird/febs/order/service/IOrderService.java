@@ -30,6 +30,7 @@ public interface IOrderService extends IService<Order> {
 
     public List<OrderVo> findAllOrders(QueryRequest request, OrderVo orderVo);
 
+    public Order findNewestOrderByAcnum(String acnum);
     /**
      * 单纯创建一个订单
      * @param orderVo
@@ -59,7 +60,7 @@ public interface IOrderService extends IService<Order> {
      * @param orderId
      * @return
      */
-    Order machineRequestData(Long orderId);
+    Order machineRequestData(String acnum);
 
     /**
      * 更新机器注资状态

@@ -10,7 +10,7 @@ public class MoneyUtils {
      *
      * @return
      */
-    public static int changeY2F(double price) {
+    public static Long changeY2F(double price) {
         /*DecimalFormat df = new DecimalFormat("#.00");
         price = Double.valueOf(df.format(price));
         int money = (int) (price * 100);
@@ -28,7 +28,7 @@ public class MoneyUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Integer.valueOf(amount);
+        return Long.valueOf(amount);
     }
 
     /**
@@ -36,7 +36,7 @@ public class MoneyUtils {
      *
      * @return
      */
-    public static String changeF2Y(int price) {
+    public static String changeF2Y(long price) {
 //        return BigDecimal.valueOf(Long.valueOf(price)).divide(new BigDecimal(100)).toString();
         String amount = String.valueOf(price);
         NumberFormat format = NumberFormat.getInstance();

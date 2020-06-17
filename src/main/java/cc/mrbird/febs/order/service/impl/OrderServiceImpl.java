@@ -104,10 +104,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public long createOrder(OrderVo orderVo) {
         checkOrderIsFinish(orderVo.getDeviceId());
-
+        Device device = deviceService.findDeviceById(orderVo.getDeviceId());
+        if (device == null) {
+            throw new FebsException("设备id=" + orderVo.getDeviceId() + "不存在");
+        }
         //验证金额
         checkAmountIsOk(orderVo);
 
+        orderVo.setAcnum(device.getAcnum());
         orderVo.setOrderStatus(OrderStatusEnum.createOrder.getStatus());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
@@ -139,6 +143,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private Order findNewestOrderByDeviceId(Long deviceId) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Order::getDeviceId, deviceId);
+        queryWrapper.last("limit 1");
+        queryWrapper.orderByDesc(Order::getOrderId);
+        List<Order> list = this.baseMapper.selectList(queryWrapper);
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * 根据设备acnum获取最新的订单
+     *
+     * @param acnum
+     * @return
+     */
+    @Override
+    public Order findNewestOrderByAcnum(String acnum) {
+        LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Order::getAcnum, acnum);
         queryWrapper.last("limit 1");
         queryWrapper.orderByDesc(Order::getOrderId);
         List<Order> list = this.baseMapper.selectList(queryWrapper);
@@ -252,8 +275,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createOrderAndSubmitApply(OrderVo orderVo) {
+        checkOrderIsFinish(orderVo.getDeviceId());
+        Device device = deviceService.findDeviceById(orderVo.getDeviceId());
+        if (device == null) {
+            throw new FebsException("设备id=" + orderVo.getDeviceId() + "不存在");
+        }
 
         orderVo.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
+        orderVo.setAcnum(device.getAcnum());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
 
@@ -268,10 +297,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * @return
      */
     @Override
-    public Order machineRequestData(Long orderId) {
-        Order order = findOrderByOrderId(orderId);
+    @Transactional(rollbackFor = Exception.class)
+    public Order machineRequestData(String acnum) {
+        Order order = findNewestOrderByAcnum(acnum);
+        if (order == null){
+            return null;
+        }
+
+        //只有审核通过才能让机器获取数据包
+        if (!order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())){
+            log.error("设备状态不正常，不能获取数据包");
+            return null;
+        }
+
         //修改订单状态
         order.setOrderStatus(OrderStatusEnum.machineGetData.getStatus());
+        //TODO 如果10秒内没有返回结果，则更改机器状态，报警，提醒管理员
+        // 然后机器再次查询，返回注资结果，解除警报，完成闭环  需要一个状态：是否报警
         updateOrder(order);
         return order;
     }
@@ -283,8 +325,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * @param injectionStatus 0 失败 1成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
+        if (order == null){
+            throw new FebsException("更新机器注资状态失败，无法找到orderId="+orderVo.getOrderId());
+        }
+
+        if (!order.getAcnum().equals(orderVo.getAcnum())){
+            throw new FebsException("更新机器注资状态失败，表头号不匹配");
+        }
+
+        if (!order.getAmount().equals(orderVo.getAmount())){
+            throw new FebsException("更新机器注资状态失败，金额不匹配");
+        }
+
+        //只有以下状态才能让机器更改数据包：机器获取数据包
+        if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())){
+            log.error("设备状态不正常，不能接收机器注资结果");
+            throw new FebsException("设备状态不正常，不能接收机器注资结果");
+        }
+
+        //TODO 如果10秒内没有返回结果，则更改机器状态，报警，提醒管理员
+        // 然后机器再次查询，返回注资结果，解除警报，完成闭环  需要一个状态：是否报警
 
         if (injectionStatus) {
             order.setIsExpire("0");

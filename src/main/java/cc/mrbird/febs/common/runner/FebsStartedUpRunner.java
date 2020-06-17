@@ -1,11 +1,13 @@
 package cc.mrbird.febs.common.runner;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.NettyServer;
 import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -33,6 +35,9 @@ public class FebsStartedUpRunner implements ApplicationRunner {
     private String contextPath;
     @Value("${spring.profiles.active}")
     private String active;
+
+    @Autowired
+    NettyServer nettyServer;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -67,6 +72,20 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                     Runtime.getRuntime().exec("cmd  /c  start " + url);
                 }
             }
+            startNetty();
         }
+    }
+
+    /**
+     * 启动netty
+     */
+    private void startNetty() {
+        nettyServer.start(febsProperties.getNetty().getIp(), febsProperties.getNetty().getPort());
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                nettyServer.destroy();
+            }
+        });
     }
 }

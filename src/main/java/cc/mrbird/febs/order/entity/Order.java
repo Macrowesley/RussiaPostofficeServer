@@ -45,6 +45,13 @@ public class Order {
     String orderNumber;
 
     /**
+     * 表头号
+     */
+    @ExcelField(value = "表头号")
+    @TableField("acnum")
+    String acnum;
+
+    /**
      * 订单金额
      */
     @NotBlank

@@ -16,11 +16,7 @@ import java.util.Map;
 @Excel("注资报表")
 public class OrderVo extends Order {
 
-    /**
-     * 表头号
-     */
-    @ExcelField(value = "表头号")
-    String acnum;
+
 
     /**
      * 设备昵称
