@@ -125,6 +125,10 @@ public class Order {
     @TableField("is_expire")
     String isExpire;
 
+    @ExcelField  (value = "机器注资是否超时", writeConverterExp = "0=未超时,1=已超时")
+    @TableField("is_alarm")
+    String isAlarm;
+
     /**
      * 截止日期
      */

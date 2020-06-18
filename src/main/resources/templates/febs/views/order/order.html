@@ -52,6 +52,17 @@
                                     </div>
 
                                     <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">注资报警</label>
+                                        <div class="layui-input-inline">
+                                            <select name="isAlarm">
+                                                <option value=""></option>
+                                                <option value="0">正常</option>
+                                                <option value="1">设备注资超时</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">订单号</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="orderNumber" autocomplete="off"
@@ -102,6 +113,16 @@
     0: {title: '未过期', color: 'green'},
     1: {title: '已过期', color: 'red'}
     }[d.isExpire];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+
+<script type="text/html" id="order-alarm">
+    {{#
+    var status = {
+    0: {title: '正常', color: 'green'},
+    1: {title: '设备注资报警', color: 'red'}
+    }[d.isAlarm];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
 </script>
@@ -296,7 +317,8 @@
                     {field: 'auditUserName', title: '审核人', width: 90},
                     {title: '注资状态', templet: '#order-status'},
                     {title: '是否过期', width: 90, templet: '#order-expire'},
-                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
+                    {title: '是否报警', minWidth: 90, templet: '#order-alarm'},
+                    // {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
                     {field: 'endTime', title: '截止日期', minWidth: 180, sort: false},
                     {title: '操作', toolbar: '#order-option', minWidth: 350}
                 ]]
@@ -439,6 +461,7 @@
                 amount: $searchForm.find('input[name="amount"]').val().trim(),
                 orderStatus: $searchForm.find("select[name='orderStatus']").val(),
                 isExpire: $searchForm.find("select[name='isExpire']").val(),
+                isAlarm: $searchForm.find("select[name='isAlarm']").val(),
                 orderNumber: $searchForm.find('input[name="orderNumber"]').val().trim(),
                 invalidate_ie_cache: new Date()
             };

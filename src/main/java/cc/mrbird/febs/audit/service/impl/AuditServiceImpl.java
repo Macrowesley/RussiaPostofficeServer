@@ -219,6 +219,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
             case AuditType.closedCycle:
                 order.setOrderStatus(OrderStatusEnum.machineInjectionSuccess.getStatus());
                 order.setIsExpire("0");
+                order.setIsAlarm("0");
                 break;
             default:
                 throw new FebsException("审核类型不存在");

@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.*;
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.threadpool.AlarmThreadPool;
 import cc.mrbird.febs.common.utils.*;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -52,6 +53,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final IAuditService auditService;
     private final IDeviceService deviceService;
     private final INoticeService noticeService;
+    private final AlarmThreadPool alarmThreadPool;
 
     @Override
     public IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo) {
@@ -126,6 +128,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public void checkOrderIsFinish(Long deviceId) {
         Order oldOrder = findNewestOrderByDeviceId(deviceId);
+//        log.info("deviceId = " + deviceId + " order=" + oldOrder.toString());
         if (oldOrder != null) {
             OrderStatusEnum statusEnum = OrderStatusEnum.getByStatus(oldOrder.getOrderStatus());
             if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)) {
@@ -143,6 +146,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private Order findNewestOrderByDeviceId(Long deviceId) {
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Order::getDeviceId, deviceId);
+        queryWrapper.eq(Order::getApplyUserId, FebsUtil.getCurrentUser().getUserId());
         queryWrapper.last("limit 1");
         queryWrapper.orderByDesc(Order::getOrderId);
         List<Order> list = this.baseMapper.selectList(queryWrapper);
@@ -218,6 +222,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private void addOtherParams(OrderVo orderVo) {
         orderVo.setApplyUserId(FebsUtil.getCurrentUser().getUserId());
         orderVo.setIsExpire("0");
+        orderVo.setIsAlarm("0");
         orderVo.setOrderNumber(IdUtil.cureateId());
         orderVo.setAmount(MoneyUtils.moneySaveTwoDecimal(orderVo.getAmount()));
         orderVo.setCreateTime(new Date());
@@ -312,8 +317,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //修改订单状态
         order.setOrderStatus(OrderStatusEnum.machineGetData.getStatus());
-        //TODO 如果10秒内没有返回结果，则更改机器状态，报警，提醒管理员
-        // 然后机器再次查询，返回注资结果，解除警报，完成闭环  需要一个状态：是否报警
+        alarmThreadPool.addAlarm(order.getOrderId());
         updateOrder(order);
         return order;
     }
@@ -346,8 +350,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new FebsException("设备状态不正常，不能接收机器注资结果");
         }
 
-        //TODO 如果10秒内没有返回结果，则更改机器状态，报警，提醒管理员
-        // 然后机器再次查询，返回注资结果，解除警报，完成闭环  需要一个状态：是否报警
+        //清除警报
+        alarmThreadPool.deleteAlarm(order.getOrderId());
+        orderVo.setIsAlarm("0");
 
         if (injectionStatus) {
             order.setIsExpire("0");
@@ -376,6 +381,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderVo.setOrderId(orderId);
         orderVo.setOrderStatus(OrderStatusEnum.orderRepeal.getStatus());
         orderVo.setIsExpire("0");
+        orderVo.setIsAlarm("0");
         updateOrder(orderVo);
 
         //修改审核订单状态
@@ -454,8 +460,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.ne(Order::getOrderStatus, OrderStatusEnum.orderRepeal.getStatus());
         queryWrapper.ne(Order::getOrderStatus, OrderStatusEnum.machineInjectionSuccess.getStatus());
         queryWrapper.ne(Order::getIsExpire, "1");
-//        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_SPLIT_PATTERN));
-        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(DateUtil.getDateAfter(new Date(), 7), DateUtil.FULL_TIME_SPLIT_PATTERN));
+        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_SPLIT_PATTERN));
+//        queryWrapper.le(Order::getEndTime, DateUtil.getDateFormat(DateUtil.getDateAfter(new Date(), 7), DateUtil.FULL_TIME_SPLIT_PATTERN));
         List<Order> orderList = baseMapper.selectList(queryWrapper);
         List<Order> list = orderList.stream().map(order -> {
             order.setIsExpire("1");

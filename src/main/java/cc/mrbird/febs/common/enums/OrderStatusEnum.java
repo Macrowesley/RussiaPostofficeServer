@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.enums;
 
+import cc.mrbird.febs.common.exception.FebsException;
 import org.apache.commons.lang3.StringUtils;
 
 public enum OrderStatusEnum {
@@ -47,5 +48,15 @@ public enum OrderStatusEnum {
     public static void main(String[] args) throws Exception {
         int status = 1;
         System.out.println(OrderStatusEnum.getByStatus("1"));
+
+        OrderStatusEnum statusEnum = OrderStatusEnum.getByStatus("8");
+        System.out.println(statusEnum == OrderStatusEnum.machineInjectionSuccess);
+        System.out.println(statusEnum == OrderStatusEnum.orderRepeal);
+        if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)) {
+//            throw new FebsException("订单没有闭环/撤销，无法操作");
+            System.out.println("111");
+        }else{
+            System.out.println("333");
+        }
     }
 }

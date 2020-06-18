@@ -17,12 +17,15 @@
         <if test="order.isExpire != null and order.isExpire != ''">
             and o.is_expire = #{order.isExpire}
         </if>
+        <if test="order.isAlarm != null and order.isAlarm != ''">
+            and o.is_alarm = #{order.isAlarm}
+        </if>
     </sql>
 
 
     <select id="selectBySystemManager" resultType="cc.mrbird.febs.order.entity.OrderVo">
         select
-        o.*,d.acnum,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
+        o.*,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
         from
         t_order o
         left join
@@ -42,7 +45,7 @@
 
     <select id="selectByOrganizationManager" resultType="cc.mrbird.febs.order.entity.OrderVo">
         select
-        o.*,d.acnum,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
+        o.*,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
         from
         t_user_device ud
         inner join
@@ -65,7 +68,7 @@
 
     <select id="selectByUserId" resultType="cc.mrbird.febs.order.entity.OrderVo">
         select
-        o.*,d.acnum,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
+        o.*,d.nickname,u1.realname as applyUserName, u2.realname as auditUserName, u3.realname as closeUserName
         from
         t_order o
         left join
@@ -89,7 +92,6 @@
             o.expire_days as expireDays,
             o.amount,
             u.realname as auditUserName,
-            d.acnum,
 			d.max_amount as maxAmount
         from
             t_order o
