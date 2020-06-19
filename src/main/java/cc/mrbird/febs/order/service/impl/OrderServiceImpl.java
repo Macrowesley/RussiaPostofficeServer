@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.threadpool.AlarmThreadPool;
 import cc.mrbird.febs.common.utils.*;
+import cc.mrbird.febs.common.websocket.WebSocketServer;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.notice.entity.Notice;
@@ -32,10 +33,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.unit.DataUnit;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -305,12 +303,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public Order machineRequestData(String acnum) {
         Order order = findNewestOrderByAcnum(acnum);
-        if (order == null){
+        if (order == null) {
             return null;
         }
 
         //只有审核通过才能让机器获取数据包
-        if (!order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())){
+        if (!order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())) {
             log.error("设备状态不正常，不能获取数据包");
             return null;
         }
@@ -332,20 +330,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional(rollbackFor = Exception.class)
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
-        if (order == null){
-            throw new FebsException("更新机器注资状态失败，无法找到orderId="+orderVo.getOrderId());
+        if (order == null) {
+            throw new FebsException("更新机器注资状态失败，无法找到orderId=" + orderVo.getOrderId());
         }
 
-        if (!order.getAcnum().equals(orderVo.getAcnum())){
+        if (!order.getAcnum().equals(orderVo.getAcnum())) {
             throw new FebsException("更新机器注资状态失败，表头号不匹配");
         }
 
-        if (!order.getAmount().equals(orderVo.getAmount())){
+        if (!order.getAmount().equals(orderVo.getAmount())) {
             throw new FebsException("更新机器注资状态失败，金额不匹配");
         }
 
         //只有以下状态才能让机器更改数据包：机器获取数据包
-        if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())){
+        if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())) {
             log.error("设备状态不正常，不能接收机器注资结果");
             throw new FebsException("设备状态不正常，不能接收机器注资结果");
         }
@@ -469,6 +467,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             return order;
         }).collect(Collectors.toList());
 
+        HashSet<Long> userIdList = new HashSet<>();
         List<Notice> noticeList = new ArrayList<>();
         list.stream().forEach(order -> {
                     Notice notice = new Notice();
@@ -481,11 +480,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     notice.setContent("过期了");
                     notice.setCreateTime(new Date());
                     noticeList.add(notice);
+
+                    userIdList.add(order.getApplyUserId());
                 }
         );
 
         saveOrUpdateBatch(list);
 
         noticeService.saveOrUpdateBatch(noticeList);
+
+        //获取不重复的userid list,挨个通知
+        userIdList.stream().forEach(userId ->{
+            WebSocketServer.sendInfo(4,"闭环过期", String.valueOf(userId));
+        });
     }
 }

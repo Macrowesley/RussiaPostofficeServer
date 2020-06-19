@@ -1,5 +1,7 @@
 package cc.mrbird.febs.common.threadpool;
 
+import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.websocket.WebSocketServer;
 import cc.mrbird.febs.notice.entity.Notice;
 import cc.mrbird.febs.notice.service.INoticeService;
 import cc.mrbird.febs.order.entity.Order;
@@ -29,7 +31,8 @@ public class AlarmRunnable implements Runnable {
         order.setIsAlarm("1");
         orderService.updateOrder(order);
 
-        //TODO websocket 通知前端
+        //websocket 通知前端
+        WebSocketServer.sendInfo(3,"付款超时报警",  String.valueOf(FebsUtil.getCurrentUser().getUserId()));
 
         //添加通知
         Notice notice = new Notice();

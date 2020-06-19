@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.websocket.WebSocketServer;
 import cc.mrbird.febs.notice.entity.Notice;
 import cc.mrbird.febs.notice.service.INoticeService;
 import com.wuwenze.poi.ExcelKit;
@@ -45,6 +46,7 @@ public class NoticeController extends BaseController {
     @ResponseBody
     public FebsResponse readAllNotice() {
         noticeService.readAllNotice();
+        WebSocketServer.sendInfo(2, "清除全部提醒", String.valueOf(FebsUtil.getCurrentUser().getUserId()));
         return new FebsResponse().success();
     }
 

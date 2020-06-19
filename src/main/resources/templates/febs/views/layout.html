@@ -9,12 +9,17 @@
                         <i class="layui-icon layui-icon-shrink-right"></i>
                     </a>
                 </li>
-                 <span class="febs-breadcrumb"></span>
+                <span class="febs-breadcrumb"></span>
             </ul>
             <ul class="layui-nav layui-layout-right" lay-filter="febs-header">
                 <li class="layui-nav-item layui-hide-xs" id="noticeList" lay-unselect>
-                    <a title="消息提醒" style="display: none;">
-                        <i class="layui-icon layui-icon-notice"><span class="layui-badge-dot" id="hot-dot" style="position: relative; top: -2px; left: -4px;"></span></i>
+                    <a title="消息提醒">
+                        <i class="layui-icon layui-icon-notice">
+                            <span class="layui-badge-dot"
+                                  id="hotDot"
+                                  style="position: relative; top: -2px; left: -4px;display: none;">
+                            </span>
+                        </i>
                     </a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs" id="fullscreen" lay-unselect>
@@ -31,7 +36,8 @@
                     <dl class="layui-nav-child">
                         <dd><a class="layui-nav-child-href" id="user-profile">个人中心</a></dd>
                         <dd><a class="layui-nav-child-href" id="password-update">密码修改</a></dd>
-                        <dd><a class="layui-nav-child-href" target="_blank" href="https://github.com/wuyouzhuguli/FEBS-Shiro">项目地址</a></dd>
+                        <dd><a class="layui-nav-child-href" target="_blank"
+                               href="https://github.com/wuyouzhuguli/FEBS-Shiro">项目地址</a></dd>
                         <hr/>
                         <dd><a class="layui-nav-child-href" data-th-href="@{logout}">退出登录</a></dd>
                     </dl>
@@ -56,7 +62,8 @@
                 <ul class="febs-tabs-menu">
                     {{# layui.each(layui.view.tab.data,function(i, item){ }}
                     <li data-type="page" class="febs-tabs-btn" lay-url="{{item.fileurl}}">
-                        <i class="febs-tabs-ball"></i>{{ item.title }}<b class="layui-icon layui-icon-close febs-tabs-close"></b>
+                        <i class="febs-tabs-ball"></i>{{ item.title }}<b
+                            class="layui-icon layui-icon-close febs-tabs-close"></b>
                     </li>
                     {{# }) }}
                 </ul>
@@ -87,15 +94,19 @@
                         var left = index == 0 ? 50 : 50 + index * 20;
                         var title = child.title;
                         if (child.icon) {
-                            title = '<i class="layui-icon '+child.icon+'"></i>' + child.title
+                        title = '<i class="layui-icon '+child.icon+'"></i>' + child.title
                         }
                         html += '
                         <dd><a style="padding-left:' + left + 'px" target="'+(child.target||'')+'"
                                lay-href="'+ (child.href||'') +'">' + title + '</a>';
                             if(child.childs) html += __createSlidebar(child.childs,index+1);
-                            html += '</dd>';
+                            html += '
+                        </dd>
+                        ';
                         });
-                        html = html +'</dl>';
+                        html = html +'
+                    </dl>
+                    ';
                     return html;
                     }
                     layui.each(d.childs, function(i,child){
@@ -157,16 +168,13 @@
             }
         });
 
-        $("#hot-dot").hide();
-        echo("hasNewNotice = " + hasNewNotice)
-        if (hasNewNotice == "1"){
-            echo("666")
-            $("#hot-dot").show();
-        }
+        //延迟1秒执行
+        setTimeout(function (){
+            isShowNoticeHot(hasNewNotice);
+        }, 1000);
 
         $view.on('click', '#noticeList', function () {
-            $("#hot-dot").hide();
-            febs.view.tab.change("/notice/notice");
+            febs.navigate("/notice/notice");
         })
 
         $view.on('click', '#password-update', function () {
@@ -193,5 +201,20 @@
                 $sidebar.addClass('febs-theme-white');
             }
         }
+
+        /**
+         * 是否显示小红点
+         * @param isShow
+         */
+        function isShowNoticeHot(isShow){
+            if (isShow == "1"){
+                echo("显示")
+                $("#hotDot").show();
+            }else{
+                // echo("隐藏")
+                $("#hotDot").hide();
+            }
+        }
+
     });
 </script>

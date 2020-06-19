@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.session.ExpiredSessionException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,9 @@ public class ViewController extends BaseController {
     private final ShiroHelper shiroHelper;
     private final IUserDataPermissionService userDataPermissionService;
     private final INoticeService noticeService;
+
+    @Value("${websocket.service}")
+    String websocketServiceName;
 
     @GetMapping("login")
     @ResponseBody
@@ -71,6 +75,9 @@ public class ViewController extends BaseController {
         //判断是否有新消息
         boolean hasNew = noticeService.findHasNewNotices();
         model.addAttribute("hasNewNotice", hasNew ? "1":"0");
+
+        //网站地址
+        model.addAttribute("websocketServiceName", websocketServiceName);
 
         log.error("获取权限 user = " + currentUserDetail.toString());
         log.error("获取权限 permissions = " + authorizationInfo.getStringPermissions());

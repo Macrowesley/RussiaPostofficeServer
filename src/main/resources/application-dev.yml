@@ -51,3 +51,6 @@ spring:
 mybatis-plus:
   configuration:
     cache-enabled: false
+
+websocket:
+  service: websocket
