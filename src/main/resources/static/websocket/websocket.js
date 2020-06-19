@@ -2,7 +2,7 @@ var socket;
 var heartCheck;
 function openSocket(userId, websocketServiceName) {
 
-    console.log("openSocket userId = " + userId + " websocketServiceName = " + websocketServiceName)
+    // console.log("openSocket userId = " + userId + " websocketServiceName = " + websocketServiceName)
     if (typeof (WebSocket) == "undefined") {
         alert("您的浏览器不支持WebSocket");
         console.log("您的浏览器不支持WebSocket");
@@ -30,14 +30,14 @@ function openSocket(userId, websocketServiceName) {
                 }, this.timeout)
             }
         }
-        console.log("您的浏览器支持WebSocket");
+        // console.log("您的浏览器支持WebSocket");
         //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
         var socketUrl = "http://" + window.location.host + ctx  + websocketServiceName + "/" + userId
         var replaceStr = "ws";
         replaceStr = "wss";
         socketUrl = socketUrl.replace("https", replaceStr).replace("http", replaceStr);
 
-        console.log("连接地址为：" + socketUrl);
+        // console.log("连接地址为：" + socketUrl);
         if (socket != null) {
             socket.close();
             socket = null;
@@ -60,21 +60,21 @@ function openSocket(userId, websocketServiceName) {
             switch (type) {
                 case 1:
                     //1 发送成功
-                    console.log("发送成功")
+                    // console.log("发送成功")
                     break;
                 case 2:
                     //2 全部阅读
-                    console.log("全部阅读了消息")
+                    // console.log("全部阅读了消息")
                     document.getElementById("hotDot").style.display = "none";
                     break;
                 case 3:
                     //3 付款超时报警
-                    console.log("付款超时报警")
+                    // console.log("付款超时报警")
                     document.getElementById("hotDot").style.display = "inline-block";
                     break;
                 case 4:
                     //4 闭环超时报警
-                    console.log("闭环超时报警")
+                    // console.log("闭环超时报警")
                     document.getElementById("hotDot").style.display = "inline-block";
                     break;
             }

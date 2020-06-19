@@ -9,6 +9,8 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.system.service.IUserRoleService;
+import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
@@ -55,10 +57,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "获取列表", exceptionMessage = "获取列表失败")
     @GetMapping("allList/{bindUserId}")
     public FebsResponse allList(@NotBlank(message = "{required}") @PathVariable String bindUserId) {
-        Map<String, Object> data = new HashMap<>(2);
-        data.put("allDevices", deviceService.findDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
-        Long[] res = deviceService.findDeviceIdArrByUserId(Long.valueOf(bindUserId));
-        data.put("bindDevices", res);
+        Map<String, Object> data =  deviceService.selectDeviceListToTransfer(bindUserId);
         return new FebsResponse().success().data(data);
     }
 

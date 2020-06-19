@@ -85,7 +85,7 @@ public interface IDeviceService extends IService<Device> {
      * @param bindUserId
      * @return
      */
-    List<Device> findDeviceListByUserId(Long bindUserId);
+    List<Device> findAllDeviceListByUserId(Long bindUserId);
 
     /**
      * 根据用户获取设备id数组
@@ -93,4 +93,17 @@ public interface IDeviceService extends IService<Device> {
      * @return
      */
     Long[] findDeviceIdArrByUserId(Long bindUserId);
+
+    /**
+     * 获取穿梭框需要的表头号信息
+     * @param bindUserId
+     * @return
+     */
+    Map<String, Object> selectDeviceListToTransfer(String bindUserId);
+
+    /**
+     * 获取父id下的所有的设备管理者(传进来的设备管理者除外)id绑定的表头号
+     * @return
+     */
+    List<Device> selectSubUserDeviceListExcepBindUserIdByRoleAndParent(Long bindUserId, Long parentUserId, Long roleType);
 }

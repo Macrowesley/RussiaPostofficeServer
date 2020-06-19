@@ -14,21 +14,21 @@
             layer = layui.layer,
             formSelects = layui.formSelects,
             form = layui.form,
-            user = [[${user}]],
+            user = [[${user}]],//被绑定的用户id
             transfer = layui.transfer;
 
         form.render();
-        echo(user.userId)
+        // echo(user.userId)
         //渲染
         febs.get(ctx + 'device/allList/' + user.userId, null, function (res) {
             // echo("重新获取")
-            echoObject(res);
+            // echoObject(res);
             var allDevices = res.data.allDevices;
             var bindDevicesIdArr = res.data.bindDevices;
             transfer.render({
                 elem: '#deviceTransfer'  //绑定元素
                 , parseData: function (res) {
-                    echo(res)
+                    // echo(res)
                     //{"deviceId":3,"acnum":"CPU789","nickname":"CPU789","warnAmount":"1000000","maxAmount":"10000000","secretKey":null,"validDays":"7","deviceStatus":"1","useLock":"0","lockInfo":null,"createTime":"2020-05-29 16:42:22","id":3},
                     return {
                         "value": res.deviceId //数据值
@@ -58,7 +58,7 @@
                 // echo(item)
                 deviceIds.push(item.value)
             });
-            echo(deviceIds);
+            // echo(deviceIds);
             // return false;
             febs.post(ctx + 'device/sendDevice/' + deviceIds.join(",") + '/' + user.userId, null, function () {
                 layer.closeAll();

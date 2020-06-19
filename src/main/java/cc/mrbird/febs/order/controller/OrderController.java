@@ -72,7 +72,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "获取表头号列表", exceptionMessage = "获取表头号列表失败")
     @GetMapping("getAcnumList")
     public FebsResponse getAcnumList() {
-        List<Device> acnumList = deviceService.findDeviceListByUserId(FebsUtil.getCurrentUser().getUserId());
+        List<Device> acnumList = deviceService.findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId());
         return new FebsResponse().success().data(acnumList);
     }
 

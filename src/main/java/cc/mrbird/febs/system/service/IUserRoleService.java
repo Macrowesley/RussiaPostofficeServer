@@ -28,4 +28,5 @@ public interface IUserRoleService extends IService<UserRole> {
      * @return
      */
     List<UserRole> queryRoleListByUserId(Long userId);
+
 }

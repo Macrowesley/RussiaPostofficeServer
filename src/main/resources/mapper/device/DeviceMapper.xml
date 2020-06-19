@@ -34,4 +34,15 @@
         d.device_id asc
     </select>
 
+    <select id="selectSubUserDeviceListExcepBindUserIdByRoleAndParent" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.device_id,d.acnum
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+        c.user_id in ( select u.user_id from t_user u left join t_user_role ur ON ur.user_id = u.user_id where u.parent_id = #{parentUserId} and ur.role_id = #{roleType} and u.user_id != #{bindUserId})
+        ORDER BY d.device_id ASC;
+    </select>
+
 </mapper>

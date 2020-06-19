@@ -21,4 +21,6 @@ public interface DeviceMapper extends BaseMapper<Device> {
     <T> IPage<Device> selectListByUserId(Page<T> page, Long userId, @Param("device") Device device);
 
     List<Device> selectAllListByUserId(Long userId);
+
+    List<Device>  selectSubUserDeviceListExcepBindUserIdByRoleAndParent(@Param("bindUserId") Long bindUserId, @Param("parentUserId") Long parentUserId, @Param("roleType") Long roleType);
 }

@@ -10,12 +10,13 @@ import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.DeviceMapper;
-import cc.mrbird.febs.device.mapper.UserDeviceMapper;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.device.service.IUserDeviceService;
 import cc.mrbird.febs.system.entity.User;
+import cc.mrbird.febs.system.entity.UserRole;
+import cc.mrbird.febs.system.service.IUserRoleService;
+import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.generator.config.IFileCreate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 设备表 Service实现
@@ -43,10 +45,12 @@ import java.util.stream.Collectors;
 public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> implements IDeviceService {
 
     private final IUserDeviceService userDeviceService;
+    private final IUserService userService;
+    private final IUserRoleService userRoleService;
 
     @Override
     public IPage<Device> findDevices(QueryRequest request, Device device) {
-        if (device == null){
+        if (device == null) {
             device = new Device();
         }
         LambdaQueryWrapper<Device> queryWrapper = new LambdaQueryWrapper<>();
@@ -58,27 +62,27 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         User curUser = FebsUtil.getCurrentUser();
         String roleId = curUser.getRoleId();
 
-        if (roleId.equals(RoleType.systemManager)){
-            if (StringUtils.isNotBlank(device.getAcnum())){
+        if (roleId.equals(RoleType.systemManager)) {
+            if (StringUtils.isNotBlank(device.getAcnum())) {
                 queryWrapper.eq(Device::getAcnum, device.getAcnum());
             }
 
-            if (StringUtils.isNotBlank(device.getNickname())){
+            if (StringUtils.isNotBlank(device.getNickname())) {
                 queryWrapper.eq(Device::getNickname, device.getNickname());
             }
 
-            if (StringUtils.isNotBlank(device.getDeviceStatus())){
+            if (StringUtils.isNotBlank(device.getDeviceStatus())) {
                 queryWrapper.eq(Device::getDeviceStatus, device.getDeviceStatus());
             }
 
             return this.page(page, queryWrapper);
-        }else{
+        } else {
             return this.baseMapper.selectListByUserId(page, curUser.getUserId(), device);
         }
     }
 
     @Override
-    public List<Device> findDeviceListByUserId(Long userId) {
+    public List<Device> findAllDeviceListByUserId(Long userId) {
         return baseMapper.selectAllListByUserId(userId);
     }
 
@@ -90,8 +94,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     public Long[] findDeviceIdArrByUserId(Long bindUserId) {
-        List<Device> deviceList = findDeviceListByUserId(bindUserId);
-        Long[] arr =new Long[deviceList.size()];
+        List<Device> deviceList = findAllDeviceListByUserId(bindUserId);
+        Long[] arr = new Long[deviceList.size()];
         for (int i = 0; i < deviceList.size(); i++) {
             arr[i] = deviceList.get(i).getDeviceId();
         }
@@ -163,7 +167,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                     device.setCreateTime(new Date());
                     editMoney(device);
 
-            this.baseMapper.insert(device);
+                    this.baseMapper.insert(device);
 
                     UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
@@ -177,6 +181,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     /**
      * 金额保留2位
+     *
      * @param device
      */
     private void editMoney(Device device) {
@@ -196,7 +201,6 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
 
-
     /**
      * 把设备列表绑定到用户上
      *
@@ -210,7 +214,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         //把新的关系添加到用户-设备列表中
         List<UserDevice> userDeviceList = new ArrayList<>();
         List<String> deviceIdList = Arrays.asList(deviceIds.split(StringPool.COMMA));
-        deviceIdList.forEach(deviceId ->{
+        deviceIdList.forEach(deviceId -> {
             UserDevice userDevice = new UserDevice();
             userDevice.setUserId(sendUserId);
             userDevice.setDeviceId(Long.valueOf(deviceId));
@@ -229,5 +233,66 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         UserDevice userDevice = new UserDevice();
         userDevice.setUserId(userId);
         userDeviceService.deleteUserDevice(userDevice);
+    }
+
+    /**
+     * 获取穿梭框需要的表头号信息
+     *
+     * @param bindUserId
+     * @return
+     */
+    @Override
+    public Map<String, Object> selectDeviceListToTransfer(String bindUserId) {
+
+        List<UserRole> list = userRoleService.queryRoleListByUserId(Long.valueOf(bindUserId));
+        if (list.size() == 0) {
+            throw new FebsException("无法获取需要绑定的设备列表");
+        }
+        Long roleType = list.get(0).getRoleId();
+
+        Map<String, Object> data = new HashMap<>(2);
+        Long[] res = null;
+        switch (String.valueOf(roleType)) {
+            case RoleType.auditManager:
+                data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
+                findDeviceIdArrByUserId(Long.valueOf(bindUserId));
+                data.put("bindDevices", res);
+                break;
+            case RoleType.deviceManage:
+                //如果是给设备管理员分配，那么，一个表头号给一个设备管理者分配后，不能再分配给另一个人
+                //获取父id绑定的所有表头号 list1
+                //获取父id下的所有的设备管理者(传进来的设备管理者除外)id绑定的表头号，去重 list2
+                List<Device> parentUserDeviceList = findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId());
+                List<Device> subUserDeviceList = selectSubUserDeviceListExcepBindUserIdByRoleAndParent(Long.valueOf(bindUserId), FebsUtil.getCurrentUser().getUserId(), roleType);
+                //过滤后的deviceList
+                subUserDeviceList.stream().forEach(device -> {
+                    parentUserDeviceList.remove(device);
+                });
+
+                res = findDeviceIdArrByUserId(Long.valueOf(bindUserId));
+                data.put("allDevices", parentUserDeviceList);
+                data.put("bindDevices", res);
+                break;
+            default:
+                throw new FebsException("无法获取需要绑定的设备列表");
+        }
+
+        /*data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
+        res = findDeviceIdArrByUserId(Long.valueOf(bindUserId));
+        data.put("bindDevices", res);
+*/
+
+        return data;
+    }
+
+    /**
+     * 获取父id下的某类管理者(传进来的管理者除外)id绑定的表头号
+     *
+     * @param bindUserId
+     * @return
+     */
+    @Override
+    public List<Device> selectSubUserDeviceListExcepBindUserIdByRoleAndParent(Long bindUserId, Long parentUserId, Long roleType) {
+        return baseMapper.selectSubUserDeviceListExcepBindUserIdByRoleAndParent(bindUserId, parentUserId, roleType);
     }
 }
