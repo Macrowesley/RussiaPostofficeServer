@@ -11,7 +11,14 @@
                 </li>
                 <span class="febs-breadcrumb"></span>
             </ul>
+
             <ul class="layui-nav layui-layout-right" lay-filter="febs-header">
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a class="btn btn-sm" th:href="@{/index?lang=zh_CN}">中文</a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a class="btn btn-sm" th:href="@{/index?lang=en_US}">English</a>
+                </li>
                 <li class="layui-nav-item layui-hide-xs" id="noticeList" lay-unselect>
                     <a title="消息提醒">
                         <i class="layui-icon layui-icon-notice">
@@ -125,7 +132,7 @@
     <!-- 主体内容 -->
     <div class="layui-body" id="febs-body"></div>
 </div>
-<script data-th-inline="javascript" type="text/javascript">
+<script th:inline="javascript" type="text/javascript">
     layui.use(['jquery', 'febs', 'element'], function () {
         var $ = layui.jquery,
             $view = $('#febs-layout'),
@@ -134,6 +141,7 @@
         var element = layui.element;
 
         initTheme();
+        console.log(i18n('user.welcome'))
 
         $view.find('#user-avatar').attr('src', ctx + "febs/images/avatar/" + currentUser.avatar);
 

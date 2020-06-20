@@ -217,6 +217,27 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
+        <!--js国际化-->
+        <!--webjars版本定位器 用于省略版本号-->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+        </dependency>
+
+        <!--jQuery前端依赖-->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
+        <!--jQuery国际化插件-->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>jquery-i18n-properties</artifactId>
+            <version>1.2.7</version>
+        </dependency>
+
 
         <dependency>
             <groupId>io.springfox</groupId>

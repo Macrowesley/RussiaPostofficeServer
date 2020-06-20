@@ -3,6 +3,8 @@ package cc.mrbird.febs.system.controller;
 import cc.mrbird.febs.common.authentication.ShiroHelper;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.entity.FebsResponse;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.notice.service.INoticeService;
@@ -21,9 +23,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 
 @Slf4j
@@ -113,7 +118,20 @@ public class ViewController extends BaseController {
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user")
     @RequiresPermissions("user:view")
     public String systemUser() {
+        log.info("国际化语言：" + MessageUtils.getMessage("user.title"));
         return FebsUtil.view("system/user/user");
+    }
+
+    @GetMapping("changeLaunage")
+    @ResponseBody
+    public FebsResponse changeLaunage(HttpServletRequest req, String lang){
+        LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(req);
+        if ("en".equals(lang)) {
+            localeResolver.setLocale(req, null, Locale.US);
+        } else {
+            localeResolver.setLocale(req, null, Locale.CHINA);
+        }
+        return new FebsResponse().success();
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/add")
