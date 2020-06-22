@@ -118,7 +118,6 @@ public class ViewController extends BaseController {
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user")
     @RequiresPermissions("user:view")
     public String systemUser() {
-        log.info("国际化语言：" + MessageUtils.getMessage("user.title"));
         return FebsUtil.view("system/user/user");
     }
 
