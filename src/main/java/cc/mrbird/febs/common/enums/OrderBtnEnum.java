@@ -1,5 +1,7 @@
 package cc.mrbird.febs.common.enums;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
+
 public enum OrderBtnEnum {
     //修改
     //提交注资审核
@@ -7,13 +9,13 @@ public enum OrderBtnEnum {
     //注销
     //冻结
 
-    editBtn(1,"editBtn","修改"),
-    submitInjectionBtn(2,"submitInjectionBtn","申请注资"),
-    submitCloseBtn(3,"submitCloseBtn","申请闭环"),
-    auditDetail(7,"auditDetail","审核详情"),
-    cancelBtn(4,"repealBtn","注销"),
-    freezeBtn(5,"freezeBtn","冻结"),
-    unfreezeBtn(6,"unfreezeBtn","解冻");
+    editBtn(1,"editBtn",MessageUtils.getMessage("order.btnEnum.editBtn")),
+    submitInjectionBtn(2,"submitInjectionBtn",MessageUtils.getMessage("order.btnEnum.submitInjectionBtn")),
+    submitCloseBtn(3,"submitCloseBtn",MessageUtils.getMessage("order.btnEnum.submitCloseBtn")),
+    auditDetail(7,"auditDetail",MessageUtils.getMessage("order.btnEnum.auditDetail")),
+    cancelBtn(4,"repealBtn",MessageUtils.getMessage("order.btnEnum.cancelBtn")),
+    freezeBtn(5,"freezeBtn",MessageUtils.getMessage("order.btnEnum.freezeBtn")),
+    unfreezeBtn(6,"unfreezeBtn",MessageUtils.getMessage("order.btnEnum.unfreezeBtn"));
 
 
     private int type;
@@ -56,7 +58,7 @@ public enum OrderBtnEnum {
                 return item;
             }
         }
-        throw new Exception("查无此订单类型");
+        throw new Exception(MessageUtils.getMessage("order.btnEnum.noType"));
     }
 
     public static void main(String[] args) throws Exception {

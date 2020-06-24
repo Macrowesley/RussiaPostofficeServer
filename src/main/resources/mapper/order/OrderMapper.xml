@@ -89,6 +89,7 @@
     <select id="findOrderDetailByOrderId" resultType="java.util.Map">
         select
             o.order_id as orderId,
+            o.acnum as acnum,
             o.expire_days as expireDays,
             o.amount,
             u.realname as auditUserName,

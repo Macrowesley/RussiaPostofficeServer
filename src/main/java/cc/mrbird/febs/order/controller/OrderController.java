@@ -50,7 +50,7 @@ public class OrderController extends BaseController {
     @Autowired
     private IUserService userService;
 
-    @ControllerEndpoint(operation = "获取注资分页列表", exceptionMessage = "获取注资分页列表失败")
+    @ControllerEndpoint(operation = "获取注资分页列表", exceptionMessage = "{order.operation.listError}")
     @GetMapping("list")
     @RequiresPermissions("order:list")
     public FebsResponse orderList(QueryRequest request, OrderVo order) {
@@ -63,35 +63,38 @@ public class OrderController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @ControllerEndpoint(operation = "获取注资状态列表", exceptionMessage = "获取注资状态列表失败")
+    @ControllerEndpoint(operation = "获取注资状态列表", exceptionMessage = "{order.operation.listError}")
     @GetMapping("selectStatus")
     public FebsResponse selectStatus() {
         return new FebsResponse().success().data(StatusUtils.getOrderStatusList());
     }
 
-    @ControllerEndpoint(operation = "获取表头号列表", exceptionMessage = "获取表头号列表失败")
+    @ControllerEndpoint(operation = "获取表头号列表", exceptionMessage = "{order.operation.acnumListError}")
     @GetMapping("getAcnumList")
     public FebsResponse getAcnumList() {
         List<Device> acnumList = deviceService.findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId());
         return new FebsResponse().success().data(acnumList);
     }
 
-    @ControllerEndpoint(operation = "获取审核员列表", exceptionMessage = "获取审核员列表失败")
+    @ControllerEndpoint(operation = "获取审核员列表", exceptionMessage = "{order.operation.auditListError}")
     @GetMapping("getAuditUserNameList/{deviceId}")
     public FebsResponse getAuditUserNameList(@NotBlank @PathVariable String deviceId) {
         List<Map<String, Object>> userList = userService.findAuditListByDeviceId(deviceId);
         return new FebsResponse().success().data(userList);
     }
 
-    @ControllerEndpoint(operation = "新增", exceptionMessage = "新增失败")
+    @ControllerEndpoint(operation = "新增", exceptionMessage = "{order.operation.addError}")
     @PostMapping("add")
     @RequiresPermissions("order:add")
     public FebsResponse addOrder(@Valid OrderVo order) {
+        if (true){
+            throw new FebsException("999");
+        }
         this.orderService.createOrder(order);
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改", exceptionMessage = "修改失败")
+    @ControllerEndpoint(operation = "修改", exceptionMessage = "{order.operation.editError}")
     @PostMapping("update")
     @RequiresPermissions("order:update")
     public FebsResponse editOrder(OrderVo order) {
@@ -99,7 +102,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "提交审核", exceptionMessage = "提交审核失败")
+    @ControllerEndpoint(operation = "提交审核", exceptionMessage = "{order.operation.submitAuditError}")
     @PostMapping("submitApply/{auditType}")
     @RequiresPermissions("order:update")
     public FebsResponse submitApply(OrderVo orderVo, @NotBlank @PathVariable String auditType) {
@@ -114,7 +117,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "显示审核详情失败")
+    @ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "{order.operation.auditDetailError}")
     @PostMapping("auditDetail")
     @RequiresPermissions("order:update")
     public FebsResponse auditDetail(OrderVo order) {
@@ -122,7 +125,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "注销", exceptionMessage = "注销失败")
+    @ControllerEndpoint(operation = "注销", exceptionMessage = "{order.operation.repealError}")
     @PostMapping("cancel/{orderId}")
     @RequiresPermissions("order:update")
     public FebsResponse cancelOrder(@NotBlank @PathVariable String orderId) {
@@ -130,7 +133,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "冻结", exceptionMessage = "冻结失败")
+    @ControllerEndpoint(operation = "冻结", exceptionMessage = "{order.operation.freezeError}")
     @PostMapping("freeze/{orderId}")
     @RequiresPermissions("order:update")
     public FebsResponse freezeOrder(@NotBlank @PathVariable String orderId) {
@@ -138,7 +141,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "解冻", exceptionMessage = "解冻失败")
+    @ControllerEndpoint(operation = "解冻", exceptionMessage = "{order.operation.unfreezeError}")
     @PostMapping("unfreeze/{orderId}")
     @RequiresPermissions("order:update")
     public FebsResponse unfreezeOrder(@NotBlank @PathVariable String orderId) {
@@ -146,7 +149,7 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "导出Order", exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(operation = "导出Order", exceptionMessage = "{order.operation.exportError}")
     @GetMapping("excel")
     @RequiresPermissions("order:export")
     public void export(QueryRequest queryRequest, OrderVo order, HttpServletResponse response) {

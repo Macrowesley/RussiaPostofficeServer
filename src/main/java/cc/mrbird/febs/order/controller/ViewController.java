@@ -49,7 +49,7 @@ public class ViewController {
         return FebsUtil.view("order/orderUpdate");
     }
 
-    @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "提交注资审核失败")
+    @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "{order.operation.submitAuditError}")
     @GetMapping("submitApply/{orderId}/{audityType}")
     @RequiresPermissions("order:update")
     public String submitApply(@NotBlank @PathVariable String orderId,

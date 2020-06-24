@@ -2,6 +2,7 @@ package cc.mrbird.febs.common.aspect;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.monitor.service.ILogService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,10 @@ public class ControllerEndpointAspect extends BaseAspectSupport {
             log.error(throwable.getMessage(), throwable);
             String exceptionMessage = annotation.exceptionMessage();
             String message = throwable.getMessage();
+            if (exceptionMessage.contains("{")){
+                exceptionMessage = exceptionMessage.substring(1,exceptionMessage.length() - 1);
+                exceptionMessage = MessageUtils.getMessage(exceptionMessage);
+            }
             String error = FebsUtil.containChinese(message) ? exceptionMessage + "，" + message : exceptionMessage;
             throw new FebsException(error);
         }

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.threadpool;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.websocket.WebSocketServer;
 import cc.mrbird.febs.notice.entity.Notice;
@@ -32,7 +33,7 @@ public class AlarmRunnable implements Runnable {
         orderService.updateOrder(order);
 
         //websocket 通知前端
-        WebSocketServer.sendInfo(3,"付款超时报警",  String.valueOf(FebsUtil.getCurrentUser().getUserId()));
+        WebSocketServer.sendInfo(3, MessageUtils.getMessage("alarm.overtime"),  String.valueOf(FebsUtil.getCurrentUser().getUserId()));
 
         //添加通知
         Notice notice = new Notice();
@@ -42,7 +43,7 @@ public class AlarmRunnable implements Runnable {
         notice.setOrderNumber(order.getOrderNumber());
         notice.setAmount(order.getAmount());
         notice.setIsRead("0");
-        notice.setContent("设备注资时间超过了30s");
+        notice.setContent(MessageUtils.getMessage("notice.alarmMessage"));
         notice.setCreateTime(new Date());
         noticeService.save(notice);
         log.error("订单id为：" + orderId + "的订单超时了，给订单状态添加警告，通知前端");

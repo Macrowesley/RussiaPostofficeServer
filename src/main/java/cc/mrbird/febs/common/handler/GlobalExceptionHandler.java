@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
 import cc.mrbird.febs.common.exception.LimitAccessException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public FebsResponse handleException(Exception e) {
         log.error("系统内部异常，异常信息", e);
-        return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message("系统内部异常");
+        return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(MessageUtils.getMessage("globalHandler.system.error"));
     }
 
     @ExceptionHandler(value = FebsException.class)

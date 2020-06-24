@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.Md5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
@@ -232,7 +233,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (isCurrentUser(user.getId())) {
             updateById(user);
         } else {
-            throw new FebsException("您无权修改别人的账号信息！");
+            throw new FebsException(MessageUtils.getMessage("user.operation.noPermissionEditOther"));
         }
     }
 

@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.*;
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.threadpool.AlarmThreadPool;
 import cc.mrbird.febs.common.utils.*;
 import cc.mrbird.febs.common.websocket.WebSocketServer;
@@ -33,6 +34,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.unit.DataUnit;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -106,7 +108,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         checkOrderIsFinish(orderVo.getDeviceId());
         Device device = deviceService.findDeviceById(orderVo.getDeviceId());
         if (device == null) {
-            throw new FebsException("设备id=" + orderVo.getDeviceId() + "不存在");
+            throw new FebsException(MessageUtils.getMessage("order.operation.noDevice") + orderVo.getDeviceId());
         }
         //验证金额
         checkAmountIsOk(orderVo);
@@ -130,7 +132,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (oldOrder != null) {
             OrderStatusEnum statusEnum = OrderStatusEnum.getByStatus(oldOrder.getOrderStatus());
             if (!(statusEnum == OrderStatusEnum.machineInjectionSuccess || statusEnum == OrderStatusEnum.orderRepeal)) {
-                throw new FebsException("订单没有闭环/撤销，无法操作");
+                throw new FebsException(MessageUtils.getMessage("order.operation.noCloseOrRepeal"));
             }
         }
     }
@@ -204,11 +206,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private void checkAmountIsOk(OrderVo orderVo) {
         Device device = deviceService.findDeviceById(orderVo.getDeviceId());
         if (device == null) {
-            throw new FebsException("没有该设备");
+            throw new FebsException(MessageUtils.getMessage("order.operation.noThisDevice"));
         }
         String maxAmount = device.getMaxAmount();
         if (Float.valueOf(orderVo.getAmount()) > Float.valueOf(maxAmount)) {
-            throw new FebsException("金额超过" + maxAmount + "，无法注资");
+            throw new FebsException(MessageFormat.format(MessageUtils.getMessage("order.operation.amountOver"),maxAmount));
         }
     }
 
@@ -281,7 +283,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         checkOrderIsFinish(orderVo.getDeviceId());
         Device device = deviceService.findDeviceById(orderVo.getDeviceId());
         if (device == null) {
-            throw new FebsException("设备id=" + orderVo.getDeviceId() + "不存在");
+            throw new FebsException(MessageFormat.format(MessageUtils.getMessage("order.operation.deviceIdNoExist") ,orderVo.getDeviceId()));
         }
 
         orderVo.setOrderStatus(OrderStatusEnum.auditIng.getStatus());
@@ -331,21 +333,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
         Order order = findOrderByOrderId(orderVo.getOrderId());
         if (order == null) {
-            throw new FebsException("更新机器注资状态失败，无法找到orderId=" + orderVo.getOrderId());
+            throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
         }
 
         if (!order.getAcnum().equals(orderVo.getAcnum())) {
-            throw new FebsException("更新机器注资状态失败，表头号不匹配");
+            throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAcnumNotEqual"));
         }
 
         if (!order.getAmount().equals(orderVo.getAmount())) {
-            throw new FebsException("更新机器注资状态失败，金额不匹配");
+            throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAmountNotEqual"));
         }
 
         //只有以下状态才能让机器更改数据包：机器获取数据包
         if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())) {
             log.error("设备状态不正常，不能接收机器注资结果");
-            throw new FebsException("设备状态不正常，不能接收机器注资结果");
+            throw new FebsException(MessageUtils.getMessage("order.operation.deviceStatusNotNormal"));
         }
 
         //清除警报
@@ -477,7 +479,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     notice.setOrderNumber(order.getOrderNumber());
                     notice.setAmount(order.getAmount());
                     notice.setIsRead("0");
-                    notice.setContent("过期了");
+                    notice.setContent(MessageUtils.getMessage("notice.overtimeMessage"));
                     notice.setCreateTime(new Date());
                     noticeList.add(notice);
 
@@ -491,7 +493,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //获取不重复的userid list,挨个通知
         userIdList.stream().forEach(userId ->{
-            WebSocketServer.sendInfo(4,"闭环过期", String.valueOf(userId));
+            WebSocketServer.sendInfo(4,MessageUtils.getMessage("notice.overtimeMessage"), String.valueOf(userId));
         });
     }
 }

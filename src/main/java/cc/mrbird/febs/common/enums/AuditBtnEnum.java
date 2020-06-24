@@ -1,8 +1,10 @@
 package cc.mrbird.febs.common.enums;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
+
 public enum AuditBtnEnum {
-    passBtn(1, "pass", "通过"),
-    noPassBtn(2, "noPass", "驳回");
+    passBtn(1, "pass", MessageUtils.getMessage("audit.BtnEnum.passBtn")),
+    noPassBtn(2, "noPass", MessageUtils.getMessage("audit.BtnEnum.noPassBtn"));
 
     private int type;
     private String event;
@@ -44,6 +46,6 @@ public enum AuditBtnEnum {
                 return item;
             }
         }
-        throw new Exception("查无此审核按钮类型");
+        throw new Exception(MessageUtils.getMessage("audit.BtnEnum.noType"));
     }
 }

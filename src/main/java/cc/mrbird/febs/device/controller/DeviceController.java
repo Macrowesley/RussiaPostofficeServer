@@ -45,7 +45,7 @@ public class DeviceController extends BaseController {
 
     private final IDeviceService deviceService;
 
-    @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "获取页面列表失败")
+    @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("list")
     @RequiresPermissions("device:list")
     public FebsResponse devicePageList(QueryRequest request, Device device) {
@@ -54,14 +54,14 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @ControllerEndpoint(operation = "获取列表", exceptionMessage = "获取列表失败")
+    @ControllerEndpoint(operation = "获取列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("allList/{bindUserId}")
     public FebsResponse allList(@NotBlank(message = "{required}") @PathVariable String bindUserId) {
         Map<String, Object> data =  deviceService.selectDeviceListToTransfer(bindUserId);
         return new FebsResponse().success().data(data);
     }
 
-    @ControllerEndpoint(operation = "分配设备", exceptionMessage = "分配设备失败")
+    @ControllerEndpoint(operation = "分配设备", exceptionMessage = "{device.operation.deviceError}")
     @PostMapping("sendDevice/{deviceIds}/{bindUserId}")
 //    @RequiresPermissions("device:add")
     public FebsResponse sendDevice(@NotBlank(message = "{required}") @PathVariable String deviceIds,
@@ -71,7 +71,7 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "新增Device", exceptionMessage = "新增Device失败")
+    @ControllerEndpoint(operation = "新增Device", exceptionMessage = "{device.operation.addDeviceError}")
     @PostMapping("add")
     @RequiresPermissions("device:add")
     public FebsResponse addDevice(Device device, String acnumList) {
@@ -83,7 +83,7 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "删除Device", exceptionMessage = "删除Device失败")
+    @ControllerEndpoint(operation = "删除Device", exceptionMessage = "{device.operation.delDeviceError}")
     @GetMapping("delete")
     @RequiresPermissions("device:delete")
     public FebsResponse deleteDevice(Device device) {
@@ -91,7 +91,7 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改Device", exceptionMessage = "修改Device失败")
+    @ControllerEndpoint(operation = "修改Device", exceptionMessage = "{device.operation.editDeviceError}")
     @PostMapping("update")
     @RequiresPermissions("device:update")
     public FebsResponse updateDevice(Device device) {
@@ -99,7 +99,7 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "{device.operation.exportError}")
     @GetMapping("excel")
     @RequiresPermissions("device:export")
     public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
@@ -107,7 +107,7 @@ public class DeviceController extends BaseController {
         ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
     }
 
-    @ControllerEndpoint(operation = "检查表头号是否存在", exceptionMessage = "检查表头号是否存在失败")
+    @ControllerEndpoint(operation = "检查表头号是否存在", exceptionMessage = "{device.operation.checkAcnumError}")
     @PostMapping("checkIsExist/{acnumList}")
     public FebsResponse checkIsExist(@NotBlank @PathVariable("acnumList") String acnumList) {
         if (acnumList.length() > 8 && !acnumList.contains(",")){

@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.enums.AuditStatusEnum;
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -195,7 +196,7 @@ public class StatusUtils {
      */
     public static void checkOrderBtnPermissioin(OrderBtnEnum btnEnum, String orderStatus) {
         if (!getOrderBtnList(orderStatus).contains(btnEnum)){
-            throw new FebsException("当前注资状态无法执行该操作");
+            throw new FebsException(MessageUtils.getMessage("order.operation.orderStatusDisable"));
         }
     }
 
@@ -206,11 +207,11 @@ public class StatusUtils {
      */
     public static void checkAuditBtnPermissioin(AuditBtnEnum btnEnum, String status) {
         if (!getAuditBtnList(status).contains(btnEnum)){
-            throw new FebsException("当前审核状态无法执行该操作");
+            throw new FebsException(MessageUtils.getMessage("order.operation.auditStatusDisable"));
         }
 
         if (status.equals(AuditStatusEnum.orderFreezeing) || status.equals(AuditStatusEnum.orderRepeal)){
-            throw new FebsException("该订单已被冻结或者注销，无法审核");
+            throw new FebsException(MessageUtils.getMessage("order.operation.orderIsFreezeOrRepeal"));
         }
     }
 

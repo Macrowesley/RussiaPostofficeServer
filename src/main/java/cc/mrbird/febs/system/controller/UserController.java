@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.Md5Util;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
@@ -47,7 +48,7 @@ public class UserController extends BaseController {
 
     @GetMapping("list")
     @RequiresPermissions("user:view")
-    @ControllerEndpoint(operation = "用户列表", exceptionMessage = "获取用户列表失败")
+    @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
     public FebsResponse userList(User user, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
@@ -55,7 +56,7 @@ public class UserController extends BaseController {
 
     @PostMapping
     @RequiresPermissions("user:add")
-    @ControllerEndpoint(operation = "新增用户", exceptionMessage = "新增用户失败")
+    @ControllerEndpoint(operation = "新增用户", exceptionMessage = "{user.operation.addError}")
     public FebsResponse addUser(@Valid User user) {
         this.userService.createUser(user);
         return new FebsResponse().success();
@@ -63,7 +64,7 @@ public class UserController extends BaseController {
 
     @GetMapping("delete/{userIds}")
     @RequiresPermissions("user:delete")
-    @ControllerEndpoint(operation = "删除用户", exceptionMessage = "删除用户失败")
+    @ControllerEndpoint(operation = "删除用户", exceptionMessage = "{user.operation.delError}")
     public FebsResponse deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
         String[] ids = userIds.split(StringPool.COMMA);
         this.userService.deleteUsers(ids);
@@ -72,7 +73,7 @@ public class UserController extends BaseController {
 
     @PostMapping("update")
     @RequiresPermissions("user:update")
-    @ControllerEndpoint(operation = "修改用户", exceptionMessage = "修改用户失败")
+    @ControllerEndpoint(operation = "修改用户", exceptionMessage = "{user.operation.editError}")
     public FebsResponse updateUser(@Valid User user) {
         if (user.getUserId() == null) {
             throw new FebsException("用户ID为空");
@@ -83,7 +84,7 @@ public class UserController extends BaseController {
 
     @PostMapping("password/reset/{usernames}")
     @RequiresPermissions("user:password:reset")
-    @ControllerEndpoint(exceptionMessage = "重置用户密码失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.resetError}")
     public FebsResponse resetPassword(@NotBlank(message = "{required}") @PathVariable String usernames) {
         String[] usernameArr = usernames.split(StringPool.COMMA);
         this.userService.resetPassword(usernameArr);
@@ -91,20 +92,20 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("password/update")
-    @ControllerEndpoint(exceptionMessage = "修改密码失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.editPwdError}")
     public FebsResponse updatePassword(
             @NotBlank(message = "{required}") String oldPassword,
             @NotBlank(message = "{required}") String newPassword) {
         User user = getCurrentUser();
         if (!StringUtils.equals(user.getPassword(), Md5Util.encrypt(user.getUsername(), oldPassword))) {
-            throw new FebsException("原密码不正确");
+            throw new FebsException(MessageUtils.getMessage("user.operation.oldPwdError"));
         }
         userService.updatePassword(user.getUsername(), newPassword);
         return new FebsResponse().success();
     }
 
     @GetMapping("avatar/{image}")
-    @ControllerEndpoint(exceptionMessage = "修改头像失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.editAvageError}")
     public FebsResponse updateAvatar(@NotBlank(message = "{required}") @PathVariable String image) {
         User user = getCurrentUser();
         this.userService.updateAvatar(user.getUsername(), image);
@@ -112,7 +113,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("theme/update")
-    @ControllerEndpoint(exceptionMessage = "修改系统配置失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.editConfigError}")
     public FebsResponse updateTheme(String theme, String isTab) {
         User user = getCurrentUser();
         this.userService.updateTheme(user.getUsername(), theme, isTab);
@@ -120,7 +121,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("profile/update")
-    @ControllerEndpoint(exceptionMessage = "修改个人信息失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.editUserInfoError}")
     public FebsResponse updateProfile(User user) throws FebsException {
         User currentUser = getCurrentUser();
         user.setUserId(currentUser.getUserId());
@@ -130,7 +131,7 @@ public class UserController extends BaseController {
 
     @GetMapping("excel")
     @RequiresPermissions("user:export")
-    @ControllerEndpoint(exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(exceptionMessage = "{user.operation.exportError}")
     public void export(QueryRequest queryRequest, User user, HttpServletResponse response) {
         List<User> users = this.userService.findUserDetailList(user, queryRequest).getRecords();
         ExcelKit.$Export(User.class, response).downXlsx(users, false);

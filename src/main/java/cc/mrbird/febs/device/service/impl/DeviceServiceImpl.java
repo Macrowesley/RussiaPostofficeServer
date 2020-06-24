@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.common.utils.SortUtil;
@@ -246,7 +247,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         List<UserRole> list = userRoleService.queryRoleListByUserId(Long.valueOf(bindUserId));
         if (list.size() == 0) {
-            throw new FebsException("无法获取需要绑定的设备列表");
+            throw new FebsException(MessageUtils.getMessage("device.operation.noList"));
         }
         Long roleType = list.get(0).getRoleId();
 
@@ -274,7 +275,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 data.put("bindDevices", res);
                 break;
             default:
-                throw new FebsException("无法获取需要绑定的设备列表");
+                throw new FebsException(MessageUtils.getMessage("device.operation.noList"));
         }
 
         /*data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));

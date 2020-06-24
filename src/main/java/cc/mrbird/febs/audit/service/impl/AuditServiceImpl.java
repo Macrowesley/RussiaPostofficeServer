@@ -11,6 +11,7 @@ import cc.mrbird.febs.common.enums.AuditBtnEnum;
 import cc.mrbird.febs.common.enums.AuditStatusEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.order.entity.Order;
@@ -210,7 +211,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         //更新订单状态
         Order order = orderService.findOrderByOrderId(audit.getOrderId());
         if (order == null){
-            throw new FebsException("订单不存在，无法审核");
+            throw new FebsException(MessageUtils.getMessage("audit.operation.noOrder"));
         }
         switch (audit.getAuditType()){
             case AuditType.injection:
@@ -222,7 +223,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
                 order.setIsAlarm("0");
                 break;
             default:
-                throw new FebsException("审核类型不存在");
+                throw new FebsException(MessageUtils.getMessage("audit.status.noType"));
         }
         orderService.updateOrder(order);
     }
@@ -277,7 +278,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
                 order.setOrderStatus(OrderStatusEnum.orderCloseApplyNotPass.getStatus());
                 break;
             default:
-                throw new FebsException("审核类型不存在");
+                throw new FebsException(MessageUtils.getMessage("audit.status.noType"));
         }
 
         orderService.updateOrder(order);

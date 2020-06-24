@@ -1,6 +1,7 @@
 package cc.mrbird.febs.notice.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.controller.BaseController;
@@ -46,7 +47,7 @@ public class NoticeController extends BaseController {
     @ResponseBody
     public FebsResponse readAllNotice() {
         noticeService.readAllNotice();
-        WebSocketServer.sendInfo(2, "清除全部提醒", String.valueOf(FebsUtil.getCurrentUser().getUserId()));
+        WebSocketServer.sendInfo(2, MessageUtils.getMessage("notice.clearMessage"), String.valueOf(FebsUtil.getCurrentUser().getUserId()));
         return new FebsResponse().success();
     }
 

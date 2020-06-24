@@ -1,20 +1,21 @@
 package cc.mrbird.febs.common.enums;
 
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public enum OrderStatusEnum {
-    createOrder("1","创建订单"),
-    auditIng("2","注资审核中"),
-    auditPass("3","注资审核通过"),
-    auditNotPass("4","注资审核失败"),
-    machineGetData("5","机器获取数据包"),
-    machineInjectionSuccess("6","闭环成功"),//机器注资成功
-    machineInjectionFail("7","机器注资失败"),
-    orderCloseApplyIng("10","闭环申请中"),
-    orderCloseApplyNotPass("11","闭环申请审核失败"),//（闭环申请成功就是状态6）
-    orderRepeal("8","注销"),
-    orderFreeze("9","冻结");
+    createOrder("1",MessageUtils.getMessage("order.createOrder")),
+    auditIng("2",MessageUtils.getMessage("order.auditIng")),
+    auditPass("3",MessageUtils.getMessage("order.auditPass")),
+    auditNotPass("4",MessageUtils.getMessage("order.auditNotPass")),
+    machineGetData("5",MessageUtils.getMessage("order.machineGetData")),
+    machineInjectionSuccess("6",MessageUtils.getMessage("order.machineInjectionSuccess")),//机器注资成功
+    machineInjectionFail("7",MessageUtils.getMessage("order.machineInjectionFail")),
+    orderCloseApplyIng("10",MessageUtils.getMessage("order.orderCloseApplyIng")),
+    orderCloseApplyNotPass("11",MessageUtils.getMessage("order.orderCloseApplyNotPass")),//（闭环申请成功就是状态6）
+    orderRepeal("8",MessageUtils.getMessage("order.orderRepeal")),
+    orderFreeze("9",MessageUtils.getMessage("order.orderFreeze"));
 
     private String status;
     private String msg;
@@ -39,7 +40,7 @@ public enum OrderStatusEnum {
             }
         }
         try {
-            throw new Exception("查无此订单类型");
+            throw new Exception(MessageUtils.getMessage("order.btnEnum.noType"));
         } catch (Exception e) {
             return null;
         }

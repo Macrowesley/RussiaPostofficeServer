@@ -1,11 +1,13 @@
 package cc.mrbird.febs.common.enums;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
+
 public enum AuditStatusEnum {
-    notBegin("0","未审核"),
-    success("1","审核通过"),
-    notPass("2","审核不通过"),
-    orderFreezeing("3","冻结中"),
-    orderRepeal("4","已注销");
+    notBegin("0", MessageUtils.getMessage("audit.notBegin")),
+    success("1",MessageUtils.getMessage("audit.success")),
+    notPass("2",MessageUtils.getMessage("audit.notPass")),
+    orderFreezeing("3",MessageUtils.getMessage("audit.orderFreezeing")),
+    orderRepeal("4",MessageUtils.getMessage("audit.orderRepeal"));
 
     private String status;
     private String msg;
@@ -37,7 +39,7 @@ public enum AuditStatusEnum {
                 return item;
             }
         }
-        throw new Exception("查无此审核类型");
+        throw new Exception(MessageUtils.getMessage("audit.status.noType"));
     }
 
     public static void main(String[] args) throws Exception {

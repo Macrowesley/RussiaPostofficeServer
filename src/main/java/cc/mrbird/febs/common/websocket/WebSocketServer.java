@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.websocket;
 
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class WebSocketServer {
 
         try {
 //            sendMessage("连接成功");
-            sendInfo(1, "连接成功", userId);
+            sendInfo(1, MessageUtils.getMessage("notice.connectSuccess"), userId);
         } catch (Exception e) {
             logger.error("用户:" + userId + ",网络异常!!!!!!");
         }

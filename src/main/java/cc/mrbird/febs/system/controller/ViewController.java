@@ -209,11 +209,11 @@ public class ViewController extends BaseController {
         if (transform) {
             String sex = user.getSex();
             if (User.SEX_MALE.equals(sex)) {
-                user.setSex("男");
+                user.setSex(MessageUtils.getMessage("man"));
             } else if (User.SEX_FEMALE.equals(sex)) {
-                user.setSex("女");
+                user.setSex(MessageUtils.getMessage("woman"));
             } else {
-                user.setSex("保密");
+                user.setSex(MessageUtils.getMessage("secrecy"));
             }
         }
         if (user.getLastLoginTime() != null) {

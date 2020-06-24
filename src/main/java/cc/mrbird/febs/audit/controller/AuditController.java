@@ -6,6 +6,8 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -59,7 +61,7 @@ public class AuditController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @ControllerEndpoint(operation = "修改Audit", exceptionMessage = "修改Audit失败")
+    @ControllerEndpoint(operation = "修改审核", exceptionMessage = "{audit.operation.editError}")
     @PostMapping("update")
     @RequiresPermissions("audit:update")
     public FebsResponse updateAudit(Audit audit) {
@@ -67,7 +69,7 @@ public class AuditController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "审核通过", exceptionMessage = "审核通过操作失败")
+    @ControllerEndpoint(operation = "审核通过", exceptionMessage = "{audit.operation.passError}")
     @PostMapping("pass/{auditId}")
     @RequiresPermissions("audit:update")
     public FebsResponse passAudit(@NotBlank @PathVariable String auditId) {
@@ -75,7 +77,7 @@ public class AuditController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "审核不通过", exceptionMessage = "驳回操作失败")
+    @ControllerEndpoint(operation = "审核不通过", exceptionMessage = "{audit.operation.updateError}")
     @PostMapping("noPass")
     @RequiresPermissions("audit:update")
     public FebsResponse noPassAudit(Audit audit) {
@@ -83,7 +85,7 @@ public class AuditController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "获取审核状态列表", exceptionMessage = "获取审核状态列表失败")
+    @ControllerEndpoint(operation = "获取审核状态列表", exceptionMessage = "{audit.operation.listError}")
     @GetMapping("selectStatus")
     public FebsResponse selectStatus() {
         return new FebsResponse().success().data(StatusUtils.getAuditStatusList());
