@@ -5,7 +5,7 @@
                 lay-done="layui.element.render('nav','febs-header')">
             <ul class="layui-nav layui-layout-left" lay-filter="febs-header">
                 <li class="layui-nav-item" lay-unselect>
-                    <a febs-event="flexible" title="侧边伸缩">
+                    <a febs-event="flexible" th:title="#{layout.title}">
                         <i class="layui-icon layui-icon-shrink-right"></i>
                     </a>
                 </li>
@@ -14,13 +14,13 @@
 
             <ul class="layui-nav layui-layout-right" lay-filter="febs-header">
                 <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                    <a class="btn btn-sm" th:href="@{/index?lang=zh_CN}">中文</a>
+                    <a class="btn btn-sm" th:href="@{/index?lang=zh_CN}" th:text="#{layout.china}"></a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                    <a class="btn btn-sm" th:href="@{/index?lang=en_US}">English</a>
+                    <a class="btn btn-sm" th:href="@{/index?lang=en_US}" th:text="#{layout.english}"></a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs" id="noticeList" lay-unselect>
-                    <a title="消息提醒">
+                    <a th:title="#{layout.notice}">
                         <i class="layui-icon layui-icon-notice">
                             <span class="layui-badge-dot"
                                   id="hotDot"
@@ -30,23 +30,21 @@
                     </a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs" id="fullscreen" lay-unselect>
-                    <a title="切换全屏">
+                    <a th:title="#{layout.screenFull}">
                         <i class="layui-icon layui-icon-screen-full"></i>
                     </a>
                 </li>
                 <li class="layui-nav-item layui-user" lay-unselect>
                     <a>
                         <img style="width: 1.9rem;margin-right:.5rem;border-radius: 50%"
-                             src="{{= ctx + 'febs/images/avatar/' + currentUser.avatar }}" title="头像">
+                             src="{{= ctx + 'febs/images/avatar/' + currentUser.avatar }}" th:title="#{layout.avatar}">
                         {{ currentUser.username }}
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a class="layui-nav-child-href" id="user-profile">个人中心</a></dd>
-                        <dd><a class="layui-nav-child-href" id="password-update">密码修改</a></dd>
-                        <dd><a class="layui-nav-child-href" target="_blank"
-                               href="https://github.com/wuyouzhuguli/FEBS-Shiro">项目地址</a></dd>
+                        <dd><a class="layui-nav-child-href" id="user-profile" th:text="#{layout.userProfile}"></a></dd>
+                        <dd><a class="layui-nav-child-href" id="password-update" th:text="#{layout.updatePwd}"></a></dd>
                         <hr/>
-                        <dd><a class="layui-nav-child-href" data-th-href="@{logout}">退出登录</a></dd>
+                        <dd><a class="layui-nav-child-href" data-th-href="@{logout}" th:text="#{layout.logout}"></a></dd>
                     </dl>
                 </li>
             </ul>
@@ -84,7 +82,7 @@
         <div class="layui-side-scroll">
             <div class="layui-logo" style="cursor: pointer">
                 <img data-th-src="@{febs/images/logo.png}">
-                <span>注资服务器</span>
+                <span th:text="#{server.name}"></span>
             </div>
             <script
                     type="text/html"
@@ -185,9 +183,9 @@
         })
 
         $view.on('click', '#password-update', function () {
-            febs.modal.view('密码修改', 'password/update', {
+            febs.modal.view(i18n("layout.updatePwd"), 'password/update', {
                 area: $(window).width() <= 750 ? '90%' : '500px',
-                btn: ['确定'],
+                btn: [i18n("confirm")],
                 yes: function () {
                     $('#user-password-update').find('#submit').trigger('click');
                 }

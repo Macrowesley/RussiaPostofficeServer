@@ -176,7 +176,7 @@ layui
                             result = {'code': 'err'};
                         }
                         if (result.code === 401) {
-                            self.notify('登录失效', '登录已失效，请重新登录', function () {
+                            self.notify(i18n("febs.loginFail"), i18n("febs.relogin"), function () {
                                 window.location.reload();
                                 window.location.hash = '';
                             });
@@ -253,19 +253,19 @@ layui
                         options: [
                             {
                                 name: 'current',
-                                title: '关闭当前选项卡'
+                                title: i18n("febs.closeCur")
                             },
                             {
                                 name: 'other',
-                                title: '关闭其他选项卡'
+                                title: i18n("febs.closeOther")
                             },
                             {
                                 name: 'all',
-                                title: '关闭所有选项卡'
+                                title: i18n("febs.closeAll")
                             },
                             {
                                 name: 'refresh',
-                                title: '刷新当前选项卡'
+                                title: i18n("febs.refreshCur")
                             }
                         ]
                     });
@@ -523,7 +523,7 @@ layui
                         if (res.status === conf.logoutHttpCode) {
                             // do nothing
                         } else {
-                            layer.msg('请检查您的网络连接');
+                            layer.msg(i18n("febs.checkNet"));
                             self.log('请检查您的网络连接，错误信息：' + JSON.stringify(res))
                         }
 

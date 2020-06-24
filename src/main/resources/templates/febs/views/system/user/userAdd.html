@@ -16,34 +16,34 @@
 <div class="layui-fluid" id="user-add">
     <form class="layui-form" action="" lay-filter="user-add-form">
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require">用户名：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{username.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="username" minlength="2" maxlength="10" lay-verify="range|username"
                        autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">姓名：</label>
+            <label class="layui-form-label" th:text="#{realname.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="username"
                        autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">手机：</label>
+            <label class="layui-form-label" th:text="#{phone.colon}"></label>
             <div class="layui-input-block">
                 <input type="tel" name="mobile" lay-verify="phone" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">邮箱：</label>
+            <label class="layui-form-label" th:text="#{email.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="email" lay-verify="email" maxlength="50" autocomplete="off"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require">角色：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{role.colon}"></label>
             <div class="layui-input-block">
                 <select name="roleId" id="roleId" lay-verify="">
                 </select>
@@ -51,30 +51,30 @@
         </div>
 
         <div class="layui-form-item" th:if="${roleId} eq 1">
-            <label class="layui-form-label">机构：</label>
+            <label class="layui-form-label" th:text="#{dept.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="deptId" id="user-add-dept" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require">状态：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{status.colon}"></label>
             <div class="layui-input-block">
-                <input type="radio" name="status" value="1" title="有效" checked="">
-                <input type="radio" name="status" value="0" title="禁用">
+                <input type="radio" name="status" value="1" th:title="#{user.enable}" checked="">
+                <input type="radio" name="status" value="0" th:title="#{user.disable}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require">性别：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{sex.colon}" ></label>
             <div class="layui-input-block">
-                <input type="radio" name="sex" value="0" title="男性">
-                <input type="radio" name="sex" value="1" title="女性">
-                <input type="radio" name="sex" value="2" title="保密" checked="">
+                <input type="radio" name="sex" value="0" th:title="#{man}">
+                <input type="radio" name="sex" value="1" th:title="#{woman}">
+                <input type="radio" name="sex" value="2" th:title="#{secrecy}" checked="">
             </div>
         </div>
 
         <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label">备注：</label>
+            <label class="layui-form-label"  th:text="#{remark.colon}"></label>
             <div class="layui-input-block">
                 <textarea name="description" maxlength="100" class="layui-textarea"></textarea>
             </div>
@@ -118,7 +118,7 @@
             elem: $view.find('#user-add-dept'),
             type: 'get',
             data: ctx + 'dept/select/tree',
-            placeholder: '请选择',
+            placeholder: i18n("select"),
             search: false
         });
 
@@ -127,7 +127,7 @@
 
             febs.post(ctx + 'user', data.field, function () {
                 layer.closeAll();
-                febs.alert.success('新增用户成功，初始密码为 123456');
+                febs.alert.success(i18n("user.addOk"));
                 $('#febs-user').find('#refreshQuery').click();
             });
             return false;

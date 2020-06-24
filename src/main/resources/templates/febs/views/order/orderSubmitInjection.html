@@ -17,19 +17,19 @@
 <div class="layui-fluid" id="order-submit-injection">
     <form class="layui-form" action="" lay-filter="order-audit-form">
         <div class="layui-form-item febs-hide">
-            <label class="layui-form-label febs-form-item-require">订单id：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{order.id}"></label>
             <div class="layui-input-block">
                 <input type="text" name="orderId" data-th-value="${orderId}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">备注：</label>
+            <label class="layui-form-label left-label" th:text="#{remark.colon}"></label>
             <div class="layui-input-block">
                 <textarea
                         lay-filter="myTextarea"
                         name="submitInfo"
                         id="submitInfo"
-                        placeholder="选填"
+                        th:placeholder="#{optional}"
                         value=""
                         class="layui-textarea"
                         rows="3"
@@ -70,13 +70,13 @@
 
             //验证字数是否超标
             if ($textarea.val().length > $maxLen) {
-                febs.alert.warn("字数不能超过" + $maxLen);
+                febs.alert.warn(i18n("order.noMoreThan") + $maxLen);
                 return false;
             }
 
             febs.post(ctx + 'order/submitApply/' + $audityType, data.field, function (result) {
                 layer.closeAll();
-                febs.alert.success('申请提交成功');
+                febs.alert.success(i18n("order.submitSuccess"));
                 $('#febs-order').find('#refreshQuery').click();
             });
             return false;

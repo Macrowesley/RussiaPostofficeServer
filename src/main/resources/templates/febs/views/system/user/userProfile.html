@@ -50,57 +50,66 @@
         margin-bottom: 0;
     }
 </style>
-<div class="layui-fluid layui-anim febs-anim" id="febs-user-profile" lay-title="个人中心">
+<div class="layui-fluid layui-anim febs-anim" id="febs-user-profile" th:lay-title="#{userProfile.title}">
     <div class="layui-row layui-col-space8 febs-container">
         <div class="layui-col-md6 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
-                <div class="layui-card-header">个人信息</div>
+                <div class="layui-card-header" th:text="#{userProfile.info}"></div>
                 <div class="layui-card-body user-profile-card">
                     <div id="user-profile">
                         <div id="user-img">
-                            <img alt="头像" title="点我更换头像" data-th-src="@{febs/images/avatar/empty.jpg}">
+                            <img alt="头像" th:title="#{userProfile.changeAvatar}"
+                                 data-th-src="@{febs/images/avatar/empty.jpg}">
                             <div id="options-wrapper">
                                 <div id="update-user-info">
                                     <a>
                                         <span class="layui-icon layui-icon-setting"></span>
-                                        编辑资料
+                                        <span th:text="#{userProfile.edit}"></span>
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <script type="text/html" template>
                             <div id="user-info">
-                                <div><span class="layui-icon layui-icon-user"></span> 账号：
+                                <div><span class="layui-icon layui-icon-user"></span> <span
+                                        th:text="#{username.colon}"></span>
                                     {{currentUser.username}}
                                 </div>
-                                <div><span class="layui-icon layui-icon-user"></span> 姓名：
+                                <div><span class="layui-icon layui-icon-user"></span> <span
+                                        th:text="#{realname.colon}"></span>
                                     {{currentUser.realname}}
                                 </div>
-                                <div><span class="layui-icon layui-icon-trophy"></span> 角色：
+                                <div><span class="layui-icon layui-icon-trophy"></span> <span
+                                        th:text="#{role.colon}"></span>
                                     {{currentUser.roleName}}
                                 </div>
-                                <div><span class="layui-icon layui-icon-home"></span> 部门：
-                                    {{currentUser.deptName || '暂无所属部门'}}
+                                <div><span class="layui-icon layui-icon-home"></span> <span
+                                        th:text="#{dept.colon}"></span>
+                                    {{currentUser.deptName || i18n("userProfile.emptyDept") }}
                                 </div>
-                                <div><span class="layui-icon layui-icon-skin"></span> 性别：
+                                <div><span class="layui-icon layui-icon-skin"></span> <span
+                                        th:text="#{sex.colon}"></span>
                                     {{# if(currentUser.sex === '0'){ }}
-                                    男
+                                    {{ i18n("man") }}
                                     {{# } }}
                                     {{# if(currentUser.sex === '1'){ }}
-                                    女
+                                    {{ i18n("woman") }}
                                     {{# } }}
                                     {{# if(currentUser.sex === '2'){ }}
-                                    保密
+                                    {{ i18n("secrecy") }}
                                     {{# } }}
                                 </div>
-                                <div><span class="layui-icon layui-icon-phone"></span> 电话：
-                                    {{currentUser.mobile?currentUser.mobile:'暂无电话信息'}}
+                                <div><span class="layui-icon layui-icon-phone"></span> <span
+                                        th:text="#{phone.colon}"></span>
+                                    {{currentUser.mobile?currentUser.mobile: i18n("userProfile.emptyPhone") }}
                                 </div>
-                                <div><span class="layui-icon layui-icon-mail"></span> 邮箱：
-                                    {{currentUser.email?currentUser.email:'暂无电话信息'}}
+                                <div><span class="layui-icon layui-icon-mail"></span> <span
+                                        th:text="#{email.colon}"></span>
+                                    {{currentUser.email?currentUser.email: i18n("userProfile.emptyEmail") }}
                                 </div>
-                                <div><span class="layui-icon layui-icon-read"></span> 简介：
-                                    {{currentUser.description?currentUser.description:'暂无简介'}}
+                                <div><span class="layui-icon layui-icon-read"></span> <span
+                                        th:text="#{userProfile.introduction}"></span>
+                                    {{currentUser.description?currentUser.description: i18n("userProfile.noIntroduction") }}
                                 </div>
                             </div>
                         </script>
@@ -108,18 +117,18 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md6 layui-col-sm6 layui-col-xs12">
+        <!--<div class="layui-col-md6 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
                 <div class="layui-card-header">系统配置</div>
                 <div class="layui-card-body">
-                    <form class="layui-form" action="" lay-filter="system-setting-form">
-                       <!-- <div class="layui-form-item">
+                    <form class="layui-form" action="" lay-filter="system-setting-form" >
+                        <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 85px">侧边栏风格：</label>
                             <div class="layui-input-block">
                                 <input type="radio" name="theme" lay-filter="theme" value="black" checked="" title="深邃">
                                 <input type="radio" name="theme" lay-filter="theme" value="white" title="明亮">
                             </div>
-                        </div>-->
+                        </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 85px">选项卡开关：</label>
                             <div class="layui-input-block">
@@ -135,7 +144,7 @@
                     <button class="layui-btn" id="submit">保存</button>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </div>
 <script data-th-inline="none" type="text/javascript">
@@ -154,9 +163,9 @@
 
         $view.find('#user-img img').attr('src', ctx + "febs/images/avatar/" + currentUser.avatar);
         $view.on('click', '#update-user-info', function () {
-            febs.modal.view('个人信息修改', 'user/profile/update', {
+            febs.modal.view(i18n("userProfile.editUserInfo"), 'user/profile/update', {
                 area: $(window).width() <= 750 ? '90%' : '50%',
-                btn: ['确定'],
+                btn: [i18n("confirm")],
                 yes: function () {
                     $('#profile-update').find('#submit').trigger('click');
                 }
@@ -164,7 +173,7 @@
         });
 
         $view.on('click', '#user-profile img', function () {
-            febs.modal.view('点击更换', 'user/avatar', {
+            febs.modal.view(i18n("userProfile.clickToChange"), 'user/avatar', {
                 area: $(window).width() <= 750 ? '90%' : '650px',
                 offset: '100px'
             });
@@ -190,12 +199,12 @@
 
         form.on('submit(system-setting-form-submit)', function (data) {
             if (febs.nativeEqual(data.field, _currentData)) {
-                febs.alert.warn('数据未作任何修改');
+                febs.alert.warn(i18n("noEdit"));
                 return false;
             }
             febs.post(ctx + 'user/theme/update', data.field, function () {
                 _currentData = data.field;
-                febs.modal.confirm('修改成功','是否马上刷新页面生效？',function () {
+                febs.modal.confirm(i18n("editSuccess"), i18n("refreshNow"), function () {
                     window.location.reload();
                 });
             });

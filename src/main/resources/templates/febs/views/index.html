@@ -69,7 +69,7 @@
         color: rgba(0, 0, 0, 0.45);
     }
 </style>
-<div class="layui-fluid layui-anim febs-anim-up" id="febs-index" lay-title="系统首页">
+<div class="layui-fluid layui-anim febs-anim-up" id="febs-index" th:lay-title="#{index.title}">
     <div class="layui-row layui-col-space8 febs-container">
         <div class="layui-col-md12 layui-col-sm12 layui-col-xs12">
             <div class="layui-card">
@@ -78,18 +78,18 @@
                         <div class="layui-col-md6 layui-col-sm12 layui-col-xs12">
                             <div class="layui-row welcome-info-wrapper">
                                 <div class="user-header">
-                                    <img alt="头像" id="user-avatar" data-th-src="@{febs/images/avatar/empty.jpg}">
+                                    <img th:alt="#{index.avatar}" id="user-avatar" data-th-src="@{febs/images/avatar/empty.jpg}">
                                 </div>
                                 <div class="user-info">
                                     <div class="layui-row">
                                         <div class="random-message">
-                                            <span id="welcome-message"></span>
+                                            <span id="welcome-message" style="display: block"></span>
                                         </div>
                                         <div class="user-dept">
                                             <span id="user-dept"></span> | <span id="user-role"></span>
                                         </div>
                                         <div class="user-login-info">
-                                            上次登录时间：<span id="last-login-time">2019-05-23 18:45:12</span>
+                                            <span th:text="#{index.lastLoginTime}"></span><span id="last-login-time">2019-05-23 18:45:12</span>
                                         </div>
                                     </div>
                                 </div>
@@ -99,9 +99,9 @@
                             <div class="layui-col-md-offset5">
                                 <table class="login-count-table">
                                     <tr>
-                                        <td>今日IP</td>
-                                        <td>今日访问</td>
-                                        <td>总访问量</td>
+                                        <td th:text="#{index.todayIp}"></td>
+                                        <td th:text="#{index.todayVisit}"></td>
+                                        <td th:text="#{index.totalVisit}"></td>
                                     </tr>
                                     <tr>
                                         <td class="count" id="today-ip">
@@ -137,14 +137,14 @@
             util = layui.util,
             $view = $('#febs-index'),
             febs = layui.febs;
-
+        echo(currentUser.lastLoginTime)
         febs.get(ctx + 'index/' + currentUser.username, null, function (r) {
             handleSuccess(r.data);
         });
 
         function handleSuccess(data) {
             var hour = new Date().getHours();
-            var time = hour < 6 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour <= 18 ? '下午好' : '晚上好')));
+            var time = hour < 12 ? i18n("index.goodMorning") : (hour <= 18 ? i18n("index.goodAfternoon") : i18n("index.goodEvening"));
             var welcomeArr = [
                 '喝杯咖啡休息下吧☕',
                 '要不要和朋友打局LOL',
@@ -157,13 +157,14 @@
                 '周末要不要去看电影？'
             ];
             var index = Math.floor((Math.random() * welcomeArr.length));
-            var welcomeMessage = time + '，<a id="febs-index-user">' + currentUser.username + '</a>，' + welcomeArr[index];
+            // var welcomeMessage = time + '，<a id="febs-index-user">' + currentUser.username + '</a>，' + welcomeArr[index];
+            var welcomeMessage = time + '，<a id="febs-index-user">' + currentUser.username + '</a>';
             $view.find('#today-ip').text(data.todayIp).end()
                 .find('#today-visit-count').text(data.todayVisitCount).end()
                 .find('#total-visit-count').text(data.totalVisitCount).end()
-                .find('#user-dept').text(currentUser.deptName ? currentUser.deptName : '暂无所属部门').end()
-                .find('#user-role').text(currentUser.roleName ? currentUser.roleName : '暂无角色').end()
-                .find('#last-login-time').text(currentUser.lastLoginTime ? currentUser.lastLoginTime : '第一次访问系统').end()
+                .find('#user-dept').text(currentUser.deptName ? currentUser.deptName : i18n("index.emptyDeptName")).end()
+                .find('#user-role').text(currentUser.roleName ? currentUser.roleName : i18n("index.emptyRoleName")).end()
+                .find('#last-login-time').text(currentUser.lastLoginTime ? currentUser.lastLoginTime : i18n("index.firstVisit")).end()
                 .find('#welcome-message').html(welcomeMessage).end()
                 .find('#user-avatar').attr('src', ctx + "febs/images/avatar/" + currentUser.avatar);
 
@@ -226,10 +227,10 @@
                     curve: 'smooth'
                 },
                 series: [{
-                    name: '总数',
+                    name: i18n("index.total"),
                     data: totalVisitCount
                 }, {
-                    name: '您',
+                    name: i18n("index.you"),
                     data: yourVisitCount
                 }],
                 xaxis: {
@@ -253,7 +254,7 @@
                     }
                 },
                 title: {
-                    text: '近10天系统访问记录',
+                    text: i18n("index.tenDay"),
                     align: 'left',
                     style: {
                         color: 'rgba(0, 0, 0, .65)'
@@ -262,7 +263,7 @@
                 tooltip: {
                     y: {
                         formatter: function (val) {
-                            return "访问次数 " + val + " 次"
+                            return  i18n("index.visitCount") + val + i18n("index.times")
                         }
                     }
                 },

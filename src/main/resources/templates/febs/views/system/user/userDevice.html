@@ -8,7 +8,7 @@
 </style>
 <div class="layui-fluid" id="user-device">
     <form class="layui-form" action="" lay-filter="user-device-form" style="text-align: center;">
-        <div id="deviceTransfer" style="color:"></div>
+        <div id="deviceTransfer" style=""></div>
 
         <div class="layui-form-item febs-hide">
             <button class="layui-btn" lay-submit="" lay-filter="user-device-form-submit" id="submit"></button>
@@ -48,7 +48,7 @@
                 , data: allDevices //左侧数据
                 , value: bindDevicesIdArr //右侧数据value
                 , showSearch: true
-                , title: ['设备列表', user.realname]
+                , title: [i18n("userDevice.deviceList"), user.realname]
                 , id: 'deviceTransfer' //定义索引
             });
         });
@@ -58,7 +58,7 @@
 
             var getData = transfer.getData('deviceTransfer');
             if (getData.length == 0) {
-                febs.alert.warn("没有分配设备")
+                febs.alert.warn(i18n("userDevice.notBind"))
                 return false;
             }
             var deviceIds = [];
@@ -70,7 +70,7 @@
             // return false;
             febs.post(ctx + 'device/sendDevice/' + deviceIds.join(",") + '/' + user.userId, null, function () {
                 layer.closeAll();
-                febs.alert.success(user.username + ' 用户数据修改成功');
+                febs.alert.success(user.username + i18n("userDevice.editSuccess"));
                 $('#febs-user').find('#refreshQuery').click();
             });
             return false;

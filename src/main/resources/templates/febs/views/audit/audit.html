@@ -4,7 +4,7 @@
     }
 </style>
 
-<div class="layui-fluid layui-anim febs-anim" id="febs-audit" lay-title="审核管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-audit" th:lay-title="#{audit.manage}">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -14,13 +14,13 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">表头号</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{acnum}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="acnum" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">注资金额</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{amount}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="amount" autocomplete="off" class="layui-input">
                                         </div>
@@ -32,7 +32,7 @@
                                         </div>
                                     </div>-->
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">状态</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{audit.status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="status" id="auditStatus" style="width: 300px;">
                                                 <option value=""></option>
@@ -40,18 +40,18 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">申请类型</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{audit.type}"></label>
                                         <div class="layui-input-inline">
                                             <select name="auditType" style="width: 300px;">
                                                 <option></option>
-                                                <option value="1">注资申请</option>
-                                                <option value="2">闭环申请</option>
+                                                <option value="1"  th:text="#{audit.apply}"></option>
+                                                <option value="2"  th:text="#{audit.close}"></option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">订单号</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{orderId}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="orderNumber" autocomplete="off"
                                                    class="layui-input">
@@ -88,8 +88,8 @@
 <script type="text/html" id="audit-type">
     {{#
     var status = {
-    1: {title: '请求注资', color: 'none'},
-    2: {title: '请求闭环', color: 'red'}
+    1: {title: i18n("audit.apply"), color: 'none'},
+    2: {title: i18n("audit.close"), color: 'red'}
     }[d.auditType];
     }}
     <span>{{ status.title }}</span>
@@ -97,11 +97,11 @@
 <script type="text/html" id="audit-status">
     {{#
     var status = {
-    0: {title: '未审核', color: 'blue'},
-    1: {title: '审核通过', color: 'green'},
-    2: {title: '审核不通过', color: 'red'},
-    3: {title: '冻结中', color: 'gold'},
-    4: {title: '已注销', color: 'gold'}
+    0: {title: i18n("audit.notBegin"), color: 'blue'},
+    1: {title: i18n("audit.success"), color: 'green'},
+    2: {title: i18n("audit.notPass"), color: 'red'},
+    3: {title: i18n("audit.orderFreezeing"), color: 'gold'},
+    4: {title: i18n("audit.orderRepeal"), color: 'gold'}
     }[d.status];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -109,7 +109,7 @@
 
 <script type="text/html" id="audit-option">
     <span shiro:lacksPermission="audit:update">
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
 
     <div shiro:hasPermission="audit:update">
@@ -122,7 +122,7 @@
         {{# }); }}
 
         {{# if(d.btnList.length === 0){ }}
-        <span class="layui-badge-dot febs-bg-orange"></span> 不可操作
+        <span class="layui-badge-dot febs-bg-orange"></span><span th:text="#{disableOperation}"></span>
         {{# } }}
     </div>
 </script>
@@ -212,18 +212,18 @@
                 url: ctx + 'audit/list',
                 cols: [[
                     {type: 'numbers'},
-                    {field: 'orderNumber', title: '订单号', width: 180},
-                    {field: 'amount', title: '注资金额', minWidth: 90},
+                    {field: 'orderNumber', title: i18n("orderId"), width: 180},
+                    {field: 'amount', title: i18n("amount"), minWidth: 90},
                     /*{field: 'applyUserName', title: '申请人', width: 90},
                     {field: 'auditUserName', title: '审核人', width: 90},*/
-                    {title: '审核类型', templet: '#audit-type'},
-                    {title: '审核状态', templet: '#audit-status'},
-                    {field: 'submitInfo', title: '提交备注', minWidth: 90},
-                    {field: 'checkRemark', title: '审核备注', minWidth: 90},
-                    {field: 'auditRealName', title: '审核人', minWidth: 90},
-                    {field: 'submitRealName', title: '提交人', minWidth: 90},
-                    {field: 'createTime', title: '提交时间', minWidth: 180, sort: false},
-                    {title: '操作', toolbar: '#audit-option', minWidth: 350}
+                    {title: i18n("audit.type"), templet: '#audit-type'},
+                    {title: i18n("audit.status"), templet: '#audit-status'},
+                    {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 90},
+                    {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 90},
+                    {field: 'auditRealName', title: i18n("audit.auditor"), minWidth: 90},
+                    {field: 'submitRealName', title: i18n("audit.submitter"), minWidth: 90},
+                    {field: 'createTime', title: i18n("audit.submitTime"), minWidth: 180, sort: false},
+                    {title: i18n("operation"), toolbar: '#audit-option', minWidth: 350}
                 ]]
             });
         }
@@ -238,10 +238,10 @@
 
                 //通过
                 if (layEvent == 'pass') {
-                    febs.modal.confirm("提示", "确定审核通过吗？", function () {
+                    febs.modal.confirm(i18n("notice"), i18n("audit.conformPass"), function () {
                         $.post(ctx + "audit/pass/" + data.auditId, null, function (res) {
                             if (res.code === 200) {
-                                febs.alert.info("操作成功");
+                                febs.alert.info(i18n("operationSuccess"));
                                 queryTable(0);
                             } else {
                                 febs.alert.error(res.message);
@@ -252,10 +252,10 @@
 
                 //驳回
                 if (layEvent == 'noPass') {
-                    febs.modal.open("驳回申请", 'audit/reject/' + data.auditId, {
+                    febs.modal.open(i18n("audit.reject"), 'audit/reject/' + data.auditId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
-                        btn: ['提交', '取消'],
+                        btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
                             $('#audit-submit-reject').find('#submit').trigger('click');
                         },

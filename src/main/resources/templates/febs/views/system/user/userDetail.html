@@ -35,40 +35,41 @@
     }
 
 </style>
-<div class="layui-fluid" id="febs-user-detail" lay-title="个人信息">
+<div class="layui-fluid" id="febs-user-detail" th:lay-title="#{userProfile.title}">
     <div id="user-info-wrapper">
         <div id="user-img">
-            <img alt="头像" title="点我更换头像" data-th-src="@{febs/images/avatar/}+${user.avatar}">
+            <img alt="头像" th:title="#{userProfile.changeAvatar}" data-th-src="@{febs/images/avatar/}+${user.avatar}">
         </div>
             <div class="user-info">
-                <div><span class="layui-icon layui-icon-user"></span> 账号：
+                <div><span class="layui-icon layui-icon-user"></span> <span th:text="#{username.colon}"></span>
                     [[${user.username}]]
                 </div>
-                <div><span class="layui-icon layui-icon-user"></span> 姓名：
+                <div><span class="layui-icon layui-icon-user"></span> <span th:text="#{realname.colon}"></span>
                     [[${user.realname}]]
                 </div>
-                <div><span class="layui-icon layui-icon-trophy"></span> 角色：
-                    [[${#strings.defaultString(user.roleName,'暂无角色信息')}]]
+                <div><span class="layui-icon layui-icon-trophy"></span> <span th:text="#{role.colon}"></span>
+                    [[${#strings.defaultString(user.roleName,' ')}]]
                 </div>
-                <div><span class="layui-icon layui-icon-home"></span> 部门：
-                    [[${#strings.defaultString(user.deptName,'无部门信息')}]]
+                <div><span class="layui-icon layui-icon-home"></span> <span th:text="#{dept.colon}"></span>
+                    [[${#strings.defaultString(user.deptName,' ')}]]
+
                 </div>
-                <div><span class="layui-icon layui-icon-skin"></span> 性别：
+                <div><span class="layui-icon layui-icon-skin"></span> <span th:text="#{sex.colon}"></span>
                     [[${user.sex}]]
                 </div>
          <!--   </div>
             <div class="user-info">-->
-                <div><span class="layui-icon layui-icon-phone"></span> 电话：
-                    [[${#strings.defaultString(user.mobile,'无电话信息')}]]
+                <div><span class="layui-icon layui-icon-phone"></span>  <span th:text="#{phone.colon}"></span>
+                    [[${#strings.defaultString(user.mobile,' ')}]]
                 </div>
-                <div><span class="layui-icon layui-icon-mail"></span> 邮箱：
-                    [[${#strings.defaultString(user.email,'无邮箱信息')}]]
+                <div><span class="layui-icon layui-icon-mail"></span> <span th:text="#{email.colon}"></span>
+                    [[${#strings.defaultString(user.email,' ')}]]
                 </div>
-                <div><span class="layui-icon layui-icon-time-circle"></span> 最后登录时间：
-                    [[${#strings.defaultString(lastLoginTime,'从未登录过系统')}]]
+                <div><span class="layui-icon layui-icon-time-circle"></span> <span th:text="#{index.lastLoginTime}"></span>
+                    [[${#strings.defaultString(lastLoginTime,' ')}]]
                 </div>
-                <div><span class="layui-icon layui-icon-read"></span> 个人简介：
-                    [[${#strings.defaultString(user.description,'暂无个人介绍')}]]
+                <div><span class="layui-icon layui-icon-read"></span>  <span th:text="#{userProfile.introduction}"></span>
+                    [[${#strings.defaultString(user.description,' ')}]]
                 </div>
             </div>
 

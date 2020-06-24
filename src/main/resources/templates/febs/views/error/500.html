@@ -5,8 +5,8 @@
         </div>
         <div class="layui-col-xs7">
             <h1 style="font-size: 60px">500</h1>
-            <h2 class="febs-mar-b20 febs-c-gray">抱歉，服务器出错了</h2>
-            <button class="layui-btn layui-btn-normal" id="home">返回首页</button>
+            <h2 class="febs-mar-b20 febs-c-gray" th:text="#{eroor.serverError}"></h2>
+            <button class="layui-btn layui-btn-normal" id="home" th:text="#{error.returnHome}"></button>
         </div>
     </div>
 </div>

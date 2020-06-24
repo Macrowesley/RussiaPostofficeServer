@@ -17,19 +17,19 @@
 <div class="layui-fluid" id="audit-submit-reject">
     <form class="layui-form" action="" lay-filter="audit-audit-form">
         <div class="layui-form-item febs-hide">
-            <label class="layui-form-label febs-form-item-require">审核id：</label>
+            <label class="layui-form-label febs-form-item-require"  th:text="#{audit.id}"></label>
             <div class="layui-input-block">
                 <input type="text" name="auditId" data-th-value="${auditId}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">驳回理由：</label>
+            <label class="layui-form-label left-label" th:text="#{audit.rejectReason}"></label>
             <div class="layui-input-block">
                 <textarea
                         lay-filter="myTextarea"
                         name="checkRemark"
                         id="checkRemark"
-                        placeholder="选填"
+                        th:placeholder=#{optional}
                         value=""
                         class="layui-textarea"
                         rows="3"
@@ -69,13 +69,13 @@
 
             //验证字数是否超标
             if ($textarea.val().length > $maxLen) {
-                febs.alert.warn("字数不能超过" + $maxLen);
+                febs.alert.warn(i18n("audit.noMoreThan") + $maxLen);
                 return false;
             }
 
             febs.post(ctx + 'audit/noPass/', data.field, function (result) {
                 layer.closeAll();
-                febs.alert.success('操作成功');
+                febs.alert.success(i18n("operationSuccess"));
                 $('#febs-audit').find('#refreshQuery').click();
             });
             return false;

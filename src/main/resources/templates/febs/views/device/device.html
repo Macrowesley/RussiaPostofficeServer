@@ -1,4 +1,4 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-device" lay-title="设备管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-device" th:lay-title="#{device.manage}">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -8,13 +8,13 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">表头号</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{acnum}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="acnum" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">设备昵称</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{device.nickname}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="nickname" autocomplete="off" class="layui-input">
                                         </div>
@@ -27,12 +27,12 @@
                                         </div>
                                     </div>-->
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">状态</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{device.status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="deviceStatus">
                                                 <option value=""></option>
-                                                <option value="0">冻结</option>
-                                                <option value="1">正常</option>
+                                                <option value="0" th:text="#{device.freeze}"></option>
+                                                <option value="1" th:text="#{device.normal}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -65,15 +65,15 @@
 <script type="text/html" id="device-status">
     {{#
     var status = {
-    1: {title: '正常', color: 'green'},
-    0: {title: '冻结', color: 'volcano'}
+    1: {title: i18n("device.normal"), color: 'green'},
+    0: {title: i18n("device.freeze"), color: 'volcano'}
     }[d.deviceStatus];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
 </script>
 <script type="text/html" id="device-option">
     <span shiro:lacksPermission="device:add,device:update,device:delete">
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
     <!--<a lay-event="detail" shiro:hasPermission="device:view"><i
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
@@ -153,8 +153,8 @@
                 click: function (name, elem, event) {
                     var checkStatus = table.checkStatus('deviceTable');
                     if (name === 'add') {
-                        febs.modal.open('新增设备', 'device/add', {
-                            btn: ['提交', '重置'],
+                        febs.modal.open(i18n("device.addDevice"), 'device/add', {
+                            btn: [i18n("submit"), i18n("reset")],
                             area: $(window).width() <= 750 ? '95%' : '50%',
                             offset: '30px',
                             yes: function (index, layero) {
@@ -186,12 +186,12 @@
                         params.pageNum = $view.find(".layui-laypage-em").next().html();
                         /*console.log(params)
                         return;*/
-                        febs.download(ctx + 'device/excel', params, '设备信息表.xlsx');
+                        febs.download(ctx + 'device/excel', params, i18n("device.list")+'.xlsx');
                     }
                 },
                 options: [{
                     name: 'add',
-                    title: '新增设备',
+                    title: i18n("device.addDevice"),
                     perms: 'device:add'
                 }, /*{
                     name: 'delete',
@@ -199,7 +199,7 @@
                     perms: 'device:delete'
                 },*/ {
                     name: 'export',
-                    title: '导出Excel',
+                    title: i18n("exportExcel"),
                     perms: 'device:export'
                 }]
             });
@@ -215,14 +215,14 @@
                 url: ctx + 'device/list',
                 cols: [[
                     {type: 'checkbox'},
-                    {field: 'acnum', title: '表头号', minWidth: 100},
-                    {field: 'nickname', title: '设备昵称', minWidth: 100},
-                    {field: 'warnAmount', title: '默认警告金额'},
-                    {field: 'maxAmount', title: '最大金额', minWidth: 165},
-                    {field: 'validDays', title: '有效天数', minWidth: 180},
-                    {title: '状态', templet: '#device-status'},
-                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
-                    {title: '操作', toolbar: '#device-option', minWidth: 140}
+                    {field: 'acnum', title: i18n("acnum"), minWidth: 100},
+                    {field: 'nickname', title: i18n("device.nickname"), minWidth: 100},
+                    {field: 'warnAmount', title: i18n("device.warnAmount")},
+                    {field: 'maxAmount', title: i18n("device.maxAmount"), minWidth: 165},
+                    {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
+                    {title: i18n("device.status"), templet: '#device-status'},
+                    {field: 'createTime', title: i18n("createTime"), minWidth: 180, sort: false},
+                    {title: i18n("operation"), toolbar: '#device-option', minWidth: 140}
                 ]]
             });
         }
@@ -245,10 +245,10 @@
                     });
                 }*/
                 if (layEvent === 'edit') {
-                    febs.modal.open('修改设备', 'device/update/' + data.deviceId, {
+                    febs.modal.open(i18n("device.editDevice"), 'device/update/' + data.deviceId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
-                        btn: ['提交', '取消'],
+                        btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
                             $('#device-update').find('#submit').trigger('click');
                         },

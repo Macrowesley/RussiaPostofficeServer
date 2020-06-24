@@ -1,4 +1,4 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-audit" lay-title="注资管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-audit" th:lay-title="#{}审核记录">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -12,8 +12,8 @@
 <script type="text/html" id="audit-type">
     {{#
     var status = {
-    1: {title: '请求注资', color: 'none'},
-    2: {title: '请求闭环', color: 'red'}
+    1: {title: i18n("audit.apply"), color: 'none'},
+    2: {title: i18n("audit.close"), color: 'red'}
     }[d.auditType];
     }}
     <span>{{ status.title }}</span>
@@ -21,11 +21,11 @@
 <script type="text/html" id="audit-status">
     {{#
     var status = {
-    0: {title: '审核中', color: 'blue'},
-    1: {title: '成功', color: 'green'},
-    2: {title: '驳回', color: 'red'},
-    3: {title: '冻结中', color: 'gold'},
-    4: {title: '已注销', color: 'gold'}
+    0: {title: i18n("audit.auditing"), color: 'blue'},
+    1: {title: i18n("audit.success"), color: 'green'},
+    2: {title: i18n("audit.notPass"), color: 'red'},
+    3: {title: i18n("audit.orderFreezeing"), color: 'gold'},
+    4: {title: i18n("audit.orderRepeal"), color: 'gold'}
     }[d.status];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -49,17 +49,17 @@
             url: ctx + 'audit/selectByOrderId/'+ $orderId,
             cols: [[
                 {type: 'numbers'},
-                {field: 'orderNumber', title: '订单号', width: 180},
-                {field: 'amount', title: '注资金额', minWidth: 90},
+                {field: 'orderNumber', title: i18n("orderId"), width: 180},
+                {field: 'amount', title: i18n("amount"), minWidth: 90},
                 /*{field: 'applyUserName', title: '申请人', width: 90},
                 {field: 'auditUserName', title: '审核人', width: 90},*/
-                {title: '审核类型', templet: '#audit-type'},
-                {title: '审核状态', templet: '#audit-status'},
-                {field: 'submitInfo', title: '提交备注', minWidth: 90},
-                {field: 'checkRemark', title: '审核备注', minWidth: 90},
-                {field: 'auditRealName', title: '审核人', minWidth: 90},
-                {field: 'submitRealName', title: '提交人', minWidth: 90},
-                {field: 'createTime', title: '提交时间', minWidth: 180, sort: false}
+                {title: i18n("audit.type"), templet: '#audit-type'},
+                {title: i18n("audit.status"), templet: '#audit-status'},
+                {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 90},
+                {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 90},
+                {field: 'auditRealName', title: i18n("audit.auditor"), minWidth: 90},
+                {field: 'submitRealName', title: i18n("audit.submitter"), minWidth: 90},
+                {field: 'createTime', title: i18n("audit.submitTime"), minWidth: 180, sort: false}
             ]]
         });
     });

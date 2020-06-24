@@ -177,7 +177,7 @@ layui.extend({
             var htmlElem = $('<div>' + res.html + '</div>');
 
             if (params.title === undefined) {
-                params.title = htmlElem.find('title').text() || '信息';
+                params.title = htmlElem.find('title').text() || i18n("febs.info");
                 if (params.title) htmlElem.find('title').remove()
             }
 
@@ -372,7 +372,7 @@ layui.extend({
             '" style="font-size:12px;background:' +
             params.titleIcoColor +
             ';display:inline-block;font-weight:600;position:relative;top:-2px;height:21px;line-height:21px;text-align:center;width:21px;color:#fff;border-radius:50%;margin-right:12px;"></i>' +
-            (msg || '请填写提示信息'),
+            (msg || i18n("febs.writeInfo")),
             'background:#fff;border:none;font-weight:500;font-size:14px;color:#08132b;margin-bottom:-50px;padding:16px;height:45px;line-height:14px;padding-bottom:0;'
         ];
         params.offset = '40px';
@@ -417,7 +417,7 @@ layui.extend({
         params.titleValue = title;
         params.shadeClose = false;
         params = $.extend({
-            btn: ['确定', '取消']
+            btn: [i18n("confirm"), i18n("cancel")]
             , yes: function (index, layero) {
                 yes && (yes)();
                 layer.close(index);
@@ -436,7 +436,7 @@ layui.extend({
         params.titleValue = title;
         params.shadeClose = false;
         params = $.extend({
-            btn: ['确定']
+            btn: [i18n("confirm")]
             , yes: function (index, layero) {
                 yes && (yes)();
                 layer.close(index);
@@ -452,7 +452,7 @@ layui.extend({
         params.titleValue = title;
         params.shadeClose = false;
         params = $.extend({
-            btn: ['确定']
+            btn: [i18n("confirm")]
             , yes: function (index, layero) {
                 yes && (yes)();
                 layer.close(index);
@@ -468,7 +468,7 @@ layui.extend({
         params.titleValue = title;
         params.shadeClose = false;
         params = $.extend({
-            btn: ['确定']
+            btn: [i18n("confirm")]
             , yes: function (index, layero) {
                 yes && (yes)();
                 layer.close(index);
@@ -484,7 +484,7 @@ layui.extend({
         params.titleValue = title;
         params.shadeClose = false;
         params = $.extend({
-            btn: ['确定']
+            btn: [i18n("confirm")]
             , yes: function (index, layero) {
                 yes && (yes)();
                 layer.close(index);
@@ -499,7 +499,7 @@ layui.extend({
             maxmin: true,
             shadeClose: false,
             title: [
-                (title || '请填写头部信息'),
+                (title || i18n("febs.wrieteTitleInfo")),
                 'font-size:16px;color:#08132b;line-height:46px;padding-bottom:0;border-bottom:1px solid #fcfcfc;background-color:#fcfcfc'
             ]
         }, params);
@@ -600,7 +600,7 @@ layui.extend({
                 }
             } else {
                 self.view.loadBar.error();
-                self.alert.error('下载失败');
+                self.alert.error(i18n("febs.downError"));
             }
         };
         xhr.send();
@@ -623,13 +623,13 @@ layui.extend({
         if (r.code === 200) {
             f(r) && (f)();
         } else if (r.code === 401) {
-            self.modal.info('登录失效', '登录已失效，请重新登录', function () {
+            self.modal.info(i18n("febs.loginFail"), i18n("febs.relogin"), function () {
                 window.location.href = ctx + 'login';
             });
         } else if (r.code === 403) {
-            self.alert.warn('对不起，您暂无该操作权限');
+            self.alert.warn(i18n("febs.noPermission"));
         } else {
-            self.alert.error(r.message ? r.message : '操作失败');
+            self.alert.error(r.message ? r.message : i18n("febs.operationFail"));
             console.error(r);
         }
     }

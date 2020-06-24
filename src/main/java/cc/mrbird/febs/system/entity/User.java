@@ -153,7 +153,7 @@ public class User implements Serializable {
      */
     @TableField("LAST_LOGIN_TIME")
     @ExcelField(value = "最近访问时间", writeConverter = TimeConverter.class)
-    @JsonFormat(pattern = "yyyy年MM月dd日 HH时mm分ss秒", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastLoginTime;
 
     /**

@@ -1,5 +1,9 @@
 package cc.mrbird.febs.common.utils;
 
+import freemarker.core.LocalContext;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -15,6 +19,7 @@ import java.util.Locale;
  *
  *
  */
+@Slf4j
 public class DateUtil {
 
     public static final String FULL_TIME_PATTERN = "yyyyMMddHHmmss";
@@ -33,7 +38,10 @@ public class DateUtil {
     }
 
     public static String getDateFormat(Date date, String dateFormatType) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatType, Locale.CHINA);
+        /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatType, Locale.CHINA);
+        return simpleDateFormat.format(date);*/
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatType, LocaleContextHolder.getLocale());
         return simpleDateFormat.format(date);
     }
 

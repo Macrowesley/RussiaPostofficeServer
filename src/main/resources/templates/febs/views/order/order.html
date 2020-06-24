@@ -4,7 +4,7 @@
     }
 </style>
 
-<div class="layui-fluid layui-anim febs-anim" id="febs-order" lay-title="注资管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-order" th:lay-title="#{order.title}">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -14,13 +14,13 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">表头号</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{acnum}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="acnum" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">注资金额</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{amount}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="amount" autocomplete="off" class="layui-input">
                                         </div>
@@ -32,7 +32,7 @@
                                         </div>
                                     </div>-->
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">状态</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="orderStatus" id="orderStatus" style="width: 300px;">
                                                 <option value=""></option>
@@ -41,29 +41,29 @@
                                     </div>
 
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">是否过期</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{order.isExpire}"></label>
                                         <div class="layui-input-inline">
                                             <select name="isExpire">
                                                 <option value=""></option>
-                                                <option value="0">未过期</option>
-                                                <option value="1">已过期</option>
+                                                <option value="0" th:text="#{order.notExpire}"></option>
+                                                <option value="1" th:text="#{order.alreadyExpire}"></option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">注资报警</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{order.alarm}"></label>
                                         <div class="layui-input-inline">
                                             <select name="isAlarm">
                                                 <option value=""></option>
-                                                <option value="0">正常</option>
-                                                <option value="1">设备注资超时</option>
+                                                <option value="0" th:text="#{order.normal}"></option>
+                                                <option value="1" th:text="#{order.injectOvertime}"></option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">订单号</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{orderId}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="orderNumber" autocomplete="off"
                                                    class="layui-input">
@@ -110,8 +110,8 @@
 <script type="text/html" id="order-expire">
     {{#
     var status = {
-    0: {title: '未过期', color: 'green'},
-    1: {title: '已过期', color: 'red'}
+    0: {title: i18n("order.notExpire"), color: 'green'},
+    1: {title: i18n("order.alreadyExpire"), color: 'red'}
     }[d.isExpire];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -120,8 +120,8 @@
 <script type="text/html" id="order-alarm">
     {{#
     var status = {
-    0: {title: '正常', color: 'green'},
-    1: {title: '设备注资报警', color: 'red'}
+    0: {title: i18n("order.normal"), color: 'green'},
+    1: {title: i18n("order.injectOvertime"), color: 'red'}
     }[d.isAlarm];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -130,17 +130,17 @@
 <script type="text/html" id="order-status">
     {{#
     var status = {
-    1: {title: '创建订单', color: 'blue'},
-    2: {title: '注资审核中', color: 'blue'},
-    3: {title: '注资审核通过', color: 'blue'},
-    4: {title: '注资审核失败', color: 'red'},
-    5: {title: '机器获取数据包', color: 'blue'},
-    6: {title: '闭环', color: 'green'},
-    7: {title: '机器注资失败', color: 'red'},
-    8: {title: '注销', color: 'gold'},
-    9: {title: '冻结', color: 'gold'},
-    10: {title: '闭环申请中', color: 'blue'},
-    11: {title: '闭环申请审核失败', color: 'red'},
+    1: {title: i18n("order.createOrder"), color: 'blue'},
+    2: {title: i18n("order.auditIng"), color: 'blue'},
+    3: {title: i18n("order.auditPass"), color: 'blue'},
+    4: {title: i18n("order.auditNotPass"), color: 'red'},
+    5: {title: i18n("order.machineGetData"), color: 'blue'},
+    6: {title: i18n("order.machineInjectionSuccess"), color: 'green'},
+    7: {title: i18n("order.machineInjectionFail"), color: 'red'},
+    8: {title: i18n("order.orderRepeal"), color: 'gold'},
+    9: {title: i18n("order.orderFreeze"), color: 'gold'},
+    10: {title: i18n("order.orderCloseApplyIng"), color: 'blue'},
+    11: {title: i18n("order.orderCloseApplyNotPass"), color: 'red'},
     }[d.orderStatus];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -148,7 +148,7 @@
 
 <script type="text/html" id="order-option">
     <span shiro:lacksPermission="order:update">
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span  th:text="#{noPermission}"></span>
     </span>
 
     <div shiro:hasPermission="order:update">
@@ -159,7 +159,7 @@
         {{# }); }}
 
         {{# if(d.btnList.length === 0){ }}
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span  th:text="#{noPermission}"></span>
         {{# } }}
 
         <!--<a lay-event="editBtn">修改</a>
@@ -240,8 +240,8 @@
 
             //添加点击事件
             $add.on('click', function () {
-                febs.modal.open('添加注资', 'order/add', {
-                    btn: ['提交', '重置'],
+                febs.modal.open(i18n("order.addOrder"), 'order/add', {
+                    btn: [i18n("submit"), i18n("reset")],
                     area: $(window).width() <= 750 ? ['95%', '90%'] : ['50%', '90%'],
                     offset: '30px',
                     yes: function (index, layero) {
@@ -259,7 +259,7 @@
                 var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
                 params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
                 params.pageNum = $view.find(".layui-laypage-em").next().html();
-                febs.download(ctx + 'order/excel', params, '注资报表.xlsx');
+                febs.download(ctx + 'order/excel', params, i18n("order.orderExcel") + '.xlsx');
             });
 
             /*//更多——弹出窗
@@ -310,17 +310,17 @@
                 url: ctx + 'order/list',
                 cols: [[
                     {type: 'numbers'},
-                    {field: 'acnum', title: '表头号', width: 90},
-                    {field: 'orderNumber', title: '订单号', minWidth: 180},
-                    {field: 'amount', title: '注资金额', width: 110},
-                    {field: 'applyUserName', title: '申请人', width: 90},
-                    {field: 'auditUserName', title: '审核人', width: 90},
-                    {title: '注资状态', templet: '#order-status'},
-                    {title: '是否过期', width: 90, templet: '#order-expire'},
-                    {title: '是否报警', minWidth: 90, templet: '#order-alarm'},
+                    {field: 'acnum', title: i18n("acnum"), width: 90},
+                    {field: 'orderNumber', title: i18n("orderId"), minWidth: 180},
+                    {field: 'amount', title: i18n("amount"), width: 110},
+                    {field: 'applyUserName', title: i18n("order.applyer"), width: 90},
+                    {field: 'auditUserName', title: i18n("order.auditor"), width: 90},
+                    {title: i18n("status"), templet: '#order-status'},
+                    {title: i18n("order.isExpire"), width: 90, templet: '#order-expire'},
+                    {title: i18n("order.isAlarm"), minWidth: 90, templet: '#order-alarm'},
                     // {field: 'createTime', title: '创建时间', minWidth: 180, sort: false},
-                    {field: 'endTime', title: '截止日期', minWidth: 180, sort: false},
-                    {title: '操作', toolbar: '#order-option', minWidth: 350}
+                    {field: 'endTime', title: i18n("order.endTime"), minWidth: 180, sort: false},
+                    {title: i18n("operation"), toolbar: '#order-option', minWidth: 350}
                 ]]
             });
         }
@@ -334,10 +334,10 @@
                     layEvent = obj.event;
                 //修改
                 if (layEvent === 'editBtn') {
-                    febs.modal.open('修改注资', 'order/update/' + data.orderId, {
+                    febs.modal.open(i18n("order.editOrder"), 'order/update/' + data.orderId, {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
-                        btn: ['提交', '取消'],
+                        btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
                             $('#order-update').find('#submit').trigger('click');
                         },
@@ -349,10 +349,10 @@
 
                 //注资审核 有个一备注栏，可填写
                 if (layEvent == 'submitInjectionBtn') {
-                    febs.modal.open("提交注资审核", 'order/submitApply/' + data.orderId + '/1', {
+                    febs.modal.open(i18n("order.submitInjectApply"), 'order/submitApply/' + data.orderId + '/1', {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
-                        btn: ['提交', '取消'],
+                        btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
                             $('#order-submit-injection').find('#submit').trigger('click');
                         },
@@ -364,10 +364,10 @@
 
                 //闭环审核
                 if (layEvent == 'submitCloseBtn') {
-                    febs.modal.open("提交注资审核", 'order/submitApply/' + data.orderId + '/2', {
+                    febs.modal.open(i18n("order.submitCloseApply"), 'order/submitApply/' + data.orderId + '/2', {
                         area: $(window).width() <= 750 ? '90%' : '50%',
                         offset: '30px',
-                        btn: ['提交', '取消'],
+                        btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
                             $('#order-submit-injection').find('#submit').trigger('click');
                         },
@@ -379,10 +379,10 @@
 
                 //审核详情
                 if (layEvent == 'auditDetail') {
-                    febs.modal.open("审核详情", 'audit/selectByOrderId/' + data.orderId, {
+                    febs.modal.open(i18n("order.auditDetail"), 'audit/selectByOrderId/' + data.orderId, {
                         area: $(window).width() <= 750 ? '90%' : '70%',
                         offset: '30px',
-                        btn: ['关闭'],
+                        btn: [i18n("close")],
                         yes: function () {
                             layer.closeAll();
                         }
@@ -391,10 +391,10 @@
 
                 //注销
                 if (layEvent == 'repealBtn') {
-                    febs.modal.confirm("提示", "确定注销吗？该操作不可逆！", function () {
+                    febs.modal.confirm(i18n("notice"), i18n("order.confirmRepeal"), function () {
                         $.post(ctx + "order/cancel/" + data.orderId, null, function (res) {
                             if (res.code === 200) {
-                                febs.alert.info("注销成功");
+                                febs.alert.info(i18n("order.repealSuccess"));
                                 queryTable(0);
                             } else {
                                 febs.alert.error(res.message);
@@ -405,10 +405,10 @@
 
                 //冻结
                 if (layEvent == 'freezeBtn') {
-                    febs.modal.confirm("提示", "确定冻结吗？", function () {
+                    febs.modal.confirm(i18n("notice"), i18n("order.confirmFreeze"), function () {
                         $.post(ctx + "order/freeze/" + data.orderId, null, function (res) {
                             if (res.code === 200) {
-                                febs.alert.info("冻结成功");
+                                febs.alert.info(i18n("order.freezeSuccess"));
                                 queryTable(0);
                             } else {
                                 febs.alert.error(res.message);
@@ -419,10 +419,10 @@
 
                 //解冻
                 if (layEvent == 'unfreezeBtn') {
-                    febs.modal.confirm("提示", "确定解冻吗？", function () {
+                    febs.modal.confirm(i18n("notice"), i18n("order.confirmUnfreeze"), function () {
                         $.post(ctx + "order/unfreeze/" + data.orderId, null, function (res) {
                             if (res.code === 200) {
-                                febs.alert.info("解冻成功");
+                                febs.alert.info(i18n("order.confirmUnfreeze"));
                                 queryTable(0);
                             } else {
                                 febs.alert.error(res.message);

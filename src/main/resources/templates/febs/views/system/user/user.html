@@ -1,4 +1,4 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-user" lay-title="用户管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-user" th:lay-title="#{user.manage}">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -8,13 +8,13 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">用户名</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{username}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="username" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">姓名</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{realname}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="realname" autocomplete="off" class="layui-input">
                                         </div>
@@ -26,36 +26,36 @@
                                         </div>
                                     </div>-->
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">状态</label>
+                                        <label class="layui-form-label layui-form-label-sm"  th:text="#{status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="status">
                                                 <option value=""></option>
-                                                <option value="0">禁用</option>
-                                                <option value="1">有效</option>
+                                                <option value="0" th:text="#{user.disable}"></option>
+                                                <option value="1" th:text="#{user.enable}"></option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">手机</label>
+                                        <label class="layui-form-label layui-form-label-sm"  th:text="#{phone}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="mobile" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">机构</label>
+                                        <label class="layui-form-label layui-form-label-sm"  th:text="#{dept}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="dept" id="dept" lay-filter="dept"
                                                    class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">性别</label>
+                                        <label class="layui-form-label layui-form-label-sm"  th:text="#{sex}"></label>
                                         <div class="layui-input-inline">
                                             <select name="sex">
                                                 <option value=""></option>
-                                                <option value="0">男</option>
-                                                <option value="1">女</option>
-                                                <option value="2">保密</option>
+                                                <option value="0"  th:text="#{man}"></option>
+                                                <option value="1"  th:text="#{woman}"></option>
+                                                <option value="2"  th:text="#{secrecy}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -85,8 +85,8 @@
 <script type="text/html" id="user-status">
     {{#
     var status = {
-    1: {title: '有效', color: 'green'},
-    0: {title: '禁用', color: 'volcano'}
+    1: {title: i18n("user.enable"), color: 'green'},
+    0: {title: i18n("user.disable"), color: 'volcano'}
     }[d.status];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
@@ -94,16 +94,16 @@
 <script type="text/html" id="user-sex">
     {{#
     var sex = {
-    2: {title: '保密'},
-    1: {title: '女'},
-    0: {title: '男'}
+    2: {title: i18n("secrecy")},
+    1: {title: i18n("woman")},
+    0: {title: i18n("man")}
     }[d.sex];
     }}
     <span>{{ sex.title }}</span>
 </script>
 <script type="text/html" id="user-option">
     <span shiro:lacksPermission="user:view,user:update,user:delete,user:device">
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
     <a lay-event="detail" shiro:hasPermission="user:view"><i
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
@@ -147,8 +147,8 @@
             click: function (name, elem, event) {
                 var checkStatus = table.checkStatus('userTable');
                 if (name === 'add') {
-                    febs.modal.open('新增用户', 'system/user/add', {
-                        btn: ['提交', '重置'],
+                    febs.modal.open(i18n("user.addUser"), 'system/user/add', {
+                        btn: [i18n("submit"), i18n("reset")],
                         area: $(window).width() <= 750 ? '95%' : '50%',
                         offset: '30px',
                         yes: function (index, layero) {
@@ -162,9 +162,9 @@
                 }
                 if (name === 'delete') {
                     if (!checkStatus.data.length) {
-                        febs.alert.warn('请选择需要删除的用户');
+                        febs.alert.warn(i18n("user.selectDelUser"));
                     } else {
-                        febs.modal.confirm('删除用户', '确定删除该用户？', function () {
+                        febs.modal.confirm(i18n("user.delUser"), i18n("user.confirmDel"), function () {
                             var userIds = [];
                             layui.each(checkStatus.data, function (key, item) {
                                 userIds.push(item.userId)
@@ -175,14 +175,14 @@
                 }
                 if (name === 'reset') {
                     if (!checkStatus.data.length) {
-                        febs.alert.warn('请选择需要重置密码的用户');
+                        febs.alert.warn(i18n("user.selectResetUser"));
                     } else {
                         var usernames = [];
                         layui.each(checkStatus.data, function (key, item) {
                             usernames.push(item.username)
                         });
                         febs.post(ctx + 'user/password/reset/' + usernames.join(','), null, function () {
-                            febs.alert.success('所选用户密码已重置为123456');
+                            febs.alert.success(i18n("user.resetOk"));
                         });
                     }
                 }
@@ -190,24 +190,24 @@
                     var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
                     params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
                     params.pageNum = $view.find(".layui-laypage-em").next().html();
-                    febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
+                    febs.download(ctx + 'user/excel', params, i18n("user.userInfoTable") + '.xlsx');
                 }
             },
             options: [{
                 name: 'add',
-                title: '新增用户',
+                title: i18n("user.addUser"),
                 perms: 'user:add'
             }, {
                 name: 'delete',
-                title: '删除用户',
+                title: i18n("user.delUser"),
                 perms: 'user:delete'
             }, {
                 name: 'reset',
-                title: '密码重置',
+                title: i18n("user.pwdReset"),
                 perms: 'user:password:reset'
             }, {
                 name: 'export',
-                title: '导出Excel',
+                title: i18n("exportExcel"),
                 perms: 'user:export'
             }]
         });
@@ -216,7 +216,7 @@
             elem: $view.find('#dept'),
             type: 'get',
             data: ctx + 'dept/select/tree',
-            placeholder: '请选择',
+            placeholder: i18n("select"),
             search: true
         });
 
@@ -224,20 +224,20 @@
             var data = obj.data,
                 layEvent = obj.event;
             if (layEvent === 'detail') {
-                febs.modal.view('用户信息', 'system/user/detail/' + data.username, {
+                febs.modal.view(i18n("user.userInfo"), 'system/user/detail/' + data.username, {
                     area: $(window).width() <= 750 ? '95%' : '660px'
                 });
             }
             if (layEvent === 'del') {
-                febs.modal.confirm('删除用户', '确定删除该用户？', function () {
+                febs.modal.confirm(i18n("user.delUser"), i18n("user.confirmDel"), function () {
                     deleteUsers(data.userId);
                 });
             }
             if (layEvent === 'edit') {
-                febs.modal.open('修改用户', 'system/user/update/' + data.username, {
+                febs.modal.open(i18n("user.editUser"), 'system/user/update/' + data.username, {
                     area: $(window).width() <= 750 ? '90%' : '50%',
                     offset: '30px',
-                    btn: ['提交', '取消'],
+                    btn: [i18n("submit"), i18n("cancel")],
                     yes: function (index, layero) {
                         $('#user-update').find('#submit').trigger('click');
                     },
@@ -248,10 +248,10 @@
             }
 
             if (layEvent === 'device') {
-                febs.modal.open('分配设备', 'system/user/device/' + data.username, {
+                febs.modal.open(i18n("user.bindDevice"), 'system/user/device/' + data.username, {
                     area: $(window).width() <= 750 ? '90%' : '50%',
                     offset: '30px',
-                    btn: ['提交', '取消'],
+                    btn: [i18n("submit"), i18n("cancel")],
                     yes: function (index, layero) {
                         $('#user-device').find('#submit').trigger('click');
                     },
@@ -314,16 +314,16 @@
                 url: ctx + 'user/list',
                 cols: [[
                     {type: 'checkbox'},
-                    {field: 'username', title: '用户名', minWidth: 100},
-                    {field: 'realname', title: '姓名', minWidth: 100},
-                    {field: 'roleName', title: '角色', minWidth: 100},
-                    {title: '性别', templet: '#user-sex'},
-                    {field: 'deptName', title: '机构'},
-                    {field: 'mobile', title: '手机', minWidth: 165},
-                    {field: 'email', title: '邮箱', minWidth: 180},
-                    {title: '状态', templet: '#user-status'},
-                    {field: 'createTime', title: '创建时间', minWidth: 180, sort: true},
-                    {title: '操作', toolbar: '#user-option', minWidth: 140}
+                    {field: 'username', title: i18n("username"), minWidth: 100},
+                    {field: 'realname', title: i18n("realname"), minWidth: 100},
+                    {field: 'roleName', title: i18n("role"), minWidth: 100},
+                    {title: i18n("sex"), templet: '#user-sex'},
+                    {field: 'deptName', title: i18n("dept")},
+                    {field: 'mobile', title: i18n("phone"), minWidth: 165},
+                    {field: 'email', title: i18n("email"), minWidth: 180},
+                    {title:  i18n("status"), templet: '#user-status'},
+                    {field: 'createTime', title:  i18n("createTime"), minWidth: 180, sort: true},
+                    {title:  i18n("operation"), toolbar: '#user-option', minWidth: 140}
                 ]]
             });
         }
@@ -350,11 +350,11 @@
         function deleteUsers(userIds) {
             var currentUserId = currentUser.userId + '';
             if (('' + userIds).split(',').indexOf(currentUserId) !== -1) {
-                febs.alert.warn('所选用户包含当前登录用户，无法删除');
+                febs.alert.warn(i18n("user.disableDel"));
                 return;
             }
             febs.get(ctx + 'user/delete/' + userIds, null, function () {
-                febs.alert.success('删除用户成功');
+                febs.alert.success(i18n("user.delOk"));
                 $query.click();
             });
         }

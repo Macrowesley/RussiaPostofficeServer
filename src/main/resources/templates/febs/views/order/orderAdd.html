@@ -25,7 +25,7 @@
 <div class="layui-fluid" id="order-add">
     <form class="layui-form" action="" lay-filter="order-add-form">
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">表头号：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{acnum.colon}">表头号：</label>
             <div class="layui-input-block ">
                 <select name="deviceId" id="acnumList" lay-verify="required" lay-filter="acnumListFilter">
                     <option value=""></option>
@@ -33,21 +33,21 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">审核人：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{order.auditor.colon}"></label>
             <div class="layui-input-block ">
                 <select name="auditUserId" id="auditUserNameList" lay-verify="required" lay-filter="auditFilter">
                 </select>
             </div>
         </div>
         <div class="layui-form-item ">
-            <label class="layui-form-label febs-form-item-require left-label">注资金额：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{amount.colon}"></label>
             <div class="layui-input-block">
                 <input type="number" step="0.01" id="acmout" name="amount" lay-verify="required" max=""
                        class="layui-input rigth-view">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">过期天数：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{order.expireDays}"></label>
             <div class="layui-input-block">
                 <input type="number" name="expireDays" lay-verify="number" autocomplete="off"
                        class="layui-input rigth-view" value="7">
@@ -86,7 +86,7 @@
             /*echo(data);
             return false;*/
             if (data.field.auditUserId.length < 1) {
-                febs.alert.warn("请选择审核人");
+                febs.alert.warn(i18n("order.selectAudit"));
                 return false;
             }
             //判断金额是否超过限制
@@ -96,14 +96,14 @@
                 var warnAmount = parseFloat(amountInfo.warnAmount);
                 var curAmount = parseFloat(data.field.amount);
                 if (curAmount > maxAmount){
-                    febs.alert.warn("注资金额不能大于" + maxAmount);
+                    febs.alert.warn(i18n("order.amountNoMoreThan") + maxAmount);
                     return false;
                 } else if (curAmount > warnAmount){
-                    febs.modal.confirm('警告', '当前注资金额超过了警告金额，是否继续', function () {
+                    febs.modal.confirm(i18n("warn"), i18n("order.moreThanAlarmMoney"), function () {
                         //开始添加
                         febs.post(ctx + 'order/add', data.field, function (result) {
                             layer.closeAll();
-                            febs.alert.success('新增注资成功');
+                            febs.alert.success(i18n("order.addOrderSuccess"));
                             $('#febs-order').find('#refreshQuery').click();
                         });
                     });
@@ -111,7 +111,7 @@
                     //开始添加
                     febs.post(ctx + 'order/add', data.field, function (result) {
                         layer.closeAll();
-                        febs.alert.success('新增注资成功');
+                        febs.alert.success(i18n("order.addOrderSuccess"));
                         $('#febs-order').find('#refreshQuery').click();
                     });
                 }

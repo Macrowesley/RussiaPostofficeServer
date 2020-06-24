@@ -25,50 +25,50 @@
 <div class="layui-fluid" id="device-update">
     <form class="layui-form" action="" lay-filter="device-update-form">
         <div class="layui-form-item febs-hide">
-            <label class="layui-form-label febs-form-item-require">设备id：</label>
+            <label class="layui-form-label febs-form-item-require" th:text="#{device.id}"></label>
             <div class="layui-input-block">
                 <input type="text" name="deviceId" data-th-value="${device.deviceId}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">表头号：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{acnum.colon}"></label>
             <div class="layui-input-block ">
                 <input type="text" name="acnum" autocomplete="off" class="layui-input rigth-view" readonly/>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">设备昵称：</label>
+            <label class="layui-form-label left-label" th:text="#{device.nickname.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="nickname" minlength="2" maxlength="10" lay-verify="nickname"
                        autocomplete="off" class="layui-input rigth-view">
             </div>
         </div>
         <div class="layui-form-item ">
-            <label class="layui-form-label left-label">默认警告金额：</label>
+            <label class="layui-form-label left-label" th:text="#{device.warnAmount.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="warnAmount"  autocomplete="off"
                        class="layui-input rigth-view">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">最大金额：</label>
+            <label class="layui-form-label left-label" th:text="#{device.maxAmount.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="maxAmount"   autocomplete="off"
                        class="layui-input rigth-view">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">有效天数：</label>
+            <label class="layui-form-label left-label" th:text="#{device.validDays.colon}"></label>
             <div class="layui-input-block">
                 <input type="number" name="validDays" lay-verify="number" autocomplete="off"
                        class="layui-input rigth-view">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">状态：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.status.colon}"></label>
             <div class="layui-input-block">
-                <input type="radio" name="deviceStatus" value="1" title="正常">
-                <input type="radio" name="deviceStatus" value="0" title="冻结">
+                <input type="radio" name="deviceStatus" value="1" th:title="#{device.normal}">
+                <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
             </div>
         </div>
         <div class="layui-form-item febs-hide">
@@ -108,14 +108,14 @@
 
         form.on('submit(device-update-form-submit)', function (data) {
             if (febs.nativeEqual(data.field, device)) {
-                febs.alert.warn('数据未作任何修改！');
+                febs.alert.warn(i18n("noEdit"));
                 return false;
             }
 
             //开始修改
             febs.post(ctx + 'device/update', data.field, function () {
                 layer.closeAll();
-                febs.alert.success('设备' + device.acnum + '数据修改成功');
+                febs.alert.success( i18n("device.device")+ device.acnum + i18n("dataEditSuccess"));
                 $('#febs-device').find('#refreshQuery').click();
             });
 

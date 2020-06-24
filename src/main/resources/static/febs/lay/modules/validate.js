@@ -13,7 +13,7 @@ layui.define(['jquery'], function (exports) {
                     async: false,
                     type: 'get',
                     success: function (d) {
-                        (!d) && (result = '该用户名已存在')
+                        (!d) && (result = i18n("validation.userExists"))
                     }
                 });
                 if (!isEmpty(result)) {
@@ -32,7 +32,7 @@ layui.define(['jquery'], function (exports) {
                     async: false,
                     type: 'get',
                     success: function (d) {
-                        (!d) && (result = 'cron表达式不合法')
+                        (!d) && (result = i18n("validation.cronNotValid"))
                     }
                 });
                 if (!isEmpty(result)) {
@@ -43,21 +43,21 @@ layui.define(['jquery'], function (exports) {
         email: function (value) {
             if (!isEmpty(value)) {
                 if (!new RegExp("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$").test(value)) {
-                    return '请填写正确的邮箱';
+                    return i18n("validation.email");
                 }
             }
         },
         phone: function (value) {
             if (!isEmpty(value)) {
                 if (!new RegExp("^1\\d{10}$").test(value)) {
-                    return '请填写正确的手机号码';
+                    return i18n("validation.phone");
                 }
             }
         },
         number: function (value) {
             if (!isEmpty(value)) {
                 if (!new RegExp("^[0-9]*$").test(value)) {
-                    return '只能填写数字';
+                    return i18n("validation.number");
                 }
             }
         },
@@ -67,15 +67,15 @@ layui.define(['jquery'], function (exports) {
             var length = value.length;
             if (minlength === -1) {
                 if (length > maxlength) {
-                    return '长度不能超过 ' + maxlength + ' 个字符';
+                    return i18n("validation.lenNotMoreThen") + maxlength + i18n("validation.char");
                 }
             } else if (maxlength === -1) {
                 if (length < minlength) {
-                    return '长度不能少于 ' + minlength + ' 个字符';
+                    return i18n("validation.lenNotLessThen") + minlength + i18n("validation.char");
                 }
             } else {
                 if (length > maxlength || length < minlength) {
-                    return '长度范围 ' + minlength + ' ~ ' + maxlength + ' 个字符';
+                    return i18n("validation.lenBetween") + minlength + ' ~ ' + maxlength + i18n("validation.char");
                 }
             }
         }

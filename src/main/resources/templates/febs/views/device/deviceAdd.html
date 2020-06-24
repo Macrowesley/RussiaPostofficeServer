@@ -25,9 +25,9 @@
 <div class="layui-fluid" id="device-add">
     <form class="layui-form" action="" lay-filter="device-add-form">
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">表头号(可批量)：</label>
+            <label class="layui-form-label febs-form-item-require left-label"  th:text="#{device.acnums}"></label>
             <div class="layui-input-block ">
-                <textarea type="text" name="acnumList" placeholder="多个表头号请用英文逗号隔开"
+                <textarea type="text" name="acnumList" th:placeholder="#{device.splitWithdot}"
                           autocomplete="off" class="layui-input rigth-view" style="height: 100px;"></textarea>
             </div>
         </div>
@@ -39,31 +39,31 @@
             </div>
         </div>-->
         <div class="layui-form-item ">
-            <label class="layui-form-label left-label">默认警告金额：</label>
+            <label class="layui-form-label left-label" th:text="#{device.warnAmount.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="warnAmount"  autocomplete="off"
                        class="layui-input rigth-view" value="10000.00">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">最大金额：</label>
+            <label class="layui-form-label left-label" th:text="#{device.maxAmount.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="maxAmount"   autocomplete="off"
                        class="layui-input rigth-view" value="100000.00">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label left-label">有效天数：</label>
+            <label class="layui-form-label left-label" th:text="#{device.validDays.colon}"></label>
             <div class="layui-input-block">
                 <input type="number" name="validDays" lay-verify="number" autocomplete="off"
                        class="layui-input rigth-view" value="7">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require left-label">状态：</label>
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.status.colon}"></label>
             <div class="layui-input-block">
-                <input type="radio" name="deviceStatus" value="1" title="正常" checked="">
-                <input type="radio" name="deviceStatus" value="0" title="冻结">
+                <input type="radio" name="deviceStatus" value="1" th:title="#{device.normal}" checked="">
+                <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
             </div>
         </div>
         <div class="layui-form-item febs-hide">
@@ -90,7 +90,7 @@
             var acnumList = data.field.acnumList;
             if (acnumList.length > 8) {
                 if (acnumList.indexOf(",") <= 0) {
-                    febs.alert.warn('多个表头号请用英文逗号隔开')
+                    febs.alert.warn(i18n("device.splitWithdot"))
                     return false;
                 }
             }
@@ -99,7 +99,7 @@
                 console.log(res)
                 var res = res.data;
                 if (res.isExist == 1) {
-                    febs.alert.warn('表头号' + res.data + '已存在')
+                    febs.alert.warn(i18n("acnum") + res.data + i18n("exist"))
                     return false;
                 }
                 // return false;
@@ -107,7 +107,7 @@
                 //开始添加
                 febs.post(ctx + 'device/add', data.field, function () {
                     layer.closeAll();
-                    febs.alert.success('新增设备成功');
+                    febs.alert.success(i18n("device.addDeviceSuccess"));
                     $('#febs-device').find('#refreshQuery').click();
                 });
             })
