@@ -87,9 +87,6 @@ public class OrderController extends BaseController {
     @PostMapping("add")
     @RequiresPermissions("order:add")
     public FebsResponse addOrder(@Valid OrderVo order) {
-        if (true){
-            throw new FebsException("999");
-        }
         this.orderService.createOrder(order);
         return new FebsResponse().success();
     }
