@@ -15,16 +15,16 @@ spring:
       datasource:
         # 数据源-1，名称为 base
         base:
-          username: root
-          password: root
+          username: gdpt
+          password: qwertyuiop
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://127.0.0.1:3306/gdpt_posmart_office?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+          url: jdbc:mysql://127.0.0.1:9688/gdpt_posmart_office?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
         # 数据源-2，名称为 quartz
         quartz:
-          username: root
-          password: root
+          username: gdpt
+          password: qwertyuiop
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://127.0.0.1:3306/febs_quartz?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+          url: jdbc:mysql://127.0.0.1:9688/febs_quartz?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   redis:
     # Redis数据库索引（默认为 0）
@@ -32,9 +32,9 @@ spring:
     # Redis服务器地址
     host: 127.0.0.1
     # Redis服务器连接端口
-    port: 6379
+    port: 6679
     # Redis 密码
-    password:
+    password: GDPT123456
     lettuce:
       pool:
         # 连接池中的最小空闲连接
@@ -48,5 +48,9 @@ spring:
     # 连接超时时间（毫秒）
     timeout: 5000
 
-  websocket:
-    service: websocket
+mybatis-plus:
+  configuration:
+    cache-enabled: false
+
+websocket:
+  service: websocket
