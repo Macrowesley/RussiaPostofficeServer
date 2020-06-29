@@ -310,16 +310,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         //只有审核通过才能让机器获取数据包
-        if (!order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())) {
+        if (order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())) {
+            //修改订单状态
+            log.error("机器第一次获取数据包");
+            order.setOrderStatus(OrderStatusEnum.machineGetData.getStatus());
+            alarmThreadPool.addAlarm(order.getOrderId());
+            updateOrder(order);
+            return order;
+        }else if (order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())){
+            log.error("机器又来获取数据包");
+            return order;
+        }else{
             log.error("设备状态不正常，不能获取数据包");
             return null;
         }
-
-        //修改订单状态
-        order.setOrderStatus(OrderStatusEnum.machineGetData.getStatus());
-        alarmThreadPool.addAlarm(order.getOrderId());
-        updateOrder(order);
-        return order;
     }
 
     /**

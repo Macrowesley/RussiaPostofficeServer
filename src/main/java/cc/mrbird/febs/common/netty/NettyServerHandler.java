@@ -72,7 +72,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+        removeCache(ctx);
+    }
 
+    /**
+     * 删除缓存
+     * @param ctx
+     */
+    private void removeCache(ChannelHandlerContext ctx) {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
 
         String clientIp = insocket.getAddress().getHostAddress();
@@ -138,6 +145,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        removeCache(ctx);
         log.info(ctx.channel().id() + " 发生了错误,此连接被关闭" + "此时连通数量: " + CHANNEL_MAP.size());
         cause.printStackTrace();
         ctx.close();

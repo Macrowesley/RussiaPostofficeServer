@@ -85,7 +85,7 @@ public class WebSocketServer {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        logger.info("用户消息:" + userId + ",报文:" + message);
+//        logger.info("用户消息:" + userId + ",报文:" + message);
         //消息保存到数据库、redis
 
     }

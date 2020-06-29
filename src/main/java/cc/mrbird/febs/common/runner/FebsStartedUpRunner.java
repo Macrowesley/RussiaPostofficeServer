@@ -76,8 +76,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                     Runtime.getRuntime().exec("cmd  /c  start " + url);
                 }
             }
-            //TODO 需要socket的时候，添加
-//            startNetty();
+            startNetty();
 //            test();
         }
     }

@@ -68,9 +68,10 @@ public class MyDecoder extends ByteToMessageDecoder {
             buffer.readBytes(data);
             if (!BaseTypeUtils.checkChkSum(data, data.length - 2)){
                 log.error("验证不成功，跳过这些数据");
+                log.error("长度 = " + length + " data = "  + BaseTypeUtils.bytesToHexString(data));
                 return;
             }
-//            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
+            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
             SocketData socketData = new SocketData();
             socketData.setContent(data);
             list.add(socketData);

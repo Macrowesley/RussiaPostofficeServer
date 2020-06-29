@@ -70,7 +70,7 @@ public class HeartPortocol extends BaseProtocol {
             throw new Exception("表头号不正确");
         }
 
-//        log.info("心跳包中表头号：" + acnum + "  连接通道数量 = " + CHANNEL_MAP.size());
+        log.info("心跳包中表头号：" + acnum + "  连接通道数量 = " + CHANNEL_MAP.size());
 
         //添加到全局的连接通道
         if (CHANNEL_MAP.containsKey(acnum)) {

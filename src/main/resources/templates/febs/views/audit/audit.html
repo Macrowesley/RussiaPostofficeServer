@@ -212,18 +212,19 @@
                 url: ctx + 'audit/list',
                 cols: [[
                     {type: 'numbers'},
+                    {field: 'acnum', title: i18n("acnum"), width: 90},
                     {field: 'orderNumber', title: i18n("orderId"), width: 180},
                     {field: 'amount', title: i18n("amount"), minWidth: 90},
                     /*{field: 'applyUserName', title: '申请人', width: 90},
                     {field: 'auditUserName', title: '审核人', width: 90},*/
                     {title: i18n("audit.type"), templet: '#audit-type'},
                     {title: i18n("audit.status"), templet: '#audit-status'},
-                    {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 90},
-                    {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 90},
+                    {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 120},
+                    {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 120},
                     {field: 'auditRealName', title: i18n("audit.auditor"), minWidth: 90},
                     {field: 'submitRealName', title: i18n("audit.submitter"), minWidth: 90},
                     {field: 'createTime', title: i18n("audit.submitTime"), minWidth: 180, sort: false},
-                    {title: i18n("operation"), toolbar: '#audit-option', minWidth: 350}
+                    {title: i18n("operation"), toolbar: '#audit-option', minWidth: 120}
                 ]]
             });
         }
