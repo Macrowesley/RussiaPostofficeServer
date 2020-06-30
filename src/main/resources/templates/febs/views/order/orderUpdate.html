@@ -85,12 +85,22 @@
                 return false;
             }
 
+            var warnAmount = parseFloat($order.warnAmount);
             var maxAmount = parseFloat($order.maxAmount);
             var curAmount = parseFloat(data.field.amount);
 
             if (curAmount > maxAmount) {
                 febs.alert.warn(i18n("order.amountNoMoreThan") + maxAmount);
                 return false;
+            } else if (curAmount > warnAmount){
+                febs.modal.confirm(i18n("warn"), i18n("order.moreThanAlarmMoney"), function () {
+                    //开始添加
+                    febs.post(ctx + 'order/update', data.field, function (result) {
+                        layer.closeAll();
+                        febs.alert.success(i18n("order.editOrderSuccess"));
+                        $('#febs-order').find('#refreshQuery').click();
+                    });
+                });
             } else {
                 /*echoObject(data);
                 return false;*/

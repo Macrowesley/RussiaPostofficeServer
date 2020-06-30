@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.threadpool;
 
+import cc.mrbird.febs.common.configure.BeanContext;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.websocket.WebSocketServer;
@@ -14,11 +15,6 @@ import java.util.Date;
 
 @Slf4j
 public class AlarmRunnable implements Runnable {
-    @Autowired
-    IOrderService orderService;
-
-    @Autowired
-    INoticeService noticeService;
 
     Long orderId;
     public AlarmRunnable(Long orderId) {
@@ -27,13 +23,16 @@ public class AlarmRunnable implements Runnable {
 
     @Override
     public void run() {
+        log.info("运行警报");
+
+        IOrderService orderService = BeanContext.getBean(IOrderService.class);
+
+        INoticeService noticeService = BeanContext.getBean(INoticeService.class);
+
         //修改订单状态，添加报警
         Order order = orderService.findOrderByOrderId(orderId);
         order.setIsAlarm("1");
         orderService.updateOrder(order);
-
-        //websocket 通知前端
-        WebSocketServer.sendInfo(3, MessageUtils.getMessage("alarm.overtime"),  String.valueOf(FebsUtil.getCurrentUser().getUserId()));
 
         //添加通知
         Notice notice = new Notice();
@@ -46,6 +45,10 @@ public class AlarmRunnable implements Runnable {
         notice.setContent(MessageUtils.getMessage("notice.alarmMessage"));
         notice.setCreateTime(new Date());
         noticeService.save(notice);
+
+        //websocket 通知前端
+        WebSocketServer.sendInfo(3, MessageUtils.getMessage("alarm.overtime"),  String.valueOf(order.getApplyUserId()));
+
         log.error("订单id为：" + orderId + "的订单超时了，给订单状态添加警告，通知前端");
     }
 }

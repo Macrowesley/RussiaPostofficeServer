@@ -93,7 +93,8 @@
             o.expire_days as expireDays,
             o.amount,
             u.realname as auditUserName,
-			d.max_amount as maxAmount
+			d.max_amount as maxAmount,
+			d.warn_amount as warnAmount
         from
             t_order o
         left join t_device d on (d.device_id = o.device_id)

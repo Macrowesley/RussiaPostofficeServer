@@ -15,10 +15,10 @@ import java.util.concurrent.*;
 public class AlarmThreadPool {
     private static ConcurrentHashMap<Long, ScheduledFuture<String>> map;
     private final ScheduledExecutorService service;
-
+    private static final int THREAD_COUNTS = Runtime.getRuntime().availableProcessors();
     public AlarmThreadPool() {
         log.info("初始化AlarmThreadPool");
-        service = Executors.newScheduledThreadPool(10);
+        service = Executors.newScheduledThreadPool(THREAD_COUNTS);
         map = new ConcurrentHashMap<>();
     }
 

@@ -104,7 +104,7 @@ public class QueryProtocol extends BaseProtocol {
             long finalAmount = MoneyUtils.changeY2F(Double.valueOf(amount));
             amountBytes = BaseTypeUtils.long2Bytes(finalAmount);
         }
-        log.info("amountBytes = " + BaseTypeUtils.bytesToHexString(amountBytes));
+//        log.info("amountBytes = " + BaseTypeUtils.bytesToHexString(amountBytes));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(getResponsetDataLen());
         baos.write(resultBytes, 0, RES_RESULT_LEN);
         baos.write(orderIdBytes, 0, RES_ORDERID_LEN);

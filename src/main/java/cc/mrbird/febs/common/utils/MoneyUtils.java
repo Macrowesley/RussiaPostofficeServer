@@ -60,13 +60,31 @@ public class MoneyUtils {
      */
     public static String moneySaveTwoDecimal(String money){
         DecimalFormat format = new DecimalFormat("0.00");
-        String abc ="100.456";
         String a = format.format(new BigDecimal(money));
         return a;
     }
 
+    /**
+     * 判断2个金额是否相同
+     * @param m1
+     * @param m2
+     * @return
+     */
+    public static boolean moneyIsSame(String m1, String m2){
+        return moneySaveTwoDecimal(m1).equals(moneySaveTwoDecimal(m2));
+    }
+
     public static void main(String[] args) {
-//        double price = 34.8;
+//        test1();
+        test2();
+    }
+
+    private static void test2() {
+        System.out.println(moneyIsSame("126", "126.00"));
+    }
+
+    private static void test1() {
+        //        double price = 34.8;
 //        System.out.println(yuanToFen("34.8"));
 //        System.out.println(fenToYuan(yuanToFen("34.8")));
         for (int i = 0; i < 100; i++) {
@@ -80,5 +98,6 @@ public class MoneyUtils {
                 System.out.println("old = " + old + " yuan = " + yuan + " fen = " + fen);*/
             }
         }
+
     }
 }

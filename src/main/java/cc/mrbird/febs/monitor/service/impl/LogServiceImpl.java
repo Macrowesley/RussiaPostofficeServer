@@ -4,6 +4,7 @@ package cc.mrbird.febs.monitor.service.impl;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.AddressUtil;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.monitor.entity.SystemLog;
 import cc.mrbird.febs.monitor.mapper.LogMapper;
@@ -69,12 +70,12 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, SystemLog> implements
     }
 
     @Override
-    public void saveLog(ProceedingJoinPoint point, Method method, String ip, String operation, long start) {
+    public void saveLog(ProceedingJoinPoint point, User user, Method method, String ip, String operation, long start) {
         SystemLog systemLog = new SystemLog();
         // 设置 IP地址
         systemLog.setIp(ip);
         // 设置操作用户
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
+//        User user = (User) SecurityUtils.getSubject().getPrincipal();
         if (user != null) {
             systemLog.setUsername(user.getUsername());
         }

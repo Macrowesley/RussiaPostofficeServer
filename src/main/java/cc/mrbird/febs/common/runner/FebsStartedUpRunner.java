@@ -4,7 +4,6 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.NettyServer;
 import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.service.RedisService;
-import cc.mrbird.febs.common.threadpool.AlarmThreadPool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +15,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author FiseTch
@@ -95,7 +90,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
     }
 
 
-    @Autowired
+/*    @Autowired
     AlarmThreadPool alarmThreadPool;
 
     private void test() {
@@ -132,16 +127,8 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                 alarmThreadPool.addAlarm((long) i);
             }
 
-            /*log.info(acnum + "开始休眠");
-
-            Thread.sleep(4000);
-
-            log.info(acnum + "开始删除");
-            for (int i = 0; i < num; i++) {
-                alarmThreadPool.deleteAlarm(list.get(i));
-            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

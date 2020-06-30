@@ -1,5 +1,7 @@
 package cc.mrbird.febs.common.utils;
 
+import sun.rmi.runtime.Log;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -425,13 +427,17 @@ public class BaseTypeUtils {
      * @return
      */
     public static boolean checkChkSum(byte[] packBytes, int len) {
-        int checkSum = 0;
-        for (int i = 0; i < len; i++) {
-            checkSum += packBytes[i];//计算和校验
-        }
-        checkSum &= 0xff; //取低八位
+        try {
+            int checkSum = 0;
+            for (int i = 0; i < len; i++) {
+                checkSum += packBytes[i];//计算和校验
+            }
+            checkSum &= 0xff; //取低八位
 //        System.out.println("正确的检测结果：" + BaseTypeUtils.bytesToHexString(new byte[]{(byte) checkSum}));
-        return (byte) checkSum == packBytes[len];//比对给到的数据真实性
+            return (byte) checkSum == packBytes[len];//比对给到的数据真实性
+        }catch (Exception e){
+            return false;
+        }
     }
 
 

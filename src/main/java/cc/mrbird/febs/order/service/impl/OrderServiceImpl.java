@@ -190,6 +190,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         StatusUtils.checkOrderBtnPermissioin(OrderBtnEnum.editBtn, order.getOrderStatus());
         checkAmountIsOk(orderVo);
 
+        orderVo.setAmount(MoneyUtils.moneySaveTwoDecimal(orderVo.getAmount()));
 
         //修改截止日期 、 截止天数、 金额
         order.setEndTime(DateUtil.getDateAfter(order.getCreateTime(), orderVo.getExpireDays()));
@@ -335,6 +336,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
+        if (orderVo.getOrderId() == 0) {
+            throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
+        }
+
         Order order = findOrderByOrderId(orderVo.getOrderId());
         if (order == null) {
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
@@ -344,7 +349,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAcnumNotEqual"));
         }
 
-        if (!order.getAmount().equals(orderVo.getAmount())) {
+//        if (!order.getAmount().equals(orderVo.getAmount())) {
+        if(!MoneyUtils.moneyIsSame(order.getAmount(), orderVo.getAmount())){
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAmountNotEqual"));
         }
 
@@ -356,7 +362,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         //清除警报
         alarmThreadPool.deleteAlarm(order.getOrderId());
-        orderVo.setIsAlarm("0");
+        order.setIsAlarm("0");
 
         if (injectionStatus) {
             order.setIsExpire("0");

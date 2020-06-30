@@ -255,10 +255,10 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         Long[] res = null;
         switch (String.valueOf(roleType)) {
             case RoleType.auditManager:
-                data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
-                findDeviceIdArrByUserId(Long.valueOf(bindUserId));
+                /*data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));
+                res = findDeviceIdArrByUserId(Long.valueOf(bindUserId));
                 data.put("bindDevices", res);
-                break;
+                break;*/
             case RoleType.deviceManage:
                 //如果是给设备管理员分配，那么，一个表头号给一个设备管理者分配后，不能再分配给另一个人
                 //获取父id绑定的所有表头号 list1

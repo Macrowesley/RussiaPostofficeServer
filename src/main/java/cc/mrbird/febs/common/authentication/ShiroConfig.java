@@ -165,6 +165,7 @@ public class ShiroConfig {
     public RedisSessionDAO redisSessionDAO() {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
+        redisSessionDAO.setKeyPrefix("shiro:redisSession:");
         return redisSessionDAO;
     }
 
@@ -195,7 +196,7 @@ public class ShiroConfig {
         //如果在Cookie中设置了"HttpOnly"属性，那么通过程序(JS脚本、Applet等)将无法读取到Cookie信息，这样能有效的防止XSS攻击。
         simpleCookie.setHttpOnly(true);
 //		simpleCookie.setName("SHRIOSESSIONID");
-        simpleCookie.setName("shiro.sesssion");
+        simpleCookie.setName("shiro.sesssionCookie");
         //单位秒
 //        simpleCookie.setMaxAge(3600);
         return simpleCookie;

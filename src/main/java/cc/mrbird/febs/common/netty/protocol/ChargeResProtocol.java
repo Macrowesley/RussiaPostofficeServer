@@ -87,40 +87,47 @@ public class ChargeResProtocol extends BaseProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))Result,*Result;*/
 
-        int pos = TYPE_LEN;
+        log.info("机器返回结果");
+        try {
+            //0xa2,0x43,0x50,0x55,0x31,0x32,0x33,0x01,0x22,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x38,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0xac,0xd0,
+            int pos = TYPE_LEN;
 
-        //解析表头号
-        String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
-        pos += REQ_ACNUM_LEN;
+            //解析表头号
+            String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
+            pos += REQ_ACNUM_LEN;
 
-        //0x00 注资失败  0x01 注资成功
-        byte resByte = bytes[pos];
-        pos += REQ_CHARGE_RES_LEN;
-        boolean chargeRes = resByte == 0x01;
+            //0x00 注资失败  0x01 注资成功
+            byte resByte = bytes[pos];
+            pos += REQ_CHARGE_RES_LEN;
+            boolean chargeRes = resByte == 0x01;
 
-        //机器订单ID
-        long orderId = BaseTypeUtils.byte2Long(bytes, pos, REQ_ORDERID_LEN);
-        pos += REQ_ORDERID_LEN;
+            //机器订单ID
+            long orderId = BaseTypeUtils.byte2Long(bytes, pos, REQ_ORDERID_LEN);
+            pos += REQ_ORDERID_LEN;
 
-        //注资金额（分）
-        long reqAmount = BaseTypeUtils.byte2Long(bytes, pos, REQ_AMOUNT_LEN);
-        pos += REQ_AMOUNT_LEN;
+            //注资金额（分）
+            long reqAmount = BaseTypeUtils.byte2Long(bytes, pos, REQ_AMOUNT_LEN);
+            pos += REQ_AMOUNT_LEN;
 
-        //注资金额（元）
-        String amount = MoneyUtils.changeF2Y(reqAmount);
+            //注资金额（元）
+            String amount = MoneyUtils.changeF2Y(reqAmount);
 
-        //验证
-        if (acnum.trim().length() != 6) {
-            throw new Exception("表头号不正确");
+            //验证
+            if (acnum.trim().length() != 6) {
+                throw new Exception("表头号不正确");
+            }
+
+            //更新订单状态
+            OrderVo orderVo = new OrderVo();
+            orderVo.setAcnum(acnum);
+            orderVo.setOrderId(orderId);
+            orderVo.setAmount(amount);
+            orderService.updateMachineInjectionStatus(orderVo, chargeRes);
+            log.info("机器返回结果 更新订单状态");
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        //更新订单状态
-        OrderVo orderVo = new OrderVo();
-        orderVo.setAcnum(acnum);
-        orderVo.setOrderId(orderId);
-        orderVo.setAmount(amount);
-        orderService.updateMachineInjectionStatus(orderVo, chargeRes);
-
         //返回数据
         byte[] data = new byte[]{(byte) 0x02};
         return getWriteContent(data);

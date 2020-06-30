@@ -73,7 +73,7 @@ public abstract class BaseProtocol {
      * @return
      */
     public byte[] getWriteContent(byte[] data) {
-        log.info("拼接发送给客户端的数据");
+//        log.info("拼接发送给客户端的数据");
         byte[] length = BaseTypeUtils.int2ByteArrayCons(getResponseProtocolLen());
         byte[] type = new byte[]{getProtocolType()};
         byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(type, data));

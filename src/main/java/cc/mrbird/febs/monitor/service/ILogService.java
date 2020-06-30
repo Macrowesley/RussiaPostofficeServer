@@ -4,6 +4,7 @@ package cc.mrbird.febs.monitor.service;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.monitor.entity.SystemLog;
+import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -40,5 +41,5 @@ public interface ILogService extends IService<SystemLog> {
      * @param start     开始时间
      */
     @Async(FebsConstant.ASYNC_POOL)
-    void saveLog(ProceedingJoinPoint point, Method method, String ip, String operation, long start);
+    void saveLog(ProceedingJoinPoint point, User user, Method method, String ip, String operation, long start);
 }

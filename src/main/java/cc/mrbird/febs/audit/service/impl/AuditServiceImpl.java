@@ -21,6 +21,7 @@ import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.generator.config.IFileCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,7 +93,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         audit.setOrderNumber(orderVo.getOrderNumber());
         audit.setDeviceId(orderVo.getDeviceId());
         audit.setAmount(orderVo.getAmount());
-        audit.setAuditType(AuditType.injection);
+        audit.setAuditType(auditType);
         audit.setFUserId(orderVo.getApplyUserId());
         audit.setStatus(AuditStatusEnum.notBegin.getStatus());
         audit.setCreateTime(new Date());
@@ -200,8 +201,12 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Transactional(rollbackFor = Exception.class)
     public void auditOneSuccess(String auditId) {
         Audit audit =  baseMapper.selectById(auditId);
+        Order order = orderService.findOrderByOrderId(audit.getOrderId());
 
-//        StatusUtils.checkAuditBtnPermissioin(AuditBtnEnum.passBtn, audit.getStatus());
+        //check
+        StatusUtils.checkAuditBtnPermissioin(AuditBtnEnum.passBtn, audit.getStatus());
+        checkCanAudit(order.getOrderStatus());
+
 
         //更新审核状态
         audit.setOldStatus(null);
@@ -209,7 +214,6 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         updateAudit(audit);
 
         //更新订单状态
-        Order order = orderService.findOrderByOrderId(audit.getOrderId());
         if (order == null){
             throw new FebsException(MessageUtils.getMessage("audit.operation.noOrder"));
         }
@@ -254,8 +258,11 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     public void auditOneFail(String auditId, String checkRemark) {
 
         Audit audit = baseMapper.selectById(auditId);
+        Order order = orderService.findOrderByOrderId(audit.getOrderId());
 
+        //check
         StatusUtils.checkAuditBtnPermissioin(AuditBtnEnum.noPassBtn, audit.getStatus());
+        checkCanAudit(order.getOrderStatus());
 
         //更新状态
         audit.setCheckRemark(checkRemark);
@@ -264,7 +271,6 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         updateAudit(audit);
 
         //更新订单状态
-        Order order = orderService.findOrderByOrderId(audit.getOrderId());
 
         if (order == null){
             throw new FebsException("订单不存在，无法审核");
@@ -282,5 +288,19 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         }
 
         orderService.updateOrder(order);
+    }
+
+    /**
+     * 验证是否能够审核
+     * @param orderStatus
+     */
+    private void checkCanAudit(String orderStatus) {
+        switch (OrderStatusEnum.getByStatus(orderStatus)) {
+            case auditIng:
+            case orderCloseApplyIng:
+                break;
+            default:
+                throw new FebsException("订单状态不能审核");
+        }
     }
 }

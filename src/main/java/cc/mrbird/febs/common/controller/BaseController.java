@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class BaseController {
     }
 
     protected void login(AuthenticationToken token) {
+//        ThreadContext.remove(ThreadContext.SUBJECT_KEY);//移除线程中的subject
         getSubject().login(token);
     }
 

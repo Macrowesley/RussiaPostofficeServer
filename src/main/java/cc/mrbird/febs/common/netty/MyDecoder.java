@@ -71,7 +71,7 @@ public class MyDecoder extends ByteToMessageDecoder {
                 log.error("长度 = " + length + " data = "  + BaseTypeUtils.bytesToHexString(data));
                 return;
             }
-            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
+//            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
             SocketData socketData = new SocketData();
             socketData.setContent(data);
             list.add(socketData);
