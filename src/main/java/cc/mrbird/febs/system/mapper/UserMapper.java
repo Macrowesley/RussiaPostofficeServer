@@ -29,6 +29,8 @@ public interface UserMapper extends BaseMapper<User> {
      */
     <T> IPage<User> findUserDetailPage(Page<T> page, @Param("user") User user);
 
+    List<User> findUserDetailPage(@Param("user") User user);
+
     long countUserDetail(@Param("user") User user);
 
     /**
@@ -40,4 +42,11 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> findUserDetail(@Param("user") User user);
 
     List<Map<String, Object>> findAuditListByDeviceId(@Param("deviceId") String deviceId);
+
+    /**
+     * 根据用户角色搜索用户信息
+     * @param roleId
+     * @return
+     */
+    List<User> findUserByRoleId(@Param("roleId") String roleId);
 }

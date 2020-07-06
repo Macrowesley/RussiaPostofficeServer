@@ -4,6 +4,7 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -53,4 +54,6 @@ public interface IUserDeviceService extends IService<UserDevice> {
      * @param userDevice userDevice
      */
     void deleteUserDevice(UserDevice userDevice);
+
+    UserDevice findOneUserDevice(UserDevice userDevice);
 }

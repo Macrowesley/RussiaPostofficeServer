@@ -30,13 +30,13 @@ public class DeptController {
     private final IDeptService deptService;
 
     @GetMapping("select/tree")
-    @ControllerEndpoint(exceptionMessage = "获取部门树失败")
+    @ControllerEndpoint(exceptionMessage = "{dept.listFail}")
     public List<DeptTree<Dept>> getDeptTree() throws FebsException {
         return this.deptService.findDepts();
     }
 
     @GetMapping("tree")
-    @ControllerEndpoint(exceptionMessage = "获取部门树失败")
+    @ControllerEndpoint(exceptionMessage = "{dept.listFail}")
     public FebsResponse getDeptTree(Dept dept) throws FebsException {
         List<DeptTree<Dept>> depts = this.deptService.findDepts(dept);
         return new FebsResponse().success().data(depts);
@@ -44,7 +44,7 @@ public class DeptController {
 
     @PostMapping
     @RequiresPermissions("dept:add")
-    @ControllerEndpoint(operation = "新增部门", exceptionMessage = "新增部门失败")
+    @ControllerEndpoint(operation = "新增部门", exceptionMessage = "{dept.addFail}")
     public FebsResponse addDept(@Valid Dept dept) {
         this.deptService.createDept(dept);
         return new FebsResponse().success();
@@ -52,7 +52,7 @@ public class DeptController {
 
     @GetMapping("delete/{deptIds}")
     @RequiresPermissions("dept:delete")
-    @ControllerEndpoint(operation = "删除部门", exceptionMessage = "删除部门失败")
+    @ControllerEndpoint(operation = "删除部门", exceptionMessage = "{dept.deleteFail}")
     public FebsResponse deleteDepts(@NotBlank(message = "{required}") @PathVariable String deptIds) throws FebsException {
         String[] ids = deptIds.split(StringPool.COMMA);
         this.deptService.deleteDepts(ids);
@@ -61,7 +61,7 @@ public class DeptController {
 
     @PostMapping("update")
     @RequiresPermissions("dept:update")
-    @ControllerEndpoint(operation = "修改部门", exceptionMessage = "修改部门失败")
+    @ControllerEndpoint(operation = "修改部门", exceptionMessage = "{dept.editFail}")
     public FebsResponse updateDept(@Valid Dept dept) throws FebsException {
         this.deptService.updateDept(dept);
         return new FebsResponse().success();
@@ -69,7 +69,7 @@ public class DeptController {
 
     @GetMapping("excel")
     @RequiresPermissions("dept:export")
-    @ControllerEndpoint(exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(exceptionMessage = "{excelFail}")
     public void export(Dept dept, QueryRequest request, HttpServletResponse response) throws FebsException {
         List<Dept> depts = this.deptService.findDepts(dept, request);
         ExcelKit.$Export(Dept.class, response).downXlsx(depts, false);

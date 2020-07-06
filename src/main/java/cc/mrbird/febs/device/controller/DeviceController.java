@@ -74,12 +74,12 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "新增Device", exceptionMessage = "{device.operation.addDeviceError}")
     @PostMapping("add")
     @RequiresPermissions("device:add")
-    public FebsResponse addDevice(Device device, String acnumList) {
+    public FebsResponse addDevice(Device device, String bindUserId, String acnumList) {
+        log.info("新增device device= {}， bindUserId = {}, acnumList = {}" , device.toString(), bindUserId, acnumList);
         if (acnumList.length() > 8 && !acnumList.contains(",")){
             throw new FebsException("数据格式不对");
         }
-        log.info("device={}, acnumList={}", device.toString(), acnumList);
-        this.deviceService.saveDeviceList(device, acnumList);
+        this.deviceService.saveDeviceList(device, acnumList, bindUserId);
         return new FebsResponse().success();
     }
 
@@ -92,10 +92,10 @@ public class DeviceController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改Device", exceptionMessage = "{device.operation.editDeviceError}")
-    @PostMapping("update")
+    @PostMapping("update/{userdeviceId}")
     @RequiresPermissions("device:update")
-    public FebsResponse updateDevice(Device device) {
-        this.deviceService.updateDevice(device);
+    public FebsResponse updateDevice(Device device, String bindUserId, @NotBlank @PathVariable String userdeviceId) {
+        this.deviceService.updateDevice(device, bindUserId, userdeviceId);
         return new FebsResponse().success();
     }
 

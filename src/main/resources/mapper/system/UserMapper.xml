@@ -185,4 +185,14 @@
                 ur.role_id = 3 and ud.device_id = #{deviceId}
     </select>
 
+    <select id="findUserByRoleId" resultType="cc.mrbird.febs.system.entity.User">
+        select
+            u.username, u.realname, u.user_id
+        from
+            t_user_role ur
+            left join t_user u on (u.user_id = ur.user_id)
+            where
+                ur.role_id = #{roleId}
+    </select>
+
 </mapper>

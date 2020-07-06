@@ -121,4 +121,11 @@ public interface IUserService extends IService<User> {
      * @return
      */
     List<Map<String, Object>> findAuditListByDeviceId(String deviceId);
+
+    /**
+     * 根据角色搜索用户列表
+     * @param roleId
+     * @return
+     */
+    List<User> findUserByRoleId(String roleId);
 }

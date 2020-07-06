@@ -155,7 +155,7 @@
                     if (name === 'add') {
                         febs.modal.open(i18n("device.addDevice"), 'device/add', {
                             btn: [i18n("submit"), i18n("reset")],
-                            area: $(window).width() <= 750 ? '95%' : '50%',
+                            area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
                             offset: '30px',
                             yes: function (index, layero) {
                                 $('#device-add').find('#submit').trigger('click');
@@ -246,7 +246,7 @@
                 }*/
                 if (layEvent === 'edit') {
                     febs.modal.open(i18n("device.editDevice"), 'device/update/' + data.deviceId, {
-                        area: $(window).width() <= 750 ? '90%' : '50%',
+                        area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
                         offset: '30px',
                         btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {

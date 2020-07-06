@@ -71,6 +71,14 @@
                 <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
             </div>
         </div>
+        <div class="layui-form-item" th:if="${userDevice} != null">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.bindTo}"></label>
+            <div class="layui-input-inline">
+                <select name="bindUserId" id="userList" lay-verify="required" lay-search="" style="width: 500px;">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
         <div class="layui-form-item febs-hide">
             <button class="layui-btn" lay-submit="" lay-filter="device-update-form-submit" id="submit"></button>
             <button type="reset" class="layui-btn" id="reset"></button>
@@ -87,6 +95,7 @@
             form = layui.form,
             eleTree = layui.eleTree,
             device = [[${device}]],
+            userDevice = [[${userDevice}]],
             $view = $('#device-update'),
             validate = layui.validate,
             _deptTree;
@@ -94,6 +103,33 @@
         form.verify(validate);
         form.render();
         initValue();
+
+        initSelect();
+
+        /**
+         * 处理下拉框
+         */
+        function initSelect() {
+            if (userDevice == null){
+                return;
+            }
+            $.ajax({
+                url: ctx + "user/deptUserList",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        //需要知道这个机器绑定的用户是谁 （机构管理员）
+                        if (userDevice.userId == item.userId) {
+                            $('#userList').append("<option value="+item.userId+" selected >"+item.username+"</option>");
+                        }else{
+                            $('#userList').append("<option value="+item.userId+">"+item.username+"</option>");
+                        }
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
 
         function initValue() {
             form.val("device-update-form", {
@@ -113,7 +149,11 @@
             }
 
             //开始修改
-            febs.post(ctx + 'device/update', data.field, function () {
+            var userDeviceId = 0;
+            if (userDevice != null){
+                userDeviceId = userDevice.id;
+            }
+            febs.post(ctx + 'device/update/'+ userDeviceId, data.field, function () {
                 layer.closeAll();
                 febs.alert.success( i18n("device.device")+ device.acnum + i18n("dataEditSuccess"));
                 $('#febs-device').find('#refreshQuery').click();

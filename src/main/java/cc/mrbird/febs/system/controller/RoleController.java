@@ -48,7 +48,7 @@ public class RoleController extends BaseController {
 
     @PostMapping
     @RequiresPermissions("role:add")
-    @ControllerEndpoint(operation = "新增角色", exceptionMessage = "新增角色失败")
+    @ControllerEndpoint(operation = "新增角色", exceptionMessage = "{role.addFail}")
     public FebsResponse addRole(@Valid Role role) {
         this.roleService.createRole(role);
         return new FebsResponse().success();
@@ -56,7 +56,7 @@ public class RoleController extends BaseController {
 
     @GetMapping("delete/{roleIds}")
     @RequiresPermissions("role:delete")
-    @ControllerEndpoint(operation = "删除角色", exceptionMessage = "删除角色失败")
+    @ControllerEndpoint(operation = "删除角色", exceptionMessage = "{role.delFail}")
     public FebsResponse deleteRoles(@NotBlank(message = "{required}") @PathVariable String roleIds) {
         this.roleService.deleteRoles(roleIds);
         return new FebsResponse().success();
@@ -64,7 +64,7 @@ public class RoleController extends BaseController {
 
     @PostMapping("update")
     @RequiresPermissions("role:update")
-    @ControllerEndpoint(operation = "修改角色", exceptionMessage = "修改角色失败")
+    @ControllerEndpoint(operation = "修改角色", exceptionMessage = "{role.editFail}")
     public FebsResponse updateRole(Role role) {
         this.roleService.updateRole(role);
         return new FebsResponse().success();
@@ -72,7 +72,7 @@ public class RoleController extends BaseController {
 
     @GetMapping("excel")
     @RequiresPermissions("role:export")
-    @ControllerEndpoint(exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(exceptionMessage = "{excelFail}")
     public void export(QueryRequest queryRequest, Role role, HttpServletResponse response) throws FebsException {
         List<Role> roles = this.roleService.findRoles(role, queryRequest).getRecords();
         ExcelKit.$Export(Role.class, response).downXlsx(roles, false);

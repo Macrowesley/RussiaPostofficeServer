@@ -5,6 +5,7 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.UserDeviceMapper;
 import cc.mrbird.febs.device.service.IUserDeviceService;
+import cc.mrbird.febs.system.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,6 +44,13 @@ public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDev
 	    LambdaQueryWrapper<UserDevice> queryWrapper = new LambdaQueryWrapper<>();
 		// TODO 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public UserDevice findOneUserDevice(UserDevice userDevice) {
+        LambdaQueryWrapper<UserDevice> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserDevice::getDeviceId, userDevice.getDeviceId());
+        return this.baseMapper.selectOne(queryWrapper);
     }
 
     @Override

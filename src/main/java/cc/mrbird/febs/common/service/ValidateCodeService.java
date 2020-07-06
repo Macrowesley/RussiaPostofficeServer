@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.service;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.ImageType;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.properties.ValidateCodeProperties;
 import com.wf.captcha.GifCaptcha;
@@ -46,13 +47,13 @@ public class ValidateCodeService {
     public void check(String key, String value) throws FebsException {
         Object codeInRedis = redisService.get(FebsConstant.CODE_PREFIX + key);
         if (StringUtils.isBlank(value)) {
-            throw new FebsException("请输入验证码");
+            throw new FebsException(MessageUtils.getMessage("validation.inputCheckCode"));
         }
         if (codeInRedis == null) {
-            throw new FebsException("验证码已过期");
+            throw new FebsException(MessageUtils.getMessage("validation.checkCodeOverTime"));
         }
         if (!StringUtils.equalsIgnoreCase(value, String.valueOf(codeInRedis))) {
-            throw new FebsException("验证码不正确");
+            throw new FebsException(MessageUtils.getMessage("validation.checkCodeIsError"));
         }
     }
 

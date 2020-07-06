@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.common.utils.SortUtil;
@@ -18,6 +19,7 @@ import cc.mrbird.febs.system.entity.UserRole;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
+import com.baomidou.mybatisplus.generator.config.IFileCreate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -113,9 +115,18 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateDevice(Device device) {
+    public void updateDevice(Device device, String bindUserId, String userdeviceId) {
         editMoney(device);
         this.saveOrUpdate(device);
+
+        if (FebsUtil.getCurrentUser().getRoleId().equals(RoleType.systemManager)) {
+            //更新绑定状态
+            UserDevice userDevice = new UserDevice();
+            userDevice.setId(Long.valueOf(userdeviceId));
+            userDevice.setDeviceId(device.getDeviceId());
+            userDevice.setUserId(Long.valueOf(bindUserId));
+            userDeviceService.updateUserDevice(userDevice);
+        }
     }
 
     @Override
@@ -158,13 +169,14 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDeviceList(Device device, String acnumList) {
+    public void saveDeviceList(Device device, String acnumList, String bindUserId) {
         List<String> list = Arrays.asList(acnumList.trim().toUpperCase().split(","));
-        long curUserId = FebsUtil.getCurrentUser().getUserId();
+//        long curUserId = FebsUtil.getCurrentUser().getUserId();
         List<UserDevice> userDeviceList = new ArrayList<>();
         list.stream().forEach(acnum -> {
                     device.setAcnum(acnum);
                     device.setNickname(acnum);
+                    device.setSecretKey(AESUtils.createUUID());
                     device.setCreateTime(new Date());
                     editMoney(device);
 
@@ -172,7 +184,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
                     UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
-                    userDevice.setUserId(curUserId);
+                    userDevice.setUserId(Long.valueOf(bindUserId));
                     userDeviceList.add(userDevice);
                 }
         );
@@ -295,5 +307,13 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     public List<Device> selectSubUserDeviceListExcepBindUserIdByRoleAndParent(Long bindUserId, Long parentUserId, Long roleType) {
         return baseMapper.selectSubUserDeviceListExcepBindUserIdByRoleAndParent(bindUserId, parentUserId, roleType);
+    }
+
+    @Override
+    public UserDevice findByDeviceIdAndRoleId(Long deviceId, Long roleId) {
+        /*UserDevice userDevice = new UserDevice();
+        userDevice.setDeviceId(deviceId);
+        return userDeviceService.findOneUserDevice(userDevice);*/
+        return baseMapper.findByDeviceIdAndRoleId(deviceId, roleId);
     }
 }

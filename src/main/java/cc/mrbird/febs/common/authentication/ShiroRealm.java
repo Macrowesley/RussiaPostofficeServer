@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.authentication;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
@@ -93,10 +94,10 @@ public class ShiroRealm extends AuthorizingRealm {
         User user = this.userService.findByName(username);
         
         if (user == null || !StringUtils.equals(password, user.getPassword())) {
-            throw new IncorrectCredentialsException("用户名或密码错误！");
+            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdError"));
         }
         if (User.STATUS_LOCK.equals(user.getStatus())) {
-            throw new LockedAccountException("账号已被锁定,请联系管理员！");
+            throw new LockedAccountException(MessageUtils.getMessage("validation.accountIsLock"));
         }
         String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
         user.setDeptIds(deptIds);

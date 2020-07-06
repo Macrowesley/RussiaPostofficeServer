@@ -1,4 +1,4 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-menu" lay-title="菜单管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-menu" th:lay-title="#{menu.title}">
     <div class="layui-row layui-col-space8 febs-container">
         <div class="layui-col-md6 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
@@ -8,7 +8,7 @@
                             <div class="layui-col-md8 layui-col-sm9 layui-col-xs9">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">名称</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{name}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="menuName" autocomplete="off" class="layui-input">
                                         </div>
@@ -35,58 +35,58 @@
         </div>
         <div class="layui-col-md6 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
-                <div class="layui-card-header" id="form-header">新增菜单</div>
+                <div class="layui-card-header" id="form-header" th:text="#{menu.add}"></div>
                 <div class="layui-card-body febs-table-full">
                     <form class="layui-form layui-table-form" action="" lay-filter="menu-form">
                         <div class="layui-form-item febs-hide">
-                            <label class="layui-form-label febs-form-item-require">ID：</label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{id.cloln}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="menuId" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">上级ID：</label>
+                            <label class="layui-form-label" th:text="#{menu.subId}"></label>
                             <div class="layui-input-block">
                                 <input type="text" value="" name="parentId" readonly class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label febs-form-item-require">名称：</label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{name.colon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="menuName" autocomplete="off" class="layui-input"
                                        minlength="2" maxlength="10" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label febs-form-item-require">类型：</label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{menu.type}"></label>
                             <div class="layui-input-block">
-                                <input type="radio" name="type" lay-filter="menu-type" value="0" title="菜单" checked="">
-                                <input type="radio" name="type" lay-filter="menu-type" value="1" title="按钮">
+                                <input type="radio" name="type" lay-filter="menu-type" value="0" th:title="#{menu.menu}" checked="">
+                                <input type="radio" name="type" lay-filter="menu-type" value="1" th:title="#{menu.btn}">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">图标：</label>
+                            <label class="layui-form-label" th:text="#{menu.icon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="icon" autocomplete="off" class="layui-input"
                                        maxlength="50" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">URL：</label>
+                            <label class="layui-form-label" >URL：</label>
                             <div class="layui-input-block">
                                 <input type="text" name="url" autocomplete="off" class="layui-input"
                                        maxlength="50" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">权限：</label>
+                            <label class="layui-form-label" th:text="#{menu.role}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="perms" autocomplete="off" class="layui-input"
                                        maxlength="50" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">排序：</label>
+                            <label class="layui-form-label" th:text="#{menu.pos}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="orderNum" autocomplete="off" class="layui-input"
                                        lay-verify="number">
@@ -98,7 +98,7 @@
                     </form>
                 </div>
                 <div class="layui-card-footer">
-                    <button class="layui-btn" id="submit">保存</button>
+                    <button class="layui-btn" id="submit" th:text="#{save}"></button>
                 </div>
             </div>
         </div>
@@ -142,11 +142,11 @@
                     reset();
                     var selected = _menuTree.getChecked(false, true);
                     if (selected.length > 1) {
-                        febs.alert.warn('只能选择一个节点作为父级！');
+                        febs.alert.warn(i18n("onlyCanSelectOne"));
                         return;
                     }
                     if (selected[0] && selected[0].type === '1') {
-                        febs.alert.warn('不能选择按钮作为父级！');
+                        febs.alert.warn(i18n("menu.canSelectSub"));
                         return;
                     }
                     form.val("menu-form", {
@@ -156,16 +156,16 @@
                 if (name === 'delete') {
                     var checked = _menuTree.getChecked(false, true);
                     if (checked.length < 1) {
-                        febs.alert.warn('请勾选需要删除的菜单或按钮');
+                        febs.alert.warn(i18n("menu.pleaseSelect"));
                         return;
                     }
                     var menuIds = [];
                     layui.each(checked, function (key, item) {
                         menuIds.push(item.id)
                     });
-                    febs.modal.confirm('提示', '当您点击确定按钮后，这些记录将会被彻底删除，如果其包含子记录，也将一并删除！', function () {
+                    febs.modal.confirm(i18n("notice"), i18n("doYouConform"), function () {
                         febs.get(ctx + 'menu/delete/' + menuIds.join(','), null, function () {
-                            febs.alert.success('删除成功！');
+                            febs.alert.success(i18n("deleteSuccess"));
                             reloadMenuTree();
                             reset();
                         })
@@ -174,20 +174,20 @@
                 if (name === 'export') {
                     febs.download(ctx + 'menu/excel', {
                         "menuName": $menuName.val().trim()
-                    }, '菜单信息表.xlsx');
+                    }, i18n("menu.table")+'.xlsx');
                 }
             },
             options: [{
                 name: 'add',
-                title: '新增',
+                title: i18n("add"),
                 perms: 'menu:add'
             }, {
                 name: 'delete',
-                title: '删除',
+                title: i18n("delete"),
                 perms: 'menu:delete'
             }, {
                 name: 'export',
-                title: '导出Excel',
+                title: i18n("exportExcel"),
                 perms: 'menu:export'
             }]
         });
@@ -201,9 +201,9 @@
             var type = data.type;
             handleTypeChange(type);
             if (type === '0') { // 菜单
-                $header.text('修改菜单');
+                $header.text(i18n("menu.editMenu"));
             } else { // 按钮
-                $header.text('修改按钮');
+                $header.text(i18n("menu.editBtn"));
             }
             form.val("menu-form", {
                 "icon": data.icon,
@@ -237,8 +237,8 @@
         });
 
         $icon.focus(function () {
-            febs.modal.open('图标选择', 'others/febs/icon', {
-                btn: ['确定'],
+            febs.modal.open(i18n("menu.chooseIcon"), 'others/febs/icon', {
+                btn: [i18n("confirm")],
                 yes: function () {
                     var icon = $('#febs-icon').find('.icon-active .icon-name').text();
                     if (icon) {
@@ -301,12 +301,12 @@
                 "orderNum": ''
             });
             if (type === '1') {
-                $header.text('新增按钮');
+                $header.text(i18n("menu.addBtn"));
                 $icon_parent.hide();
                 $url_parent.hide();
                 $order_parent.hide();
             } else {
-                $header.text('新增菜单');
+                $header.text(i18n("menu.add"));
                 $icon_parent.show();
                 $url_parent.show();
                 $order_parent.show();
@@ -314,19 +314,19 @@
         };
 
         form.on('submit(menu-form-submit)', function (data) {
-            if (data.field.menuId && $header.text().indexOf('修改') !== -1) {
+            if (data.field.menuId && $header.text().indexOf(i18n("order.btnEnum.editBtn")) !== -1) {
                 if (febs.nativeEqual(data.field, _currentMenuData)) {
-                    febs.alert.warn('数据未作任何修改！');
+                    febs.alert.warn(i18n("noEdit"));
                     return false;
                 }
                 febs.post(ctx + 'menu/update', data.field, function () {
-                    febs.alert.success('修改成功');
+                    febs.alert.success(i18n("editSuccess"));
                     reloadMenuTree();
                     reset();
                 })
             } else {
                 febs.post(ctx + 'menu', data.field, function () {
-                    febs.alert.success('新增成功');
+                    febs.alert.success(i18n("addSuccess"));
                     reloadMenuTree();
                     reset();
                 })

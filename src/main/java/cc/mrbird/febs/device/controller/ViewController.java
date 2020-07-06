@@ -1,11 +1,12 @@
 package cc.mrbird.febs.device.controller;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.service.impl.DeviceServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,12 @@ public class ViewController {
         device.setCreateTime(null);
         log.info("device信息 = " + device.toString());
         model.addAttribute("device", device);
+
+        //查询这个设备绑定了哪个机构管理员
+        if (FebsUtil.getCurrentUser().getRoleId().equals(RoleType.systemManager)) {
+            UserDevice userDevice = deviceService.findByDeviceIdAndRoleId(deviceId, Long.valueOf(RoleType.organizationManager));
+            model.addAttribute("userDevice", userDevice);
+        }
         return FebsUtil.view("device/deviceUpdate");
     }
 

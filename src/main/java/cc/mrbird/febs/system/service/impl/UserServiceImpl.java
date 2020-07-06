@@ -70,6 +70,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return this.baseMapper.findUserDetailPage(page, user);
     }
 
+    @Override
+    public List<User> findUserByRoleId(String roleId) {
+        return this.baseMapper.findUserByRoleId(roleId);
+    }
+
     private void addUserInfo(User user) {
         User currentUser = FebsUtil.getCurrentUser();
         user.setUserId(currentUser.getUserId());

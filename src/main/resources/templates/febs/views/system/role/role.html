@@ -1,4 +1,4 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-role" lay-title="角色管理">
+<div class="layui-fluid layui-anim febs-anim" id="febs-role" th:lay-title="#{role.title}">
     <div class="layui-row layui-col-space8 febs-container">
         <div class="layui-col-md7 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
@@ -8,7 +8,7 @@
                             <div class="layui-col-md9 layui-col-sm9 layui-col-xs9">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">角色名称</label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{role.name}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="roleName" autocomplete="off" class="layui-input">
                                         </div>
@@ -35,30 +35,30 @@
         </div>
         <div class="layui-col-md5 layui-col-sm6 layui-col-xs12">
             <div class="layui-card">
-                <div class="layui-card-header" id="form-header">新增角色</div>
+                <div class="layui-card-header" id="form-header" th:text="#{role.add}"></div>
                 <div class="layui-card-body febs-table-full">
                     <form class="layui-form layui-table-form" action="" lay-filter="role-form">
                         <div class="layui-form-item febs-hide">
-                            <label class="layui-form-label febs-form-item-require">角色ID：</label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{role.id.colon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="roleId" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label febs-form-item-require">角色名称：</label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{role.name.colon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="roleName" autocomplete="off" class="layui-input" minlength="2"
                                        maxlength="10" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">角色描述：</label>
+                            <label class="layui-form-label" th:text="#{role.describe.colon}"></label>
                             <div class="layui-input-block">
                                 <textarea name="remark" maxlength="50" class="layui-textarea"></textarea>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">角色权限：</label>
+                            <label class="layui-form-label" th:text="#{role.role.colon}"></label>
                             <div class="layui-input-block menu-tree" style="margin-top: .8rem;"></div>
                         </div>
                         <div class="layui-form-item febs-hide">
@@ -69,7 +69,7 @@
                     </form>
                 </div>
                 <div class="layui-card-footer">
-                    <button class="layui-btn" id="submit">保存</button>
+                    <button class="layui-btn" id="submit" th:text="#{save}"></button>
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
 </div>
 <script type="text/html" id="role-option">
     <span shiro:lacksPermission="role:update,role:delete">
-        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+        <span class="layui-badge-dot febs-bg-orange"></span> <span  th:text="#{noPermission}"></span>
     </span>
     <a lay-event="edit" shiro:hasPermission="role:update"><i class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
     <a lay-event="del" shiro:hasPermission="role:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
@@ -143,9 +143,9 @@
                 }
                 if (name === 'delete') {
                     if (!checkStatus.data.length) {
-                        febs.alert.warn('请选择需要删除的角色');
+                        febs.alert.warn(i18n("role.selectDel"));
                     } else {
-                        febs.modal.confirm('删除角色', '确定删除所选角色？', function () {
+                        febs.modal.confirm(i18n("role.delete"), i18n("role.comfireDel"), function () {
                             var roleIds = [];
                             layui.each(checkStatus.data, function (key, item) {
                                 roleIds.push(item.roleId);
@@ -158,20 +158,20 @@
                     var params = getQueryParams();
                     params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
                     params.pageNum = $view.find(".layui-laypage-em").next().html();
-                    febs.download(ctx + 'role/excel', params, '角色信息表.xlsx');
+                    febs.download(ctx + 'role/excel', params, i18n("role.excel")+'.xlsx');
                 }
             },
             options: [{
                 name: 'add',
-                title: '新增角色',
+                title: i18n("role.add"),
                 perms: 'role:add'
             }, {
                 name: 'delete',
-                title: '删除角色',
+                title: i18n("role.delete"),
                 perms: 'role:delete'
             }, {
                 name: 'export',
-                title: '导出Excel',
+                title: i18n("exportExcel"),
                 perms: 'role:export'
             }]
         });
@@ -180,7 +180,7 @@
             var data = obj.data,
                 layEvent = obj.event;
             if (layEvent === 'edit') {
-                $header.text('修改角色');
+                $header.text(i18n("role.edit"));
                 form.val("role-form", {
                     "roleId": data.roleId,
                     "roleName": data.roleName,
@@ -193,7 +193,7 @@
                 }
             }
             if (layEvent === 'del') {
-                febs.modal.confirm('删除角色', '确定删除该角色？', function () {
+                febs.modal.confirm(i18n("role.delete"), i18n("role.comfireDel"), function () {
                     deleteRoles(data.roleId);
                 });
             }
@@ -221,10 +221,10 @@
                 url: ctx + 'role/list',
                 cols: [[
                     {type: 'checkbox'},
-                    {field: 'roleName', title: '角色名称', minWidth: 120},
-                    {field: 'remark', title: '角色描述'},
-                    {field: 'createTime', title: '创建时间', minWidth: 180},
-                    {title: '操作', toolbar: '#role-option', width: 100}
+                    {field: 'roleName', title: i18n("role.name"), minWidth: 120},
+                    {field: 'remark', title: i18n("role.describe")},
+                    {field: 'createTime', title: i18n("createTime"), minWidth: 180},
+                    {title: i18n("operation"), toolbar: '#role-option', width: 100}
                 ]]
             });
         }
@@ -238,7 +238,7 @@
 
         function resetRoleForm() {
             $view.find('#reset-form').trigger('click');
-            $header.text('新增角色');
+            $header.text(i18n("role.add"));
             menuTree.setChecked([], true);
             menuTree.unExpandAll();
         }
@@ -251,7 +251,7 @@
             });
             data.field.menuIds = menuIds.join(',');
             if (!menuIds.length) {
-                febs.modal.confirm('提示', '当前角色未授予任何权限，是否继续？', function () {
+                febs.modal.confirm(i18n("notice"), i18n("role.noRole"), function () {
                     addOrUpdateRole(data.field);
                 });
             } else {
@@ -262,20 +262,20 @@
 
         function deleteRoles(roleIds) {
             febs.get(ctx + 'role/delete/' + roleIds, null, function () {
-                febs.alert.success('删除角色成功');
+                febs.alert.success(i18n("role.delSuccess"));
                 $query.trigger('click');
             })
         }
 
         var addOrUpdateRole = function (data) {
-            if (data.roleId && $header.text() === '修改角色') {
+            if (data.roleId && $header.text() === i18n("role.edit")) {
                 febs.post(ctx + 'role/update', data, function () {
-                    febs.alert.success('修改角色成功');
+                    febs.alert.success(i18n("role.editSuccess"));
                     $query.trigger('click');
                 });
             } else {
                 febs.post(ctx + 'role', data, function () {
-                    febs.alert.success('新增角色成功');
+                    febs.alert.success(i18n("role.addSuccess"));
                     $query.trigger('click');
                 });
             }

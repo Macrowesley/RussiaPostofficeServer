@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.MenuTree;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IMenuService;
@@ -34,14 +35,14 @@ public class MenuController extends BaseController {
     public FebsResponse getUserMenus(@NotBlank(message = "{required}") @PathVariable String username) throws FebsException {
         User currentUser = getCurrentUser();
         if (!StringUtils.equalsIgnoreCase(username, currentUser.getUsername())) {
-            throw new FebsException("您无权获取别人的菜单");
+            throw new FebsException(MessageUtils.getMessage("menu.noPamission"));
         }
         MenuTree<Menu> userMenus = this.menuService.findUserMenus(username);
         return new FebsResponse().data(userMenus);
     }
 
     @GetMapping("tree")
-    @ControllerEndpoint(exceptionMessage = "获取菜单树失败")
+    @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
     public FebsResponse getMenuTree(Menu menu) {
         MenuTree<Menu> menus = this.menuService.findMenus(menu);
         return new FebsResponse().success().data(menus.getChilds());
@@ -49,7 +50,7 @@ public class MenuController extends BaseController {
 
     @PostMapping
     @RequiresPermissions("menu:add")
-    @ControllerEndpoint(operation = "新增菜单/按钮", exceptionMessage = "新增菜单/按钮失败")
+    @ControllerEndpoint(operation = "新增菜单/按钮", exceptionMessage = "{menu.addFail}")
     public FebsResponse addMenu(@Valid Menu menu) {
         this.menuService.createMenu(menu);
         return new FebsResponse().success();
@@ -57,7 +58,7 @@ public class MenuController extends BaseController {
 
     @GetMapping("delete/{menuIds}")
     @RequiresPermissions("menu:delete")
-    @ControllerEndpoint(operation = "删除菜单/按钮", exceptionMessage = "删除菜单/按钮失败")
+    @ControllerEndpoint(operation = "删除菜单/按钮", exceptionMessage = "{menu.deleteFail}")
     public FebsResponse deleteMenus(@NotBlank(message = "{required}") @PathVariable String menuIds) {
         this.menuService.deleteMenus(menuIds);
         return new FebsResponse().success();
@@ -65,7 +66,7 @@ public class MenuController extends BaseController {
 
     @PostMapping("update")
     @RequiresPermissions("menu:update")
-    @ControllerEndpoint(operation = "修改菜单/按钮", exceptionMessage = "修改菜单/按钮失败")
+    @ControllerEndpoint(operation = "修改菜单/按钮", exceptionMessage = "{menu.editFail}")
     public FebsResponse updateMenu(@Valid Menu menu) {
         this.menuService.updateMenu(menu);
         return new FebsResponse().success();
@@ -73,7 +74,7 @@ public class MenuController extends BaseController {
 
     @GetMapping("excel")
     @RequiresPermissions("menu:export")
-    @ControllerEndpoint(exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(exceptionMessage = "{excelFail}")
     public void export(Menu menu, HttpServletResponse response) {
         List<Menu> menus = this.menuService.findMenuList(menu);
         ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);

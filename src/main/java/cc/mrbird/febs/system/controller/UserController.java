@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.Md5Util;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +55,13 @@ public class UserController extends BaseController {
     public FebsResponse userList(User user, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
+    }
+
+    @GetMapping("deptUserList")
+    @ControllerEndpoint(operation = "获取机构用户列表", exceptionMessage = "{user.operation.listError}")
+    public FebsResponse deptUserList() {
+        List<User> users = this.userService.findUserByRoleId(RoleType.organizationManager);
+        return new FebsResponse().success().data(users);
     }
 
     @PostMapping

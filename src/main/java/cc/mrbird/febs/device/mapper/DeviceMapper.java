@@ -1,6 +1,8 @@
 package cc.mrbird.febs.device.mapper;
 
 import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.device.entity.UserDevice;
+import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,4 +25,6 @@ public interface DeviceMapper extends BaseMapper<Device> {
     List<Device> selectAllListByUserId(Long userId);
 
     List<Device>  selectSubUserDeviceListExcepBindUserIdByRoleAndParent(@Param("bindUserId") Long bindUserId, @Param("parentUserId") Long parentUserId, @Param("roleType") Long roleType);
+
+    UserDevice findByDeviceIdAndRoleId(@Param("deviceId") Long deviceId, @Param("roleId") Long roleId);
 }

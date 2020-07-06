@@ -3,6 +3,8 @@ package cc.mrbird.febs.device.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.device.entity.UserDevice;
+import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -37,7 +39,7 @@ public interface IDeviceService extends IService<Device> {
      *
      * @param device device
      */
-    void updateDevice(Device device);
+    void updateDevice(Device device, String bindUserId, String userdeviceId);
 
     /**
      * 删除
@@ -58,7 +60,7 @@ public interface IDeviceService extends IService<Device> {
      * @param device
      * @param acnumList
      */
-    void saveDeviceList(Device device, String acnumList);
+    void saveDeviceList(Device device, String acnumList, String bindUserId);
 
     /**
      * 根据id查询device
@@ -106,4 +108,11 @@ public interface IDeviceService extends IService<Device> {
      * @return
      */
     List<Device> selectSubUserDeviceListExcepBindUserIdByRoleAndParent(Long bindUserId, Long parentUserId, Long roleType);
+
+    /**
+     * 查询这个设备绑定了哪个机构管理员
+     * @param deviceId
+     * @return
+     */
+    UserDevice findByDeviceIdAndRoleId(Long deviceId, Long roleId);
 }

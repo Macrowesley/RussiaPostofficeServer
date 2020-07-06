@@ -20,6 +20,8 @@
     .rigth-view {
         width: 80%;
     }
+    /*.layui-form-select {width: 70%;}*/
+
 
 </style>
 <div class="layui-fluid" id="device-add">
@@ -59,11 +61,20 @@
                        class="layui-input rigth-view" value="7">
             </div>
         </div>
+
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.status.colon}"></label>
             <div class="layui-input-block">
                 <input type="radio" name="deviceStatus" value="1" th:title="#{device.normal}" checked="">
                 <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.bindTo}"></label>
+            <div class="layui-input-inline">
+                <select name="bindUserId" id="userList" lay-verify="required" lay-search="" style="width: 500px;">
+                    <option value=""></option>
+                </select>
             </div>
         </div>
         <div class="layui-form-item febs-hide">
@@ -86,6 +97,24 @@
         form.verify(validate);
         form.render();
 
+        initSelect();
+
+        /**
+         * 处理下拉框
+         */
+        function initSelect() {
+            $.ajax({
+                url: ctx + "user/deptUserList",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        $('#userList').append("<option value=" + item.userId + ">" + item.username + "</option>");
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
         form.on('submit(device-add-form-submit)', function (data) {
             var acnumList = data.field.acnumList;
             if (acnumList.length > 8) {
@@ -94,6 +123,12 @@
                     return false;
                 }
             }
+            var bindUserId = data.field.bindUserId;
+            if (bindUserId == ""){
+                febs.alert.warn(i18n("device.selectBindUser"))
+                return false;
+            }
+
             //检查是否重复
             febs.post(ctx + "device/checkIsExist/" + acnumList, null, function (res) {
                 console.log(res)
