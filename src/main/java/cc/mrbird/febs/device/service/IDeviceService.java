@@ -4,7 +4,6 @@ package cc.mrbird.febs.device.service;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
-import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -115,4 +114,6 @@ public interface IDeviceService extends IService<Device> {
      * @return
      */
     UserDevice findByDeviceIdAndRoleId(Long deviceId, Long roleId);
+
+    Device findDeviceByAcnum(String acnum);
 }

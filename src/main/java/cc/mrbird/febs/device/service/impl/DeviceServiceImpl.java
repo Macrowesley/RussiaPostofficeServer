@@ -316,4 +316,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return userDeviceService.findOneUserDevice(userDevice);*/
         return baseMapper.findByDeviceIdAndRoleId(deviceId, roleId);
     }
+
+    @Override
+    public Device findDeviceByAcnum(String acnum) {
+        LambdaQueryWrapper<Device> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Device::getAcnum, acnum);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
 }

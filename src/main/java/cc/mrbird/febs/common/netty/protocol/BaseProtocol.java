@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.netty.protocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
 
@@ -24,6 +25,12 @@ public abstract class BaseProtocol {
     //总长度是否包含第一个4字节的长度 ： 否
     protected static final boolean isContainFirstLen = false;
 
+    //版本内容 3
+    protected static final int VERSION_LEN = 3;
+
+    @Autowired
+    TempKeyUtils tempKeyUtils;
+
     /**
      * 获取协议类型
      * A0 心跳包
@@ -34,17 +41,6 @@ public abstract class BaseProtocol {
      */
     public abstract byte getProtocolType();
 
-    /**
-     * 获取发送过来的协议数据部分的长度
-     * @return
-     */
-    public abstract int getRequestDataLen();
-
-    /**
-     * 获取返回的协议数据部分的长度
-     * @return
-     */
-    public abstract int getResponsetDataLen();
     /**
      * 解析并返回结果流
      *
@@ -59,11 +55,11 @@ public abstract class BaseProtocol {
      *
      * @return
      */
-    public int getResponseProtocolLen() {
+    public int getResponseProtocolLen(byte[] data) {
         if (isContainFirstLen) {
-            return LENGTH_LEN + TYPE_LEN + getResponsetDataLen() + CHECK_LEN + END_LEN;
+            return LENGTH_LEN + TYPE_LEN + data.length + CHECK_LEN + END_LEN;
         } else {
-            return TYPE_LEN + getResponsetDataLen() + CHECK_LEN + END_LEN;
+            return TYPE_LEN + data.length + CHECK_LEN + END_LEN;
         }
     }
 
@@ -74,16 +70,17 @@ public abstract class BaseProtocol {
      */
     public byte[] getWriteContent(byte[] data) {
 //        log.info("拼接发送给客户端的数据");
-        byte[] length = BaseTypeUtils.int2ByteArrayCons(getResponseProtocolLen());
+        int protocolLen = getResponseProtocolLen(data);
+        byte[] length = BaseTypeUtils.int2ByteArrayCons(protocolLen);
         byte[] type = new byte[]{getProtocolType()};
         byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(type, data));
         byte[] end = {(byte) 0xD0};
 
         int totalLen = 0;
         if (isContainFirstLen) {
-            totalLen = getResponseProtocolLen();
+            totalLen = protocolLen;
         } else {
-            totalLen = LENGTH_LEN + getResponseProtocolLen();
+            totalLen = LENGTH_LEN + protocolLen;
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLen);

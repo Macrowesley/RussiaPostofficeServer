@@ -1,7 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol;
 
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
+import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * 机器返回注资结果
+ */
 @Slf4j
 @Component
 public class ChargeResProtocol extends BaseProtocol {
@@ -46,26 +51,6 @@ public class ChargeResProtocol extends BaseProtocol {
     }
 
     /**
-     * 获取发送过来的协议数据部分的长度
-     *
-     * @return
-     */
-    @Override
-    public int getRequestDataLen() {
-        return REQ_ACNUM_LEN + REQ_CHARGE_RES_LEN + REQ_ORDERID_LEN + REQ_AMOUNT_LEN;
-    }
-
-    /**
-     * 获取返回的协议数据部分的长度
-     *
-     * @return
-     */
-    @Override
-    public int getResponsetDataLen() {
-        return RES_DATA_LEN;
-    }
-
-    /**
      * 解析并返回结果流
      *
      * @param bytes
@@ -73,63 +58,94 @@ public class ChargeResProtocol extends BaseProtocol {
      * @return
      */
     @Override
-    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
-        //解析
-        /*typedef  struct{
-            unsigned char head;				    //0xAA
-            unsigned char length;				//0x09
-            unsigned char type;					//0xA2
-            unsigned char acnum[6];			    //机器的表头号
-            unsigned char result;				//0x00 注资失败  0x01 注资成功
-            unsigned long  orderId;				//机器订单ID
-            unsigned long  amount				//注资金额
-            unsigned char check;				//校验位
-            unsigned char tail;					//0xD0
-        }__attribute__((packed))Result,*Result;*/
-
-        log.info("机器返回结果");
+    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         try {
-            //0xa2,0x43,0x50,0x55,0x31,0x32,0x33,0x01,0x22,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x38,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0xac,0xd0,
+            /*typedef  struct{
+                unsigned char head;				    //0xAA
+                unsigned char length;				//0x09
+                unsigned char type;					//0xA2
+                unsigned char acnum[6];             //机器表头号
+                unsigned char content[?];           //加密后内容 版本内容(3) + 注资结果（1）+ 机器订单ID（8）+ 注资金额（8）
+                unsigned char check;				//校验位
+                unsigned char tail;					//0xD0
+            }__attribute__((packed))Result,*Result;*/
             int pos = TYPE_LEN;
-
-            //解析表头号
+            //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
 
-            //0x00 注资失败  0x01 注资成功
-            byte resByte = bytes[pos];
-            pos += REQ_CHARGE_RES_LEN;
-            boolean chargeRes = resByte == 0x01;
+            //加密内容
+            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
-            //机器订单ID
-            long orderId = BaseTypeUtils.byte2Long(bytes, pos, REQ_ORDERID_LEN);
-            pos += REQ_ORDERID_LEN;
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(acnum);
 
-            //注资金额（分）
-            long reqAmount = BaseTypeUtils.byte2Long(bytes, pos, REQ_AMOUNT_LEN);
-            pos += REQ_AMOUNT_LEN;
+            //解密后内容
+            String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
 
-            //注资金额（元）
-            String amount = MoneyUtils.changeF2Y(reqAmount);
+            String versionContent = dectryptContent.substring(0, VERSION_LEN);
+            pos = VERSION_LEN;
 
-            //验证
-            if (acnum.trim().length() != 6) {
-                throw new Exception("表头号不正确");
+            int version = Integer.valueOf(versionContent);
+            switch (version) {
+                case 1:
+                    //表头号
+                    pos = VERSION_LEN;
+                    log.info("机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
+
+                    //注资结果
+                    String chargeRes = enctryptContent.substring(pos, REQ_CHARGE_RES_LEN);
+                    pos += REQ_CHARGE_RES_LEN;
+
+                    //机器订单ID
+                    String orderId = enctryptContent.substring(pos, REQ_ORDERID_LEN);
+                    pos += REQ_ORDERID_LEN;
+
+                    //注资金额
+                    String amount = enctryptContent.substring(pos, REQ_AMOUNT_LEN);
+                    pos += REQ_AMOUNT_LEN;
+
+                    //----------开始处理逻辑
+                    //更新订单状态
+                    OrderVo orderVo = new OrderVo();
+                    orderVo.setAcnum(acnum);
+                    orderVo.setOrderId(Long.valueOf(orderId));
+                    orderVo.setAmount(amount);
+
+                    //更新状态结果
+                    /*
+                    typedef  struct{
+                        unsigned char length;				 //一个字节
+                        unsigned char head;				 	 //0xA2
+                        unsigned char content[?];            //加密后内容 版本内容(3) + 检验结果（1）+ 机器订单ID（8）+ 注资金额（8）
+                        unsigned char check;				 //校验位
+                        unsigned char tail;					 //0xD0
+                    }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
+                    boolean changeRes = false;
+                    try {
+                        log.info("机器返回结果 更新订单状态");
+                        orderService.updateMachineInjectionStatus(orderVo, chargeRes == "1");
+                        changeRes = true;
+                    } catch (Exception e) {
+                        changeRes = false;
+                    }
+
+                    //把临时密钥从redis中删除
+                    tempKeyUtils.deleteTempKey(acnum);
+
+                    //----------开始返回
+                    //返回内容的原始数据
+                    String responseData = versionContent + chargeRes + String.format("%08d", orderId) + String.format("%08", amount);
+                    //返回内容的加密数据
+                    String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+                    return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+                default:
+                    throw new Exception("版本不存在");
             }
 
-            //更新订单状态
-            OrderVo orderVo = new OrderVo();
-            orderVo.setAcnum(acnum);
-            orderVo.setOrderId(orderId);
-            orderVo.setAmount(amount);
-            orderService.updateMachineInjectionStatus(orderVo, chargeRes);
-            log.info("机器返回结果 更新订单状态");
-
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("解析出错" + e.getMessage());
+            throw new Exception(e.getMessage());
         }
-        //返回数据
-        byte[] data = new byte[]{(byte) 0x02};
-        return getWriteContent(data);
     }
 }

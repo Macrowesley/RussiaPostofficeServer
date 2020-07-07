@@ -34,32 +34,11 @@ public class HeartPortocol extends BaseProtocol {
     }
 
     /**
-     * 获取发送过来的协议数据部分的长度
-     *
-     * @return
-     */
-    @Override
-    public int getRequestDataLen() {
-        return REQ_ACNUM_LEN;
-    }
-
-    /**
-     * 获取返回的协议数据部分的长度
-     *
-     * @return
-     */
-    @Override
-    public int getResponsetDataLen() {
-        return RES_DATA_LEN;
-    }
-
-
-    /**
      * 解析并返回结果流
      *
      * @param bytes
      */
-    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         int pos = TYPE_LEN;
 
         //解析表头号

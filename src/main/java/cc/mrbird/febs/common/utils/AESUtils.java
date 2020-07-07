@@ -110,16 +110,17 @@ public class AESUtils {
         return Keysb.toString();
     }
 
-    public static String[] chars = new String[] { "a", "b", "c", "d", "e", "f",
+    public static String[] chars = new String[]{"a", "b", "c", "d", "e", "f",
             "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
             "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
             "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z" };
+            "W", "X", "Y", "Z"};
 
 
     /**
      * 生成短8位的uuid
+     *
      * @param
      * @return
      */
@@ -147,14 +148,28 @@ public class AESUtils {
     }
 
     private static void test2() {
-        long t1= System.currentTimeMillis();
-        String key = UUID.randomUUID().toString();
-        System.out.println("耗时：" + (System.currentTimeMillis() - t1));
-        String res =  AESUtils.encrypt("123456",key);
-        System.out.println("key = " + key +" res长度 = " + res.length() + " res = " + res);
+        int n = 0;
+        long t = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            long t1 = System.currentTimeMillis();
+            String key = createUUID();
+//        System.out.println("耗时：" + (System.currentTimeMillis() - t1));
+            String tempKey = createKey(8);
+            String res = AESUtils.encrypt(tempKey, key);
+//        System.out.println("key = " + key + " tempKey=" +tempKey+ " res长度 = " + res.length() + " res = " + res);
+            if (res.length() != 24) {
+                System.out.println("有例外");
+            } else {
+                n++;
+            }
+
+        }
+        System.out.println("n = " + n);
+        System.out.println("耗时：" + (System.currentTimeMillis() - t));
+
     }
 
-    private static void test1() throws Exception{
+    private static void test1() throws Exception {
 
         /*long time = System.currentTimeMillis();
         String plainText = "m=1&n=10&t=1&d=1232211312";
@@ -197,7 +212,7 @@ public class AESUtils {
         String c = URLEncoder.encode(content, "utf-8");
         System.out.println("URL " + content);
         System.out.println("URLEncoder.encode:" + c);
-        System.out.println("URLDecoder.decode:" + URLDecoder.decode("93fi3%5A5Er7%3977bY%2BESPtqQd%2Becefrg5FU1mRdIF%393IQ%3D","utf-8"));
+        System.out.println("URLDecoder.decode:" + URLDecoder.decode("93fi3%5A5Er7%3977bY%2BESPtqQd%2Becefrg5FU1mRdIF%393IQ%3D", "utf-8"));
     }
 
 

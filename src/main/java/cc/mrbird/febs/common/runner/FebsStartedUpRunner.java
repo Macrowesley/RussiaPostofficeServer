@@ -2,6 +2,7 @@ package cc.mrbird.febs.common.runner;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.NettyServer;
+import cc.mrbird.febs.common.netty.protocol.TempKeyUtils;
 import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.service.RedisService;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +72,12 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                     Runtime.getRuntime().exec("cmd  /c  start " + url);
                 }
             }
-            startNetty();
+
 //            test();
+            startNetty();
         }
     }
+
 
     /**
      * 启动netty

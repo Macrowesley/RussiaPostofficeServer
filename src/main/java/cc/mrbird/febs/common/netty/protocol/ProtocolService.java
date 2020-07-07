@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-
 /**
  * 协议处理
  */
@@ -28,6 +26,12 @@ public class ProtocolService {
 
     @Autowired
     ChargeResProtocol chargeResProtocol;
+
+    @Autowired
+    QueryIDPortocol queryIDPortocol;
+
+    @Autowired
+    QueryTemKeyPortocol queryTemKeyPortocol;
 
     //出问题了返回该结果
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
@@ -88,6 +92,12 @@ public class ProtocolService {
             switch (protocolType) {
                 case HeartPortocol.PROTOCOL_TYPE:
                     baseProtocol = heartPortocol;
+                    break;
+                case QueryIDPortocol.PROTOCOL_TYPE:
+                    baseProtocol = queryIDPortocol;
+                    break;
+                case QueryTemKeyPortocol.PROTOCOL_TYPE:
+                    baseProtocol = queryTemKeyPortocol;
                     break;
                 case QueryProtocol.PROTOCOL_TYPE:
                     baseProtocol = queryProtocol;
