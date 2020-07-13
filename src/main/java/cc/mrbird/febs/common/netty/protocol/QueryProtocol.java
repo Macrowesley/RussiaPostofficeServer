@@ -70,6 +70,7 @@ public class QueryProtocol extends BaseProtocol {
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))QueryData,*QueryData;*/
+        log.info("查询是否有数据包");
         try {
             int pos = TYPE_LEN;
             //表头号
@@ -120,14 +121,16 @@ public class QueryProtocol extends BaseProtocol {
                         finalAmount = MoneyUtils.changeY2F(Double.valueOf(amount));
                     }
                     //返回内容的原始数据
-                    String responseData = versionContent + res + String.format("%08d", orderId) + String.format("%08", finalAmount);
+                    String responseData = versionContent + res + String.format("%08d", orderId) + String.format("%08d", finalAmount);
                     //返回内容的加密数据
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+                    log.info("原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     throw new Exception("版本不存在");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("解析出错" + e.getMessage());
             throw new Exception(e.getMessage());
         }

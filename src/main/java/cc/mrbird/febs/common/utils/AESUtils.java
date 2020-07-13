@@ -1,17 +1,12 @@
 package cc.mrbird.febs.common.utils;
 
-import org.apache.commons.codec.binary.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.rmi.server.UID;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -137,6 +132,23 @@ public class AESUtils {
     }
 
 
+    /**
+     * 获取16位的uuid
+     * @return
+     */
+    public static String generateUUID16Len() {
+        String uuid= UUID.randomUUID().toString().replace("-","");
+        StringBuffer Keysb = new StringBuffer();
+        Random random = new Random();
+        int number;
+        for (int i = 0; i < 16; i++) {
+            number = random.nextInt(uuid.length());
+            Keysb.append(uuid.charAt(number));
+        }
+        return Keysb.toString();
+    }
+
+
     public static String createUUID() {
         return UUID.randomUUID().toString();
     }
@@ -144,7 +156,71 @@ public class AESUtils {
 
     public static void main(String[] args) throws Exception {
 //        test1();
-        test2();
+//        test2();
+//        test3();
+//          test4();
+//        test5();
+        String versionContent = "001";
+        String res = "1";
+        long orderId = 49;
+        long finalAmount = 12345;
+        String responseData = versionContent + res + String.format("%08d", orderId) + String.format("%08d", finalAmount);
+        System.out.println(responseData);
+    }
+
+    private static void test5() throws Exception {
+        String uuid = generateUUID16Len();
+        String tempKey = AESUtils.createKey(16);
+        String entryptContent = AESUtils.encrypt(tempKey, uuid);
+        int RES_ENCRYPT_LEN = 44;
+        byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
+
+        encryptBytes = BaseTypeUtils.stringToByte(entryptContent, RES_ENCRYPT_LEN, BaseTypeUtils.UTF8);
+
+        String res = BaseTypeUtils.byteToString(encryptBytes, BaseTypeUtils.UTF8);
+        System.out.println("要加密的内容：" + tempKey);
+        System.out.println("密钥="+ uuid);
+        System.out.println("原始文本="+entryptContent + " 变成字节后最终还原的文本="+ res);
+        System.out.println(" 最后解密的内容=" + decrypt(res, uuid));
+    }
+
+    private static void test4() {
+        int n = 0;
+        long t = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {//1000000
+            long t1 = System.currentTimeMillis();
+            String key = generateUUID16Len();
+            String tempKey = AESUtils.createKey(16);
+            String res = AESUtils.encrypt(tempKey, key);
+//            System.out.println("key = " + key + " tempKey=" +tempKey+ " res长度 = " + res.length() + " res = " + res);
+            if (res.length() != 44) {
+                System.out.println("有例外");
+            } else {
+                n++;
+            }
+
+        }
+        System.out.println("n = " + n);
+        System.out.println("耗时：" + (System.currentTimeMillis() - t));
+
+    }
+
+    private static void test3() throws Exception {
+        String content = "123456";
+        String key = "111111";
+
+
+        String entryptContent = AESUtils.encrypt(content, key);
+        System.out.println("加密前内容：" + content);
+        System.out.println("加密后的内容：" + entryptContent);
+
+        entryptContent = "KrRPAWzCOvHEgK3jjtVDHA==";
+        key = "SppTi3alaNNJoTDf";
+
+        entryptContent = "wflYk5saIuyUdCjuOkX6NQ==";
+        key = "1111111111111111";
+        String res = AESUtils.decrypt(entryptContent, key);
+        System.out.println("解密后内容：" + res);
     }
 
     private static void test2() {

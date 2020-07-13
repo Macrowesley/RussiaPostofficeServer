@@ -433,7 +433,7 @@ public class BaseTypeUtils {
                 checkSum += packBytes[i];//计算和校验
             }
             checkSum &= 0xff; //取低八位
-//        System.out.println("正确的检测结果：" + BaseTypeUtils.bytesToHexString(new byte[]{(byte) checkSum}));
+//            System.out.println("正确的检测结果：" + BaseTypeUtils.bytesToHexString(new byte[]{(byte) checkSum}));
             return (byte) checkSum == packBytes[len];//比对给到的数据真实性
         }catch (Exception e){
             return false;

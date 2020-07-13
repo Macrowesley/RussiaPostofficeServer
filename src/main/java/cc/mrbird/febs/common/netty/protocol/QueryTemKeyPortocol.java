@@ -23,7 +23,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
     private static final int REQ_ACNUM_LEN = 6;
 
     //加密内容长度
-    private static final int RES_ENCRYPT_LEN = 24;
+    private static final int RES_ENCRYPT_LEN = 44;
 
     @Autowired
     IDeviceService deviceService;
@@ -55,7 +55,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                     throw new Exception("设备" + acnum + "不存在");
                 }
                 String uuid = device.getSecretKey();
-                String tempKey = AESUtils.createKey(8);
+                String tempKey = AESUtils.createKey(16);
                 String entryptContent = AESUtils.encrypt(tempKey, uuid);
 
                 //保存临时密钥
@@ -70,7 +70,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);
                 baos.write(versionBytes, 0, versionBytes.length);
                 baos.write(encryptBytes, 0, encryptBytes.length);
-                log.info("获取临时密钥  结束 ， 临时密钥= {}", tempKey);
+                log.info("获取临时密钥  结束 ， 临时密钥= {} 发给机器的是{}", tempKey, entryptContent);
                 return getWriteContent(baos.toByteArray());
             default:
                 throw new Exception("版本不存在");
@@ -91,7 +91,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
             unsigned char length;				 //一个字节
             unsigned char head;				 	 //0xA4
             unsigned char version[3];            //版本内容 001
-            unsigned char key[24];				 //加密内容
+            unsigned char key[44];				 //加密内容
             unsigned char check;				 //校验位
             unsigned char tail;					 //0xD0
         }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/

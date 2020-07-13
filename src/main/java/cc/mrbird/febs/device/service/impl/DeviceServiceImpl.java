@@ -19,7 +19,6 @@ import cc.mrbird.febs.system.entity.UserRole;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.generator.config.IFileCreate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 设备表 Service实现
@@ -176,7 +174,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         list.stream().forEach(acnum -> {
                     device.setAcnum(acnum);
                     device.setNickname(acnum);
-                    device.setSecretKey(AESUtils.createUUID());
+                    device.setSecretKey(AESUtils.generateUUID16Len());
                     device.setCreateTime(new Date());
                     editMoney(device);
 

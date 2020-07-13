@@ -135,7 +135,7 @@ public class ChargeResProtocol extends BaseProtocol {
 
                     //----------开始返回
                     //返回内容的原始数据
-                    String responseData = versionContent + chargeRes + String.format("%08d", orderId) + String.format("%08", amount);
+                    String responseData = versionContent + chargeRes + String.format("%08d", orderId) + String.format("%08d", amount);
                     //返回内容的加密数据
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

@@ -24,7 +24,7 @@ public class QueryIDPortocol extends BaseProtocol {
     private static final int REQ_ACNUM_LEN = 6;
 
     //唯一id长度
-    private static final int RES_UUID_LEN = 36;
+    private static final int RES_UUID_LEN = 16;
 
     @Autowired
     IDeviceService deviceService;
@@ -94,7 +94,7 @@ public class QueryIDPortocol extends BaseProtocol {
          *     unsigned char length;				//一个字节
          * 	unsigned char head;				 	//0xA3
          * 	unsigned char version[3];           //版本内容 001
-         *     unsigned char id[36];				//唯一id内容（如果都为0，则这个表头号还没注册到系统中）
+         *     unsigned char id[16];				//唯一id内容（如果都为0，则这个表头号还没注册到系统中）
          * 	unsigned char check;				//校验位
          * 	unsigned char tail;				    //0xD0
          * }__attribute__((packed))T_IdAck, *PT_IdAck;

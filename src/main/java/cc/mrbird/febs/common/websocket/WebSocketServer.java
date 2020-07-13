@@ -41,7 +41,7 @@ public class WebSocketServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") String userId) {
-        logger.info("生产环境的websocket配置");
+        logger.info("生产环境的websocket配置 " + this.toString());
         this.session = session;
         this.userId = userId;
         if (webSocketMap.containsKey(userId)) {
@@ -96,7 +96,6 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        error.printStackTrace();
         logger.error("用户错误:" + this.userId + ",原因:" + error.getMessage());
     }
 
