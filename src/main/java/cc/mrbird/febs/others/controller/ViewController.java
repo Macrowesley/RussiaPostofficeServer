@@ -31,7 +31,7 @@ public class ViewController {
     }
 
     @GetMapping("febs/icon")
-    @RequiresPermissions("febs:icons:view")
+//    @RequiresPermissions("febs:icons:view")
     public String febsIcon() {
         return FebsUtil.view("others/febs/icon");
     }

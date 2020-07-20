@@ -38,12 +38,12 @@ public class QueryIDPortocol extends BaseProtocol {
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         try {
             int pos = TYPE_LEN;
-            log.info("获取唯一id  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));
+            log.info("获取唯一id：  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));
             //解析版本号
             String versionContent = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
             pos += VERSION_LEN;
             int version = Integer.valueOf(versionContent);
-            log.info("version = {} byte内容 = {}", version, BaseTypeUtils.bytesToHexString(Arrays.copyOfRange(bytes, pos, pos + VERSION_LEN)));
+//            log.info("version = {} byte内容 = {}", version, BaseTypeUtils.bytesToHexString(Arrays.copyOfRange(bytes, pos, pos + VERSION_LEN)));
             switch (version) {
                 case 1:
                     //解析表头号
@@ -52,7 +52,7 @@ public class QueryIDPortocol extends BaseProtocol {
                     //根据acnum获取密钥
                     Device device = deviceService.findDeviceByAcnum(acnum);
                     if (device == null) {
-                        throw new Exception("设备" + acnum + "不存在");
+                        throw new Exception("获取唯一id：设备" + acnum + "不存在");
                     }
 
                     byte[] versionBytes = new byte[VERSION_LEN];
@@ -65,12 +65,13 @@ public class QueryIDPortocol extends BaseProtocol {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_UUID_LEN);
                     baos.write(versionBytes, 0, versionBytes.length);
                     baos.write(UUIDBytes, 0, UUIDBytes.length);
-                    log.info("获取唯一id  结束 id = {} ", device.getSecretKey().trim());
+                    log.info("获取唯一id：  结束 id = {} ", device.getSecretKey().trim());
                     return getWriteContent(baos.toByteArray());
                 default:
-                    throw new Exception("版本不存在");
+                    throw new Exception("获取唯一id：版本不存在");
             }
         } catch (Exception e) {
+            log.error("获取唯一id： 解析出错" + e.getMessage());
             throw new Exception(e.getMessage());
         }
 

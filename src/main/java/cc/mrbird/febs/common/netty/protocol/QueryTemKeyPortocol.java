@@ -52,7 +52,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                 //根据acnum获取密钥
                 Device device = deviceService.findDeviceByAcnum(acnum);
                 if (device == null) {
-                    throw new Exception("设备" + acnum + "不存在");
+                    throw new Exception("获取临时密钥：设备" + acnum + "不存在");
                 }
                 String uuid = device.getSecretKey();
                 String tempKey = AESUtils.createKey(16);
@@ -70,10 +70,10 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);
                 baos.write(versionBytes, 0, versionBytes.length);
                 baos.write(encryptBytes, 0, encryptBytes.length);
-                log.info("获取临时密钥  结束 ， 临时密钥= {} 发给机器的是{}", tempKey, entryptContent);
+                log.info("获取临时密钥：  结束 ， 临时密钥= {} 发给机器的是{}", tempKey, entryptContent);
                 return getWriteContent(baos.toByteArray());
             default:
-                throw new Exception("版本不存在");
+                throw new Exception("获取临时密钥：版本不存在");
         }
         /*2.1 请求临时加密秘钥
         Typedef struct{

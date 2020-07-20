@@ -350,7 +350,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
 //        if (!order.getAmount().equals(orderVo.getAmount())) {
-        if(!MoneyUtils.moneyIsSame(order.getAmount(), orderVo.getAmount())){
+        if(!MoneyUtils.moneyIsSame(String.valueOf(MoneyUtils.changeY2F(Double.valueOf(order.getAmount()))), orderVo.getAmount())){
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAmountNotEqual"));
         }
 

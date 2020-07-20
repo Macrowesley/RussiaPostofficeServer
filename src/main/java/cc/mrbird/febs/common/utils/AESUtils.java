@@ -160,12 +160,20 @@ public class AESUtils {
 //        test3();
 //          test4();
 //        test5();
-        String versionContent = "001";
-        String res = "1";
-        long orderId = 49;
-        long finalAmount = 12345;
-        String responseData = versionContent + res + String.format("%08d", orderId) + String.format("%08d", finalAmount);
-        System.out.println(responseData);
+
+        String dectryptContent = "00110000004900012345";
+        int pos = 3 ;
+        String res =  dectryptContent.substring(pos, pos+1);
+        pos += 1;
+
+        //机器订单ID
+        String orderId = dectryptContent.substring(pos, pos + 8);
+        pos += 8;
+
+        //注资金额
+        String amount = dectryptContent.substring(pos, pos + 8);
+        pos += 8;
+        System.out.println(res + ", " + orderId + " , " + amount);
     }
 
     private static void test5() throws Exception {

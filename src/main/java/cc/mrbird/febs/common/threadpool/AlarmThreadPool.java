@@ -29,7 +29,7 @@ public class AlarmThreadPool {
     public synchronized void addAlarm(Long orderId){
         try {
             deleteAlarm(orderId);
-            ScheduledFuture<String> future = (ScheduledFuture<String>) service.schedule(new AlarmRunnable(orderId), 5, TimeUnit.SECONDS);
+            ScheduledFuture<String> future = (ScheduledFuture<String>) service.schedule(new AlarmRunnable(orderId), 60, TimeUnit.SECONDS);
             map.put(orderId, future);
             log.info("添加警告 " + orderId + " map.size = " + map.size());
         }catch (Exception e){

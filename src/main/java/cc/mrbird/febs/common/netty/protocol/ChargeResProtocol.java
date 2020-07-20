@@ -86,23 +86,25 @@ public class ChargeResProtocol extends BaseProtocol {
             String versionContent = dectryptContent.substring(0, VERSION_LEN);
             pos = VERSION_LEN;
 
+            log.info("机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
+
             int version = Integer.valueOf(versionContent);
             switch (version) {
                 case 1:
                     //表头号
                     pos = VERSION_LEN;
-                    log.info("机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
+
 
                     //注资结果
-                    String chargeRes = enctryptContent.substring(pos, REQ_CHARGE_RES_LEN);
+                    String chargeRes = dectryptContent.substring(pos, pos + REQ_CHARGE_RES_LEN);
                     pos += REQ_CHARGE_RES_LEN;
 
                     //机器订单ID
-                    String orderId = enctryptContent.substring(pos, REQ_ORDERID_LEN);
+                    String orderId = dectryptContent.substring(pos, pos + REQ_ORDERID_LEN);
                     pos += REQ_ORDERID_LEN;
 
                     //注资金额
-                    String amount = enctryptContent.substring(pos, REQ_AMOUNT_LEN);
+                    String amount = dectryptContent.substring(pos, pos + REQ_AMOUNT_LEN);
                     pos += REQ_AMOUNT_LEN;
 
                     //----------开始处理逻辑
@@ -123,8 +125,8 @@ public class ChargeResProtocol extends BaseProtocol {
                     }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
                     boolean changeRes = false;
                     try {
-                        log.info("机器返回结果 更新订单状态");
-                        orderService.updateMachineInjectionStatus(orderVo, chargeRes == "1");
+                        log.info("机器返回注资结果： 更新订单状态 res = " + chargeRes.equals("1"));
+                        orderService.updateMachineInjectionStatus(orderVo, chargeRes.equals("1"));
                         changeRes = true;
                     } catch (Exception e) {
                         changeRes = false;
@@ -135,16 +137,17 @@ public class ChargeResProtocol extends BaseProtocol {
 
                     //----------开始返回
                     //返回内容的原始数据
-                    String responseData = versionContent + chargeRes + String.format("%08d", orderId) + String.format("%08d", amount);
+                    String responseData = versionContent + chargeRes + String.format("%08d", Long.valueOf(orderId)) + String.format("%08d", Long.valueOf(amount));
                     //返回内容的加密数据
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
-                    throw new Exception("版本不存在");
+                    throw new Exception("机器返回注资结果：版本不存在");
             }
 
         } catch (Exception e) {
-            log.error("解析出错" + e.getMessage());
+            e.printStackTrace();
+            log.error("机器返回注资结果：解析出错" + e.getMessage());
             throw new Exception(e.getMessage());
         }
     }

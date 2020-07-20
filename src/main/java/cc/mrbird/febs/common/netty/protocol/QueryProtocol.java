@@ -104,7 +104,6 @@ public class QueryProtocol extends BaseProtocol {
 
                     log.info("查询是否有数据包：解析加密内容，version={}, acnum={}", versionContent, acnum);
 
-                    log.info("表头号为：" + acnum);
                     Order order = orderService.machineRequestData(acnum);
 
                     //是否有结果
@@ -124,14 +123,14 @@ public class QueryProtocol extends BaseProtocol {
                     String responseData = versionContent + res + String.format("%08d", orderId) + String.format("%08d", finalAmount);
                     //返回内容的加密数据
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-                    log.info("原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+                    log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
-                    throw new Exception("版本不存在");
+                    throw new Exception("查询是否有数据包：版本不存在");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("解析出错" + e.getMessage());
+            log.error("查询是否有数据包：解析出错" + e.getMessage());
             throw new Exception(e.getMessage());
         }
     }
