@@ -57,12 +57,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
         //如果map中不包含此连接，就保存连接
         if (CHANNEL_MAP.containsKey(channelId)) {
-            log.info("客户端【" + channelId + "】是连接状态，连接通道数量: " + CHANNEL_MAP.size());
+            log.info("客户端【" + channelId + "】是连接状态，连接通道数量: " + CHANNEL_MAP.size() + " insocket="+insocket.toString());
         } else {
             //保存连接
             CHANNEL_MAP.put(channelId, ctx);
 
-            log.info("客户端【" + channelId + "】连接netty服务器[IP:" + clientIp + "--->PORT:" + clientPort + "]");
+            log.info("客户端【" + channelId + "】连接netty服务器[IP:" + clientIp + "--->PORT:" + clientPort + "]" + " insocket="+insocket.toString());
             log.info("连接通道数量: " + CHANNEL_MAP.size());
         }
     }

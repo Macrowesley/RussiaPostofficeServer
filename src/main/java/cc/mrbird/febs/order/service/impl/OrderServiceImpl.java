@@ -318,8 +318,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             alarmThreadPool.addAlarm(order.getOrderId());
             updateOrder(order);
             return order;
-        }else if (order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())){
-            log.error("机器又来获取数据包");
+        } else if (order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())
+                || order.getOrderStatus().equals(OrderStatusEnum.machineInjectionFail.getStatus())) {
+            log.error("机器处于获取数据包状态或者失败状态的时候，可以再次获取数据包");
             return order;
         }else{
             log.error("设备状态不正常，不能获取数据包");
@@ -355,7 +356,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         //只有以下状态才能让机器更改数据包：机器获取数据包
-        if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())) {
+        if (!order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())
+        && !order.getOrderStatus().equals(OrderStatusEnum.machineInjectionFail.getStatus())) {
             log.error("设备状态不正常，不能接收机器注资结果");
             throw new FebsException(MessageUtils.getMessage("order.operation.deviceStatusNotNormal"));
         }

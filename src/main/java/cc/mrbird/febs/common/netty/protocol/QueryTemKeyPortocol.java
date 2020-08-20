@@ -59,7 +59,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                 String entryptContent = AESUtils.encrypt(tempKey, uuid);
 
                 //保存临时密钥
-                tempKeyUtils.addTempKey(acnum, tempKey);
+                tempKeyUtils.addTempKey(acnum + getCID(ctx), tempKey);
 
                 byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];

@@ -3,9 +3,11 @@ package cc.mrbird.febs.common.netty.protocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.jaxen.function.IdFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
+import java.net.InetSocketAddress;
 
 /**
  * <b>长度 + 类型 + 数据 + 检验位 + 结尾</b>
@@ -102,6 +104,19 @@ public abstract class BaseProtocol {
     public static byte parseType(byte[] data) {
         byte t = data[0];
         return t;
+    }
+
+    /**
+     * 获取ChannelHandlerContextIp
+     * @param ctx
+     * @return
+     */
+    public String getCID(ChannelHandlerContext ctx){
+        String cid = "_null";
+        if(ctx != null){
+            cid = "_" + ctx.channel().id().toString();
+        }
+        return cid;
     }
 
 }

@@ -81,8 +81,11 @@ public class QueryProtocol extends BaseProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(acnum);
-
+            String tempKey = tempKeyUtils.getTempKey(acnum + getCID(ctx));
+/*
+            log.info("tempKey = " + tempKey + " acnumId = " + (acnum + getCID(ctx)));
+            log.info("enctryptContent = " + enctryptContent);
+*/
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
 

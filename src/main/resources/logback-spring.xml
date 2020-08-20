@@ -14,7 +14,18 @@
     </appender>
 
     <!--输出到文件-->
-    <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <appender name="file_all" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.path}/all/all.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>${log.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/info/info.%d{yyyy-MM-dd}.log</fileNamePattern>
             <MaxHistory>${log.maxHistory}</MaxHistory>
@@ -27,7 +38,7 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-    </appender>
+    </appender>-->
 
     <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -48,7 +59,8 @@
     </root>
 
     <root level="info">
-        <appender-ref ref="file_info" />
+        <appender-ref ref="file_all" />
+        <!--<appender-ref ref="file_info" />-->
         <appender-ref ref="file_error" />
     </root>
 </configuration>

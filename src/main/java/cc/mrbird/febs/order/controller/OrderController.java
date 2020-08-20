@@ -54,6 +54,7 @@ public class OrderController extends BaseController {
     @GetMapping("list")
     @RequiresPermissions("order:list")
     public FebsResponse orderList(QueryRequest request, OrderVo order) {
+        log.info("请求订单列表");
 //        log.info("请求参数：order={} , request={}", order.toString(), request.toString());
         IPage<OrderVo> pageInfo = this.orderService.findPageOrders(request, order);
         pageInfo.getRecords().stream().forEach(bean -> {
