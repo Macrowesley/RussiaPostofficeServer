@@ -48,7 +48,7 @@ public class ControllerEndpointAspect extends BaseAspectSupport {
                 if (servletRequestAttributes != null) {
                     ip = servletRequestAttributes.getRequest().getRemoteAddr();
                 }
-                logService.saveLog(point, FebsUtil.getCurrentUser(), targetMethod, ip, operation, start);
+//                logService.saveLog(point, FebsUtil.getCurrentUser(), targetMethod, ip, operation, start);
             }
             return result;
         } catch (Throwable throwable) {
