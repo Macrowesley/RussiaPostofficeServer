@@ -86,7 +86,7 @@ public class ChargeResProtocol extends BaseProtocol {
             String versionContent = dectryptContent.substring(0, VERSION_LEN);
             pos = VERSION_LEN;
 
-            log.info("机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
+            log.info("【协议】机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
 
             int version = Integer.valueOf(versionContent);
             switch (version) {

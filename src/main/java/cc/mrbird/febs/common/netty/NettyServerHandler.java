@@ -72,7 +72,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.error("客户端终止连接服务器");
+        log.error("客户端【" + ctx.channel().id() + "】终止连接服务器");
         removeCache(ctx);
     }
 

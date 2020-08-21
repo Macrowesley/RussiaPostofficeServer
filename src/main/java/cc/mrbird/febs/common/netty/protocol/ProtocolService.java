@@ -46,6 +46,7 @@ public class ProtocolService {
         }
         BaseProtocol protocol = null;
         try {
+            log.error("客户端【" + ctx.channel().id() + "】发送数据给客户端");
             wrieteToCustomer(ctx, parseContentAndRspone(msg.getContent(), ctx));
         } catch (Exception e) {
             e.printStackTrace();

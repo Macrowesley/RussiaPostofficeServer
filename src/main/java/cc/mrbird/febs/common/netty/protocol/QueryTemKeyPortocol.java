@@ -36,7 +36,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
 
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
-        log.info("获取临时密钥  开始");
+        log.info("【协议】获取临时密钥  开始");
         int pos = TYPE_LEN;
 
         //解析版本号
