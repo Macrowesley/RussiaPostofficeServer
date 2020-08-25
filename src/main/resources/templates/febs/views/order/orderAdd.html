@@ -98,6 +98,9 @@
                 if (curAmount > maxAmount){
                     febs.alert.warn(i18n("order.amountNoMoreThan") + maxAmount);
                     return false;
+                } else if (curAmount <= 0.00){
+                    febs.alert.warn(i18n("order.operation.amountMustOverZero"));
+                    return false;
                 } else if (curAmount > warnAmount){
                     febs.modal.confirm(i18n("warn"), i18n("order.moreThanAlarmMoney"), function () {
                         //开始添加

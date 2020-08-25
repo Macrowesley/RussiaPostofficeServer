@@ -71,8 +71,8 @@ public class QueryProtocol extends BaseProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))QueryData,*QueryData;*/
         log.info("【协议】查询是否有数据包");
-        Thread.sleep(15000);
-        log.info("停15s");
+        /*Thread.sleep(15000);
+        log.info("停15s");*/
         try {
             int pos = TYPE_LEN;
             //表头号

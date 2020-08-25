@@ -212,6 +212,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String maxAmount = device.getMaxAmount();
         if (Float.valueOf(orderVo.getAmount()) > Float.valueOf(maxAmount)) {
             throw new FebsException(MessageFormat.format(MessageUtils.getMessage("order.operation.amountOver"),maxAmount));
+        }else if (Float.valueOf(orderVo.getAmount()) <= 0.00){
+            throw new FebsException(MessageUtils.getMessage("order.operation.amountMustOverZero"));
         }
     }
 
