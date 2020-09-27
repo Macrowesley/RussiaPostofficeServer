@@ -214,6 +214,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new FebsException(MessageFormat.format(MessageUtils.getMessage("order.operation.amountOver"),maxAmount));
         }else if (Float.valueOf(orderVo.getAmount()) <= 0.00){
             throw new FebsException(MessageUtils.getMessage("order.operation.amountMustOverZero"));
+        }else{
+
         }
     }
 
