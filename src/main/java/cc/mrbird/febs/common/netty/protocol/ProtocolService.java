@@ -113,6 +113,7 @@ public class ProtocolService {
             try {
                 return baseProtocol.parseContentAndRspone(data, ctx);
             } catch (Exception e) {
+                log.error("返回结果出错：" + e.getMessage());
                 return emptyResBytes;
             }
         } else {

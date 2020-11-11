@@ -129,7 +129,9 @@ public class ChargeResProtocol extends BaseProtocol {
                         orderService.updateMachineInjectionStatus(orderVo, chargeRes.equals("1"));
                         changeRes = true;
                     } catch (Exception e) {
+                        log.error(e.getMessage());
                         changeRes = false;
+                        throw new Exception(e.getMessage());
                     }
 
                     //把临时密钥从redis中删除
