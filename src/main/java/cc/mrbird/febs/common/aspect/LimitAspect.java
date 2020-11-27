@@ -2,7 +2,9 @@ package cc.mrbird.febs.common.aspect;
 
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.entity.LimitType;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.LimitAccessException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.HttpContextUtil;
 import cc.mrbird.febs.common.utils.IpUtil;
 import com.google.common.collect.ImmutableList;
@@ -60,15 +62,16 @@ public class LimitAspect extends BaseAspectSupport {
             default:
                 key = StringUtils.upperCase(method.getName());
         }
-        ImmutableList<String> keys = ImmutableList.of(StringUtils.join(limitAnnotation.prefix() + "_", key, ip));
+        ImmutableList<String> keys = ImmutableList.of(StringUtils.join(limitAnnotation.prefix() + "_", key + "_", ip));
         String luaScript = buildLuaScript();
         RedisScript<Number> redisScript = new DefaultRedisScript<>(luaScript, Number.class);
         Number count = redisTemplate.execute(redisScript, keys, limitCount, limitPeriod);
+        name = StringUtils.isEmpty(name) ? StringUtils.upperCase(method.getName()) : name;
         log.info("IP:{} 第 {} 次访问key为 {}，描述为 [{}] 的接口", ip, count, keys, name);
         if (count != null && count.intValue() <= limitCount) {
             return point.proceed();
         } else {
-            throw new LimitAccessException("接口访问超出频率限制");
+            throw new LimitAccessException(MessageUtils.getMessage("aspect.tooManyRequest"));
         }
     }
 

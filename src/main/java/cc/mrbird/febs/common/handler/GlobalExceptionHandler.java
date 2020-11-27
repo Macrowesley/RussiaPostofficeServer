@@ -35,13 +35,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public FebsResponse handleException(Exception e) {
-        log.error("系统内部异常，异常信息", e);
+        log.error("系统内部异常，异常信息 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(MessageUtils.getMessage("globalHandler.system.error"));
     }
 
     @ExceptionHandler(value = FebsException.class)
     public FebsResponse handleFebsException(FebsException e) {
-        log.error("系统错误", e);
+        log.error("系统错误 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
     }
 
@@ -94,14 +94,14 @@ public class GlobalExceptionHandler {
             message.append(error.getField()).append(error.getDefaultMessage()).append(",");
         }
         message = new StringBuilder(message.substring(0, message.length() - 1));
-        log.error(message.toString(), e);
+        log.error(message.toString());
         return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
     }
 
     @ExceptionHandler(value = LimitAccessException.class)
     public FebsResponse handleLimitAccessException(LimitAccessException e) {
-        log.error("LimitAccessException", e);
-        return new FebsResponse().code(HttpStatus.TOO_MANY_REQUESTS).message(e.getMessage());
+        log.error("LimitAccessException, {}", e.getMessage());
+        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(e.getMessage());
     }
 
     @ExceptionHandler(value = UnauthorizedException.class)

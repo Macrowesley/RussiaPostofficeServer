@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.aspect;
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 
@@ -15,7 +16,7 @@ public abstract class BaseAspectSupport {
         Method method = getDeclaredMethod(targetClass, signature.getName(),
                 signature.getMethod().getParameterTypes());
         if (method == null) {
-            throw new IllegalStateException("无法解析目标方法: " + signature.getMethod().getName());
+            throw new IllegalStateException(MessageUtils.getMessage("aspect.cannotParseMethod") + signature.getMethod().getName());
         }
         return method;
     }

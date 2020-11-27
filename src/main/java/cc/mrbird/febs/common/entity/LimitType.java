@@ -9,5 +9,9 @@ public enum LimitType {
     /**
      *  根据 IP地址限制
      */
-    IP
+    IP,
+    /**
+     * 默认使用方法
+     */
+    DEFAULT
 }
