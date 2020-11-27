@@ -1,5 +1,7 @@
 package cc.mrbird.febs.notice.controller;
 
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
@@ -30,6 +32,7 @@ import java.util.Map;
 public class ViewController extends BaseController {
 
     @GetMapping("notice")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_notice_view")
     public String noticeIndex(){
         return FebsUtil.view("notice/notice");
     }

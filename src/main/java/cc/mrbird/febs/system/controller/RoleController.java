@@ -2,6 +2,8 @@ package cc.mrbird.febs.system.controller;
 
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -30,17 +32,20 @@ public class RoleController extends BaseController {
     private final IRoleService roleService;
 
     @GetMapping
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse getAllRoles(Role role) {
         return new FebsResponse().success().data(roleService.findRoles(role));
     }
 
     @GetMapping("selectRole")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse findSelectsRoleByUser() {
         return new FebsResponse().success().data(roleService.findSelectsRoleByUser());
     }
 
     @GetMapping("list")
     @RequiresPermissions("role:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse roleList(Role role, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.roleService.findRoles(role, request));
         return new FebsResponse().success().data(dataTable);
@@ -49,6 +54,7 @@ public class RoleController extends BaseController {
     @PostMapping
     @RequiresPermissions("role:add")
     @ControllerEndpoint(operation = "新增角色", exceptionMessage = "{role.addFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse addRole(@Valid Role role) {
         this.roleService.createRole(role);
         return new FebsResponse().success();
@@ -57,6 +63,7 @@ public class RoleController extends BaseController {
     @GetMapping("delete/{roleIds}")
     @RequiresPermissions("role:delete")
     @ControllerEndpoint(operation = "删除角色", exceptionMessage = "{role.delFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse deleteRoles(@NotBlank(message = "{required}") @PathVariable String roleIds) {
         this.roleService.deleteRoles(roleIds);
         return new FebsResponse().success();
@@ -65,6 +72,7 @@ public class RoleController extends BaseController {
     @PostMapping("update")
     @RequiresPermissions("role:update")
     @ControllerEndpoint(operation = "修改角色", exceptionMessage = "{role.editFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public FebsResponse updateRole(Role role) {
         this.roleService.updateRole(role);
         return new FebsResponse().success();
@@ -73,6 +81,7 @@ public class RoleController extends BaseController {
     @GetMapping("excel")
     @RequiresPermissions("role:export")
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     public void export(QueryRequest queryRequest, Role role, HttpServletResponse response) throws FebsException {
         List<Role> roles = this.roleService.findRoles(role, queryRequest).getRecords();
         ExcelKit.$Export(Role.class, response).downXlsx(roles, false);

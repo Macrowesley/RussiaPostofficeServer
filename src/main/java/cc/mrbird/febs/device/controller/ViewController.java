@@ -1,5 +1,7 @@
 package cc.mrbird.febs.device.controller;
 
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.utils.FebsUtil;
@@ -26,18 +28,21 @@ public class ViewController {
 
     @GetMapping("device")
     @RequiresPermissions("device:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
     public String deviceIndex(){
         return FebsUtil.view("device/device");
     }
 
     @GetMapping("add")
     @RequiresPermissions("device:add")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
     public String deviceAdd() {
         return FebsUtil.view("device/deviceAdd");
     }
 
     @GetMapping("update/{deviceId}")
     @RequiresPermissions("device:update")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
     public String deviceUpdate(@NotNull @PathVariable Long deviceId, Model model) {
         Device device = deviceService.findDeviceById(deviceId);
         device.setCreateTime(null);

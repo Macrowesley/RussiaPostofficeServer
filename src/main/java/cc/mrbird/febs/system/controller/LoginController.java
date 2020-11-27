@@ -1,6 +1,7 @@
 package cc.mrbird.febs.system.controller;
 
 import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
@@ -38,7 +39,7 @@ public class LoginController extends BaseController {
     private final ILoginLogService loginLogService;
 
     @PostMapping("login")
-    @Limit(key = "login", period = 60, count = 10, name = "登录接口", prefix = "limit")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_login")
     public FebsResponse login(
             @NotBlank(message = "{required}") String username,
             @NotBlank(message = "{required}") String password,
@@ -59,6 +60,7 @@ public class LoginController extends BaseController {
     }
 
     @PostMapping("regist")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_login")
     public FebsResponse regist(
             @NotBlank(message = "{required}") String username,
             @NotBlank(message = "{required}") String password) throws FebsException {
@@ -71,6 +73,7 @@ public class LoginController extends BaseController {
     }
 
     @GetMapping("index/{username}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_login")
     public FebsResponse index(@NotBlank(message = "{required}") @PathVariable String username) {
         // 更新登录时间
         this.userService.updateLoginTime(username);
@@ -93,7 +96,7 @@ public class LoginController extends BaseController {
     }
 
     @GetMapping("images/captcha")
-    @Limit(key = "get_captcha", period = 60, count = 10, name = "获取验证码", prefix = "limit")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_login")
     public void captcha(HttpServletRequest request, HttpServletResponse response) throws IOException, FebsException {
         validateCodeService.create(request, response);
     }

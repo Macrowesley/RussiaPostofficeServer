@@ -1,6 +1,8 @@
 package cc.mrbird.febs.system.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -39,12 +41,14 @@ public class UserController extends BaseController {
     private final IUserService userService;
 
     @GetMapping("{username}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public User getUser(@NotBlank(message = "{required}") @PathVariable String username) {
 
         return this.userService.findUserDetailList(username);
     }
 
     @GetMapping("check/{username}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public boolean checkUserName(@NotBlank(message = "{required}") @PathVariable String username, String userId) {
         return this.userService.findByName(username) == null || StringUtils.isNotBlank(userId);
     }
@@ -52,6 +56,7 @@ public class UserController extends BaseController {
     @GetMapping("list")
     @RequiresPermissions("user:view")
     @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse userList(User user, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
@@ -59,6 +64,7 @@ public class UserController extends BaseController {
 
     @GetMapping("deptUserList")
     @ControllerEndpoint(operation = "获取机构用户列表", exceptionMessage = "{user.operation.listError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse deptUserList() {
         List<User> users = this.userService.findUserByRoleId(RoleType.organizationManager);
         return new FebsResponse().success().data(users);
@@ -67,6 +73,7 @@ public class UserController extends BaseController {
     @PostMapping
     @RequiresPermissions("user:add")
     @ControllerEndpoint(operation = "新增用户", exceptionMessage = "{user.operation.addError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse addUser(@Valid User user) {
         this.userService.createUser(user);
         return new FebsResponse().success();
@@ -75,6 +82,7 @@ public class UserController extends BaseController {
     @GetMapping("delete/{userIds}")
     @RequiresPermissions("user:delete")
     @ControllerEndpoint(operation = "删除用户", exceptionMessage = "{user.operation.delError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
         String[] ids = userIds.split(StringPool.COMMA);
         this.userService.deleteUsers(ids);
@@ -84,6 +92,7 @@ public class UserController extends BaseController {
     @PostMapping("update")
     @RequiresPermissions("user:update")
     @ControllerEndpoint(operation = "修改用户", exceptionMessage = "{user.operation.editError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse updateUser(@Valid User user) {
         if (user.getUserId() == null) {
             throw new FebsException("用户ID为空");
@@ -95,6 +104,7 @@ public class UserController extends BaseController {
     @PostMapping("password/reset/{usernames}")
     @RequiresPermissions("user:password:reset")
     @ControllerEndpoint(exceptionMessage = "{user.operation.resetError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse resetPassword(@NotBlank(message = "{required}") @PathVariable String usernames) {
         String[] usernameArr = usernames.split(StringPool.COMMA);
         this.userService.resetPassword(usernameArr);
@@ -103,6 +113,7 @@ public class UserController extends BaseController {
 
     @PostMapping("password/update")
     @ControllerEndpoint(exceptionMessage = "{user.operation.editPwdError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse updatePassword(
             @NotBlank(message = "{required}") String oldPassword,
             @NotBlank(message = "{required}") String newPassword) {
@@ -116,6 +127,7 @@ public class UserController extends BaseController {
 
     @GetMapping("avatar/{image}")
     @ControllerEndpoint(exceptionMessage = "{user.operation.editAvageError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse updateAvatar(@NotBlank(message = "{required}") @PathVariable String image) {
         User user = getCurrentUser();
         this.userService.updateAvatar(user.getUsername(), image);
@@ -124,6 +136,7 @@ public class UserController extends BaseController {
 
     @PostMapping("theme/update")
     @ControllerEndpoint(exceptionMessage = "{user.operation.editConfigError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse updateTheme(String theme, String isTab) {
         User user = getCurrentUser();
         this.userService.updateTheme(user.getUsername(), theme, isTab);
@@ -132,6 +145,7 @@ public class UserController extends BaseController {
 
     @PostMapping("profile/update")
     @ControllerEndpoint(exceptionMessage = "{user.operation.editUserInfoError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse updateProfile(User user) throws FebsException {
         User currentUser = getCurrentUser();
         user.setUserId(currentUser.getUserId());
@@ -142,6 +156,7 @@ public class UserController extends BaseController {
     @GetMapping("excel")
     @RequiresPermissions("user:export")
     @ControllerEndpoint(exceptionMessage = "{user.operation.exportError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public void export(QueryRequest queryRequest, User user, HttpServletResponse response) {
         List<User> users = this.userService.findUserDetailList(user, queryRequest).getRecords();
         ExcelKit.$Export(User.class, response).downXlsx(users, false);

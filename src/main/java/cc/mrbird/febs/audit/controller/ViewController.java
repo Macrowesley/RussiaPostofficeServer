@@ -1,5 +1,7 @@
 package cc.mrbird.febs.audit.controller;
 
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -17,12 +19,14 @@ public class ViewController {
 
     @GetMapping("audit")
     @RequiresPermissions("audit:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
     public String auditIndex(){
         return FebsUtil.view("audit/audit");
     }
 
     @GetMapping("reject/{auditId}")
     @RequiresPermissions("audit:update")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
     public String reject(@NotBlank @PathVariable String auditId, Model model){
         model.addAttribute("auditId", auditId);
         return FebsUtil.view("audit/reject");
@@ -35,6 +39,7 @@ public class ViewController {
      * @return
      */
     @GetMapping("selectByOrderId/{orderId}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
     public String selectByOrderId(@NotBlank @PathVariable String orderId, Model model){
         model.addAttribute("orderId", orderId);
         return FebsUtil.view("audit/listByOrderId");

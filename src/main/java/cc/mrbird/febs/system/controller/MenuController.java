@@ -2,6 +2,8 @@ package cc.mrbird.febs.system.controller;
 
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.MenuTree;
@@ -32,6 +34,7 @@ public class MenuController extends BaseController {
     private final IMenuService menuService;
 
     @GetMapping("{username}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public FebsResponse getUserMenus(@NotBlank(message = "{required}") @PathVariable String username) throws FebsException {
         User currentUser = getCurrentUser();
         if (!StringUtils.equalsIgnoreCase(username, currentUser.getUsername())) {
@@ -43,6 +46,7 @@ public class MenuController extends BaseController {
 
     @GetMapping("tree")
     @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public FebsResponse getMenuTree(Menu menu) {
         MenuTree<Menu> menus = this.menuService.findMenus(menu);
         return new FebsResponse().success().data(menus.getChilds());
@@ -51,6 +55,7 @@ public class MenuController extends BaseController {
     @PostMapping
     @RequiresPermissions("menu:add")
     @ControllerEndpoint(operation = "新增菜单/按钮", exceptionMessage = "{menu.addFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public FebsResponse addMenu(@Valid Menu menu) {
         this.menuService.createMenu(menu);
         return new FebsResponse().success();
@@ -59,6 +64,7 @@ public class MenuController extends BaseController {
     @GetMapping("delete/{menuIds}")
     @RequiresPermissions("menu:delete")
     @ControllerEndpoint(operation = "删除菜单/按钮", exceptionMessage = "{menu.deleteFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public FebsResponse deleteMenus(@NotBlank(message = "{required}") @PathVariable String menuIds) {
         this.menuService.deleteMenus(menuIds);
         return new FebsResponse().success();
@@ -67,6 +73,7 @@ public class MenuController extends BaseController {
     @PostMapping("update")
     @RequiresPermissions("menu:update")
     @ControllerEndpoint(operation = "修改菜单/按钮", exceptionMessage = "{menu.editFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public FebsResponse updateMenu(@Valid Menu menu) {
         this.menuService.updateMenu(menu);
         return new FebsResponse().success();
@@ -75,6 +82,7 @@ public class MenuController extends BaseController {
     @GetMapping("excel")
     @RequiresPermissions("menu:export")
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public void export(Menu menu, HttpServletResponse response) {
         List<Menu> menus = this.menuService.findMenuList(menu);
         ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);

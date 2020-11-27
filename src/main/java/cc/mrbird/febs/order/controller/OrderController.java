@@ -1,6 +1,8 @@
 package cc.mrbird.febs.order.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.AuditType;
 import cc.mrbird.febs.common.entity.FebsResponse;
@@ -53,6 +55,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "获取注资分页列表", exceptionMessage = "{order.operation.listError}")
     @GetMapping("list")
     @RequiresPermissions("order:list")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse orderList(QueryRequest request, OrderVo order) {
         log.info("请求订单列表");
 //        log.info("请求参数：order={} , request={}", order.toString(), request.toString());
@@ -66,12 +69,14 @@ public class OrderController extends BaseController {
 
     @ControllerEndpoint(operation = "获取注资状态列表", exceptionMessage = "{order.operation.listError}")
     @GetMapping("selectStatus")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse selectStatus() {
         return new FebsResponse().success().data(StatusUtils.getOrderStatusList());
     }
 
     @ControllerEndpoint(operation = "获取表头号列表", exceptionMessage = "{order.operation.acnumListError}")
     @GetMapping("getAcnumList")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse getAcnumList() {
         List<Device> acnumList = deviceService.findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId());
         return new FebsResponse().success().data(acnumList);
@@ -79,6 +84,7 @@ public class OrderController extends BaseController {
 
     @ControllerEndpoint(operation = "获取审核员列表", exceptionMessage = "{order.operation.auditListError}")
     @GetMapping("getAuditUserNameList/{deviceId}")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse getAuditUserNameList(@NotBlank @PathVariable String deviceId) {
         List<Map<String, Object>> userList = userService.findAuditListByDeviceId(deviceId);
         return new FebsResponse().success().data(userList);
@@ -87,6 +93,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "新增", exceptionMessage = "{order.operation.addError}")
     @PostMapping("add")
     @RequiresPermissions("order:add")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse addOrder(@Valid OrderVo order) {
         this.orderService.createOrder(order);
         return new FebsResponse().success();
@@ -95,6 +102,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "修改", exceptionMessage = "{order.operation.editError}")
     @PostMapping("update")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse editOrder(OrderVo order) {
         this.orderService.editOrder(order);
         return new FebsResponse().success();
@@ -103,6 +111,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "提交审核", exceptionMessage = "{order.operation.submitAuditError}")
     @PostMapping("submitApply/{auditType}")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse submitApply(OrderVo orderVo, @NotBlank @PathVariable String auditType) {
         if (auditType.equals(AuditType.injection)){
             orderService.submitAuditApply(orderVo);
@@ -118,6 +127,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "{order.operation.auditDetailError}")
     @PostMapping("auditDetail")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse auditDetail(OrderVo order) {
         //TODO
         return new FebsResponse().success();
@@ -126,6 +136,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "注销", exceptionMessage = "{order.operation.repealError}")
     @PostMapping("cancel/{orderId}")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse cancelOrder(@NotBlank @PathVariable String orderId) {
         orderService.cancelOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
@@ -134,6 +145,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "冻结", exceptionMessage = "{order.operation.freezeError}")
     @PostMapping("freeze/{orderId}")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse freezeOrder(@NotBlank @PathVariable String orderId) {
         orderService.freezeOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
@@ -142,6 +154,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "解冻", exceptionMessage = "{order.operation.unfreezeError}")
     @PostMapping("unfreeze/{orderId}")
     @RequiresPermissions("order:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse unfreezeOrder(@NotBlank @PathVariable String orderId) {
         orderService.unfreezeOrder(Long.valueOf(orderId));
         return new FebsResponse().success();
@@ -150,6 +163,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "导出Order", exceptionMessage = "{order.operation.exportError}")
     @GetMapping("excel")
     @RequiresPermissions("order:export")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public void export(QueryRequest queryRequest, OrderVo order, HttpServletResponse response) {
         List<OrderVo> orders = this.orderService.findAllOrders(queryRequest, order);
         orders.stream().forEach(orderVo -> {

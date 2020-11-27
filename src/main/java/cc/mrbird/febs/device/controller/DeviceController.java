@@ -1,6 +1,8 @@
 package cc.mrbird.febs.device.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.entity.FebsConstant;
@@ -48,6 +50,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("list")
     @RequiresPermissions("device:list")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse devicePageList(QueryRequest request, Device device) {
         log.info("request = " + request.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
@@ -56,6 +59,7 @@ public class DeviceController extends BaseController {
 
     @ControllerEndpoint(operation = "获取列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("allList/{bindUserId}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse allList(@NotBlank(message = "{required}") @PathVariable String bindUserId) {
         Map<String, Object> data =  deviceService.selectDeviceListToTransfer(bindUserId);
         return new FebsResponse().success().data(data);
@@ -64,6 +68,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "分配设备", exceptionMessage = "{device.operation.deviceError}")
     @PostMapping("sendDevice/{deviceIds}/{bindUserId}")
 //    @RequiresPermissions("device:add")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public FebsResponse sendDevice(@NotBlank(message = "{required}") @PathVariable String deviceIds,
                                    @NotBlank(message = "{required}") @PathVariable String bindUserId) {
         log.info("获取的分配设备id = " + deviceIds + " 绑定的userId = " + bindUserId);
@@ -74,6 +79,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "新增Device", exceptionMessage = "{device.operation.addDeviceError}")
     @PostMapping("add")
     @RequiresPermissions("device:add")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public FebsResponse addDevice(Device device, String bindUserId, String acnumList) {
         log.info("新增device device= {}， bindUserId = {}, acnumList = {}" , device.toString(), bindUserId, acnumList);
         if (acnumList.length() > 8 && !acnumList.contains(",")){
@@ -86,6 +92,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "删除Device", exceptionMessage = "{device.operation.delDeviceError}")
     @GetMapping("delete")
     @RequiresPermissions("device:delete")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public FebsResponse deleteDevice(Device device) {
         this.deviceService.deleteDevice(device);
         return new FebsResponse().success();
@@ -94,6 +101,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "修改Device", exceptionMessage = "{device.operation.editDeviceError}")
     @PostMapping("update/{userdeviceId}")
     @RequiresPermissions("device:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public FebsResponse updateDevice(Device device, String bindUserId, @NotBlank @PathVariable String userdeviceId) {
         this.deviceService.updateDevice(device, bindUserId, userdeviceId);
         return new FebsResponse().success();
@@ -102,6 +110,7 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "{device.operation.exportError}")
     @GetMapping("excel")
     @RequiresPermissions("device:export")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
         List<Device> devices = this.deviceService.findDevices(queryRequest, device).getRecords();
         ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
@@ -109,6 +118,7 @@ public class DeviceController extends BaseController {
 
     @ControllerEndpoint(operation = "检查表头号是否存在", exceptionMessage = "{device.operation.checkAcnumError}")
     @PostMapping("checkIsExist/{acnumList}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse checkIsExist(@NotBlank @PathVariable("acnumList") String acnumList) {
         if (acnumList.length() > 8 && !acnumList.contains(",")){
             throw new FebsException("数据格式不对");
