@@ -4,7 +4,9 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
 import cc.mrbird.febs.common.exception.LimitAccessException;
+import cc.mrbird.febs.common.exception.LimitAccessViewException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -35,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public FebsResponse handleException(Exception e) {
+//        e.printStackTrace();
         log.error("系统内部异常，异常信息 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(MessageUtils.getMessage("globalHandler.system.error"));
     }
@@ -43,6 +47,22 @@ public class GlobalExceptionHandler {
     public FebsResponse handleFebsException(FebsException e) {
         log.error("系统错误 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
+    }
+
+    @ExceptionHandler(value = LimitAccessException.class)
+    public FebsResponse handleLimitAccessApiException(LimitAccessException e) {
+        log.error("LimitAccessException, {}", e.getMessage());
+        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(e.getMessage());
+    }
+
+    @ExceptionHandler(value = LimitAccessViewException.class)
+    public Object handleLimitAccessViewException(LimitAccessViewException e) {
+        log.error("666 handleLimitAccessViewException, {}", e.getMessage());
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(FebsUtil.view("error/429"));
+//        mav.setViewName("error/429");
+        return mav;
     }
 
     /**
@@ -98,11 +118,6 @@ public class GlobalExceptionHandler {
         return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
     }
 
-    @ExceptionHandler(value = LimitAccessException.class)
-    public FebsResponse handleLimitAccessException(LimitAccessException e) {
-        log.error("LimitAccessException, {}", e.getMessage());
-        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(e.getMessage());
-    }
 
     @ExceptionHandler(value = UnauthorizedException.class)
     public FebsResponse handleUnauthorizedException(UnauthorizedException e) {

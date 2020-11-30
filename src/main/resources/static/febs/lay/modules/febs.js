@@ -537,8 +537,8 @@ layui.extend({
             parseData: function (res) {
                 return {
                     "code": res.code === 200 ? 0 : res.code,
-                    "count": res.data.total,
-                    "data": res.data.rows
+                    "count": res.data === undefined ? undefined : res.data.total,
+                    "data": res.data === undefined ? undefined : res.data.rows,
                 }
             },
             done: function (res, curr, count) {

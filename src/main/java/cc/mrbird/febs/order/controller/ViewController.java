@@ -30,7 +30,7 @@ public class ViewController {
 
     @GetMapping("order")
     @RequiresPermissions("order:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_order_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_order_view", isApi = false)
     public String orderIndex(Model model){
 //        List<OrderBtnEnum> btnList = BtnPermissionUtils.getBtnList()
         return FebsUtil.view("order/order");
@@ -38,14 +38,14 @@ public class ViewController {
 
     @GetMapping("add")
     @RequiresPermissions("order:add")
-    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view", isApi = false)
     public String orderAdd(){
         return FebsUtil.view("order/orderAdd");
     }
 
     @GetMapping("update/{orderId}")
     @RequiresPermissions("order:update")
-    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view", isApi = false)
     public String orderUpdate(@NotBlank @PathVariable String orderId, Model model){
         log.info("orderId = {}", orderId );
         //需要几个数据  device中的maxAmount acnum  审核人的id  还需要传递orderId进去
@@ -57,7 +57,7 @@ public class ViewController {
     @ControllerEndpoint(operation = "提交注资审核", exceptionMessage = "{order.operation.submitAuditError}")
     @GetMapping("submitApply/{orderId}/{audityType}")
     @RequiresPermissions("order:update")
-    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view", isApi = false)
     public String submitApply(@NotBlank @PathVariable String orderId,
                                        @NotBlank @PathVariable String audityType,
                                        Model model) {

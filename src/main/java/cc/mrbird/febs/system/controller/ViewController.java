@@ -49,7 +49,7 @@ public class ViewController extends BaseController {
     String websocketServiceName;
 
     @GetMapping("login")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+//    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     @ResponseBody
     public Object login(HttpServletRequest request) {
         if (FebsUtil.isAjaxRequest(request)) {
@@ -73,7 +73,6 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("index")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
     public String index(Model model) {
         AuthorizationInfo authorizationInfo = shiroHelper.getCurrentUserAuthorizationInfo();
         User user = super.getCurrentUser();
@@ -97,12 +96,13 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "layout")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String layout() {
         return FebsUtil.view("layout");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "password/update")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String passwordUpdate() {
         return FebsUtil.view("system/user/passwordUpdate");
     }
@@ -113,27 +113,28 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "user/avatar")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String userAvatar() {
         return FebsUtil.view("system/user/avatar");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "user/profile/update")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String profileUpdate() {
         return FebsUtil.view("system/user/profileUpdate");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user")
     @RequiresPermissions("user:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUser() {
+        log.info("1111111");
         return FebsUtil.view("system/user/user");
     }
 
     @GetMapping("changeLaunage")
     @ResponseBody
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public FebsResponse changeLaunage(HttpServletRequest req, String lang){
         LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(req);
         if ("en".equals(lang)) {
@@ -146,7 +147,7 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/add")
     @RequiresPermissions("user:add")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUserAdd(Model model) {
         model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
         return FebsUtil.view("system/user/userAdd");
@@ -154,7 +155,7 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/detail/{username}")
     @RequiresPermissions("user:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUserDetail(@PathVariable String username, Model model) {
         resolveUserModel(username, model, true);
         return FebsUtil.view("system/user/userDetail");
@@ -162,7 +163,7 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/update/{username}")
     @RequiresPermissions("user:update")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUserUpdate(@PathVariable String username, Model model) {
         resolveUserModel(username, model, false);
         model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
@@ -171,7 +172,7 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/device/{username}")
     @RequiresPermissions("user:device")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUserDevice(@PathVariable String username, Model model) {
         resolveUserModel(username, model, false);
         return FebsUtil.view("system/user/userDevice");
@@ -179,27 +180,27 @@ public class ViewController extends BaseController {
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/role")
     @RequiresPermissions("role:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemRole() {
         return FebsUtil.view("system/role/role");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/menu")
     @RequiresPermissions("menu:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemMenu() {
         return FebsUtil.view("system/menu/menu");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "system/dept")
     @RequiresPermissions("dept:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemDept() {
         return FebsUtil.view("system/dept/dept");
     }
 
     @RequestMapping(FebsConstant.VIEW_PREFIX + "index")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String pageIndex() {
         return FebsUtil.view("index");
     }

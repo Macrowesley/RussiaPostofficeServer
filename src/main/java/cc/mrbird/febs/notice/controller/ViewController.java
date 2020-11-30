@@ -32,7 +32,7 @@ import java.util.Map;
 public class ViewController extends BaseController {
 
     @GetMapping("notice")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_notice_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_notice_view", isApi = false)
     public String noticeIndex(){
         return FebsUtil.view("notice/notice");
     }

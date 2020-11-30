@@ -19,14 +19,14 @@ public class ViewController {
 
     @GetMapping("audit")
     @RequiresPermissions("audit:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view", isApi = false)
     public String auditIndex(){
         return FebsUtil.view("audit/audit");
     }
 
     @GetMapping("reject/{auditId}")
     @RequiresPermissions("audit:update")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view", isApi = false)
     public String reject(@NotBlank @PathVariable String auditId, Model model){
         model.addAttribute("auditId", auditId);
         return FebsUtil.view("audit/reject");
@@ -39,7 +39,7 @@ public class ViewController {
      * @return
      */
     @GetMapping("selectByOrderId/{orderId}")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view", isApi = false)
     public String selectByOrderId(@NotBlank @PathVariable String orderId, Model model){
         model.addAttribute("orderId", orderId);
         return FebsUtil.view("audit/listByOrderId");

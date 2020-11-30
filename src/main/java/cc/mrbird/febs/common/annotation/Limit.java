@@ -42,4 +42,11 @@ public @interface Limit {
      * 限制类型
      */
     LimitType limitType() default LimitType.DEFAULT;
+
+    /**
+     * apitype
+     * true 普通借口
+     * false 视图接口
+     */
+    boolean isApi() default true;
 }

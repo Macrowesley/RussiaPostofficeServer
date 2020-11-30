@@ -28,21 +28,21 @@ public class ViewController {
 
     @GetMapping("device")
     @RequiresPermissions("device:view")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
     public String deviceIndex(){
         return FebsUtil.view("device/device");
     }
 
     @GetMapping("add")
     @RequiresPermissions("device:add")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
     public String deviceAdd() {
         return FebsUtil.view("device/deviceAdd");
     }
 
     @GetMapping("update/{deviceId}")
     @RequiresPermissions("device:update")
-    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
     public String deviceUpdate(@NotNull @PathVariable Long deviceId, Model model) {
         Device device = deviceService.findDeviceById(deviceId);
         device.setCreateTime(null);

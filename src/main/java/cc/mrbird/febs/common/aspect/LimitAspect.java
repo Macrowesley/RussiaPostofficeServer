@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.entity.LimitType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.LimitAccessException;
+import cc.mrbird.febs.common.exception.LimitAccessViewException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.HttpContextUtil;
 import cc.mrbird.febs.common.utils.IpUtil;
@@ -52,6 +53,7 @@ public class LimitAspect extends BaseAspectSupport {
         String ip = IpUtil.getIpAddr(request);
         int limitPeriod = limitAnnotation.period();
         int limitCount = limitAnnotation.count();
+        boolean isApi = limitAnnotation.isApi();
         switch (limitType) {
             case IP:
                 key = ip;
@@ -71,7 +73,11 @@ public class LimitAspect extends BaseAspectSupport {
         if (count != null && count.intValue() <= limitCount) {
             return point.proceed();
         } else {
-            throw new LimitAccessException(MessageUtils.getMessage("aspect.tooManyRequest"));
+            if (isApi){
+                throw new LimitAccessException(MessageUtils.getMessage("aspect.tooManyRequest"));
+            }else{
+                throw new LimitAccessViewException(MessageUtils.getMessage("aspect.tooManyRequest"));
+            }
         }
     }
 

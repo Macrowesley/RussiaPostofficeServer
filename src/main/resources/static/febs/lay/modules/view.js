@@ -194,7 +194,7 @@ layui
                             return;
                         }
                         if (result.code === 429) {
-                            self.tab.change('/404');
+                            self.tab.change('/429');
                             loadBar.finish();
                             return;
                         }
@@ -213,8 +213,8 @@ layui
                         if (res.status === 403) {
                             self.tab.change('/403');
                         }
-                        if (result.code === 429) {
-                            self.tab.change('/404');
+                        if (res.status === 429) {
+                            self.tab.change('/429');
                         }
                         if (res.status === 500) {
                             self.tab.change('/500');
