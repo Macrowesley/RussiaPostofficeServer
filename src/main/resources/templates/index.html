@@ -23,8 +23,10 @@
 <div id="febs"></div>
 <script th:src="@{layui/layui.js}"></script>
 <script th:src="@{websocket/websocket.js}"></script>
+<script th:src="@{jsencrypt/jsencrypt.min.js}"></script>
 <script th:src="@{i18n/jquery-3.5.1.min.js}"></script>
-<script th:src="@{i18n/jquery.i18n.properties-min-1.0.9.js}"></script>
+<!--<script th:src="@{i18n/jquery.i18n.properties-min-1.0.9.js}"></script>-->
+<script th:src="@{i18n/jquery.i18n.properties-1.2.7.js}"></script>
 <script th:inline="javascript" type="text/javascript">
     var ctx = [[@{/}]];
     //获取默认语言
@@ -45,7 +47,9 @@
         eleTree: 'lay/extends/eleTree'
     }).use(['index','jquery']);
 
+    echo("11")
     initLaunage();
+    echo("222")
     //开启websocket
     openSocket(currentUser.userId, websocketServiceName)
 
@@ -60,12 +64,13 @@
     //初始化语言配置
     function initLaunage() {
         //初始化i18n插件
-        $.i18n.properties({
+        var settings = {
             path: ctx + 'i18n/',//这里表示访问路径
             name: 'message',//文件名开头
             language: LANG_COUNTRY,//文件名语言 例如en_US
             mode: 'both'//默认值
-        });
+        };
+        $.i18n.properties(settings);
     }
 
     //初始化i18n函数
@@ -76,6 +81,12 @@
             return msgKey;
         }
     }
+
+    test();
+    function test() {
+        echo("开始测试RSA加密解密")
+    }
+
 </script>
 </body>
 </html>

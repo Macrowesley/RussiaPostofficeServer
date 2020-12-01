@@ -39,26 +39,26 @@
                 <div class="layui-card-body febs-table-full">
                     <form class="layui-form layui-table-form" action="" lay-filter="role-form">
                         <div class="layui-form-item febs-hide">
-                            <label class="layui-form-label febs-form-item-require" th:text="#{role.id.colon}"></label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{role.idColon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="roleId" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label febs-form-item-require" th:text="#{role.name.colon}"></label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{role.nameColon}"></label>
                             <div class="layui-input-block">
                                 <input type="text" name="roleName" autocomplete="off" class="layui-input" minlength="2"
                                        maxlength="10" lay-verify="range">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label" th:text="#{role.describe.colon}"></label>
+                            <label class="layui-form-label" th:text="#{role.describeColon}"></label>
                             <div class="layui-input-block">
                                 <textarea name="remark" maxlength="50" class="layui-textarea"></textarea>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label" th:text="#{role.role.colon}"></label>
+                            <label class="layui-form-label" th:text="#{role.roleColon}"></label>
                             <div class="layui-input-block menu-tree" style="margin-top: .8rem;"></div>
                         </div>
                         <div class="layui-form-item febs-hide">
