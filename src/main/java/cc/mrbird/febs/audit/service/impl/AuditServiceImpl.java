@@ -19,19 +19,18 @@ import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.generator.config.IFileCreate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
-import lombok.RequiredArgsConstructor;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +42,7 @@ import java.util.List;
  *
  * @date 2020-05-27 14:56:09
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -201,7 +201,18 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Transactional(rollbackFor = Exception.class)
     public void auditOneSuccess(String auditId) {
         Audit audit =  baseMapper.selectById(auditId);
+
+        //判断当前审核人没问题
+        User curUser = FebsUtil.getCurrentUser();
+        if (audit == null || !audit.getUserId().equals(curUser.getUserId())){
+            throw new FebsException(MessageUtils.getMessage("audit.operation.userError"));
+        }
+
         Order order = orderService.findOrderByOrderId(audit.getOrderId());
+
+        if (order == null){
+            throw new FebsException(MessageUtils.getMessage("audit.operation.noOrder"));
+        }
 
         //check
         StatusUtils.checkAuditBtnPermissioin(AuditBtnEnum.passBtn, audit.getStatus());
@@ -214,9 +225,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         updateAudit(audit);
 
         //更新订单状态
-        if (order == null){
-            throw new FebsException(MessageUtils.getMessage("audit.operation.noOrder"));
-        }
+
         switch (audit.getAuditType()){
             case AuditType.injection:
                 order.setOrderStatus(OrderStatusEnum.auditPass.getStatus());
@@ -258,7 +267,17 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     public void auditOneFail(String auditId, String checkRemark) {
 
         Audit audit = baseMapper.selectById(auditId);
+        //判断当前审核人没问题
+        User curUser = FebsUtil.getCurrentUser();
+        if (audit == null || !audit.getUserId().equals(curUser.getUserId())){
+            throw new FebsException(MessageUtils.getMessage("audit.operation.userError"));
+        }
+
+
         Order order = orderService.findOrderByOrderId(audit.getOrderId());
+        if (order == null){
+            throw new FebsException("订单不存在，无法审核");
+        }
 
         //check
         StatusUtils.checkAuditBtnPermissioin(AuditBtnEnum.noPassBtn, audit.getStatus());
@@ -272,9 +291,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
 
         //更新订单状态
 
-        if (order == null){
-            throw new FebsException("订单不存在，无法审核");
-        }
+
 
         switch (audit.getAuditType()){
             case AuditType.injection:

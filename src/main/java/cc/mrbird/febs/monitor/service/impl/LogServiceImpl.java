@@ -75,7 +75,7 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, SystemLog> implements
         // 设置 IP地址
         systemLog.setIp(ip);
         // 设置操作用户
-//        User user = (User) SecurityUtils.getSubject().getPrincipal();
+//        User user = FebsUtil.getCurrentUser();
         if (user != null) {
             systemLog.setUsername(user.getUsername());
         }

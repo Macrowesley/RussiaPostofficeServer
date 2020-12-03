@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.authentication;
 
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
@@ -60,7 +61,7 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principal) {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        User user = FebsUtil.getCurrentUser();
         String userName = user.getUsername();
 
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
