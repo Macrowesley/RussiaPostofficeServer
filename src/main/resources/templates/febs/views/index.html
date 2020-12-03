@@ -137,7 +137,7 @@
             util = layui.util,
             $view = $('#febs-index'),
             febs = layui.febs;
-        echo(currentUser.lastLoginTime)
+        // echo(currentUser.lastLoginTime)
         febs.get(ctx + 'index/' + currentUser.username, null, function (r) {
             handleSuccess(r.data);
         });
