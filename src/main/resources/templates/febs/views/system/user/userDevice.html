@@ -68,7 +68,7 @@
             });
             // echo(deviceIds);
             // return false;
-            febs.post(ctx + 'device/sendDevice/' + deviceIds.join(",") + '/' + user.userId, null, function () {
+            febs.post(ctx + 'device/sendDevice', {deviceIds: deviceIds.join(","), bindUserId: user.userId},  function () {
                 layer.closeAll();
                 febs.alert.success(user.username + i18n("userDevice.editSuccess"));
                 $('#febs-user').find('#refreshQuery').click();

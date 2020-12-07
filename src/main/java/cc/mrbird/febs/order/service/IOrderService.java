@@ -97,7 +97,7 @@ public interface IOrderService extends IService<Order> {
 
     void updateOrder(Order orderVo);
 
-    Map<String, Object> findOrderDetailByOrderId(String orderId);
+    Map<String, Object> findOrderDetailByOrderId(Long orderId);
 
     void editOrder(OrderVo order);
 

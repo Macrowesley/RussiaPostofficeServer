@@ -85,6 +85,11 @@
                 return false;
             }
 
+            if (data.field.expireDays <= 0){
+                febs.alert.warn(i18n("order.expireDaysLess1"));
+                return false;
+            }
+
             var warnAmount = parseFloat($order.warnAmount);
             var maxAmount = parseFloat($order.maxAmount);
             var curAmount = parseFloat(data.field.amount);

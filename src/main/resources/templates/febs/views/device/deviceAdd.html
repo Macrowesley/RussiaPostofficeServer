@@ -130,7 +130,7 @@
             }
 
             //检查是否重复
-            febs.post(ctx + "device/checkIsExist/" + acnumList, null, function (res) {
+            febs.post(ctx + "device/checkIsExist", {acnumList:acnumList}, function (res) {
                 console.log(res)
                 var res = res.data;
                 if (res.isExist == 1) {

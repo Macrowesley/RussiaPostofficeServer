@@ -74,7 +74,7 @@ public class Device implements Serializable {
      */
     @ExcelField(value = "有效天数")
     @TableField("valid_days")
-    private String validDays;
+    private Integer validDays;
 
     /**
      * 状态：1正常 0冻结

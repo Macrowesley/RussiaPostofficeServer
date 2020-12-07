@@ -89,6 +89,12 @@
                 febs.alert.warn(i18n("order.selectAudit"));
                 return false;
             }
+
+            if (data.field.expireDays <= 0){
+                febs.alert.warn(i18n("order.expireDaysLess1"));
+                return false;
+            }
+
             //判断金额是否超过限制
             if ($selectedAuditUserId != 0){
                 var amountInfo = $amountMap[$selectedAuditUserId];

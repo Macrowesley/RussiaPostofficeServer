@@ -11,6 +11,10 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.order.dto.AddOrderDTO;
+import cc.mrbird.febs.order.dto.EditOrderDTO;
+import cc.mrbird.febs.order.dto.EditOrderStatusDTO;
+import cc.mrbird.febs.order.dto.SubmitApplyDTO;
 import cc.mrbird.febs.order.entity.OrderExcel;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
@@ -21,6 +25,7 @@ import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +91,7 @@ public class OrderController extends BaseController {
     @ControllerEndpoint(operation = "获取审核员列表", exceptionMessage = "{order.operation.auditListError}")
     @GetMapping("getAuditUserNameList/{deviceId}")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse getAuditUserNameList(@NotBlank @PathVariable String deviceId) {
+    public FebsResponse getAuditUserNameList(@NotNull @PathVariable Long deviceId) {
         List<Map<String, Object>> userList = userService.findAuditListByDeviceId(deviceId);
         return new FebsResponse().success().data(userList);
     }
@@ -94,7 +100,9 @@ public class OrderController extends BaseController {
     @PostMapping("add")
     @RequiresPermissions("order:add")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse addOrder(@Valid OrderVo order) {
+    public FebsResponse addOrder(@Validated AddOrderDTO addOrderDTO) {
+        OrderVo order = new OrderVo();
+        BeanUtils.copyProperties(addOrderDTO, order);
         this.orderService.createOrder(order);
         return new FebsResponse().success();
     }
@@ -103,16 +111,21 @@ public class OrderController extends BaseController {
     @PostMapping("update")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse editOrder(OrderVo order) {
+    public FebsResponse editOrder(@Validated EditOrderDTO editOrderDTO) {
+        OrderVo order = new OrderVo();
+        BeanUtils.copyProperties(editOrderDTO, order);
         this.orderService.editOrder(order);
         return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "提交审核", exceptionMessage = "{order.operation.submitAuditError}")
-    @PostMapping("submitApply/{auditType}")
+    @PostMapping("submitApply")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse submitApply(OrderVo orderVo, @NotBlank @PathVariable String auditType) {
+    public FebsResponse submitApply(@Validated SubmitApplyDTO submitApplyDTO) {
+        String auditType = submitApplyDTO.getAuditType();
+        OrderVo orderVo = new OrderVo();
+        BeanUtils.copyProperties(submitApplyDTO, orderVo);
         if (auditType.equals(AuditType.injection)){
             orderService.submitAuditApply(orderVo);
         }else if (auditType.equals(AuditType.closedCycle)){
@@ -124,39 +137,39 @@ public class OrderController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "{order.operation.auditDetailError}")
+    /*@ControllerEndpoint(operation = "显示审核详情", exceptionMessage = "{order.operation.auditDetailError}")
     @PostMapping("auditDetail")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse auditDetail(OrderVo order) {
         //TODO
         return new FebsResponse().success();
-    }
+    }*/
 
     @ControllerEndpoint(operation = "注销", exceptionMessage = "{order.operation.repealError}")
-    @PostMapping("cancel/{orderId}")
+    @PostMapping("cancel")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse cancelOrder(@NotBlank @PathVariable String orderId) {
-        orderService.cancelOrder(Long.valueOf(orderId));
+    public FebsResponse cancelOrder(@Validated EditOrderStatusDTO orderStatusDTO) {
+        orderService.cancelOrder(orderStatusDTO.getOrderId());
         return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "冻结", exceptionMessage = "{order.operation.freezeError}")
-    @PostMapping("freeze/{orderId}")
+    @PostMapping("freeze")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse freezeOrder(@NotBlank @PathVariable String orderId) {
-        orderService.freezeOrder(Long.valueOf(orderId));
+    public FebsResponse freezeOrder(@Validated EditOrderStatusDTO orderStatusDTO) {
+        orderService.freezeOrder(orderStatusDTO.getOrderId());
         return new FebsResponse().success();
     }
 
     @ControllerEndpoint(operation = "解冻", exceptionMessage = "{order.operation.unfreezeError}")
-    @PostMapping("unfreeze/{orderId}")
+    @PostMapping("unfreeze")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse unfreezeOrder(@NotBlank @PathVariable String orderId) {
-        orderService.unfreezeOrder(Long.valueOf(orderId));
+    public FebsResponse unfreezeOrder(@Validated EditOrderStatusDTO orderStatusDTO) {
+        orderService.unfreezeOrder(orderStatusDTO.getOrderId());
         return new FebsResponse().success();
     }
 

@@ -1,5 +1,7 @@
 package cc.mrbird.febs.audit.controller;
 
+import cc.mrbird.febs.audit.dto.NoPassAuditDTO;
+import cc.mrbird.febs.audit.dto.PassAuditDTO;
 import cc.mrbird.febs.audit.entity.Audit;
 import cc.mrbird.febs.audit.service.IAuditService;
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
@@ -23,7 +25,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -58,28 +62,28 @@ public class AuditController extends BaseController {
      */
     @GetMapping("selectByOrderId/{orderId}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_audit")
-    public FebsResponse selectByOrderId(@NotBlank @PathVariable String orderId, QueryRequest request) {
+    public FebsResponse selectByOrderId(@PathVariable @NotNull @Min(1) Long orderId, QueryRequest request) {
         Audit audit = new Audit();
-        audit.setOrderId(Long.valueOf(orderId));
+        audit.setOrderId(orderId);
         Map<String, Object> dataTable = getDataTable(this.auditService.findPageAudits(request, audit));
         return new FebsResponse().success().data(dataTable);
     }
 
-    @ControllerEndpoint(operation = "修改审核", exceptionMessage = "{audit.operation.editError}")
+    /*@ControllerEndpoint(operation = "修改审核", exceptionMessage = "{audit.operation.editError}")
     @PostMapping("update")
     @RequiresPermissions("audit:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_audit_audit")
     public FebsResponse updateAudit(Audit audit) {
         this.auditService.updateAudit(audit);
         return new FebsResponse().success();
-    }
+    }*/
 
     @ControllerEndpoint(operation = "审核通过", exceptionMessage = "{audit.operation.passError}")
-    @PostMapping("pass/{auditId}")
+    @PostMapping("pass")
     @RequiresPermissions("audit:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_audit_audit")
-    public FebsResponse passAudit(@NotBlank @PathVariable String auditId) {
-        this.auditService.auditOneSuccess(auditId);
+    public FebsResponse passAudit(@Validated PassAuditDTO auditDTO) {
+        this.auditService.auditOneSuccess(auditDTO.getAuditId());
         return new FebsResponse().success();
     }
 
@@ -87,8 +91,8 @@ public class AuditController extends BaseController {
     @PostMapping("noPass")
     @RequiresPermissions("audit:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_audit_audit")
-    public FebsResponse noPassAudit(Audit audit) {
-        this.auditService.auditOneFail(String.valueOf(audit.getAuditId()), audit.getCheckRemark());
+    public FebsResponse noPassAudit(@Validated NoPassAuditDTO auditDTO) {
+        this.auditService.auditOneFail(String.valueOf(auditDTO.getAuditId()), auditDTO.getCheckRemark());
         return new FebsResponse().success();
     }
 

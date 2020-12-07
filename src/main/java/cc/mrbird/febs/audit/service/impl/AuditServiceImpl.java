@@ -188,7 +188,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
         List<String> auditIdList = Arrays.asList(auditIds.split(StringPool.COMMA));
         auditIdList.stream().forEach(auditId ->{
             //更新审核状态
-            auditOneSuccess(auditId);
+            auditOneSuccess(Long.valueOf(auditId));
         });
     }
 
@@ -199,7 +199,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void auditOneSuccess(String auditId) {
+    public void auditOneSuccess(Long auditId) {
         Audit audit =  baseMapper.selectById(auditId);
 
         //判断当前审核人没问题

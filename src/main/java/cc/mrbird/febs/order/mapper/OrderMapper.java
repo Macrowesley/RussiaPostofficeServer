@@ -48,5 +48,5 @@ public interface OrderMapper extends BaseMapper<Order> {
     IPage<OrderVo> selectByUserId(Page<OrderVo> page, @Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
     List<OrderVo> selectByUserId(@Param("curUserId") long curUserId, @Param("order") OrderVo orderVo);
 
-    Map<String, Object> findOrderDetailByOrderId(String orderId);
+    Map<String, Object> findOrderDetailByOrderId(Long orderId);
 }

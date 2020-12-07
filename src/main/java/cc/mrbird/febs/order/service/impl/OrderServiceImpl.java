@@ -460,7 +460,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public Map<String, Object> findOrderDetailByOrderId(String orderId) {
+    public Map<String, Object> findOrderDetailByOrderId(Long orderId) {
         return this.baseMapper.findOrderDetailByOrderId(orderId);
     }
 

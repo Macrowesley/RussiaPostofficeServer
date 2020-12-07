@@ -7,12 +7,16 @@ import cc.mrbird.febs.common.utils.FebsUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
+@Validated
 @Controller("auditView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "audit")
 public class ViewController {
@@ -40,7 +44,7 @@ public class ViewController {
      */
     @GetMapping("selectByOrderId/{orderId}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_audit_view", isApi = false)
-    public String selectByOrderId(@NotBlank @PathVariable String orderId, Model model){
+    public String selectByOrderId(@PathVariable @NotNull @Min(1) Long orderId, Model model){
         model.addAttribute("orderId", orderId);
         return FebsUtil.view("audit/listByOrderId");
     }

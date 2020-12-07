@@ -41,7 +41,7 @@ public interface UserMapper extends BaseMapper<User> {
      */
     List<User> findUserDetail(@Param("user") User user);
 
-    List<Map<String, Object>> findAuditListByDeviceId(@Param("deviceId") String deviceId);
+    List<Map<String, Object>> findAuditListByDeviceId(@Param("deviceId") Long deviceId);
 
     /**
      * 根据用户角色搜索用户信息

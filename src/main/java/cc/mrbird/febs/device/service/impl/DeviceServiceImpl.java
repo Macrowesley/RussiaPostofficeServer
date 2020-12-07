@@ -9,6 +9,8 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.common.utils.SortUtil;
+import cc.mrbird.febs.device.dto.AddDeviceDTO;
+import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.DeviceMapper;
@@ -19,8 +21,10 @@ import cc.mrbird.febs.system.entity.UserRole;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
+import com.mchange.v2.beans.BeansUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
@@ -113,16 +117,19 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateDevice(Device device, String bindUserId, String userdeviceId) {
+    public void updateDevice(UpdateDeviceDTO updateDeviceDTO) {
+        Device device = new Device();
+        BeanUtils.copyProperties(updateDeviceDTO, device);
+
         editMoney(device);
         this.saveOrUpdate(device);
 
         if (FebsUtil.getCurrentUser().getRoleId().equals(RoleType.systemManager)) {
             //更新绑定状态
             UserDevice userDevice = new UserDevice();
-            userDevice.setId(Long.valueOf(userdeviceId));
+            userDevice.setId(updateDeviceDTO.getUserDeviceId());
             userDevice.setDeviceId(device.getDeviceId());
-            userDevice.setUserId(Long.valueOf(bindUserId));
+            userDevice.setUserId(updateDeviceDTO.getBindUserId());
             userDeviceService.updateUserDevice(userDevice);
         }
     }
@@ -167,8 +174,10 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDeviceList(Device device, String acnumList, String bindUserId) {
-        List<String> list = Arrays.asList(acnumList.trim().toUpperCase().split(","));
+    public void saveDeviceList(AddDeviceDTO addDeviceDTO) {
+        Device device = new Device();
+        BeanUtils.copyProperties(addDeviceDTO, device);
+        List<String> list = Arrays.asList(addDeviceDTO.getAcnumList().trim().toUpperCase().split(","));
 //        long curUserId = FebsUtil.getCurrentUser().getUserId();
         List<UserDevice> userDeviceList = new ArrayList<>();
         list.stream().forEach(acnum -> {
@@ -182,7 +191,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
                     UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
-                    userDevice.setUserId(Long.valueOf(bindUserId));
+                    userDevice.setUserId(addDeviceDTO.getBindUserId());
                     userDeviceList.add(userDevice);
                 }
         );

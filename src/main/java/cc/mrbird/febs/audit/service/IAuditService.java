@@ -91,7 +91,7 @@ public interface IAuditService extends IService<Audit> {
      * 审核通过(单个)
      * @param auditId
      */
-    void auditOneSuccess(String auditId);
+    void auditOneSuccess(Long auditId);
 
     /**
      * 审核失败(批量)

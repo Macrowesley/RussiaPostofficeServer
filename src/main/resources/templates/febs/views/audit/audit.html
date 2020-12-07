@@ -240,7 +240,7 @@
                 //通过
                 if (layEvent == 'pass') {
                     febs.modal.confirm(i18n("notice"), i18n("audit.conformPass"), function () {
-                        $.post(ctx + "audit/pass/" + data.auditId, null, function (res) {
+                        febs.post(ctx + "audit/pass/", {auditId: data.auditId}, function (res) {
                             if (res.code === 200) {
                                 febs.alert.info(i18n("operationSuccess"));
                                 queryTable(0);

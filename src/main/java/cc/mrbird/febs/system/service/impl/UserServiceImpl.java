@@ -247,7 +247,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public List<Map<String, Object>> findAuditListByDeviceId(String deviceId) {
+    public List<Map<String, Object>> findAuditListByDeviceId(Long deviceId) {
         return baseMapper.findAuditListByDeviceId(deviceId);
     }
 

@@ -13,13 +13,16 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Slf4j
+@Validated
 @Controller("deviceView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "device")
 public class ViewController {
@@ -43,7 +46,7 @@ public class ViewController {
     @GetMapping("update/{deviceId}")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
-    public String deviceUpdate(@NotNull @PathVariable Long deviceId, Model model) {
+    public String deviceUpdate(@NotNull @Min(1) @PathVariable Long deviceId, Model model) {
         Device device = deviceService.findDeviceById(deviceId);
         device.setCreateTime(null);
         log.info("device信息 = " + device.toString());

@@ -392,7 +392,7 @@
                 //注销
                 if (layEvent == 'repealBtn') {
                     febs.modal.confirm(i18n("notice"), i18n("order.confirmRepeal"), function () {
-                        $.post(ctx + "order/cancel/" + data.orderId, null, function (res) {
+                        $.post(ctx + "order/cancel", {orderId:data.orderId}, function (res) {
                             if (res.code === 200) {
                                 febs.alert.info(i18n("order.repealSuccess"));
                                 queryTable(0);
@@ -406,7 +406,7 @@
                 //冻结
                 if (layEvent == 'freezeBtn') {
                     febs.modal.confirm(i18n("notice"), i18n("order.confirmFreeze"), function () {
-                        $.post(ctx + "order/freeze/" + data.orderId, null, function (res) {
+                        $.post(ctx + "order/freeze", {orderId:data.orderId}, function (res) {
                             if (res.code === 200) {
                                 febs.alert.info(i18n("order.freezeSuccess"));
                                 queryTable(0);
@@ -420,7 +420,7 @@
                 //解冻
                 if (layEvent == 'unfreezeBtn') {
                     febs.modal.confirm(i18n("notice"), i18n("order.confirmUnfreeze"), function () {
-                        $.post(ctx + "order/unfreeze/" + data.orderId, null, function (res) {
+                        $.post(ctx + "order/unfreeze", {orderId:data.orderId}, function (res) {
                             if (res.code === 200) {
                                 febs.alert.info(i18n("order.confirmUnfreeze"));
                                 queryTable(0);

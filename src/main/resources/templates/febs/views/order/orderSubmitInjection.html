@@ -73,7 +73,8 @@
                 return false;
             }
 
-            febs.post(ctx + 'order/submitApply/' + $audityType, data.field, function (result) {
+            data.field.auditType = $audityType;
+            febs.post(ctx + 'order/submitApply', data.field, function (result) {
                 layer.closeAll();
                 febs.alert.success(i18n("order.submitSuccess"));
                 $('#febs-order').find('#refreshQuery').click();

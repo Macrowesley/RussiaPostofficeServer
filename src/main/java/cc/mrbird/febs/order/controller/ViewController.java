@@ -13,15 +13,20 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @Slf4j
+@Validated
 @Controller("orderView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "order")
 public class ViewController {
@@ -46,7 +51,7 @@ public class ViewController {
     @GetMapping("update/{orderId}")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view", isApi = false)
-    public String orderUpdate(@NotBlank @PathVariable String orderId, Model model){
+    public String orderUpdate(@NotNull @Min(1) @PathVariable Long orderId, Model model){
         log.info("orderId = {}", orderId );
         //需要几个数据  device中的maxAmount acnum  审核人的id  还需要传递orderId进去
         Map<String, Object> order = orderService.findOrderDetailByOrderId(orderId);
@@ -58,8 +63,8 @@ public class ViewController {
     @GetMapping("submitApply/{orderId}/{audityType}")
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_view", isApi = false)
-    public String submitApply(@NotBlank @PathVariable String orderId,
-                                       @NotBlank @PathVariable String audityType,
+    public String submitApply(@NotNull @Min(1) @PathVariable Long orderId,
+                                       @NotNull @Min(1) @Max(2) @PathVariable Integer audityType,
                                        Model model) {
         model.addAttribute("orderId", orderId);
         model.addAttribute("audityType",audityType);

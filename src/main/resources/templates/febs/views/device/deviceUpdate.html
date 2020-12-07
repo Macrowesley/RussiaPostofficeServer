@@ -153,7 +153,9 @@
             if (userDevice != null){
                 userDeviceId = userDevice.id;
             }
-            febs.post(ctx + 'device/update/'+ userDeviceId, data.field, function () {
+
+            data.field.userDeviceId = userDeviceId;
+            febs.post(ctx + 'device/update', data.field, function () {
                 layer.closeAll();
                 febs.alert.success( i18n("device.device")+ device.acnum + i18n("dataEditSuccess"));
                 $('#febs-device').find('#refreshQuery').click();

@@ -120,7 +120,7 @@ public interface IUserService extends IService<User> {
      * @param deviceId
      * @return
      */
-    List<Map<String, Object>> findAuditListByDeviceId(String deviceId);
+    List<Map<String, Object>> findAuditListByDeviceId(Long deviceId);
 
     /**
      * 根据角色搜索用户列表

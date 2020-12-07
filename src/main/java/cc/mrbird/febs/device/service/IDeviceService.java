@@ -2,6 +2,8 @@ package cc.mrbird.febs.device.service;
 
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.device.dto.AddDeviceDTO;
+import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -38,7 +40,7 @@ public interface IDeviceService extends IService<Device> {
      *
      * @param device device
      */
-    void updateDevice(Device device, String bindUserId, String userdeviceId);
+    void updateDevice(UpdateDeviceDTO updateDeviceDTO);
 
     /**
      * 删除
@@ -56,10 +58,8 @@ public interface IDeviceService extends IService<Device> {
 
     /**
      * 批量添加设备
-     * @param device
-     * @param acnumList
      */
-    void saveDeviceList(Device device, String acnumList, String bindUserId);
+    void saveDeviceList(AddDeviceDTO addDeviceDTO);
 
     /**
      * 根据id查询device
