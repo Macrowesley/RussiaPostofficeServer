@@ -9,6 +9,7 @@ import cc.mrbird.febs.system.service.IMenuService;
 import cc.mrbird.febs.system.service.IRoleService;
 import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  *
  *
  */
+@Slf4j
 @Component
 public class ShiroRealm extends AuthorizingRealm {
 

@@ -7,9 +7,8 @@ import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.common.utils.Md5Util;
+import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
-import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserDataPermission;
 import cc.mrbird.febs.system.entity.UserRole;
@@ -18,7 +17,6 @@ import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -111,7 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (StringUtils.isEmpty(user.getRealname())){
             user.setRealname(user.getUsername());
         }
-        user.setPassword(Md5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
+        user.setPassword(MD5Util.encrypt(user.getUsername(), User.DEFAULT_PASSWORD));
 
         User curUser = FebsUtil.getCurrentUser();
         long parentId = 0;
@@ -175,7 +173,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void resetPassword(String[] usernames) {
         Arrays.stream(usernames).forEach(username -> {
             User user = new User();
-            user.setPassword(Md5Util.encrypt(username, User.DEFAULT_PASSWORD));
+            user.setPassword(MD5Util.encrypt(username, User.DEFAULT_PASSWORD));
             this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         });
     }
@@ -184,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional(rollbackFor = Exception.class)
     public void regist(String username, String password) {
         User user = new User();
-        user.setPassword(Md5Util.encrypt(username, password));
+        user.setPassword(MD5Util.encrypt(username, password));
         user.setUsername(username);
         user.setCreateTime(new Date());
         user.setStatus(User.STATUS_VALID);
@@ -205,7 +203,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String username, String password) {
         User user = new User();
-        user.setPassword(Md5Util.encrypt(username, password));
+        user.setPassword(MD5Util.encrypt(username, password));
         user.setModifyTime(new Date());
         this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
     }

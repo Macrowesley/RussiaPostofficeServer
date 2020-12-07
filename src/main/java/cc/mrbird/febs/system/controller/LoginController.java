@@ -6,7 +6,7 @@ import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.service.ValidateCodeService;
-import cc.mrbird.febs.common.utils.Md5Util;
+import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.monitor.entity.LoginLog;
 import cc.mrbird.febs.monitor.service.ILoginLogService;
 import cc.mrbird.febs.system.entity.User;
@@ -47,7 +47,7 @@ public class LoginController extends BaseController {
             boolean rememberMe, HttpServletRequest request) throws FebsException {
         HttpSession session = request.getSession();
         validateCodeService.check(session.getId(), verifyCode);
-        password = Md5Util.encrypt(username.toLowerCase(), password);
+        password = MD5Util.encrypt(username.toLowerCase(), password);
         UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
         super.login(token);
         // 保存登录日志

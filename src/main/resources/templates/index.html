@@ -54,8 +54,9 @@
     //开启websocket
     openSocket(currentUser.userId, websocketServiceName)
 
-    test();
-    function test() {
+
+    // test1();
+    function test1() {
         echo("开始测试RSA加密解密")
         var jsonObj = {name:"好看",sex:"男"};
 
@@ -93,6 +94,63 @@
         });
 
     }
+
+    // test2();
+    function test2() {
+        echo("开始测试sign测试")
+        var jsonObj = {name:"好看",sex:"男"};
+        $.ajax({
+            type: "POST",   //提交的方法
+            dataType: "json",
+            contentType : 'application/json',//添加这句话
+            headers: {
+                'SignsValue': "sign111",
+                'TimeStamp': "time111",
+            },
+            url:ctx + 'myTest/signTest1?className=1班&teacher=王老师', //提交的地址
+            async: false,
+            data:JSON.stringify(jsonObj),
+
+
+            error: function(request) {  //失败的话
+                echoObject(request)
+            },
+            success: function(data) {  //成功
+                echoObject(data)
+            }
+        });
+
+        echo("测试2")
+        $.ajax({
+            type: "GET",   //提交的方法
+            dataType: "json",
+            contentType : 'application/json',//添加这句话
+            headers: {
+                'SignsValue': "sign222",
+                'TimeStamp': "time222",
+            },
+            url:ctx + 'myTest/signTest2/王老师/2班', //提交的地址 https://auto.uprins.com/p/test/signTest2/王老师/2班
+            async: false,
+
+            error: function(request) {  //失败的话
+                echoObject(request)
+            },
+            success: function(data) {  //成功
+                echoObject(data)
+            }
+        });
+
+        /*var febs = layui.febs;
+        febs.post(ctx + 'audit/noPass/', {name:11}, function (result) {
+
+            echo("6666")
+            febs.alert.success(i18n("operationSuccess"));
+            $('#febs-audit').find('#refreshQuery').click();
+        });*/
+
+    }
+
+
 
 </script>
 </body>

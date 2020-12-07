@@ -9,7 +9,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.utils.Md5Util;
+import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -24,9 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -118,7 +115,7 @@ public class UserController extends BaseController {
             @NotBlank(message = "{required}") String oldPassword,
             @NotBlank(message = "{required}") String newPassword) {
         User user = getCurrentUser();
-        if (!StringUtils.equals(user.getPassword(), Md5Util.encrypt(user.getUsername(), oldPassword))) {
+        if (!StringUtils.equals(user.getPassword(), MD5Util.encrypt(user.getUsername(), oldPassword))) {
             throw new FebsException(MessageUtils.getMessage("user.operation.oldPwdError"));
         }
         userService.updatePassword(user.getUsername(), newPassword);

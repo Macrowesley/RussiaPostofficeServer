@@ -42,9 +42,10 @@ public class RsaDecodeRequestBodyAdvice implements RequestBodyAdvice {
     @Override
     public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) throws IOException {
         try {
-            System.out.println("测试RSA beforeBodyRead");
+
             boolean encode = false;
             if (methodParameter.getMethod().isAnnotationPresent(RsaSecurityParameter.class)) {
+                System.out.println("测试RSA beforeBodyRead");
                 //获取注解配置的包含和去除字段
                 RsaSecurityParameter serializedField = methodParameter.getMethodAnnotation(RsaSecurityParameter.class);
                 //入参是否需要解密
