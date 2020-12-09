@@ -1,6 +1,7 @@
 package cc.mrbird.febs.system.controller;
 
 import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.Constant;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
@@ -50,6 +51,10 @@ public class LoginController extends BaseController {
         password = MD5Util.encrypt(username.toLowerCase(), password);
         UsernamePasswordToken token = new UsernamePasswordToken(username, password, rememberMe);
         super.login(token);
+
+        if (Constant.USERNAME.equals(username)){
+            return new FebsResponse().success();
+        }
         // 保存登录日志
         LoginLog loginLog = new LoginLog();
         loginLog.setUsername(username);

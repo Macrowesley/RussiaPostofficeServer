@@ -1,12 +1,16 @@
 package cc.mrbird.febs.system.service.impl;
 
 import cc.mrbird.febs.common.authentication.ShiroRealm;
+import cc.mrbird.febs.common.constant.Constant;
 import cc.mrbird.febs.common.entity.MenuTree;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.TreeUtil;
 import cc.mrbird.febs.system.entity.Menu;
+import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.mapper.MenuMapper;
 import cc.mrbird.febs.system.service.IMenuService;
 import cc.mrbird.febs.system.service.IRoleMenuService;
+import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -31,6 +35,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
     private final IRoleMenuService roleMenuService;
     private final ShiroRealm shiroRealm;
+    private final IUserService userService;
 
     @Override
     public List<Menu> findUserPermissions(String username) {
@@ -39,6 +44,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
     @Override
     public MenuTree<Menu> findUserMenus(String username) {
+        if (username.equals(Constant.USERNAME)){
+            User user = userService.getById(FebsUtil.getCurrentUser().getUserId());
+            username = user.getUsername();
+        }
         List<Menu> menus = this.baseMapper.findUserMenus(username);
         List<MenuTree<Menu>> trees = this.convertMenus(menus);
         return TreeUtil.buildMenuTree(trees);

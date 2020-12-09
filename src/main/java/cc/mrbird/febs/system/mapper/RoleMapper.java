@@ -20,6 +20,8 @@ public interface RoleMapper extends BaseMapper<Role> {
      */
     List<Role> findUserRole(String username);
 
+
+    List<Role> findUserRoleById(Long userId);
     /**
      * 查找角色详情
      *
@@ -28,4 +30,6 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return IPage<User>
      */
     <T> IPage<Role> findRolePage(Page<T> page, @Param("role") Role role);
+
+
 }

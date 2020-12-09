@@ -13,12 +13,11 @@ import java.util.Map;
 public interface UserMapper extends BaseMapper<User> {
 
     /**
-     * 通过用户名查找用户
+     *  查找用户
      *
-     * @param username 用户名
      * @return 用户
      */
-    User findByName(String username);
+    User findByName(@Param("user") User user);
 
     /**
      * 查找用户详细信息

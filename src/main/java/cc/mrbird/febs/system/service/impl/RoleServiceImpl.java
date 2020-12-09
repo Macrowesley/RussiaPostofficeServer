@@ -46,6 +46,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     }
 
     @Override
+    public List<Role> findUserRoleById(Long userId){
+        return this.baseMapper.findUserRoleById(userId);
+    }
+
+    @Override
     public List<Role> findRoles(Role role) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(role.getRoleName())) {
