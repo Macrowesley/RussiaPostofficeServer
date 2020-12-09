@@ -1,7 +1,10 @@
 package cc.mrbird.febs.common.authentication;
 
 import cc.mrbird.febs.common.constant.Constant;
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.properties.ValidateCodeProperties;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.Role;
@@ -10,6 +13,7 @@ import cc.mrbird.febs.system.service.IMenuService;
 import cc.mrbird.febs.system.service.IRoleService;
 import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserService;
+import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -21,6 +25,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpSession;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +43,7 @@ public class ShiroRealm extends AuthorizingRealm {
     private IRoleService roleService;
     private IMenuService menuService;
     private IUserDataPermissionService userDataPermissionService;
+    private RedisService redisService;
 
     @Autowired
     public void setMenuService(IMenuService menuService) {
@@ -51,6 +58,11 @@ public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     public void setRoleService(IRoleService roleService) {
         this.roleService = roleService;
+    }
+
+    @Autowired
+    public void setRedisService(RedisService redisService) {
+        this.redisService = redisService;
     }
 
     @Autowired
@@ -140,7 +152,8 @@ public class ShiroRealm extends AuthorizingRealm {
             return new SimpleAuthenticationInfo(user, password, getName());
         }
         if (user == null || !StringUtils.equals(password, user.getPassword())) {
-            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdError"));
+            addErrorTime(username);
+//            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdError"));
         }
 
         if (User.STATUS_LOCK.equals(user.getStatus())) {
@@ -149,6 +162,23 @@ public class ShiroRealm extends AuthorizingRealm {
         String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
         user.setDeptIds(deptIds);
         return new SimpleAuthenticationInfo(user, password, getName());
+    }
+
+    private void addErrorTime(String username) {
+        String key = FebsConstant.LOGIN_ERROR  + username;
+        long errorTimes = 0;
+        if (redisService.hasKey(key)){
+            errorTimes = redisService.incr(key,1L);
+        }else{
+            redisService.set(key, 0, (long) (60*60*24));
+            errorTimes = redisService.incr(key,1L);
+        }
+        if (errorTimes > 3){
+            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdErrorMoreThree"));
+        }else{
+            throw new IncorrectCredentialsException(MessageFormat.format(MessageUtils.getMessage("validation.pwdErrorTimes"),errorTimes));
+        }
+
     }
 
     /**

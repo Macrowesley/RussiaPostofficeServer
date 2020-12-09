@@ -33,6 +33,11 @@ public interface FebsConstant {
     String CODE_PREFIX = "febs_captcha_";
 
     /**
+     * 登录失败统计 Session Key
+     */
+    String LOGIN_ERROR = "login_error_";
+
+    /**
      * 允许下载的文件类型，根据需求自己添加（小写）
      */
     String[] VALID_FILE_TYPE = {"xlsx", "zip"};

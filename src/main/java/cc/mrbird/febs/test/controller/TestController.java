@@ -3,13 +3,20 @@ package cc.mrbird.febs.test.controller;
 import cc.mrbird.febs.common.annotation.CheckSign;
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.RsaSecurityParameter;
+import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.test.entity.Persion;
 import cc.mrbird.febs.test.entity.Student;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("myTest")
+import java.text.MessageFormat;
+
+@RequestMapping("test")
 @RestController
 @Slf4j
 public class TestController {
@@ -37,7 +44,7 @@ public class TestController {
         log.info("进行RSA测试1 Student = " + student.toString());
         String content = "内容";
         info.setName(content);
-        return  info;
+        return info;
     }
 
 
@@ -47,7 +54,7 @@ public class TestController {
         log.info("进行RSA测试2 " + info.toString());
         String content = "内容2";
         info.setName(content);
-        return  info;
+        return info;
     }
 
     @PostMapping("/signTest1")
@@ -61,9 +68,8 @@ public class TestController {
         log.info("进行signTest1 Student = " + student.toString());
         String content = "内容";
         info.setName(content);
-        return  info;
+        return info;
     }
-
 
 
     @GetMapping("/signTest2/{teacher}/{className}")
@@ -85,6 +91,31 @@ public class TestController {
 
         String content = "内容";
         persion.setName(content);
-        return  persion;
+        return persion;
+    }
+
+    @Autowired
+    RedisService redisService;
+
+    @GetMapping("/loginTest")
+    public String loginTest() {
+        log.info("begin");
+        String username = "hello";
+        long time = (long) (60 * 60 * 24);
+        time = 60;
+        String key = FebsConstant.LOGIN_ERROR + username;
+        long errorTimes = 0;
+        if (redisService.hasKey(key)) {
+            errorTimes = redisService.incr(key, 1L);
+        } else {
+            redisService.set(key, 0, time );
+            errorTimes = redisService.incr(key, 1L);
+        }
+        log.info("errorTimes = {}",errorTimes);
+        if (errorTimes > 3) {
+            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdErrorMoreThree"));
+        } else {
+            throw new IncorrectCredentialsException(MessageFormat.format(MessageUtils.getMessage("validation.pwdErrorTimes"), errorTimes));
+        }
     }
 }
