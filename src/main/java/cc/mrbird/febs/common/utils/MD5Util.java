@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.utils;
 
+import io.netty.util.CharsetUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
@@ -36,6 +37,10 @@ public class MD5Util {
         return hexDigits[d1] + hexDigits[d2];
     }
 
+    public static String MD5Encode(String origin) {
+        return MD5Encode(origin, CharsetUtil.UTF_8.name());
+    }
+
     public static String MD5Encode(String origin, String charsetname) {
         String resultString = null;
         try {
@@ -43,13 +48,13 @@ public class MD5Util {
             MessageDigest md = MessageDigest.getInstance("MD5");
             if (charsetname == null || "".equals(charsetname))
                 resultString = byteArrayToHexString(md.digest(resultString
-                        .getBytes()));
+                        .getBytes(CharsetUtil.UTF_8)));
             else
                 resultString = byteArrayToHexString(md.digest(resultString
                         .getBytes(charsetname)));
         } catch (Exception exception) {
         }
-        return resultString;
+        return resultString.toUpperCase();
     }
 
     private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5",

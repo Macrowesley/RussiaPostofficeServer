@@ -1,7 +1,8 @@
 package cc.mrbird.febs.common.aspect;
 
-import cc.mrbird.febs.common.utils.SignUtil;
-import com.alibaba.fastjson.JSONObject;
+import cc.mrbird.febs.common.utils.JoinPointUtil;
+import cc.mrbird.febs.common.utils.MD5Util;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
@@ -15,8 +16,6 @@ import org.apache.ibatis.javassist.bytecode.CodeAttribute;
 import org.apache.ibatis.javassist.bytecode.LocalVariableAttribute;
 import org.apache.ibatis.javassist.bytecode.MethodInfo;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -27,7 +26,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -36,6 +34,7 @@ import java.util.*;
 @Configuration
 @Log4j2
 public class CheckSignAspect {
+    private final static String PRIVATE_KEY = "QKBgQCWlA";
     // 定义切点Pointcut
     @Pointcut("@annotation(cc.mrbird.febs.common.annotation.CheckSign)")
     public void excudeService() {
@@ -47,7 +46,10 @@ public class CheckSignAspect {
     private static ObjectMapper objectMapper = new ObjectMapper();
     /**
      * 请求方法前打印内容
-     *
+     * 得到所有参数信息
+     * 判断签名是否一致
+     * 判断时间是佛过期 30s
+     * 判断redis是否存在随机数
      * @param joinPoint
      */
     @Before("excudeService()")
@@ -58,47 +60,82 @@ public class CheckSignAspect {
         RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;
         HttpServletRequest request = sra.getRequest();
-        // 如果有session则返回session如果没有则返回null(避免创建过多的session浪费内存)
-        HttpSession session = request.getSession(false);
-        // 获取请求头
-        Enumeration<String> enumeration = request.getHeaderNames();
-        StringBuffer headers = new StringBuffer();
-        while (enumeration.hasMoreElements()) {
-            String name = enumeration.nextElement();
-            String value = request.getHeader(name);
-            headers.append(name + ":" + value).append(",");
-        }
-        String uri = UUID.randomUUID() + "|" + request.getRequestURI();
 
+        // 获取请求头
+        Map<String, String>  headersInfo = JoinPointUtil.getHeadersInfo(request);
+        log.info("头部信息 {}" ,headersInfo);
+        log.info("nonce = {}", headersInfo.get("nonce"));
+        log.info("sign = {}", headersInfo.get("sign"));
+
+
+
+        //获取方法类型
         String method = request.getMethod();
         StringBuffer params = new StringBuffer();
         if (HttpMethod.GET.toString().equals(method)) {// get请求
+
             String queryString = request.getQueryString();
-            if (StringUtils.isNotBlank(queryString)) {
-                /*params.append(URLEncodedUtils.encode(queryString, "UTF-8"));*/
-                params.append(queryString);
+            if (StringUtils.isEmpty(queryString)){
+                //处理Restful
+                log.info("get Restful 请求");
+                Object[] paramsArray = joinPoint.getArgs();
+                if (paramsArray != null && paramsArray.length > 0) {
+                    for (int i = 0; i < paramsArray.length; i++) {
+                        if (paramsArray[i] instanceof Serializable) {
+                            log.info("get Restful paramsArray[{}}].toString() = {}", i, paramsArray[i].toString());
+                            params.append(paramsArray[i].toString()).append(",");
+                        }
+                    }
+                }
+
+               /* if (StringUtils.isNotBlank(queryString)) {
+                    params.append(queryString).append("&privateKey="+PRIVATE_KEY);
+                }*/
+            }else{
+                //处理URLParame
+                log.info("get &参数 请求");
+                Map<String, String> parameterMap = JoinPointUtil.getURLParameterMap(request);
+                log.info("get参数信息 {}" ,parameterMap);
             }
+
         } else {//其他请求
+
+            log.info("其他请求");
             Object[] paramsArray = joinPoint.getArgs();
             if (paramsArray != null && paramsArray.length > 0) {
                 for (int i = 0; i < paramsArray.length; i++) {
                     if (paramsArray[i] instanceof Serializable) {
+                        log.info("paramsArray[{}}].toString() = {}",i,paramsArray[i].toString());
                         params.append(paramsArray[i].toString()).append(",");
                     } else {
+                        //这里针对post的json对象
                         //使用json系列化 反射等等方法 反系列化会影响请求性能建议重写tostring方法实现系列化接口
                         try {
                             String param= objectMapper.writeValueAsString(paramsArray[i]);
-                            if(StringUtils.isNotBlank(param))
+                            if(StringUtils.isNotBlank(param)) {
+                                JoinPointUtil.getJsonStrMap(param);
                                 params.append(param).append(",");
+                                log.info("param = {}",param);
+                            }
+
                         } catch (JsonProcessingException e) {
                             log.error("doBefore obj to json exception obj={},msg={}",paramsArray[i],e);
                         }
                     }
                 }
+
+                params.append("&privateKey="+PRIVATE_KEY);
             }
         }
-        key.set(uri);
-        log.info("request params>>>>>>uri={},method={},params={},headers={}", uri, method, params, headers);
+        String resSign =  MD5Util.MD5Encode("name=好看&nonce=1607397527135&privateKey=QKBgQCWlA&sex=男");
+        if ("E99F6C920C4F26483B0C1DF07A11E3B3".equals(resSign)){
+            log.info("前后端加密一致");
+        }else{
+            log.info("前后端加密不一致 resSign = {}",resSign);
+        }
+
+        log.info("request params>>>>>>uri={} method={},params={}", request.getRequestURI(), method, params);
+        log.info("");
     }
 
 

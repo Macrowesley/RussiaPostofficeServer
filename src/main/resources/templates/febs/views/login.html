@@ -50,9 +50,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="layui-form-item" style="margin-top: -10px;">
+                                <!--<div class="layui-form-item" style="margin-top: -10px;">
                                     <input type="checkbox" name="rememberMe" th:title="#{login.rememberMe}" lay-skin="primary">
-                                </div>
+                                </div>-->
                                 <div class="layui-form-item">
                                     <button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit
                                             lay-filter="login-submit" id="login" th:text="#{login.login}">
@@ -145,28 +145,6 @@
                     layer.msg(r.message);
                     loading.hide();
                     initCode();
-                }
-            });
-            return false;
-        });
-
-        //提交注册表单
-        form.on('submit(regist-submit)', function (data) {
-            if (data.field.password !== data.field.passwordB) {
-                layer.msg(i18n("login.pwd.notSame"));
-                return;
-            }
-            var loading = $(this).find('.layui-icon');
-            if (loading.is(":visible")) return;
-            loading.show();
-            $.post(ctx + 'regist', data.field, function (r) {
-                if (r.code === 200) {
-                    layer.msg(i18n("login.reg.success"));
-                    loading.hide();
-                    $view.find('#login-href').trigger('click');
-                } else {
-                    layer.msg(r.message);
-                    loading.hide();
                 }
             });
             return false;

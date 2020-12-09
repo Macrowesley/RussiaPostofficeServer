@@ -1,4 +1,5 @@
 var publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWlALa1Kem5BwEDTGPV7T++lp1IlJBuVQlc4fLzgOXpPUMdty6sfaRymdJAyL7exRUo6VFkc5NWdFw/OPiL1GHDVhF2NXAZrNAJUN9/tnn30rQC/e+xVMMYwelMRPLp+HPx/yI1gx9Wcj0iHMXfpks6ymynQL5GWc9A1jJgAvYJwIDAQAB";
+var privateKey = "QKBgQCWlA";
 var encrypt = new JSEncrypt();
 encrypt.setPublicKey(publicKey);
 
@@ -39,3 +40,40 @@ function i18n(msgKey) {
         return msgKey;
     }
 }
+
+/**
+ * 创建签名
+ * @param params
+ * @returns {string}
+ */
+function createSign (params) {
+    var paramStr = "";
+    if (typeof params == "string") {
+        params += "&privateKey="+privateKey;
+        paramStr = params;
+    }
+    else if (typeof params == "object") {
+        var arr = [];
+        params["privateKey"] = privateKey;
+        for (var i in params) {
+            if (params.hasOwnProperty(i)) {
+                arr.push((i + "=" + params[i]));
+            }
+        }
+        paramStr = arr.join(("&"));
+    }
+    if (paramStr) {
+        var newParamStr = paramStr.split("&").sort().join("&");
+        console.log(newParamStr);
+        var sign = md5(newParamStr);
+        /*if (typeof params == "string") {
+            params += ("&sign=" + sign);
+        }
+        else {
+            params["sign"] = sign;
+        }*/
+    }
+    return sign.toUpperCase();;
+}
+
+

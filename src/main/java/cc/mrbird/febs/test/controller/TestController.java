@@ -64,13 +64,10 @@ public class TestController {
         return  info;
     }
 
+
+
     @GetMapping("/signTest2/{teacher}/{className}")
     @CheckSign
-/*
-    @ControllerEndpoint(operation = "审核不通过", exceptionMessage = "{audit.operation.updateError}")
-    @PostMapping("/signTest2/{teacher}/{className}")
-    @RequiresPermissions("audit:update")
-*/
     public Student signTest2(@PathVariable String teacher, @PathVariable String className) {
         Student student = new Student();
         student.setTeacher(teacher);
@@ -79,5 +76,15 @@ public class TestController {
         String content = "内容";
         student.setClassName("新的班级咯");
         return student;
+    }
+
+    @PostMapping("/signTest3")
+    @CheckSign
+    public Persion signTest3(@RequestBody Persion persion) {
+        log.info("进行signTest3 Persion = " + persion.toString());
+
+        String content = "内容";
+        persion.setName(content);
+        return  persion;
     }
 }
