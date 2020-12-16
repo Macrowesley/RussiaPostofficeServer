@@ -101,17 +101,35 @@ public class DateUtil {
         return true;
     }
 
+    /**
+     * 判断当前时间距离第二天凌晨的秒数
+     *
+     * @return 返回值单位为[s:秒]
+     */
+    public static Long getSecondsNextEarlyMorning() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return (cal.getTimeInMillis() - System.currentTimeMillis()) / 1000;
+    }
+
     public static void main(String[] args) throws ParseException {
         /*Date nowDate = new Date();
         Date afterDate = getDateAfter(nowDate, 7);
         System.out.println(nowDate);
         System.out.println(afterDate);*/
 
-       Date checkDate = getDateFormat("2020-06-02 16:52:31");
+       /*Date checkDate = getDateFormat("2020-06-02 16:52:31");
        if (isOverTime(checkDate)){
            System.out.println("超时");
        }else{
            System.out.println("还没超时");
-       }
+       }*/
+
+       System.out.println(getSecondsNextEarlyMorning());
+       System.out.println(38349/3600);
     }
 }

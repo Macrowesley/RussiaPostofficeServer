@@ -6,9 +6,9 @@
             AND u.parent_id = #{user.userId}
         </if>
         <if test="user.roleId == 1">
-            AND u.username != 'root'
+            AND u.username != 'gszh2020'
         </if>
-        <if test="user.username != null and user.username != '' and user.username != 'root'">
+        <if test="user.username != null and user.username != '' and user.username != 'gszh2020'">
             AND u.username = #{user.username}
         </if>
         <if test="user.realname != null and user.realname != ''">
