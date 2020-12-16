@@ -221,6 +221,7 @@ public class ViewController extends BaseController {
     private void resolveUserModel(String username, Model model, Boolean transform) {
         User user = userService.findByName(username);
         String deptIds = userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
+        user.setPassword("It's a secret");
         user.setDeptIds(deptIds);
         model.addAttribute("user", user);
         if (transform) {

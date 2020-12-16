@@ -109,7 +109,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         User curUser = FebsUtil.getCurrentUser();
         String curRole = curUser.getRoleId();
         if (curRole.equals(RoleType.systemManager)){
-           return baseMapper.selectList(new LambdaQueryWrapper<Role>().le(Role::getRoleId, RoleType.organizationManager));
+           return baseMapper.selectList(new LambdaQueryWrapper<Role>().eq(Role::getRoleId, RoleType.organizationManager));
         }else{
             return baseMapper.selectList(new LambdaQueryWrapper<Role>().gt(Role::getRoleId, curRole));
         }

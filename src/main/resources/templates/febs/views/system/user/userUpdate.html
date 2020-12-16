@@ -48,18 +48,21 @@
                        class="layui-input">
             </div>
         </div>
-        <div class="layui-form-item">
+        <!--只有机构管理员才能修改下级的内容-->
+        <div class="layui-form-item" th:if="${roleId} eq 2">
             <label class="layui-form-label febs-form-item-require" th:text="#{role.colon}"></label>
             <div class="layui-input-block">
                 <select name="roleId" id="roleId" lay-verify="">
                 </select>
             </div>
         </div>
-
-        <label class="layui-form-label" th:text="#{dept.colon}"></label>
-        <div class="layui-input-block">
-            <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
-                   class="layui-input">
+        <!--只有系统管理员才能修改下级的内容-->
+        <div class="layui-form-item"   th:if="${roleId} eq 1">
+            <label class="layui-form-label" th:text="#{dept.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
+                       class="layui-input">
+            </div>
         </div>
 
         <div class="layui-form-item">
@@ -100,30 +103,17 @@
             form = layui.form,
             eleTree = layui.eleTree,
             user = [[${user}]],
+            curRoleId = [[${roleId}]],
             $view = $('#user-update'),
             validate = layui.validate,
             _deptTree;
 
         form.verify(validate);
         form.render();
-
         initUserValue();
 
         //处理下拉框
-        $.ajax({
-            url: ctx + "role/selectRole",
-            type: 'get',
-            success: function (data) {
-                $.each(data.data, function (index, item) {
-                    if (user.roleId == item.roleId) {
-                        $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
-                    }else{
-                        $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
-                    }
-                });
-                layui.form.render("select");
-            }
-        });
+        initRoleSelect();
 
         treeSelect.render({
             elem: $view.find('#user-update-dept'),
@@ -136,7 +126,22 @@
             }
         });
 
-
+        function initRoleSelect(){
+            $.ajax({
+                url: ctx + "role/selectRole",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        if (user.roleId == item.roleId) {
+                            $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
+                        }else{
+                            $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
+                        }
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
 
         function initUserValue() {
             form.val("user-update-form", {
@@ -155,8 +160,14 @@
                 febs.alert.warn(i18n("noEdit"));
                 return false;
             }
+
+            if(curRoleId == 1){
+                data.field.roleId = 0;
+            }
+
             febs.post(ctx + 'user/update', data.field, function () {
                 layer.closeAll();
+
                 febs.alert.success(user.username + i18n("userDevice.editSuccess"));
                 $('#febs-user').find('#refreshQuery').click();
             });

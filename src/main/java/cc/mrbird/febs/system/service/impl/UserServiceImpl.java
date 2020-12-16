@@ -112,7 +112,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createUser(User user) {
-
+        if (user.getRoleId().equals(RoleType.systemManager)){
+            throw new FebsException(MessageUtils.getMessage("user.cannotAddSystemUser"));
+        }
         user.setCreateTime(new Date());
         user.setStatus(User.STATUS_VALID);
         user.setAvatar(User.DEFAULT_AVATAR);
@@ -157,6 +159,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(User user) {
         String username = user.getUsername();
+        User currentUser = FebsUtil.getCurrentUser();
+        //超级管理员不修改低级管理员的角色
+        if (currentUser.getRoleId().equals(RoleType.systemManager) ){
+            user.setRoleId(null);
+        }
         // 更新用户
         user.setPassword(null);
         user.setUsername(null);
@@ -166,15 +173,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String[] userId = {String.valueOf(user.getUserId())};
         this.userRoleService.deleteUserRolesByUserId(Arrays.asList(userId));
         String[] roles = StringUtils.splitByWholeSeparatorPreserveAllTokens(user.getRoleId(), StringPool.COMMA);
-        setUserRoles(user, roles);
+        if (currentUser.getRoleId().equals(RoleType.organizationManager) ) {
+            setUserRoles(user, roles);
+        }
 
-        userDataPermissionService.deleteByUserIds(userId);
+//        userDataPermissionService.deleteByUserIds(userId);
         String[] deptIds = StringUtils.splitByWholeSeparatorPreserveAllTokens(user.getDeptIds(), StringPool.COMMA);
-        if (ArrayUtils.isNotEmpty(deptIds)) {
+
+        if (ArrayUtils.isNotEmpty(deptIds) && currentUser.getRoleId().equals(RoleType.systemManager)) {
             setUserDataPermissions(user, deptIds);
         }
 
-        User currentUser = FebsUtil.getCurrentUser();
+
         if (StringUtils.equalsIgnoreCase(currentUser.getUsername(), username)) {
             shiroRealm.clearCache();
         }
