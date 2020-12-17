@@ -35,7 +35,7 @@ public interface FebsConstant {
     /**
      * 登录失败统计 Session Key
      */
-    String LOGIN_ERROR = "login_error_";
+    String LOGIN_ERROR = "login_error:";
 
     /**
      * 允许下载的文件类型，根据需求自己添加（小写）

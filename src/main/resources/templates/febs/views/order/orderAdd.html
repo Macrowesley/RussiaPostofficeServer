@@ -71,7 +71,8 @@
             $acnumList = $view.find("#acnumList"),
             $amountMap = {},
             //选中的审核员UserId
-            $selectedAuditUserId = 0;
+            $selectedAuditUserId = 0,
+            $token = "";
 
 
 
@@ -82,9 +83,15 @@
 
         initAcnumSelect();
 
+        getToken();
+
         form.on('submit(order-add-form-submit)', function (data) {
             /*echo(data);
             return false;*/
+            if ($token.length < 1){
+                layer.closeAll();
+                febs.alert.warn(i18n("order.retry"));
+            }
             if (data.field.auditUserId.length < 1) {
                 febs.alert.warn(i18n("order.selectAudit"));
                 return false;
@@ -108,21 +115,10 @@
                     febs.alert.warn(i18n("order.operation.amountMustOverZero"));
                     return false;
                 } else if (curAmount > warnAmount){
-                    febs.modal.confirm(i18n("warn"), i18n("order.moreThanAlarmMoney"), function () {
-                        //开始添加
-                        febs.post(ctx + 'order/add', data.field, function (result) {
-                            layer.closeAll();
-                            febs.alert.success(i18n("order.addOrderSuccess"));
-                            $('#febs-order').find('#refreshQuery').click();
-                        });
-                    });
+                    addOrder(data);
                 }else{
                     //开始添加
-                    febs.post(ctx + 'order/add', data.field, function (result) {
-                        layer.closeAll();
-                        febs.alert.success(i18n("order.addOrderSuccess"));
-                        $('#febs-order').find('#refreshQuery').click();
-                    });
+                    addOrder(data);
                 }
             }
 
@@ -141,6 +137,37 @@
             changeMaxAmount(data.value);
         });
 
+        function getToken() {
+            febs.get(ctx + "common/token", null, function (res) {
+                if (res.code === 200) {
+                    $token = res.data
+                }else{
+                    febs.alert.warn(i18n("order.retry"));
+                }
+
+            })
+        }
+        function addOrder(data) {
+            /*febs.get(ctx + "common/token", null, function (res) {
+                if (res.code === 200) {*/
+
+                    febs.post(ctx + 'order/add/'+$token, data.field, function (result) {
+                        layer.closeAll();
+                        if (result.code === 200) {
+                            febs.alert.success(i18n("order.addOrderSuccess"));
+                        }else{
+                            febs.alert.warn(i18n("order.addOrderFail"));
+                        }
+
+                        $('#febs-order').find('#refreshQuery').click();
+                    });
+            /*}else{
+                febs.alert.warn(i18n("order.retry"));
+            }
+
+        })*/
+
+        }
         /**
          * 处理表头号下拉框
          */

@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.utils.TokenUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.order.dto.AddOrderDTO;
@@ -21,6 +22,7 @@ import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.service.IUserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("order")
 public class OrderController extends BaseController {
+    @Autowired
+    private TokenUtil tokenUtil;
 
     @Autowired
     private final IOrderService orderService;
@@ -97,10 +101,11 @@ public class OrderController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "新增", exceptionMessage = "{order.operation.addError}")
-    @PostMapping("add")
+    @PostMapping("add/{token}")
     @RequiresPermissions("order:add")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
-    public FebsResponse addOrder(@Validated AddOrderDTO addOrderDTO) {
+    public FebsResponse addOrder(@Validated AddOrderDTO addOrderDTO, @PathVariable String token) {
+        tokenUtil.validToken(token, FebsUtil.getCurrentUser().getUserId().toString());
         OrderVo order = new OrderVo();
         BeanUtils.copyProperties(addOrderDTO, order);
         this.orderService.createOrder(order);
