@@ -126,7 +126,6 @@ public class ViewController extends BaseController {
     @RequiresPermissions("user:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     public String systemUser() {
-        log.info("1111111");
         return FebsUtil.view("system/user/user");
     }
 

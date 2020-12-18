@@ -69,7 +69,7 @@ public class LimitAspect extends BaseAspectSupport {
         RedisScript<Number> redisScript = new DefaultRedisScript<>(luaScript, Number.class);
         Number count = redisTemplate.execute(redisScript, keys, limitCount, limitPeriod);
         name = StringUtils.isEmpty(name) ? StringUtils.upperCase(method.getName()) : name;
-        log.info("IP:{} 第 {} 次访问key为 {}，描述为 [{}] 的接口", ip, count, keys, name);
+//        log.info("IP:{} 第 {} 次访问key为 {}，描述为 [{}] 的接口", ip, count, keys, name);
         if (count != null && count.intValue() <= limitCount) {
             return point.proceed();
         } else {

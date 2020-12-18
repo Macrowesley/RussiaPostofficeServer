@@ -33,7 +33,7 @@ public class CommonController {
     @GetMapping("token")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_get_time")
     public FebsResponse getToken() {
-        log.info("获取token");
+//        log.info("获取token");
         String userInfo = FebsUtil.getCurrentUser().getUserId().toString();
         return new FebsResponse().success().data(tokenUtil.generateToken(userInfo));
     }

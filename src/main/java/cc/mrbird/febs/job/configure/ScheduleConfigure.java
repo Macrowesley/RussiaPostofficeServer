@@ -37,7 +37,7 @@ public class ScheduleConfigure {
             return executor;
     }
 
-    @Bean
+//    @Bean
     public SchedulerFactoryBean schedulerFactoryBean() {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // 手动从多数据源中获取 quartz数据源

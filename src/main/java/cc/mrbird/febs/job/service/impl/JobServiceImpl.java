@@ -39,7 +39,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements IJobS
     /**
      * 项目启动时，初始化定时器
      */
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         List<Job> scheduleJobList = this.baseMapper.queryList();
         // 如果不存在，则创建
