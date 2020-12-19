@@ -24,9 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,11 +42,11 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements IAuditService {
 
-    private final AuditMapper auditMapper;
+    @Autowired
+    AuditMapper auditMapper;
 
     @Autowired
     IOrderService orderService;
@@ -238,6 +236,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
             default:
                 throw new FebsException(MessageUtils.getMessage("audit.status.noType"));
         }
+        log.info("{}注资审核判定通过 订单信息{}",curUser.getUsername(),order.toString());
         orderService.updateOrder(order);
     }
 
@@ -303,7 +302,7 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
             default:
                 throw new FebsException(MessageUtils.getMessage("audit.status.noType"));
         }
-
+        log.info("{}注资审核，判定失败 订单信息{}",curUser.getUsername(),order.toString());
         orderService.updateOrder(order);
     }
 

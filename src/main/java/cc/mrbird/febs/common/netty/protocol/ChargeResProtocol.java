@@ -125,7 +125,7 @@ public class ChargeResProtocol extends BaseProtocol {
                     }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
                     boolean changeRes = false;
                     try {
-                        log.info("机器返回注资结果： 更新订单状态 res = " + chargeRes.equals("1"));
+                        log.info("机器{}返回注资结果： 更新订单状态 res = {}" ,acnum, chargeRes.equals("1"));
                         orderService.updateMachineInjectionStatus(orderVo, chargeRes.equals("1"));
                         changeRes = true;
                     } catch (Exception e) {
@@ -142,6 +142,7 @@ public class ChargeResProtocol extends BaseProtocol {
                     String responseData = versionContent + chargeRes + String.format("%08d", Long.valueOf(orderId)) + String.format("%08d", Long.valueOf(amount));
                     //返回内容的加密数据
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+                    log.info("解析并返回结果流");
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     throw new Exception("机器返回注资结果：版本不存在");

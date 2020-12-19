@@ -1,8 +1,10 @@
 package cc.mrbird.febs.order.service.impl;
 
 import cc.mrbird.febs.audit.service.IAuditService;
-import cc.mrbird.febs.common.entity.*;
-
+import cc.mrbird.febs.common.entity.AuditType;
+import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.enums.OrderBtnEnum;
 import cc.mrbird.febs.common.enums.OrderStatusEnum;
 import cc.mrbird.febs.common.exception.FebsException;
@@ -21,18 +23,15 @@ import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
-import lombok.RequiredArgsConstructor;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.util.unit.DataUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -45,15 +44,20 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
-    private final OrderMapper orderMapper;
-    private final IAuditService auditService;
-    private final IDeviceService deviceService;
-    private final INoticeService noticeService;
-    private final AlarmThreadPool alarmThreadPool;
+    @Autowired
+    OrderMapper orderMapper;
+    @Autowired
+    IAuditService auditService;
+    @Autowired
+    IDeviceService deviceService;
+    @Autowired
+    INoticeService noticeService;
+    @Autowired
+    AlarmThreadPool alarmThreadPool;
 
     @Override
     public IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo) {
@@ -117,6 +121,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderVo.setOrderStatus(OrderStatusEnum.createOrder.getStatus());
         addOtherParams(orderVo);
         this.baseMapper.insert(orderVo);
+        log.info("{}新增一个订单{}", FebsUtil.getCurrentUser().getUsername(), orderVo.getOrderNumber());
         return orderVo.getOrderId();
     }
 
@@ -252,6 +257,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //添加注资申请
         BeanUtils.copyProperties(order, orderVo);
         auditService.createAudit(orderVo, AuditType.injection);
+        log.info("{}修改订单{}状态并且添加添加注资申请", FebsUtil.getCurrentUser().getUsername(), order.getOrderNumber());
     }
 
 
@@ -275,6 +281,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //添加闭环申请
         BeanUtils.copyProperties(order, orderVo);
         auditService.createAudit(orderVo, AuditType.closedCycle);
+        log.info("{}修改订单{}状态并且添加添加闭环申请", FebsUtil.getCurrentUser().getUsername(), order.getOrderNumber());
     }
 
     /**
@@ -313,21 +320,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (order == null) {
             return null;
         }
-
+        log.info("机器{}获取数据包,订单信息{}", acnum, order.toString());
         //只有审核通过才能让机器获取数据包
         if (order.getOrderStatus().equals(OrderStatusEnum.auditPass.getStatus())) {
             //修改订单状态
-            log.error("机器第一次获取数据包");
+            log.error("机器{}第一次获取数据包,订单编号为{}",acnum,order.getOrderNumber());
             order.setOrderStatus(OrderStatusEnum.machineGetData.getStatus());
             alarmThreadPool.addAlarm(order.getOrderId());
             updateOrder(order);
             return order;
         } else if (order.getOrderStatus().equals(OrderStatusEnum.machineGetData.getStatus())
                 || order.getOrderStatus().equals(OrderStatusEnum.machineInjectionFail.getStatus())) {
-            log.error("机器处于获取数据包状态或者失败状态的时候，可以再次获取数据包");
+            log.error("机器{}处于获取数据包状态或者失败状态的时候，可以再次获取数据包", acnum);
             return order;
         }else{
-            log.error("设备状态不正常，不能获取数据包");
+            log.error("设备{}状态不正常，不能获取数据包",acnum);
             return null;
         }
     }
@@ -341,21 +348,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateMachineInjectionStatus(OrderVo orderVo, boolean injectionStatus) {
+
         if (orderVo.getOrderId() == 0) {
+            log.error(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
         }
-
+        log.info("更新机器注资状态开始,orderId = {}",orderVo.getOrderId());
         Order order = findOrderByOrderId(orderVo.getOrderId());
         if (order == null) {
+            log.error(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorNoOrderId") + orderVo.getOrderId());
         }
 
         if (!order.getAcnum().equals(orderVo.getAcnum())) {
+            log.error(MessageUtils.getMessage("order.operation.updateErrorAcnumNotEqual"));
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAcnumNotEqual"));
         }
 
 //        if (!order.getAmount().equals(orderVo.getAmount())) {
         if(!MoneyUtils.moneyIsSame(String.valueOf(MoneyUtils.changeY2F(Double.valueOf(order.getAmount()))), orderVo.getAmount())){
+            log.error(MessageUtils.getMessage("order.operation.updateErrorAmountNotEqual"));
             throw new FebsException(MessageUtils.getMessage("order.operation.updateErrorAmountNotEqual"));
         }
 
@@ -376,6 +388,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } else {
             order.setOrderStatus(OrderStatusEnum.machineInjectionFail.getStatus());
         }
+        log.info("更新机器注资状态结束,orderId = {}",orderVo.getOrderId());
         updateOrder(order);
     }
 
@@ -400,6 +413,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderVo.setIsAlarm("0");
         updateOrder(orderVo);
 
+        log.info("注销注资结束,orderNumber = {}",order.getOrderNumber());
         //修改审核订单状态
         auditService.cancelOrder(orderId);
     }
@@ -421,6 +435,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setOrderStatus(OrderStatusEnum.orderFreeze.getStatus());
         updateOrder(order);
 
+        log.info("冻结注资结束,orderNumber = {}",order.getOrderNumber());
         //修改审核订单状态
         auditService.freezeOrder(orderId);
     }
@@ -442,6 +457,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setOldStatus(null);
         updateOrder(order);
 
+        log.info("解冻注资结束,orderNumber = {}",order.getOrderNumber());
         //修改审核订单状态
         auditService.unFreezeOrder(orderId);
     }
