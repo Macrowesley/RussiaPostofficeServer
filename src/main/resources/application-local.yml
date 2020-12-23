@@ -48,3 +48,8 @@ mybatis-plus:
 
 websocket:
   service: websocket
+
+
+netty:
+  port: 12800
+  ip: localhost

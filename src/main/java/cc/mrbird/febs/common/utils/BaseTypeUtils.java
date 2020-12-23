@@ -1,7 +1,5 @@
 package cc.mrbird.febs.common.utils;
 
-import sun.rmi.runtime.Log;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

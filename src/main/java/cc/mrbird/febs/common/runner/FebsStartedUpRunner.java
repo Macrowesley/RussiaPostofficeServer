@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.NettyServer;
 import cc.mrbird.febs.common.netty.protocol.TempKeyUtils;
 import cc.mrbird.febs.common.properties.FebsProperties;
+import cc.mrbird.febs.common.properties.NettyProperties;
 import cc.mrbird.febs.common.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,9 @@ public class FebsStartedUpRunner implements ApplicationRunner {
 
     @Autowired
     NettyServer nettyServer;
+
+    @Autowired
+    NettyProperties nettyProperties;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -83,7 +87,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
      * 启动netty
      */
     private void startNetty() {
-        nettyServer.start(febsProperties.getNetty().getIp(), febsProperties.getNetty().getPort());
+        nettyServer.start(nettyProperties.getIp(), nettyProperties.getPort());
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
