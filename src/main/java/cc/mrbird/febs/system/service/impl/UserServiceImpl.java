@@ -160,22 +160,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void updateUser(User user) {
         String username = user.getUsername();
         User currentUser = FebsUtil.getCurrentUser();
-        //超级管理员不修改低级管理员的角色
-        if (currentUser.getRoleId().equals(RoleType.systemManager) ){
-            user.setRoleId(null);
-        }
-        // 更新用户
+        //超级管理员、机构管理员都不修改低级管理员的角色
+        user.setRoleId(null);
+
         user.setPassword(null);
         user.setUsername(null);
         user.setModifyTime(new Date());
         updateById(user);
 
-        String[] userId = {String.valueOf(user.getUserId())};
-        this.userRoleService.deleteUserRolesByUserId(Arrays.asList(userId));
-        String[] roles = StringUtils.splitByWholeSeparatorPreserveAllTokens(user.getRoleId(), StringPool.COMMA);
-        if (currentUser.getRoleId().equals(RoleType.organizationManager) ) {
-            setUserRoles(user, roles);
-        }
+        /*if (currentUser.getRoleId().equals(RoleType.systemManager) ){
+            user.setRoleId(null);
+            // 更新用户
+            user.setPassword(null);
+            user.setUsername(null);
+            user.setModifyTime(new Date());
+            updateById(user);
+        }else{
+            // 更新用户
+            user.setPassword(null);
+            user.setUsername(null);
+            user.setModifyTime(new Date());
+            updateById(user);
+
+            //更新角色信息
+            String[] roles = StringUtils.splitByWholeSeparatorPreserveAllTokens(user.getRoleId(), StringPool.COMMA);
+            *//*if (ArrayUtils.isNotEmpty(roles) && currentUser.getRoleId().equals(RoleType.organizationManager)) {
+                String[] userId = {String.valueOf(user.getUserId())};
+                this.userRoleService.deleteUserRolesByUserId(Arrays.asList(userId));
+
+                setUserRoles(user, roles);
+            }*//*
+        }*/
 
 //        userDataPermissionService.deleteByUserIds(userId);
         String[] deptIds = StringUtils.splitByWholeSeparatorPreserveAllTokens(user.getDeptIds(), StringPool.COMMA);

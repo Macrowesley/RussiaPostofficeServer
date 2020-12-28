@@ -124,11 +124,12 @@
 
 
         form.on('submit(user-add-form-submit)', function (data) {
-
-            febs.post(ctx + 'user', data.field, function () {
-                layer.closeAll();
-                febs.alert.success(i18n("user.addOk"));
-                $('#febs-user').find('#refreshQuery').click();
+            febs.modal.confirm(i18n("notice"), i18n("user.confirmAddUser"), function () {
+                febs.post(ctx + 'user', data.field, function () {
+                    layer.closeAll();
+                    febs.alert.success(i18n("user.addOk"));
+                    $('#febs-user').find('#refreshQuery').click();
+                });
             });
             return false;
         });

@@ -49,13 +49,13 @@
             </div>
         </div>
         <!--只有机构管理员才能修改下级的内容-->
-        <div class="layui-form-item" th:if="${roleId} eq 2">
+        <!--<div class="layui-form-item" th:if="${roleId} eq 2">
             <label class="layui-form-label febs-form-item-require" th:text="#{role.colon}"></label>
             <div class="layui-input-block">
                 <select name="roleId" id="roleId" lay-verify="">
                 </select>
             </div>
-        </div>
+        </div>-->
         <!--只有系统管理员才能修改下级的内容-->
         <div class="layui-form-item"   th:if="${roleId} eq 1">
             <label class="layui-form-label" th:text="#{dept.colon}"></label>
@@ -103,7 +103,7 @@
             form = layui.form,
             eleTree = layui.eleTree,
             user = [[${user}]],
-            curRoleId = [[${roleId}]],
+            curRoleId = [[${roleId}]],//当前登录用户的roldId
             $view = $('#user-update'),
             validate = layui.validate,
             _deptTree;
@@ -161,7 +161,7 @@
                 return false;
             }
 
-            if(curRoleId == 1){
+            if(curRoleId == 1 || curRoleId == 2){
                 data.field.roleId = 0;
             }
 

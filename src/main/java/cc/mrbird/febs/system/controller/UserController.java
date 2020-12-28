@@ -81,8 +81,8 @@ public class UserController extends BaseController {
     @ControllerEndpoint(operation = "删除用户", exceptionMessage = "{user.operation.delError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
-        String[] ids = userIds.split(StringPool.COMMA);
-        this.userService.deleteUsers(ids);
+        /*String[] ids = userIds.split(StringPool.COMMA);
+        this.userService.deleteUsers(ids);*/
         return new FebsResponse().success();
     }
 
