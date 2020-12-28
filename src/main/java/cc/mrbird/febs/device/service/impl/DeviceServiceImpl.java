@@ -16,24 +16,23 @@ import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.DeviceMapper;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.device.service.IUserDeviceService;
+import cc.mrbird.febs.device.vo.UserDeviceVO;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserRole;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.mchange.v2.beans.BeansUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
-import lombok.RequiredArgsConstructor;
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,7 +128,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             UserDevice userDevice = new UserDevice();
             userDevice.setId(updateDeviceDTO.getUserDeviceId());
             userDevice.setDeviceId(device.getDeviceId());
-            userDevice.setUserId(updateDeviceDTO.getBindUserId());
+//            userDevice.setUserId(updateDeviceDTO.getBindUserId());
             userDeviceService.updateUserDevice(userDevice);
         }
     }
@@ -317,7 +316,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     @Override
-    public UserDevice findByDeviceIdAndRoleId(Long deviceId, Long roleId) {
+    public UserDeviceVO findByDeviceIdAndRoleId(Long deviceId, Long roleId) {
         /*UserDevice userDevice = new UserDevice();
         userDevice.setDeviceId(deviceId);
         return userDeviceService.findOneUserDevice(userDevice);*/

@@ -44,13 +44,15 @@
         c.user_id in ( select u.user_id from t_user u left join t_user_role ur ON ur.user_id = u.user_id where u.parent_id = #{parentUserId} and ur.role_id = #{roleType} and u.user_id != #{bindUserId})
         ORDER BY d.device_id ASC;
     </select>
-    <select id="findByDeviceIdAndRoleId" resultType="cc.mrbird.febs.device.entity.UserDevice">
+    <select id="findByDeviceIdAndRoleId" resultType="cc.mrbird.febs.device.vo.UserDeviceVO">
         select
-            tud.*
+            tud.*, u.username, u.realname
         from
             t_user_device tud
         left join
             t_user_role tur on (tur.user_id = tud.user_id)
+        left join
+            t_user u on (tur.user_id = u.user_id)
         where
             tud.device_id = #{deviceId} and tur.role_id = #{roleId}
     </select>

@@ -34,9 +34,9 @@ public class UpdateDeviceDTO {
     @NotBlank
     String deviceStatus;
 
-    @NotNull
+/*    @NotNull
     @Min(1)
-    Long bindUserId;
+    Long bindUserId;*/
 
     @NotNull
     @Min(1)

@@ -1,15 +1,12 @@
 package cc.mrbird.febs.device.mapper;
 
 import cc.mrbird.febs.device.entity.Device;
-import cc.mrbird.febs.device.entity.UserDevice;
-import cc.mrbird.febs.system.entity.User;
+import cc.mrbird.febs.device.vo.UserDeviceVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.apache.poi.ss.formula.functions.T;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 /**
@@ -26,5 +23,5 @@ public interface DeviceMapper extends BaseMapper<Device> {
 
     List<Device>  selectSubUserDeviceListExcepBindUserIdByRoleAndParent(@Param("bindUserId") Long bindUserId, @Param("parentUserId") Long parentUserId, @Param("roleType") Long roleType);
 
-    UserDevice findByDeviceIdAndRoleId(@Param("deviceId") Long deviceId, @Param("roleId") Long roleId);
+    UserDeviceVO findByDeviceIdAndRoleId(@Param("deviceId") Long deviceId, @Param("roleId") Long roleId);
 }
