@@ -4,21 +4,12 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.notice.entity.Notice;
-import cc.mrbird.febs.notice.service.INoticeService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 消息提示表 Controller
@@ -29,6 +20,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(FebsConstant.VIEW_PREFIX + "notice")
 @Controller("noticeView")
+@ApiIgnore
 public class ViewController extends BaseController {
 
     @GetMapping("notice")

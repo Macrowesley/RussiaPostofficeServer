@@ -4,9 +4,7 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
-import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,12 +14,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
@@ -29,6 +26,7 @@ import java.util.Map;
 @Validated
 @Controller("orderView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "order")
+@ApiIgnore
 public class ViewController {
     @Autowired
     IOrderService orderService;

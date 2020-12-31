@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -25,6 +26,7 @@ import javax.validation.constraints.NotNull;
 @Validated
 @Controller("deviceView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "device")
+@ApiIgnore
 public class ViewController {
     @Autowired
     DeviceServiceImpl deviceService;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import static cc.mrbird.febs.monitor.endpoint.FebsMetricsEndpoint.FebsMetricResp
 @Controller("monitorView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "monitor")
 @RequiredArgsConstructor
+@ApiIgnore
 public class ViewController {
 
     private final FebsActuatorHelper actuatorHelper;

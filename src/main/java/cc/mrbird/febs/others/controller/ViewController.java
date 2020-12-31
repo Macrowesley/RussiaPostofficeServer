@@ -6,10 +6,12 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @Controller("othersView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "others")
+@ApiIgnore
 public class ViewController {
 
     @GetMapping("febs/form")

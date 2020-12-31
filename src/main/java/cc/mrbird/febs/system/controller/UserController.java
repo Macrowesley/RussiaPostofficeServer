@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("user")
+@ApiIgnore
 public class UserController extends BaseController {
 
     private final IUserService userService;

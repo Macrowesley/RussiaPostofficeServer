@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.stream.IntStream;
 @RestController
 @RequestMapping("eximport")
 @RequiredArgsConstructor
+@ApiIgnore
 public class EximportController extends BaseController {
 
     private final IEximportService eximportService;

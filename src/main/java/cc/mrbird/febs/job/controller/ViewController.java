@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotBlank;
 
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 @Controller("jobView")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "job")
 @RequiredArgsConstructor
+@ApiIgnore
 public class ViewController {
 
     private final IJobService jobService;

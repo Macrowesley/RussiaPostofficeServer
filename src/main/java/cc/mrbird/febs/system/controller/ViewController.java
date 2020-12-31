@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import java.util.Locale;
 @Slf4j
 @Controller("systemView")
 @RequiredArgsConstructor
+@ApiIgnore
 public class ViewController extends BaseController {
 
     private final IUserService userService;

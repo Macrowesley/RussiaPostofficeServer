@@ -14,6 +14,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.quartz.CronExpression;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("job")
 @RequiredArgsConstructor
+@ApiIgnore
 public class JobController extends BaseController {
 
     private final IJobService jobService;

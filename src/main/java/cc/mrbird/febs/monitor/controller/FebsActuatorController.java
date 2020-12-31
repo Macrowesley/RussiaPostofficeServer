@@ -13,6 +13,7 @@ import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import static cc.mrbird.febs.monitor.endpoint.FebsHttpTraceEndpoint.FebsHttpTrac
 @RestController
 @RequestMapping("febs/actuator")
 @RequiredArgsConstructor
+@ApiIgnore
 public class FebsActuatorController {
 
     private final FebsHttpTraceEndpoint httpTraceEndpoint;

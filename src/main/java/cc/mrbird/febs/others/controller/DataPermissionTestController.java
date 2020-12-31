@@ -11,6 +11,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("datapermission/test")
 @RequiredArgsConstructor
+@ApiIgnore
 public class DataPermissionTestController extends BaseController {
 
     private final IDataPermissionTestService dataPermissionTestService;

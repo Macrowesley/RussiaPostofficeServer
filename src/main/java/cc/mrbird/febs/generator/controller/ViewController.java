@@ -10,11 +10,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @Controller("generatorViews")
 @RequestMapping(FebsConstant.VIEW_PREFIX + "generator")
 @RequiredArgsConstructor
+@ApiIgnore
 public class ViewController {
 
     private final IGeneratorConfigService generatorConfigService;

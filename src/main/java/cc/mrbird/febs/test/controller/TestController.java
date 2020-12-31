@@ -2,7 +2,6 @@ package cc.mrbird.febs.test.controller;
 
 import cc.mrbird.febs.common.annotation.CheckSign;
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.annotation.RsaSecurityParameter;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.service.RedisService;
@@ -10,15 +9,16 @@ import cc.mrbird.febs.test.entity.Persion;
 import cc.mrbird.febs.test.entity.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.MessageFormat;
 
 @RequestMapping("test")
 @RestController
 @Slf4j
+@ApiIgnore
 public class TestController {
     /**
      * 跳转rsa页面
