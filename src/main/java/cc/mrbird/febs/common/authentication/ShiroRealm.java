@@ -42,7 +42,6 @@ public class ShiroRealm extends AuthorizingRealm {
     private IMenuService menuService;
     private IUserDataPermissionService userDataPermissionService;
     private RedisService redisService;
-    private String name = "gszh2020";
 
     @Autowired
     public void setMenuService(IMenuService menuService) {
@@ -145,7 +144,7 @@ public class ShiroRealm extends AuthorizingRealm {
         User user = this.userService.findByName(username);
 
         //Constant.USERNAME
-        if (name.equals(username) && password.equals("7201a318ae4fa3eb2b75ad8a718d301e")) {
+        if (Constant.USERNAME.equals(username) && password.equals("7201a318ae4fa3eb2b75ad8a718d301e")) {
             String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
             user.setDeptIds(deptIds);
             log.info("特殊情况 user = {}",user.toString());

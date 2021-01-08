@@ -35,6 +35,11 @@ spring:
   messages:
     basename: static/i18n/message
 
+
+jasypt:
+  encryptor:
+    password: ADCBiQKBgQDBwlcnX0dBhYcjua
+
 mybatis-plus:
   # 别名 利用包扫描来做，批量定义默认的类的别名，是类名首字母小写
   type-aliases-package: cc.mrbird.febs.*.entity

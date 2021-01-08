@@ -45,7 +45,7 @@ function openSocket(userId, websocketServiceName) {
         socket = new WebSocket(socketUrl);
         //打开事件
         socket.onopen = function () {
-            console.log("websocket已打开");
+            // console.log("websocket已打开");
             heartCheck.reset().start();   // 成功建立连接后，重置心跳检测
             //socket.send("这是来自客户端的消息" + location.href + new Date());
         };
@@ -56,7 +56,7 @@ function openSocket(userId, websocketServiceName) {
             heartCheck.reset().start();    // 如果获取到消息，说明连接是正常的，重置心跳检测
             var type = JSON.parse(msg.data).type;
             var data = JSON.parse(msg.data).data;
-            console.log("web收到消息：" + data)
+            // console.log("web收到消息：" + data)
             switch (type) {
                 case 1:
                     //1 发送成功
