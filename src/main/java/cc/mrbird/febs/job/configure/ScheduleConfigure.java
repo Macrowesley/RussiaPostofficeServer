@@ -22,7 +22,7 @@ public class ScheduleConfigure {
 
     private final DynamicRoutingDataSource dynamicRoutingDataSource;
 
-    @Bean
+    /*@Bean
     public ThreadPoolTaskExecutor scheduleJobExecutorService(){
             ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
             executor.setCorePoolSize(5);
@@ -35,10 +35,10 @@ public class ScheduleConfigure {
             executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
             executor.initialize();
             return executor;
-    }
+    }*/
 
 //    @Bean
-    public SchedulerFactoryBean schedulerFactoryBean() {
+    /*public SchedulerFactoryBean schedulerFactoryBean() {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // 手动从多数据源中获取 quartz数据源
         DataSource quartz = dynamicRoutingDataSource.getDataSource("quartz");
@@ -73,5 +73,5 @@ public class ScheduleConfigure {
         factory.setAutoStartup(true);
 
         return factory;
-    }
+    }*/
 }
