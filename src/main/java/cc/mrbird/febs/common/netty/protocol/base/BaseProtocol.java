@@ -1,19 +1,16 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty.protocol.base;
 
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import org.jaxen.function.IdFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
-import java.net.InetSocketAddress;
 
-/**
- * <b>长度 + 类型 + 数据 + 检验位 + 结尾</b>
- */
 @Slf4j
-public abstract class BaseProtocol {
+public class BaseProtocol {
 
     //记录整条数据长度数值的长度
     public static final int LENGTH_LEN = 1;
@@ -31,25 +28,7 @@ public abstract class BaseProtocol {
     protected static final int VERSION_LEN = 3;
 
     @Autowired
-    TempKeyUtils tempKeyUtils;
-
-    /**
-     * 获取协议类型
-     * A0 心跳包
-     * A1 查询是否有数据包
-     * A2 返回注资结果
-     *
-     * @return
-     */
-    public abstract byte getProtocolType();
-
-    /**
-     * 解析并返回结果流
-     *
-     * @param bytes
-     * @return
-     */
-    public abstract byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception;
+    public TempKeyUtils tempKeyUtils;
 
     /**
      * 获取返回的协议内容长度
@@ -70,12 +49,12 @@ public abstract class BaseProtocol {
      * length + type + data + checkSum + end
      * @return
      */
-    public byte[] getWriteContent(byte[] data) {
+    public byte[] getWriteContent(byte[] data, byte type) {
 //        log.info("拼接发送给客户端的数据");
         int protocolLen = getResponseProtocolLen(data);
         byte[] length = BaseTypeUtils.int2ByteArrayCons(protocolLen);
-        byte[] type = new byte[]{getProtocolType()};
-        byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(type, data));
+        byte[] typeData = new byte[]{type};
+        byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(typeData, data));
         byte[] end = {(byte) 0xD0};
 
         int totalLen = 0;
@@ -87,7 +66,7 @@ public abstract class BaseProtocol {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLen);
         baos.write(length, 0, LENGTH_LEN);
-        baos.write(type, 0, TYPE_LEN);
+        baos.write(typeData, 0, TYPE_LEN);
         baos.write(data, 0, data.length);
         baos.write(checkSume, 0, CHECK_LEN);
         baos.write(end, 0, END_LEN);
@@ -107,16 +86,23 @@ public abstract class BaseProtocol {
     }
 
     /**
-     * 获取ChannelHandlerContextIp
-     * @param ctx
-     * @return
+     * 服务端给客户端发送消息
      */
-    public String getCID(ChannelHandlerContext ctx){
-        String cid = "_null";
-        if(ctx != null){
-            cid = "_" + ctx.channel().id().toString();
+    public void wrieteToCustomer(ChannelHandlerContext ctx, byte[] bytes) throws Exception {
+        if (ctx == null) {
+            log.info("通道不存在");
+            return;
         }
-        return cid;
+
+        if (bytes == null) {
+            log.info("服务端响应空的消息");
+            return;
+        }
+
+        ByteBuf buf = Unpooled.buffer(bytes.length);
+        buf.writeBytes(bytes);
+        ctx.write(buf);
+        ctx.flush();
     }
 
 }

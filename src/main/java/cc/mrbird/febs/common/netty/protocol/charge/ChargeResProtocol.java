@@ -1,9 +1,8 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty.protocol.charge;
 
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.common.utils.MoneyUtils;
-import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class ChargeResProtocol extends BaseProtocol {
+public class ChargeResProtocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA2;
 
     //表头号长度
@@ -78,7 +77,7 @@ public class ChargeResProtocol extends BaseProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(acnum + getCID(ctx));
+            String tempKey = tempKeyUtils.getTempKey(ctx);
 
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
@@ -134,8 +133,7 @@ public class ChargeResProtocol extends BaseProtocol {
                         throw new Exception(e.getMessage());
                     }
 
-                    //把临时密钥从redis中删除
-                    tempKeyUtils.deleteTempKey(acnum + getCID(ctx));
+
 
                     //----------开始返回
                     //返回内容的原始数据

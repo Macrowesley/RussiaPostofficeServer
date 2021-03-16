@@ -1,6 +1,6 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty.protocol.charge;
 
-import cc.mrbird.febs.common.utils.AESUtils;
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 
 /**
  * 请求唯一ID
  */
 @Slf4j
 @Component
-public class QueryIDPortocol extends BaseProtocol {
+public class QueryIDPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA3;
 
     //表头号长度

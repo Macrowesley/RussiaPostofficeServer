@@ -1,6 +1,11 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty;
 
-import cc.mrbird.febs.common.netty.SocketData;
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.charge.ChargeResProtocol;
+import cc.mrbird.febs.common.netty.protocol.charge.QueryIDPortocol;
+import cc.mrbird.febs.common.netty.protocol.charge.QueryProtocol;
+import cc.mrbird.febs.common.netty.protocol.charge.QueryTemKeyPortocol;
+import cc.mrbird.febs.common.netty.protocol.charge.HeartPortocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -39,12 +44,12 @@ public class ProtocolService {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public BaseProtocol parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
+    public MachineToServiceProtocol parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
         if (msg == null) {
             log.error("socketData为null，不可用");
             return null;
         }
-        BaseProtocol protocol = null;
+        MachineToServiceProtocol protocol = null;
         try {
             log.error("客户端【" + ctx.channel().id() + "】发送数据给客户端");
             wrieteToCustomer(ctx, parseContentAndRspone(msg.getContent(), ctx));
@@ -87,9 +92,9 @@ public class ProtocolService {
         //验证校验位
         if (BaseTypeUtils.checkChkSum(data, data.length - 2)) {
             //解析类型
-            byte protocolType = BaseProtocol.parseType(data);
+            byte protocolType = MachineToServiceProtocol.parseType(data);
 
-            BaseProtocol baseProtocol = null;
+            MachineToServiceProtocol baseProtocol = null;
             switch (protocolType) {
                 case HeartPortocol.PROTOCOL_TYPE:
                     baseProtocol = heartPortocol;

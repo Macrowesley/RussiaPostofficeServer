@@ -1,5 +1,6 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty.protocol.charge;
 
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -10,14 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-
 /**
  * 查询是否有数据包
  */
 @Slf4j
 @Component
-public class QueryProtocol extends BaseProtocol {
+public class QueryProtocol extends MachineToServiceProtocol {
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
@@ -83,7 +82,7 @@ public class QueryProtocol extends BaseProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(acnum + getCID(ctx));
+            String tempKey = tempKeyUtils.getTempKey(ctx);
 /*
             log.info("tempKey = " + tempKey + " acnumId = " + (acnum + getCID(ctx)));
             log.info("enctryptContent = " + enctryptContent);

@@ -1,25 +1,20 @@
 package cc.mrbird.febs.common.netty;
 
 
-import cc.mrbird.febs.common.netty.protocol.BaseProtocol;
-import cc.mrbird.febs.common.netty.protocol.HeartPortocol;
-import cc.mrbird.febs.common.netty.protocol.ProtocolService;
-import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import io.netty.buffer.ByteBuf;
+import cc.mrbird.febs.common.netty.protocol.base.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.base.TempKeyUtils;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,10 +28,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
     @Autowired
     ProtocolService protocolService;
+
+    @Autowired
+    public TempKeyUtils tempKeyUtils;
     /**
      * 管理一个全局map，保存连接进服务端的通道数量
      */
-    private static final ConcurrentHashMap<ChannelId, ChannelHandlerContext> CHANNEL_MAP = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<ChannelId, ChannelHandlerContext> CHANNEL_MAP = new ConcurrentHashMap<>();
 
 
     /**
@@ -87,19 +85,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
         ChannelId channelId = ctx.channel().id();
 
+        //把临时密钥从redis中删除
+        tempKeyUtils.deleteTempKey(ctx);
+
         //包含此客户端才去删除
         if (CHANNEL_MAP.containsKey(channelId)) {
 
             ChannelHandlerContext temp = CHANNEL_MAP.get(channelId);
-            if (HeartPortocol.CHANNEL_MAP.containsValue(temp)) {
-                for (Map.Entry<String, ChannelHandlerContext> entry : HeartPortocol.CHANNEL_MAP.entrySet()) {
-                    if (entry.getValue() == temp) {
-                        HeartPortocol.CHANNEL_MAP.remove(entry.getKey());
-                        log.info("删除心跳包中保存的连接通道1 ");
-                    }
-                }
-                log.info("删除心跳包中保存的连接通道2");
-            }
+            ChannelMapperUtils.deleteChannelByValue(temp);
 
             //删除连接
             CHANNEL_MAP.remove(channelId);

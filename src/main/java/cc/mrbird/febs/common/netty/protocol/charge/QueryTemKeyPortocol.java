@@ -1,5 +1,6 @@
-package cc.mrbird.febs.common.netty.protocol;
+package cc.mrbird.febs.common.netty.protocol.charge;
 
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
@@ -16,7 +17,7 @@ import java.io.ByteArrayOutputStream;
  */
 @Slf4j
 @Component
-public class QueryTemKeyPortocol extends BaseProtocol {
+public class QueryTemKeyPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA4;
 
     //表头号长度
@@ -59,7 +60,7 @@ public class QueryTemKeyPortocol extends BaseProtocol {
                 String entryptContent = AESUtils.encrypt(tempKey, uuid);
 
                 //保存临时密钥
-                tempKeyUtils.addTempKey(acnum + getCID(ctx), tempKey);
+                tempKeyUtils.addTempKey(ctx, tempKey);
 
                 byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
