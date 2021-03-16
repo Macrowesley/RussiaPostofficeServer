@@ -12,9 +12,6 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
 
     /**
      * 获取协议类型
-     * A0 心跳包
-     * A1 查询是否有数据包
-     * A2 返回注资结果
      *
      * @return
      */

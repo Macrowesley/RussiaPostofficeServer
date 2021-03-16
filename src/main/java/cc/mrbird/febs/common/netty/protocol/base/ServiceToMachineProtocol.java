@@ -49,7 +49,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xB1));
             log.info("服务器发送打开机器ssh指令");
         } catch (Exception e) {
-            log.error("服务器发送打开机器ssh指令失败，原因如下："+e.getMessage());
+            log.error("服务器发送打开机器ssh指令失败，原因如下：" + e.getMessage());
         }
     }
 }
