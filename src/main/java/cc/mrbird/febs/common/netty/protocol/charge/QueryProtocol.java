@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.charge;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -77,6 +78,11 @@ public class QueryProtocol extends MachineToServiceProtocol {
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
+
+            if (!ChannelMapperUtils.containsKey(acnum)){
+                log.error("机器返回注资结果：请求不合法");
+                throw new Exception("请求不合法");
+            }
 
             //加密内容
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);

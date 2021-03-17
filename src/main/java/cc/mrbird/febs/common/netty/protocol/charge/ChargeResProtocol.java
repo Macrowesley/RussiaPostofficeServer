@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.charge;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.order.entity.OrderVo;
@@ -71,6 +72,10 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
             int pos = TYPE_LEN;
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
+            if (!ChannelMapperUtils.containsKey(acnum)){
+                log.error("机器返回注资结果：请求不合法");
+                throw new Exception("请求不合法");
+            }
             pos += REQ_ACNUM_LEN;
 
             //加密内容

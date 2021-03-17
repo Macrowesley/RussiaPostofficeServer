@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.netty.protocol.charge;
+package cc.mrbird.febs.common.netty.protocol.safe;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;

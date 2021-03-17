@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.annotation.CheckSign;
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.netty.protocol.base.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.test.entity.Persion;
 import cc.mrbird.febs.test.entity.Student;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 @RequestMapping("test")
@@ -20,12 +22,59 @@ import java.text.MessageFormat;
 @Slf4j
 @ApiIgnore
 public class TestController {
+    @Autowired
+    ServiceToMachineProtocol serviceToMachineProtocol;
+
+    //https://auto.uprins.com/p/test/openSsh
+    @GetMapping("/openSsh")
+    public String openSsh() {
+        //执行指令
+        try {
+            String cmd = "cmd /c net start cygsshd";
+            Process process = Runtime.getRuntime().exec(cmd);
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "打开ssh";
+    }
+
+    //https://auto.uprins.com/p/test/closeSsh
+    @GetMapping("/closeSsh")
+    public String closeSsh() {
+        //执行关闭指令
+        try {
+            String cmd = "cmd /c net stop cygsshd &&" +
+                    "taskkill /IM sshd.exe /F &&" +
+                    "taskkill /IM bash.exe /F";
+            Process process = Runtime.getRuntime().exec(cmd);
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "关闭ssh";
+    }
+
+    //https://auto.uprins.com/p/test/openSshPortocol
+    @GetMapping("/openSshPortocol")
+    public String openSshPortocol() {
+
+        serviceToMachineProtocol.openSshProtocol("CPU123");
+        return "打开ssh";
+    }
+
+    //https://auto.uprins.com/p/test/closeSshPortocol
+    @GetMapping("/closeSshPortocol")
+    public String closeSshPortocol() {
+        serviceToMachineProtocol.closeSshProtocol("CPU123");
+        return "关闭ssh";
+    }
+
     /**
      * 跳转rsa页面
      *
      * @return
      */
-
     @GetMapping("/rsa")
     public String goRsa() {
         return "rsa";

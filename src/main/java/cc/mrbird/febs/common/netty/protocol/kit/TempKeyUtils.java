@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.netty.protocol.base;
+package cc.mrbird.febs.common.netty.protocol.kit;
 
 import cc.mrbird.febs.common.service.RedisService;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,12 +43,14 @@ public class TempKeyUtils {
         redisService.del(createKeyName(ctx));
     }
 
+
     private String createKeyName(ChannelHandlerContext ctx){
         String cid = "_null";
         if(ctx != null){
             cid = "_" + ctx.channel().id().toString();
         }
-        return "keyName:" + cid;
+        return "temp:AesKey:" + cid;
     }
+
 
 }

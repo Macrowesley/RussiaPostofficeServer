@@ -51,5 +51,5 @@ websocket:
 
 netty:
   port: 12800
-    ip: localhost
-#  ip: 119.37.199.25
+  ip: localhost
+# ip: 119.37.199.25

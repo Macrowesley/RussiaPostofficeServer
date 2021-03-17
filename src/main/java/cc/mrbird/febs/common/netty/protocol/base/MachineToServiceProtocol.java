@@ -18,7 +18,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
     public abstract byte getProtocolType();
 
     /**
-     * 解析并返回结果流
+     * 解析并返回结果流 注意判断通道是否在缓存中
      *
      * @param bytes
      * @return

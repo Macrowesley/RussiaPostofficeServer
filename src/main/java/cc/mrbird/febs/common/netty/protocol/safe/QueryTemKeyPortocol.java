@@ -1,6 +1,7 @@
-package cc.mrbird.febs.common.netty.protocol.charge;
+package cc.mrbird.febs.common.netty.protocol.safe;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
@@ -28,6 +29,9 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
 
     @Autowired
     IDeviceService deviceService;
+
+    @Autowired
+    public TempTimeUtils tempTimeUtils;
 
 
     @Override
@@ -57,10 +61,15 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 }
                 String uuid = device.getSecretKey();
                 String tempKey = AESUtils.createKey(16);
-                String entryptContent = AESUtils.encrypt(tempKey, uuid);
+                long timestamp = System.currentTimeMillis();
+                //todo 要删掉这段代码，用下面的代码，需要添加一个时间戳
+                String entryptContent = AESUtils.encrypt(tempKey , uuid);
+//                String entryptContent = AESUtils.encrypt(tempKey + String.valueOf(timestamp), uuid);
 
                 //保存临时密钥
                 tempKeyUtils.addTempKey(ctx, tempKey);
+                //保存临时时间戳
+                tempTimeUtils.addTempTime(ctx, timestamp);
 
                 byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
@@ -72,6 +81,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 baos.write(versionBytes, 0, versionBytes.length);
                 baos.write(encryptBytes, 0, encryptBytes.length);
                 log.info("获取临时密钥：  结束 ， 临时密钥= {} 发给机器的是{}", tempKey, entryptContent);
+
                 return getWriteContent(baos.toByteArray());
             default:
                 throw new Exception("获取临时密钥：版本不存在");
@@ -92,9 +102,11 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
             unsigned char length;				 //一个字节
             unsigned char head;				 	 //0xA4
             unsigned char version[3];            //版本内容 001
-            unsigned char key[44];				 //加密内容
+            unsigned char content[?];			//【改动】加密内容 临时秘钥（16）+ 时间戳（13）
             unsigned char check;				 //校验位
             unsigned char tail;					 //0xD0
         }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
+
+
     }
 }

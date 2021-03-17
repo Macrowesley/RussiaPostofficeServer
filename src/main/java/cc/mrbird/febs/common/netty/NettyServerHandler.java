@@ -1,8 +1,8 @@
 package cc.mrbird.febs.common.netty;
 
 
-import cc.mrbird.febs.common.netty.protocol.base.ChannelMapperUtils;
-import cc.mrbird.febs.common.netty.protocol.base.TempKeyUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;

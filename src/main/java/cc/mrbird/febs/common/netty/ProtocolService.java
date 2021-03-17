@@ -2,10 +2,12 @@ package cc.mrbird.febs.common.netty;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.charge.ChargeResProtocol;
-import cc.mrbird.febs.common.netty.protocol.charge.QueryIDPortocol;
+import cc.mrbird.febs.common.netty.protocol.safe.QueryIDPortocol;
 import cc.mrbird.febs.common.netty.protocol.charge.QueryProtocol;
-import cc.mrbird.febs.common.netty.protocol.charge.QueryTemKeyPortocol;
-import cc.mrbird.febs.common.netty.protocol.charge.HeartPortocol;
+import cc.mrbird.febs.common.netty.protocol.safe.QueryTemKeyPortocol;
+import cc.mrbird.febs.common.netty.protocol.heart.HeartPortocol;
+import cc.mrbird.febs.common.netty.protocol.ssh.CloseSSHResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.ssh.OpenSSHResultPortocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -37,6 +39,12 @@ public class ProtocolService {
 
     @Autowired
     QueryTemKeyPortocol queryTemKeyPortocol;
+
+    @Autowired
+    OpenSSHResultPortocol openSSHResultPortocol;
+
+    @Autowired
+    CloseSSHResultPortocol closeSSHResultPortocol;
 
     //出问题了返回该结果
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
@@ -110,6 +118,12 @@ public class ProtocolService {
                     break;
                 case ChargeResProtocol.PROTOCOL_TYPE:
                     baseProtocol = chargeResProtocol;
+                    break;
+                case OpenSSHResultPortocol.PROTOCOL_TYPE:
+                    baseProtocol = openSSHResultPortocol;
+                    break;
+                case CloseSSHResultPortocol.PROTOCOL_TYPE:
+                    baseProtocol = closeSSHResultPortocol;
                     break;
                 default:
                     return emptyResBytes;
