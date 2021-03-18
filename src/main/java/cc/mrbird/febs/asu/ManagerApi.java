@@ -93,7 +93,7 @@ public class ManagerApi {
      */
     @PostMapping("/foreseens")
     public ApiResponse foreseens(@RequestBody Foreseen foreseen){
-        ApiResponse apiResponse =  new ApiResponse(200, new Balance());
+        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
         apiResponse =  new ApiResponse(400, new OperationError());
         apiResponse =  new ApiResponse(500, new Error());
         return apiResponse;
@@ -107,7 +107,7 @@ public class ManagerApi {
      */
     @PostMapping("/foreseens/{foreseenId}/cancel")
     public ApiResponse cancel(@PathVariable String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
-        ApiResponse apiResponse =  new ApiResponse(200, new Balance());
+        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
         apiResponse =  new ApiResponse(400, new OperationError());
         apiResponse =  new ApiResponse(500, new Error());
         return apiResponse;
@@ -115,7 +115,7 @@ public class ManagerApi {
 
     @PostMapping("/transactions")
     public ApiResponse transactions(@NotNull @RequestBody Transaction transaction){
-        ApiResponse apiResponse =  new ApiResponse(200, new Balance());
+        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
         apiResponse =  new ApiResponse(400, new OperationError());
         apiResponse =  new ApiResponse(500, new Error());
         return apiResponse;
@@ -123,7 +123,7 @@ public class ManagerApi {
 
     @PostMapping("/refills")
     public ApiResponse refills(@RequestBody Registers registers){
-        ApiResponse apiResponse =  new ApiResponse(200, new Balance());
+        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
         apiResponse =  new ApiResponse(400, new OperationError());
         apiResponse =  new ApiResponse(500, new Error());
         return apiResponse;
@@ -131,7 +131,7 @@ public class ManagerApi {
 
     @PostMapping("/franking/stats")
     public ApiResponse stats(@RequestBody Statistics statistics){
-        ApiResponse apiResponse =  new ApiResponse(200, new Balance());
+        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
         apiResponse =  new ApiResponse(400, new OperationError());
         apiResponse =  new ApiResponse(500, new Error());
         return apiResponse;

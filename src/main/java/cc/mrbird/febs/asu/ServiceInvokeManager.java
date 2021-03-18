@@ -23,10 +23,10 @@ import java.net.URL;
 @Slf4j
 @Component
 public class ServiceInvokeManager {
-    @Autowired
-    RestTemplate restTemplate;
+//    @Autowired
+//    RestTemplate restTemplate;
 
-    private final String baseUrl = "https://http://40.114.247.228:8080/rcs-manager/v1";
+    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
@@ -68,7 +68,8 @@ public class ServiceInvokeManager {
 
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = "https://auto.uprins.com/p/test/frankMachines";
+//        String url = "https://auto.uprins.com/p/test/frankMachines";
+        String url = "http://localhost/p/test/frankMachines";
         FrankMachine bean = new FrankMachine();
         bean.setId("");
         bean.setDateTime("");
@@ -81,11 +82,11 @@ public class ServiceInvokeManager {
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, bean, String.class);
 
-        log.info("responseEntity = {}", responseEntity.toString());
-        log.info("responseEntity.getBody() = {}", responseEntity.getBody().toString());
-        log.info("responseEntity.getStatusCode() = {}", responseEntity.getStatusCode());
-        log.info("responseEntity.getStatusCodeValue() = {}", responseEntity.getStatusCodeValue());
-        log.info("responseEntity.getHeaders() = {}", responseEntity.getHeaders().toString());
+        log.info("结果：responseEntity = {}", responseEntity.toString());
+        log.info("结果：responseEntity.getBody() = {}", responseEntity.getBody().toString());
+        log.info("结果：responseEntity.getStatusCode() = {}", responseEntity.getStatusCode());
+        log.info("结果：responseEntity.getStatusCodeValue() = {}", responseEntity.getStatusCodeValue());
+        log.info("结果：responseEntity.getHeaders() = {}", responseEntity.getHeaders().toString());
     }
 
     /**

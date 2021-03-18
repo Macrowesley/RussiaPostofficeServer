@@ -34,6 +34,18 @@ public class TestController {
         return new ApiResponse(200,"hahaha");
     }
 
+    @PutMapping("/test")
+    public ApiResponse test(String msg){
+
+        return new ApiResponse(200, "传过来的内容：" + msg);
+    }
+
+    @GetMapping("/test/{msg}")
+    public ApiResponse testGet(@PathVariable String msg){
+
+        return new ApiResponse(200, "get测试 传过来的内容：" + msg);
+    }
+
 
 
 

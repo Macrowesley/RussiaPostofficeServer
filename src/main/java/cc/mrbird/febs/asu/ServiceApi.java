@@ -93,11 +93,11 @@ public class ServiceApi {
     /**
      * 合同余额的同步
      * @param contractId
-     * @param balance
+     * @param serviceBalance
      * @return
      */
     @PutMapping("/contracts/{contractId}/balance")
-    public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody Balance balance){
+    public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody ServiceBalance serviceBalance){
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
         apiResponse =  new ApiResponse(400, new Error());

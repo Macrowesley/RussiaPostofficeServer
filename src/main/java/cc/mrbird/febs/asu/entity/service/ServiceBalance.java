@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Balance {
+public class ServiceBalance {
     /**
      * 合约编号
      * format: uuid

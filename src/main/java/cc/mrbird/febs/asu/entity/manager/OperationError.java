@@ -16,5 +16,5 @@ public class OperationError {
     int code;
     @NotBlank
     String message;
-    Balance balance;
+    ManagerBalance managerBalance;
 }
