@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.netty.protocol.ssh;
+package cc.mrbird.febs.common.netty.protocol.machine.ssh;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class OpenSSHResultPortocol extends MachineToServiceProtocol {
-    public static final byte PROTOCOL_TYPE = (byte) 0xB1;
+public class CloseSSHResultPortocol extends MachineToServiceProtocol {
+    public static final byte PROTOCOL_TYPE = (byte) 0xB2;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
@@ -42,7 +42,7 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
         typedef  struct{
             unsigned char head;				    //0xAA
             unsigned char length;				//0x09
-            unsigned char type;					//0xB1
+            unsigned char type;					//0xB2
             unsigned char acnum[6];             //机器表头号
             unsigned char result;				//0x00 失败  0x01 成功
             unsigned char check;				//校验位

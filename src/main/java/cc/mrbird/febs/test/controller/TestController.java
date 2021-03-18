@@ -1,13 +1,16 @@
 package cc.mrbird.febs.test.controller;
 
+import cc.mrbird.febs.asu.entity.manager.ApiResponse;
+import cc.mrbird.febs.asu.entity.manager.FrankMachine;
 import cc.mrbird.febs.common.annotation.CheckSign;
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.netty.protocol.base.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.test.entity.Persion;
 import cc.mrbird.febs.test.entity.Student;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,16 @@ import java.text.MessageFormat;
 public class TestController {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
+
+    @PutMapping("/frankMachines")
+    public ApiResponse frankMachines(@RequestBody FrankMachine frankMachine){
+
+        return new ApiResponse(200,"hahaha");
+    }
+
+
+
+
 
     //https://auto.uprins.com/p/test/openSsh
     @GetMapping("/openSsh")

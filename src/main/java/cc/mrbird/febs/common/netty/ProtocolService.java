@@ -1,13 +1,13 @@
 package cc.mrbird.febs.common.netty;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.charge.ChargeResProtocol;
-import cc.mrbird.febs.common.netty.protocol.safe.QueryIDPortocol;
-import cc.mrbird.febs.common.netty.protocol.charge.QueryProtocol;
-import cc.mrbird.febs.common.netty.protocol.safe.QueryTemKeyPortocol;
-import cc.mrbird.febs.common.netty.protocol.heart.HeartPortocol;
-import cc.mrbird.febs.common.netty.protocol.ssh.CloseSSHResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.ssh.OpenSSHResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
+import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
+import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.ssh.CloseSSHResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.ssh.OpenSSHResultPortocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

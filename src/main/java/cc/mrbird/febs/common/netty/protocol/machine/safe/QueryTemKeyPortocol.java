@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.netty.protocol.safe;
+package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;

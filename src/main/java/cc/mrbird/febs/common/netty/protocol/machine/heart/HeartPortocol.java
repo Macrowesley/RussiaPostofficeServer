@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.netty.protocol.heart;
+package cc.mrbird.febs.common.netty.protocol.machine.heart;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
