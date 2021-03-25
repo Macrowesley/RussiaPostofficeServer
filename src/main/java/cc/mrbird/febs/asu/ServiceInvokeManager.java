@@ -1,21 +1,13 @@
 package cc.mrbird.febs.asu;
+import cc.mrbird.febs.asu.entity.enums.Event;
 import cc.mrbird.febs.asu.entity.enums.FMStatus;
 import cc.mrbird.febs.asu.entity.manager.FMError;
 
 import cc.mrbird.febs.asu.entity.manager.*;
-import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import lombok.var;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
-import java.net.URL;
 
 /**
  * 调用俄罗斯服务器接口
@@ -28,14 +20,13 @@ public class ServiceInvokeManager {
 
     private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 
-    @Autowired
-    ServiceToMachineProtocol serviceToMachineProtocol;
+
 
     /**
      * 发送机器状况
      * @PutMapping("frankMachines")
      */
-    public void frankMachines(FrankMachine frankMachine) {
+    public ApiResponse frankMachines(FrankMachine frankMachine) {
 
 /*
         String url = "http://" + host + ":" + port + "/hello2";
@@ -43,26 +34,34 @@ public class ServiceInvokeManager {
         map.add("name", name);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, map, String.class);
 */
-        /*RestTemplate restTemplate = new RestTemplate();
+        /*{
+        RestTemplate restTemplate = new RestTemplate(new HttpsClientRequestFactory());
+        String url = "https://asufm.russianpost.ru/rcs-manager/v1/frankMachines";
+//        url = "http://40.114.247.228:8080/rcs-manager/v1/frankMachines";
 
-        String url = baseUrl + "/frankMachines";
-        FrankMachine bean = new FrankMachine();
-        bean.setId("");
-        bean.setDateTime("");
-        bean.setStatus(FMStatus.ENABLED);
-        bean.setPostOffice("");
-        bean.setTaxVersion("");
-        bean.setEvent("");
-        bean.setError(new FMError("200","ok"));
+        FrankMachine machine = new FrankMachine();
+        machine.setId("FM100001");
+        machine.setDateTime("2021-01-01T09:00:00.001+03:00");
+        machine.setStatus(FMStatus.ENABLED);
+        machine.setPostOffice("131000");
+        machine.setTaxVersion("A0042015A");
+        machine.setEvent("STATUS");
+        machine.setError(new FMError("200","ok"));
 
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, bean, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-API-KEY","-----BEGIN PUBLIC KEY-----MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH-----END PUBLIC KEY-----");
 
-        log.info("responseEntity = {}", responseEntity.toString());
-        log.info("responseEntity.getBody() = {}", responseEntity.getBody().toString());
-        log.info("responseEntity.getStatusCode() = {}", responseEntity.getStatusCode());
-        log.info("responseEntity.getStatusCodeValue() = {}", responseEntity.getStatusCodeValue());
-        log.info("responseEntity.getHeaders() = {}", responseEntity.getHeaders().toString());*/
+        HttpEntity<FrankMachine> httpEntity = new HttpEntity<>(machine, headers);
+
+        ResponseEntity<String> entityResponseEntity = restTemplate.exchange(url, HttpMethod.PUT, httpEntity, String.class);
+
+        log.info(""+entityResponseEntity.getStatusCodeValue());
+        log.info(entityResponseEntity.getHeaders().toString());
+        log.info(entityResponseEntity.getBody().toString());
+
+
+    }*/
 
 
 
@@ -76,7 +75,14 @@ public class ServiceInvokeManager {
         bean.setStatus(FMStatus.ENABLED);
         bean.setPostOffice("");
         bean.setTaxVersion("");
-        bean.setEvent("");
+        //校验事件
+        int eventType = 0;
+        Event event = Event.getEventByType(eventType);
+        if (event == null){
+            //todo 待定
+            return null;
+        }
+        bean.setEvent(event);
         bean.setError(new FMError("200","ok"));
 
 
@@ -87,6 +93,7 @@ public class ServiceInvokeManager {
         log.info("结果：responseEntity.getStatusCode() = {}", responseEntity.getStatusCode());
         log.info("结果：responseEntity.getStatusCodeValue() = {}", responseEntity.getStatusCodeValue());
         log.info("结果：responseEntity.getHeaders() = {}", responseEntity.getHeaders().toString());
+        return null;
     }
 
     /**
@@ -96,12 +103,9 @@ public class ServiceInvokeManager {
      * @param frankMachine
      * @return
      */
-    public void auth(String frankMachineId, FrankMachine frankMachine) {
-
-
-
-
-
+    public ApiResponse auth(String frankMachineId, FrankMachine frankMachine) {
+        //TODO 处理远程api调用
+        return null;
     }
 
     /**
@@ -111,8 +115,8 @@ public class ServiceInvokeManager {
      * @param frankMachine
      * @return
      */
-    public void unauth(String frankMachineId, FrankMachine frankMachine) {
-
+    public ApiResponse unauth(String frankMachineId, FrankMachine frankMachine) {
+        return null;
     }
 
 
@@ -123,8 +127,8 @@ public class ServiceInvokeManager {
      * @param frankMachine
      * @return
      */
-    public void lost(String frankMachineId, FrankMachine frankMachine) {
-
+    public ApiResponse lost(String frankMachineId, FrankMachine frankMachine) {
+        return null;
     }
 
     /**
@@ -134,8 +138,8 @@ public class ServiceInvokeManager {
      * @param PublicKey
      * @return
      */
-    public void publicKey(String frankMachineId, PublicKey PublicKey) {
-
+    public ApiResponse publicKey(String frankMachineId, PublicKey PublicKey) {
+        return null;
     }
 
     /**
@@ -144,8 +148,8 @@ public class ServiceInvokeManager {
      * @param rateTableFeedback
      * @return
      */
-    public void rateTables(RateTableFeedback rateTableFeedback) {
-
+    public ApiResponse rateTables(RateTableFeedback rateTableFeedback) {
+        return null;
     }
 
     /**
@@ -154,8 +158,8 @@ public class ServiceInvokeManager {
      * @param foreseen
      * @return
      */
-    public void foreseens(Foreseen foreseen) {
-
+    public ApiResponse foreseens(Foreseen foreseen) {
+        return null;
     }
 
     /**
@@ -165,32 +169,32 @@ public class ServiceInvokeManager {
      * @param foreseenCancel
      * @return
      */
-    public void cancel(String foreseenId, ForeseenCancel foreseenCancel) {
-
+    public ApiResponse cancel(String foreseenId, ForeseenCancel foreseenCancel) {
+        return null;
     }
 
     /**
      * @PostMapping("/transactions")
      * @param transaction
      */
-    public void transactions(Transaction transaction) {
-
+    public ApiResponse transactions(Transaction transaction) {
+        return null;
     }
 
     /**
      * @PostMapping("/refills")
      * @param registers
      */
-    public void refills(Registers registers) {
-
+    public ApiResponse refills(Registers registers) {
+        return null;
     }
 
     /**
      * @PostMapping("/franking/stats")
      * @param statistics
      */
-    public void stats(Statistics statistics) {
-
+    public ApiResponse stats(Statistics statistics) {
+        return null;
     }
 
 

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.asu.entity.manager;
 
+import cc.mrbird.febs.asu.entity.enums.Event;
 import cc.mrbird.febs.asu.entity.enums.FMStatus;
 import lombok.Data;
 import lombok.ToString;
@@ -55,7 +56,7 @@ public class FrankMachine {
      * example:
      * 'STATUS'
      */
-    String event;
+    Event event;
 
     FMError error;
 }

@@ -360,7 +360,7 @@ public class RSAUtils {
         try {
             data = Base64.encodeBase64String(encryptByPublicKey(data.getBytes(CharsetUtil.UTF_8), PUBLICKEY));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            // Auto-generated catch block
             e.printStackTrace();
         }
         return data;

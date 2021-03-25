@@ -28,4 +28,8 @@ public class ApiResponse {
         this.object = object;
         return this;
     }
+
+    public boolean isOK(){
+        return this.code == 200;
+    }
 }

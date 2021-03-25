@@ -137,7 +137,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Transactional(rollbackFor = Exception.class)
     public void deleteDevice(Device device) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
-        // TODO 设置删除条件
+        // 设置删除条件
         this.remove(wrapper);
     }
 

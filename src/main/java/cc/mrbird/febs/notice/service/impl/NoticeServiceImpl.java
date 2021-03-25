@@ -45,7 +45,6 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Override
     public List<Notice> findNotices(Notice notice) {
 	    LambdaQueryWrapper<Notice> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
     }
 
@@ -80,7 +79,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Transactional(rollbackFor = Exception.class)
     public void deleteNotice(Notice notice) {
         LambdaQueryWrapper<Notice> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
+	    // 设置删除条件
 	    this.remove(wrapper);
 	}
 

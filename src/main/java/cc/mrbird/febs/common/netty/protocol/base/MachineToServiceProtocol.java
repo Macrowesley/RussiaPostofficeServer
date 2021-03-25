@@ -1,7 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.asu.ServiceManageCenter;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <b>长度 + 类型 + 数据 + 检验位 + 结尾</b>
@@ -9,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class MachineToServiceProtocol extends BaseProtocol {
 
+    @Autowired
+    public ServiceManageCenter serviceManageCenter;
 
     /**
      * 获取协议类型

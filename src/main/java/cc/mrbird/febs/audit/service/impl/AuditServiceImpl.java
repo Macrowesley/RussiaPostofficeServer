@@ -77,7 +77,6 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Override
     public List<Audit> findAuditList(Audit audit) {
 	    LambdaQueryWrapper<Audit> queryWrapper = new LambdaQueryWrapper<>();
-	    //TODO
 		return this.baseMapper.selectList(queryWrapper);
     }
 
@@ -109,7 +108,6 @@ public class AuditServiceImpl extends ServiceImpl<AuditMapper, Audit> implements
     @Transactional(rollbackFor = Exception.class)
     public void deleteAudit(Audit audit) {
         LambdaQueryWrapper<Audit> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
 

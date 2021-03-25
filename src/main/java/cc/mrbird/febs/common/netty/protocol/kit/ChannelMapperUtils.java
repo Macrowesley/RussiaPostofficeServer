@@ -1,9 +1,11 @@
 package cc.mrbird.febs.common.netty.protocol.kit;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,6 +40,13 @@ public class ChannelMapperUtils {
         if (!StringUtils.isEmpty(acnum)) {
             channelMap.put(acnum, ctx);
             channelCount.incrementAndGet();
+
+            ChannelId channelId = ctx.channel().id();
+            InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+
+            String clientIp = insocket.getAddress().getHostAddress();
+            int clientPort = insocket.getPort();
+            log.info("长连接：客户端【" + channelId + "】信息 [IP:" + clientIp + "--->PORT:" + clientPort + "]" + " insocket="+insocket.toString());
             log.info("添加机器{}长连接，现在有{}个连接",acnum,getChannleSize());
         }
     }

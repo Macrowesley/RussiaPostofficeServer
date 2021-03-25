@@ -144,7 +144,6 @@ public class OrderController extends BaseController {
     @RequiresPermissions("order:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_order_order")
     public FebsResponse auditDetail(OrderVo order) {
-        //TODO
         return new FebsResponse().success();
     }*/
 

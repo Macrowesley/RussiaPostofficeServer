@@ -48,7 +48,7 @@ public class FebsConfigure {
     /**
      * XssFilter Bean
      */
-    //TODO 禁止了xss拦截器
+    //禁止了xss拦截器
     @Bean
     public FilterRegistrationBean<XssFilter> xssFilterRegistrationBean() {
         FilterRegistrationBean<XssFilter> filterRegistrationBean = new FilterRegistrationBean<>();

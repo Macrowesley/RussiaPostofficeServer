@@ -34,7 +34,7 @@ public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDev
     @Override
     public IPage<UserDevice> findUserDevices(QueryRequest request, UserDevice userDevice) {
         LambdaQueryWrapper<UserDevice> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
+        // 设置查询条件
         Page<UserDevice> page = new Page<>(request.getPageNum(), request.getPageSize());
         return this.page(page, queryWrapper);
     }
@@ -42,7 +42,7 @@ public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDev
     @Override
     public List<UserDevice> findUserDevices(UserDevice userDevice) {
 	    LambdaQueryWrapper<UserDevice> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
+		// 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
     }
 
@@ -69,7 +69,7 @@ public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDev
     @Transactional(rollbackFor = Exception.class)
     public void deleteUserDevice(UserDevice userDevice) {
         LambdaQueryWrapper<UserDevice> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
+	    // 设置删除条件
         wrapper.eq(UserDevice::getUserId, userDevice.getUserId());
 	    this.remove(wrapper);
 	}

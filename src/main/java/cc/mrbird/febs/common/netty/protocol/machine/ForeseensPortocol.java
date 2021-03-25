@@ -1,21 +1,23 @@
-package cc.mrbird.febs.common.netty.protocol.machine.ssh;
+package cc.mrbird.febs.common.netty.protocol.machine;
 
+import cc.mrbird.febs.asu.entity.manager.Foreseen;
+import cc.mrbird.febs.asu.entity.manager.ForeseenProduct;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+
 @Slf4j
 @Component
-public class CloseSSHResultPortocol extends MachineToServiceProtocol {
-    public static final byte PROTOCOL_TYPE = (byte) 0xB2;
+public class ForeseensPortocol extends MachineToServiceProtocol {
+    public static final byte PROTOCOL_TYPE = (byte) 0xB5;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-    //SSH结果长度
-    private static final int REQ_SSH_RES_LEN = 1;
+
 
     //返回数据长度
     private static final int RES_DATA_LEN = 1;
@@ -41,10 +43,10 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x09
-            unsigned char type;					//0xB2
+            unsigned char length;				//0x0 ?
+            unsigned char type;					//0xB5
             unsigned char acnum[6];             //机器表头号
-            unsigned char result;				//0x00 失败  0x01 成功
+            unsigned char content[?];			//加密后内容: 版本内容（长度3） + todo 机器信息（）？
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))ssh, *ssh;
@@ -55,12 +57,28 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
 
-        //ssh结果
-        String sshRes = BaseTypeUtils.byteToString(bytes, pos, REQ_SSH_RES_LEN, BaseTypeUtils.UTF8);
+        //todo 解析什么
+        // 产品列表？ 总金额 机器其他信息
 
-        log.info("{}机器的ssh打开结果：{}", acnum, sshRes.equals("1")? "成功":"失败");
 
-        //返回
+        Foreseen foreseen = new Foreseen();
+        foreseen.setId("");
+        foreseen.setPostOffice("");
+        foreseen.setUserId("");
+        foreseen.setContractId("");
+        foreseen.setContractNum(0);
+        foreseen.setTotalCount(0);
+        foreseen.setProducts(new ForeseenProduct[]{new ForeseenProduct()});
+        foreseen.setFrankMachineId("");
+        foreseen.setTaxVersion("");
+        foreseen.setMailVal(0.0D);
+
+        //需要知道哪些数据是机器能提供的
+
+        serviceManageCenter.foreseens(foreseen);
+
+
+        //返回 todo 返回需要写清楚点
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);
     }

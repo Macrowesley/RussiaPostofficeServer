@@ -76,7 +76,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                 }
             }
 
-//            test();
+//            cc.mrbird.test();
             startNetty();
         }
     }
@@ -99,7 +99,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
 /*    @Autowired
     AlarmThreadPool alarmThreadPool;
 
-    private void test() {
+    private void cc.mrbird.test() {
         ExecutorService service = Executors.newFixedThreadPool(6);
         service.submit(new testRun("AAA"));
         service.submit(new testRun("AAA"));
