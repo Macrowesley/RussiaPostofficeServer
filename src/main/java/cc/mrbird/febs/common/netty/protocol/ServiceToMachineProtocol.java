@@ -32,13 +32,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public void openSshProtocol(String acnum) {
         try {
             //执行指令
-            try {
+            /*try {
                 String cmd = "cmd /c net start cygsshd";
                 Process process = Runtime.getRuntime().exec(cmd);
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
 
 
             ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByKey(acnum);
@@ -106,7 +106,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             log.error("服务器发送关闭机器ssh指令失败，原因如下：" + e.getMessage());
         } finally {
             //执行关闭指令
-            try {
+            /*try {
                 String cmd = "cmd /c net stop cygsshd &&" +
                         "taskkill /IM sshd.exe /F &&" +
                         "taskkill /IM bash.exe /F";
@@ -114,7 +114,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 

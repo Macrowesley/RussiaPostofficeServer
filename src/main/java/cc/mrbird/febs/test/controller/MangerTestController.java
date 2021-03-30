@@ -199,7 +199,7 @@ public class MangerTestController {
         String foreseenId = "id 666";
         ForeseenCancel foreseenCancel = new ForeseenCancel("不弄了，取消");
 
-        ApiResponse apiResponse = serviceInvokeManager.cancel(foreseenId, foreseenCancel);
+        ApiResponse apiResponse = serviceInvokeManager.cancel(null, foreseenCancel);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 

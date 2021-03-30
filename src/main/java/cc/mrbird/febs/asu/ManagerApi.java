@@ -1,11 +1,13 @@
 package cc.mrbird.febs.asu;
 
 import cc.mrbird.febs.asu.entity.manager.*;
-import cc.mrbird.febs.asu.entity.manager.ApiError;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -17,7 +19,7 @@ public class ManagerApi {
      * 机器状况
      */
     @PutMapping("frankMachines")
-    public ApiResponse frankMachines(@RequestBody FrankMachine frankMachine, HttpServletRequest request){
+    public ApiResponse frankMachines(@Validated @RequestBody FrankMachine frankMachine, HttpServletRequest request){
         log.info("收到消息：{}", frankMachine.toString());
         log.info("收到的header X-API-KEY={}", request.getHeader("X-API-KEY"));
         frankMachine.setId("666 manager收到了");
@@ -150,7 +152,8 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/foreseens/{foreseenId}/cancel")
-    public ApiResponse cancel(@PathVariable String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
+    public ApiResponse cancel(@PathVariable @NotBlank String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
+
         log.info("manager cancel foreseenCancel={}", foreseenCancel.toString());
         log.info("manager cancel foreseenId={}", foreseenId);
 

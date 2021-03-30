@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.handler;
 
+import cc.mrbird.febs.asu.entity.manager.ApiResponse;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
@@ -72,14 +73,15 @@ public class GlobalExceptionHandler {
      * @return FebsResponse
      */
     @ExceptionHandler(BindException.class)
-    public FebsResponse validExceptionHandler(BindException e) {
+    public ApiResponse validExceptionHandler(BindException e) {
         StringBuilder message = new StringBuilder();
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         for (FieldError error : fieldErrors) {
             message.append(error.getField()).append(error.getDefaultMessage()).append(",");
         }
         message = new StringBuilder(message.substring(0, message.length() - 1));
-        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+//        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),message.toString());
     }
 
     /**
@@ -108,14 +110,15 @@ public class GlobalExceptionHandler {
      * @return FebsResponse
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public FebsResponse handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ApiResponse handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         StringBuilder message = new StringBuilder();
         for (FieldError error : e.getBindingResult().getFieldErrors()) {
             message.append(error.getField()).append(error.getDefaultMessage()).append(",");
         }
         message = new StringBuilder(message.substring(0, message.length() - 1));
         log.error(message.toString());
-        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+//        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),message.toString());
     }
 
 

@@ -28,9 +28,9 @@ public class ServiceInvokeManager {
     @Autowired
     RestTemplate restTemplate;
 
-    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
+//    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 //    private final String baseUrl = "https://asufm.russianpost.ru/rcs-manager/v1";
-//    private final String baseUrl = "http://localhost/p/test/manager";
+    private final String baseUrl = "http://localhost/p/test/manager";
 
     /**
      * 发送机器状况
@@ -39,11 +39,8 @@ public class ServiceInvokeManager {
      */
     public ApiResponse frankMachines(FrankMachine frankMachine) {
         String url = baseUrl + "/frankMachines";
-
-        return doExchange( url, frankMachine,HttpMethod.PUT);
+        return doExchange(url, frankMachine, HttpMethod.PUT, FrankMachine.class,null);
     }
-
-
 
 
     /**
@@ -56,8 +53,11 @@ public class ServiceInvokeManager {
      */
     public ApiResponse auth(String frankMachineId, FrankMachine frankMachine) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
+        HashMap<String, String> map = new HashMap<>();
+        map.put("frankMachineId", frankMachineId);
 
-        return changeStatusAndEvent(frankMachineId, frankMachine, url);
+        return doExchange(url, frankMachine, HttpMethod.POST, String.class, map);
+
     }
 
     /**
@@ -71,7 +71,10 @@ public class ServiceInvokeManager {
     public ApiResponse unauth(String frankMachineId, FrankMachine frankMachine) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
 
-        return changeStatusAndEvent(frankMachineId, frankMachine, url);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("frankMachineId", frankMachineId);
+
+        return doExchange(url, frankMachine, HttpMethod.POST, String.class, map);
     }
 
 
@@ -86,7 +89,10 @@ public class ServiceInvokeManager {
     public ApiResponse lost(String frankMachineId, FrankMachine frankMachine) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/lost";
 
-        return changeStatusAndEvent(frankMachineId, frankMachine, url);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("frankMachineId", frankMachineId);
+
+        return doExchange(url, frankMachine, HttpMethod.POST, String.class, map);
     }
 
     /**
@@ -99,14 +105,10 @@ public class ServiceInvokeManager {
      */
     public ApiResponse publicKey(String frankMachineId, PublicKey publicKey) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/publicKey";
-        HttpEntity<PublicKey> requestEntity = new HttpEntity<>(publicKey, getHttpHeaders());
 
         Map<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
-
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, ApiResponse.class, map);
-
-        return parseResponse(responseEntity, String.class);
+        return doExchange(url, publicKey, HttpMethod.POST, String.class, map);
     }
 
     /**
@@ -118,9 +120,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse rateTables(RateTableFeedback rateTableFeedback) {
         String url = baseUrl + "/rateTables";
-        HttpEntity<RateTableFeedback> requestEntity = new HttpEntity<>(rateTableFeedback, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, ApiResponse.class);
-        return parseResponse(responseEntity, String.class);
+        return doExchange(url, rateTableFeedback, HttpMethod.PUT, String.class,null);
     }
 
     /**
@@ -132,9 +132,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse foreseens(Foreseen foreseen) {
         String url = baseUrl + "/foreseens";
-        HttpEntity<Foreseen> requestEntity = new HttpEntity<>(foreseen, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class);
-        return parseResponse(responseEntity, ManagerBalance.class);
+        return doExchange(url, foreseen, HttpMethod.POST, ManagerBalance.class,null);
     }
 
     /**
@@ -147,13 +145,11 @@ public class ServiceInvokeManager {
      */
     public ApiResponse cancel(String foreseenId, ForeseenCancel foreseenCancel) {
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
-        HttpEntity<ForeseenCancel> requestEntity = new HttpEntity<>(foreseenCancel, getHttpHeaders());
 
         Map<String, String> map = new HashMap<>();
         map.put("foreseenId", foreseenId);
 
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class, map);
-        return parseResponse(responseEntity, ManagerBalance.class);
+        return doExchange(url, foreseenCancel, HttpMethod.POST, ManagerBalance.class, map);
     }
 
     /**
@@ -162,9 +158,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse transactions(Transaction transaction) {
         String url = baseUrl + "/transactions";
-        HttpEntity<Transaction> requestEntity = new HttpEntity<>(transaction, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class);
-        return parseResponse(responseEntity, ManagerBalance.class);
+        return doExchange(url, transaction, HttpMethod.POST, ManagerBalance.class,null);
     }
 
     /**
@@ -173,9 +167,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse refills(Registers registers) {
         String url = baseUrl + "/refills";
-        HttpEntity<Registers> requestEntity = new HttpEntity<>(registers, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class);
-        return parseResponse(responseEntity, ManagerBalance.class);
+        return doExchange(url, registers, HttpMethod.POST, ManagerBalance.class,null);
     }
 
     /**
@@ -184,9 +176,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse stats(Statistics statistics) {
         String url = baseUrl + "/franking/stats";
-        HttpEntity<Statistics> requestEntity = new HttpEntity<>(statistics, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class);
-        return parseResponse(responseEntity, ManagerBalance.class);
+        return doExchange(url, statistics, HttpMethod.POST, ManagerBalance.class,null);
     }
 
 
@@ -202,43 +192,34 @@ public class ServiceInvokeManager {
         return httpHeaders;
     }
 
-    private ApiResponse changeStatusAndEvent(String frankMachineId, FrankMachine frankMachine, String url) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("frankMachineId", frankMachineId);
-
-        HttpEntity<FrankMachine> requestEntity = new HttpEntity<>(frankMachine, getHttpHeaders());
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, ApiResponse.class, map);
-
-        return parseResponse(responseEntity, FrankMachine.class);
-    }
-
-    private <T> ApiResponse doExchange( String url, T requestBody, HttpMethod method,  Object... uriVariables) {
-        log.info("给manager服务器发送消息：{}", requestBody.toString());
-
-        HttpEntity<T> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
-
-        ResponseEntity<ApiResponse> responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class);
-
-        return parseResponse(responseEntity, FrankMachine.class);
-    }
-
-
     /**
-     * 解析接口返回
-     *
-     * @param responseEntity
-     * @param clazz
-     * @param <T>
+     * 处理远程调用接口
+     * @param url 路径
+     * @param requestBody 发送的对象
+     * @param method 方法
+     * @param responseObjectClass 返回的数据类型
+     * @param uriVariables 链接中带的参数
+     * @param <T> 返回的数据类型
+     * @param <E> 发送的数据类型
      * @return
      */
-    private <T> ApiResponse parseResponse(ResponseEntity<ApiResponse> responseEntity, Class<T> clazz) {
+    private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
+        log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
+            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
+            ResponseEntity<ApiResponse> responseEntity;
+            if (uriVariables == null){
+                responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class);
+            }else{
+                responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class, uriVariables);
+            }
+
             if (ResultEnum.SUCCESS.getCode() == responseEntity.getStatusCodeValue()) {
                 ApiResponse apiResponse = responseEntity.getBody();
                 log.info("manager返回的结果 ApiResponse = {}", apiResponse.toString());
                 switch (ResultEnum.getByCode(apiResponse.getCode())) {
                     case SUCCESS:
-                        T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), clazz);
+                        T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
                         log.info("manager返回的结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
                         apiResponse.setObject(bean);
                         return apiResponse;
@@ -257,12 +238,14 @@ public class ServiceInvokeManager {
                 }
             } else {
                 log.info("网络问题，错误代码{} ", responseEntity.getStatusCodeValue());
-                return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值");
+                return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值1");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
-            return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "解析接口返回出错");
+            return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
         }
     }
+
 
 }

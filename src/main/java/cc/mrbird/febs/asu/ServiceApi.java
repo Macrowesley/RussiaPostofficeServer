@@ -5,9 +5,9 @@ import cc.mrbird.febs.asu.entity.manager.ApiResponse;
 import cc.mrbird.febs.asu.entity.manager.PublicKey;
 import cc.mrbird.febs.asu.entity.service.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
  * TODO 过滤IP，只接受一个IP
  *
  */
+@RequestMapping("/s")
 @RestController
 public class ServiceApi {
     @Autowired
@@ -65,7 +66,7 @@ public class ServiceApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
-    public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId, @RequestBody ChangeStatusRequest changeStatusRequest) throws AsuApiException {
+    public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId, @Validated @RequestBody ChangeStatusRequest changeStatusRequest) throws AsuApiException {
         //TODO 检查请求的有效性
         if (StringUtils.isEmpty(frankMachineId)){
             //TODO 拦截这种错误，发送错误请求给服务器
@@ -94,7 +95,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/postOffices")
-    public ApiResponse postOffices(@RequestBody PostOffice postOffice){
+    public ApiResponse postOffices(@RequestBody @Validated PostOffice postOffice){
         /**
          * todo 接收邮局信息
          * 1. 更新邮局信息
@@ -112,7 +113,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/taxes")
-    public ApiResponse taxes(@RequestBody TaxVersion taxVersion){
+    public ApiResponse taxes(@RequestBody @Validated TaxVersion taxVersion){
         //todo 【收到了服务器消息】
 
         //todo 保存信息到数据库
@@ -139,7 +140,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/contracts")
-    public ApiResponse contracts(@RequestBody Contract contract){
+    public ApiResponse contracts(@RequestBody @Validated Contract contract){
         /**
          * TODO 接收服务器传递过来的合同数据
          * 1. 合同插入数据库
@@ -158,7 +159,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/contracts/{contractId}/balance")
-    public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody ServiceBalance serviceBalance){
+    public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalance serviceBalance){
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
         apiResponse =  new ApiResponse(400, new ApiError());
