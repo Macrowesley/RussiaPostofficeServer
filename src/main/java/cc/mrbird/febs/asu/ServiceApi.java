@@ -1,5 +1,6 @@
 package cc.mrbird.febs.asu;
 
+import cc.mrbird.febs.asu.entity.manager.ApiError;
 import cc.mrbird.febs.asu.entity.manager.ApiResponse;
 import cc.mrbird.febs.asu.entity.manager.PublicKey;
 import cc.mrbird.febs.asu.entity.service.*;
@@ -52,8 +53,8 @@ public class ServiceApi {
 
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -82,8 +83,8 @@ public class ServiceApi {
 
         //TODO 如果都没问题，最后返回200
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -100,8 +101,8 @@ public class ServiceApi {
          * 2. 更新邮局和合同的关系表
          */
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -127,8 +128,8 @@ public class ServiceApi {
         //todo 返回结果
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -145,8 +146,8 @@ public class ServiceApi {
          *
          */
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -160,8 +161,8 @@ public class ServiceApi {
     public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody ServiceBalance serviceBalance){
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new Error());
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 

@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.RestTemplate;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -84,4 +85,8 @@ public class FebsConfigure {
                 swagger.getLicense(), swagger.getLicenseUrl(), Collections.emptyList());
     }
 
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate(new HttpsClientRequestFactory());
+    }
 }

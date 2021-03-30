@@ -13,15 +13,15 @@
     <link rel="icon" th:href="@{febs/images/favicon.ico}" type="image/x-icon"/>
 </head>
 <body>
-<div class="layui-fluid" id="febs-error-403" lay-title="403">
+<div class="layui-fluid" id="febs-apiError-403" lay-title="403">
     <div class="layui-row layui-col-space10" style="margin-top:100px">
         <div class="layui-col-xs3 layui-col-xs-offset2">
-            <img data-th-src="@{febs/images/error/403.svg}" alt="" width="85%"/>
+            <img data-th-src="@{febs/images/apiError/403.svg}" alt="" width="85%"/>
         </div>
         <div class="layui-col-xs7">
             <h1 style="font-size: 60px">403</h1>
-            <h2 class="febs-mar-b20 febs-c-gray" th:text="#{error.noPermission}"></h2>
-            <button class="layui-btn layui-btn-normal" id="home" th:text="#{error.returnHome}"></button>
+            <h2 class="febs-mar-b20 febs-c-gray" th:text="#{apiError.noPermission}"></h2>
+            <button class="layui-btn layui-btn-normal" id="home" th:text="#{apiError.returnHome}"></button>
         </div>
     </div>
 </div>
@@ -30,7 +30,7 @@
     layui.use(['jquery'], function () {
         var $ = layui.jquery,
             ctx = [[@{/}]],
-            $view = $('#febs-error-403');
+            $view = $('#febs-apiError-403');
         $view.on('click', 'button', function () {
             window.location.href = ctx + 'index';
         });

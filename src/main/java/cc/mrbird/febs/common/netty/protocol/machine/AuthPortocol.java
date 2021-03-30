@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.enums.Event;
-import cc.mrbird.febs.asu.entity.enums.FMStatus;
+import cc.mrbird.febs.asu.entity.enums.EventEnum;
+import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
 import cc.mrbird.febs.asu.entity.manager.FrankMachine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -71,36 +71,30 @@ public class AuthPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         int statusType = 0;
-        FMStatus status = FMStatus.getStatusByType(statusType);
+        FMStatusEnum status = FMStatusEnum.getStatusByType(statusType);
 
         //todo 解析得到机器信息
         FrankMachine machine = new FrankMachine();
         machine.setId("");
         machine.setDateTime("");
-        machine.setStatus(FMStatus.ENABLED);
+        machine.setStatus(FMStatusEnum.ENABLED);
         machine.setPostOffice("");
         machine.setTaxVersion("");
 
         //校验事件
         int eventType = 0;
-        Event event = Event.getEventByType(eventType);
-        if (event == null){
+        EventEnum eventEnum = EventEnum.getEventByType(eventType);
+        if (eventEnum == null){
             //返回 todo 返回需要写清楚点
             return null;
         }
-        machine.setEvent(event);
+        machine.setEventEnum(eventEnum);
 
-        switch (event){
+        switch (eventEnum){
             case STATUS:
                 switch (status){
                     case ENABLED:
                         serviceManageCenter.auth(machine);
-                        break;
-                    case DEMO:
-                        //todo 这个情况怎么处理
-                        break;
-                    case BLOCKED:
-                        //todo 这个情况怎么处理
                         break;
                     case LOST:
                         serviceManageCenter.lost(machine);
@@ -110,11 +104,13 @@ public class AuthPortocol extends MachineToServiceProtocol {
                         break;
                     default:
                         //todo 这个情况怎么处理
+                        serviceManageCenter.changeStatusEvent(machine);
                         break;
                 }
 
                 break;
             case RATE_TABLE_UPDATE:
+                serviceManageCenter.rateTableUpdateEvent(machine);
                 break;
             default:
                 //处理异常

@@ -166,7 +166,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          typedef  struct{
              unsigned char length;				 //一个字节
              unsigned char head;				 	 //0xC4
-             unsigned char content[?];            //加密后内容 版本内容(3) + ？？
+             unsigned char content[?];            //加密后内容 版本内容(3) + taxId(自己数据库中的 )  + ？？
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
          }__attribute__((packed))updateTaxes, *updateTaxes;
@@ -184,7 +184,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          typedef  struct{
              unsigned char length;				 //一个字节
              unsigned char head;				 	 //0xC5
-             unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + contractId(?) + contractNum(?) + current(?) + consolidate(?)
+             unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractId(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
          }__attribute__((packed))updateTaxes, *updateTaxes;

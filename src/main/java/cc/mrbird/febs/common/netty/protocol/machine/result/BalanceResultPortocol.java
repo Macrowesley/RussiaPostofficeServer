@@ -43,7 +43,7 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
             unsigned char length;				//0x09
             unsigned char type;					//0xC4
             unsigned char acnum[?];             //frankMachineId
-            unsigned char result;				//0x00 失败  0x01 成功
+            unsigned char result;				//加密内容：balanceId() + result(1)
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))updateTaxesRes, *updateTaxesRes;

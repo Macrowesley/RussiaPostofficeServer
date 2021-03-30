@@ -69,8 +69,8 @@
     <span shiro:lacksPermission="job:update,job:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> 无权限
     </span>
-    <a lay-event="edit" shiro:hasPermission="job:update"><i class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
-    <a lay-event="del" shiro:hasPermission="job:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
+    <a lay-eventEnum="edit" shiro:hasPermission="job:update"><i class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
+    <a lay-eventEnum="del" shiro:hasPermission="job:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
@@ -103,7 +103,7 @@
 
         dropdown.render({
             elem: $view.find('.action-more'),
-            click: function (name, elem, event) {
+            click: function (name, elem, eventEnum) {
                 var checkStatus = table.checkStatus('jobTable');
                 if (name === 'add') {
                     febs.modal.open('新增任务', 'job/job/add', {
@@ -215,7 +215,7 @@
 
         table.on('tool(jobTable)', function (obj) {
             var data = obj.data,
-                layEvent = obj.event;
+                layEvent = obj.eventEnum;
             if (layEvent === 'del') {
                 febs.modal.confirm('删除任务', '确定删除该任务？', function () {
                     deleteJobs(data.jobId);

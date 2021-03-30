@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.enums.Event;
-import cc.mrbird.febs.asu.entity.enums.FMStatus;
+import cc.mrbird.febs.asu.entity.enums.EventEnum;
+import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
 import cc.mrbird.febs.asu.entity.manager.FrankMachine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -61,18 +61,18 @@ public class LostPortocol extends MachineToServiceProtocol {
         FrankMachine machine = new FrankMachine();
         machine.setId("");
         machine.setDateTime("");
-        machine.setStatus(FMStatus.ENABLED);
+        machine.setStatus(FMStatusEnum.ENABLED);
         machine.setPostOffice("");
         machine.setTaxVersion("");
         //校验事件
         int eventType = 0;
-        Event event = Event.getEventByType(eventType);
-        if (event == null){
+        EventEnum eventEnum = EventEnum.getEventByType(eventType);
+        if (eventEnum == null){
             //返回 todo 返回需要写清楚点
             byte[] data = new byte[]{(byte) 0xFF};
             return data;
         }
-        machine.setEvent(event);
+        machine.setEventEnum(eventEnum);
 
         serviceManageCenter.lost(machine);
 

@@ -1,13 +1,13 @@
 package cc.mrbird.febs.asu.entity.enums;
 
 
-public enum Type {
+public enum TypeEnum {
     REFILL("REFILL"),
     REFUND("REFUND");
 
     private final String type;
 
-    Type(String type){
+    TypeEnum(String type){
         this.type = type;
     }
 

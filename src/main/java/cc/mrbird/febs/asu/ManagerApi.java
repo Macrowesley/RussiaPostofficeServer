@@ -1,20 +1,51 @@
 package cc.mrbird.febs.asu;
 
 import cc.mrbird.febs.asu.entity.manager.*;
-import cc.mrbird.febs.asu.entity.manager.Error;
+import cc.mrbird.febs.asu.entity.manager.ApiError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+@Slf4j
+@RestController
+@RequestMapping("/test/manager")
 public class ManagerApi {
     /**
      * 机器状况
      */
     @PutMapping("frankMachines")
-    public ApiResponse frankMachines(FrankMachine frankMachine){
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+    public ApiResponse frankMachines(@RequestBody FrankMachine frankMachine, HttpServletRequest request){
+        log.info("收到消息：{}", frankMachine.toString());
+        log.info("收到的header X-API-KEY={}", request.getHeader("X-API-KEY"));
+        frankMachine.setId("666 manager收到了");
+        int code = 400;
+        ApiResponse apiResponse;
+        switch (code){
+            case 200:
+                apiResponse =  new ApiResponse(200, frankMachine);
+                break;
+            case 400:
+                ManagerBalance managerBalance = new ManagerBalance();
+                managerBalance.setBalanceId("11");
+                managerBalance.setContractId("222");
+                managerBalance.setContractNum(333);
+                managerBalance.setCurrent(444.0D);
+                managerBalance.setConsolidate(555.0D);
+                apiResponse =  new ApiResponse(400, new OperationError(400,"操作失误111", managerBalance));
+
+                break;
+            case 500:
+                apiResponse =  new ApiResponse(500, new ApiError(500,"网络问题111"));
+
+                break;
+            default:
+                apiResponse =  new ApiResponse(500, new ApiError(500,"网络问题111"));
+                break;
+        }
+
         return apiResponse;
     }
 
@@ -26,9 +57,12 @@ public class ManagerApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/auth")
     public ApiResponse auth(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachine frankMachine){
+        log.info("manager auth frankMachineId={}",frankMachineId);
+        log.info("manager auth frankMachine={}",frankMachine.toString());
 
+        frankMachine.setId("manager auth 新的id");
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+
         return apiResponse;
     }
 
@@ -42,7 +76,7 @@ public class ManagerApi {
     public ApiResponse unauth(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachine frankMachine){
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+        apiResponse =  new ApiResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -54,9 +88,10 @@ public class ManagerApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/lost")
     public ApiResponse lost(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachine frankMachine){
-
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager lost frankMachineId={}", frankMachineId);
+        log.info("manager lost frankMachine={}", frankMachine);
+        ApiResponse apiResponse =  new ApiResponse(200, "ok 666");
+        apiResponse =  new ApiResponse(500, new ApiError(500, "错误"));
         return apiResponse;
     }
 
@@ -67,10 +102,11 @@ public class ManagerApi {
      * @return
      */
     @PutMapping("/frankMachines/{frankMachineId}/publicKey")
-    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, @RequestBody PublicKey PublicKey){
-
+    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, @RequestBody PublicKey publicKey){
+        log.info("manager lost frankMachineId={}", frankMachineId);
+        log.info("manager lost publicKey={}", publicKey.toString());
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+//        apiResponse =  new ApiResponse(500, new ApiError(200,"error hahaha"));
         return apiResponse;
     }
 
@@ -82,7 +118,8 @@ public class ManagerApi {
     @PutMapping("/rateTables")
     public ApiResponse rateTables(@RequestBody RateTableFeedback rateTableFeedback){
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager rateTables rateTableFeedback={}", rateTableFeedback.toString());
+//        apiResponse =  new ApiResponse(500, new ApiError(200,"error hahaha"));
         return apiResponse;
     }
 
@@ -93,9 +130,16 @@ public class ManagerApi {
      */
     @PostMapping("/foreseens")
     public ApiResponse foreseens(@RequestBody Foreseen foreseen){
-        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
-        apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager foreseen foreseen={}", foreseen.toString());
+        ManagerBalance managerBalance = new ManagerBalance();
+        managerBalance.setBalanceId("11");
+        managerBalance.setContractId("222");
+        managerBalance.setContractNum(333);
+        managerBalance.setCurrent(444.0D);
+        managerBalance.setConsolidate(555.0D);
+        ApiResponse apiResponse =  new ApiResponse(200, managerBalance);
+        /*apiResponse =  new ApiResponse(400, new OperationError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 
@@ -107,33 +151,69 @@ public class ManagerApi {
      */
     @PostMapping("/foreseens/{foreseenId}/cancel")
     public ApiResponse cancel(@PathVariable String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
-        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
-        apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager cancel foreseenCancel={}", foreseenCancel.toString());
+        log.info("manager cancel foreseenId={}", foreseenId);
+
+        ManagerBalance managerBalance = new ManagerBalance();
+        managerBalance.setBalanceId("11");
+        managerBalance.setContractId("222");
+        managerBalance.setContractNum(333);
+        managerBalance.setCurrent(444.0D);
+        managerBalance.setConsolidate(555.0D);
+        ApiResponse apiResponse =  new ApiResponse(200, managerBalance);
+
+ /*       apiResponse =  new ApiResponse(400, new OperationError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/transactions")
     public ApiResponse transactions(@NotNull @RequestBody Transaction transaction){
-        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
-        apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager transaction transaction={}", transaction.toString());
+
+        ManagerBalance managerBalance = new ManagerBalance();
+        managerBalance.setBalanceId("11");
+        managerBalance.setContractId("222");
+        managerBalance.setContractNum(333);
+        managerBalance.setCurrent(444.0D);
+        managerBalance.setConsolidate(555.0D);
+        ApiResponse apiResponse =  new ApiResponse(200, managerBalance);
+
+  /*      apiResponse =  new ApiResponse(400, new OperationError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/refills")
     public ApiResponse refills(@RequestBody Registers registers){
-        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
-        apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager registers registers={}", registers.toString());
+        ManagerBalance managerBalance = new ManagerBalance();
+        managerBalance.setBalanceId("11");
+        managerBalance.setContractId("222");
+        managerBalance.setContractNum(333);
+        managerBalance.setCurrent(444.0D);
+        managerBalance.setConsolidate(555.0D);
+        ApiResponse apiResponse =  new ApiResponse(200, managerBalance);
+
+  /*      apiResponse =  new ApiResponse(400, new OperationError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/franking/stats")
     public ApiResponse stats(@RequestBody Statistics statistics){
-        ApiResponse apiResponse =  new ApiResponse(200, new ManagerBalance());
-        apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new Error());
+        log.info("manager statistics statistics={}", statistics.toString());
+
+        ManagerBalance managerBalance = new ManagerBalance();
+        managerBalance.setBalanceId("11");
+        managerBalance.setContractId("222");
+        managerBalance.setContractNum(333);
+        managerBalance.setCurrent(444.0D);
+        managerBalance.setConsolidate(555.0D);
+        ApiResponse apiResponse =  new ApiResponse(200, managerBalance);
+
+  /*      apiResponse =  new ApiResponse(400, new OperationError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 

@@ -64,7 +64,7 @@
     <span shiro:lacksPermission="log:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> 无权限
     </span>
-    <a lay-event="del" shiro:hasPermission="log:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
+    <a lay-eventEnum="del" shiro:hasPermission="log:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
     layui.use(['jquery', 'laydate', 'form', 'table', 'febs', 'dropdown'], function () {
@@ -95,7 +95,7 @@
 
         dropdown.render({
             elem: $view.find('.action-more'),
-            click: function (name, elem, event) {
+            click: function (name, elem, eventEnum) {
                 if (name === 'delete') {
                     var checkStatus = table.checkStatus('logTable');
                     if (!checkStatus.data.length) {
@@ -130,7 +130,7 @@
 
         table.on('tool(logTable)', function (obj) {
             var data = obj.data,
-                layEvent = obj.event;
+                layEvent = obj.eventEnum;
             if (layEvent === 'del') {
                 febs.modal.confirm('删除日志', '确定删除该条系统日志？', function () {
                     deleteLogs(data.id);

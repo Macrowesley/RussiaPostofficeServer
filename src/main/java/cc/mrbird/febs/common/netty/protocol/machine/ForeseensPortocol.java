@@ -46,10 +46,12 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             unsigned char length;				//0x0 ?
             unsigned char type;					//0xB5
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容: 版本内容（长度3） + todo 机器信息（）？
+            unsigned char content[?];			//加密后内容:
+            版本内容（长度3）+ FrankMachineId() + TaxVersion() + PostOffice(6) + userId() + ContractId() + ContractNum(int 4) + TotalCount(int 4) + MailVal(8 double 类型 最后2位是小数)
+             + 产品数组（int 4） +  【productCode() + count(int 4) + weight(double 8) + amount(double 8)】 一直拼接
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
-        }__attribute__((packed))ssh, *ssh;
+        }__attribute__((packed))Foreseens, *Foreseens;
          */
         int pos = TYPE_LEN;
 
@@ -79,6 +81,15 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
 
         //返回 todo 返回需要写清楚点
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //0xB5
+         unsigned char content;				     //加密内容: result(0 失败 1 成功) + foreseenId（？）
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))ForeseensResult, *ForeseensResult;
+         */
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);
     }

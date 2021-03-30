@@ -75,11 +75,11 @@
     <span shiro:lacksPermission="device:add,device:update,device:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
-    <!--<a lay-event="detail" shiro:hasPermission="device:view"><i
+    <!--<a lay-eventEnum="detail" shiro:hasPermission="device:view"><i
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
-    <a lay-event="edit" shiro:hasPermission="device:update"><i
+    <a lay-eventEnum="edit" shiro:hasPermission="device:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
-    <!--<a lay-event="del" shiro:hasPermission="device:delete"><i
+    <!--<a lay-eventEnum="del" shiro:hasPermission="device:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
 </script>
 <script data-th-inline="none" type="text/javascript">
@@ -150,7 +150,7 @@
             //更多——弹出窗
             dropdown.render({
                 elem: $view.find('.action-more'),
-                click: function (name, elem, event) {
+                click: function (name, elem, eventEnum) {
                     var checkStatus = table.checkStatus('deviceTable');
                     if (name === 'add') {
                         febs.modal.open(i18n("device.addDevice"), 'device/add', {
@@ -233,7 +233,7 @@
         function initTableTool(){
             table.on('tool(deviceTable)', function (obj) {
                 var data = obj.data,
-                    layEvent = obj.event;
+                    layEvent = obj.eventEnum;
                 /*if (layEvent === 'detail') {
                     febs.modal.view('设备信息', 'system/device/detail/' + data.devicename, {
                         area: $(window).width() <= 750 ? '95%' : '660px'

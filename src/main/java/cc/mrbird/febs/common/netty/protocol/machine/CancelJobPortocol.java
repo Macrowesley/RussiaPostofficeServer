@@ -43,10 +43,10 @@ public class CancelJobPortocol extends MachineToServiceProtocol {
             unsigned char length;				//0x0 ?
             unsigned char type;					//0xB7
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容: 版本内容（长度3） + todo 机器信息（）？
+            unsigned char content[?];			//加密后内容: 版本内容（长度3） + frankMachineId(?) + foreseenId(?) + cancelMessage（?）
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
-        }__attribute__((packed))ssh, *ssh;
+        }__attribute__((packed))CancelJob, *CancelJob;
          */
         int pos = TYPE_LEN;
 
@@ -63,6 +63,15 @@ public class CancelJobPortocol extends MachineToServiceProtocol {
 
 
         //返回 todo 返回需要写清楚点
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //0xB7
+         unsigned char content;				     //加密内容: result(0 失败 1 成功)
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))CancelJobResult, *CancelJobResult;
+         */
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);
     }

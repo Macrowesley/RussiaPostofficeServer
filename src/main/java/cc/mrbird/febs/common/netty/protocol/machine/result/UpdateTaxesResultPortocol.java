@@ -43,7 +43,7 @@ public class UpdateTaxesResultPortocol extends MachineToServiceProtocol {
             unsigned char length;				//0x09
             unsigned char type;					//0xC4
             unsigned char acnum[?];             //frankMachineId
-            unsigned char result;				//0x00 失败  0x01 成功
+            unsigned char result;				//加密内容： taxId（） + result(0x00 失败  0x01 成功)
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))updateTaxesRes, *updateTaxesRes;
@@ -54,10 +54,10 @@ public class UpdateTaxesResultPortocol extends MachineToServiceProtocol {
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
 
-        //结果
+   /*     //结果
         String res = BaseTypeUtils.byteToString(bytes, pos, REQ_UPDATE_TAXES_RES_LEN, BaseTypeUtils.UTF8);
 
-        log.info("{}机器的税率表更新结果：{}", acnum, res.equals("1")? "成功":"失败");
+        log.info("{}机器的税率表更新结果：{}", acnum, res.equals("1")? "成功":"失败");*/
 
         //todo 统计所有邮资机收到资费表的状态
 

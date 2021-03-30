@@ -1,6 +1,5 @@
 package cc.mrbird.febs.asu;
 
-import cc.mrbird.febs.asu.entity.enums.Event;
 import cc.mrbird.febs.asu.entity.manager.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class ServiceManageCenter {
      * @param frankMachine
      */
     public void changeStatus(FrankMachine frankMachine) {
-        //todo 收到了FM消息
+        /*//todo 收到了FM消息
         switch (frankMachine.getEvent()) {
             case STATUS:
                 changeStatusEvent(frankMachine);
@@ -41,15 +40,15 @@ public class ServiceManageCenter {
             default:
                 //todo 处理异常
                 break;
-        }
+        }*/
     }
 
     /**
      * 机器状态改变事件
-     *
+     * 【FM状态改变协议】
      * @param frankMachine
      */
-    private void changeStatusEvent(FrankMachine frankMachine) {
+    public void changeStatusEvent(FrankMachine frankMachine) {
 
 
         //访问俄罗斯服务器，改变状态
@@ -57,7 +56,7 @@ public class ServiceManageCenter {
         //todo 收到了俄罗斯消息
 
         if (changeStatusResponse.isOK()) {
-
+            FrankMachine responseFrankMachine = (FrankMachine) changeStatusResponse.getObject();
             // 更新数据库
 
         }
@@ -65,10 +64,10 @@ public class ServiceManageCenter {
 
     /**
      * 收到费率表事件
-     *
+     * 【FM状态改变协议】
      * @param frankMachine
      */
-    private void rateTableUpdateEvent(FrankMachine frankMachine) {
+    public void rateTableUpdateEvent(FrankMachine frankMachine) {
 
 
         //访问俄罗斯服务器，改变状态

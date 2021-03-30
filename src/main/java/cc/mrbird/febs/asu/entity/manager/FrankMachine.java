@@ -1,7 +1,7 @@
 package cc.mrbird.febs.asu.entity.manager;
 
-import cc.mrbird.febs.asu.entity.enums.Event;
-import cc.mrbird.febs.asu.entity.enums.FMStatus;
+import cc.mrbird.febs.asu.entity.enums.EventEnum;
+import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
@@ -35,7 +35,7 @@ public class FrankMachine {
      */
     String dateTime;
 
-    FMStatus status;
+    FMStatusEnum status;
 
     /**
      * 131000
@@ -56,7 +56,7 @@ public class FrankMachine {
      * example:
      * 'STATUS'
      */
-    Event event;
+    EventEnum eventEnum;
 
     FMError error;
 }

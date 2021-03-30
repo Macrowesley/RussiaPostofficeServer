@@ -10,6 +10,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ManagerBalance {
     /**
+     * 自己数据库中
+     */
+    String balanceId;
+    /**
      * 合约编号
      * format: uuid
      */

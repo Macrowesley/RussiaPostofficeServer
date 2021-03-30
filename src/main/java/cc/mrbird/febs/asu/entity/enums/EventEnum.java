@@ -1,14 +1,14 @@
 package cc.mrbird.febs.asu.entity.enums;
 
 
-public enum Event {
+public enum EventEnum {
     STATUS(1,"STATUS"),
     RATE_TABLE_UPDATE(2,"RATE_TABLE_UPDATE");
 
     private final int type;
     private final String event;
 
-    Event(int type, String event){
+    EventEnum(int type, String event){
         this.type = type;
         this.event = event;
     }
@@ -21,14 +21,12 @@ public enum Event {
         return type;
     }
 
-    public static Event getEventByType(int eventType){
-        switch (eventType){
-            case 1:
-                return STATUS;
-            case 2:
-                return RATE_TABLE_UPDATE;
-            default:
-                return null;
+    public static EventEnum getEventByType(int eventType){
+        for (EventEnum item: EventEnum.values()){
+            if (item.getType()== eventType){
+                return item;
+            }
         }
+        return null;
     }
 }

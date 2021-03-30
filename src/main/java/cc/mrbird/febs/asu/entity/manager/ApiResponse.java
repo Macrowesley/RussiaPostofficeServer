@@ -1,10 +1,11 @@
 package cc.mrbird.febs.asu.entity.manager;
 
+import cc.mrbird.febs.asu.entity.enums.ResultEnum;
 import lombok.Data;
 import lombok.ToString;
+import org.apache.poi.ss.formula.functions.T;
 
 @Data
-
 @ToString
 public class ApiResponse {
     int code;
@@ -30,6 +31,6 @@ public class ApiResponse {
     }
 
     public boolean isOK(){
-        return this.code == 200;
+        return this.code == ResultEnum.SUCCESS.getCode();
     }
 }
