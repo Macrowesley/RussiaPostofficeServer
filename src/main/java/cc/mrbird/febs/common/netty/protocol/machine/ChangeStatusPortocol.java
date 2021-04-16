@@ -1,8 +1,8 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.enums.EventEnum;
-import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
-import cc.mrbird.febs.asu.entity.manager.FrankMachine;
+import cc.mrbird.febs.asu.enums.EventEnum;
+import cc.mrbird.febs.asu.enums.FMStatusEnum;
+import cc.mrbird.febs.asu.dto.manager.FrankMachine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -41,21 +41,37 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
     @Override
     public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         /*
+        状态
+        1 ENABLED
+        2 DEMO
+        3 BLOCKED
+        4 UNAUTHORIZED
+        5 LOST
+
+        event
+        1 STATUS
+        2 RATE_TABLE_UPDATE
+
+
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x0 ?
+            unsigned char length;				//0x09
             unsigned char type;					//0xB4
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容: 版本内容（长度3） + todo 机器信息（）？
+            unsigned char content[?];			//加密后内容:
+            版本内容（长度3） + frankMachineId（） +  status(1) + PostOffice（6） + taxVersion（） + event(1)
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
-        }__attribute__((packed))ssh, *ssh;
+        }__attribute__((packed))auth, *auth;
          */
         int pos = TYPE_LEN;
 
         //表头号
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
+
+        int statusType = 0;
+        FMStatusEnum status = FMStatusEnum.getStatusByType(statusType);
 
         //todo 解析得到机器信息
         FrankMachine machine = new FrankMachine();
@@ -65,20 +81,55 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         machine.setPostOffice("");
         machine.setTaxVersion("");
 
-        //TODO 校验事件
+        //校验事件
         int eventType = 0;
         EventEnum eventEnum = EventEnum.getEventByType(eventType);
         if (eventEnum == null){
             //返回 todo 返回需要写清楚点
-            byte[] data = new byte[]{(byte) 0xFF};
-            return data;
+            return null;
         }
         machine.setEventEnum(eventEnum);
 
-        serviceManageCenter.changeStatus(machine);
+        switch (eventEnum){
+            case STATUS:
+                switch (status){
+                    case ENABLED:
+                        serviceManageCenter.auth(machine);
+                        break;
+                    case LOST:
+                        serviceManageCenter.lost(machine);
+                        break;
+                    case UNAUTHORIZED:
+                        serviceManageCenter.unauth(machine);
+                        break;
+                    default:
+                        //todo 这个情况怎么处理
+                        serviceManageCenter.changeStatusEvent(machine);
+                        break;
+                }
+
+                break;
+            case RATE_TABLE_UPDATE:
+                serviceManageCenter.rateTableUpdateEvent(machine);
+                break;
+            default:
+                //处理异常
+                //todo 这个情况怎么处理
+                break;
+        }
+
 
 
         //返回 todo 返回需要写清楚点
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //0xB1
+         unsigned char content[?];				 // 加密内容  event(1) + status(1) + result(1)
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))auth, *auth;
+         */
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);
     }

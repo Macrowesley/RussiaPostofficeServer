@@ -1,10 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.enums.EventEnum;
-import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
-import cc.mrbird.febs.asu.entity.manager.FrankMachine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -64,7 +60,7 @@ public class AuthPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))auth, *auth;
          */
-        int pos = TYPE_LEN;
+  /*      int pos = TYPE_LEN;
 
         //表头号
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
@@ -117,7 +113,7 @@ public class AuthPortocol extends MachineToServiceProtocol {
                 //todo 这个情况怎么处理
                 break;
         }
-
+*/
 
 
         //返回 todo 返回需要写清楚点

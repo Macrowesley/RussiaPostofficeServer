@@ -1,9 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol;
 
-import cc.mrbird.febs.asu.entity.manager.ApiResponse;
-import cc.mrbird.febs.asu.entity.manager.ManagerBalance;
-import cc.mrbird.febs.asu.entity.service.ChangeStatusRequest;
-import cc.mrbird.febs.asu.entity.service.TaxVersion;
+import cc.mrbird.febs.asu.dto.manager.ApiResponse;
+import cc.mrbird.febs.asu.dto.manager.ManagerBalance;
+import cc.mrbird.febs.asu.dto.service.ChangeStatusRequest;
+import cc.mrbird.febs.asu.dto.service.TaxVersion;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
@@ -13,8 +13,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Slf4j
 @Component

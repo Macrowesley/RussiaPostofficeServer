@@ -2,10 +2,10 @@ package cc.mrbird.febs.test.controller;
 
 
 import cc.mrbird.febs.asu.ServiceInvokeManager;
-import cc.mrbird.febs.asu.entity.enums.EventEnum;
-import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
-import cc.mrbird.febs.asu.entity.enums.ResultEnum;
-import cc.mrbird.febs.asu.entity.manager.*;
+import cc.mrbird.febs.asu.enums.EventEnum;
+import cc.mrbird.febs.asu.enums.FMStatusEnum;
+import cc.mrbird.febs.asu.enums.ResultEnum;
+import cc.mrbird.febs.asu.dto.manager.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,7 @@ public class MangerTestController {
     public void frankMachines(){
         log.info("开始测试frankMachines");
         FrankMachine bean = new FrankMachine();
-        bean.setId("1");
+        bean.setId("FM100001");
         bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.ENABLED);
         bean.setPostOffice("3");
@@ -70,7 +70,7 @@ public class MangerTestController {
         bean.setEventEnum(EventEnum.STATUS);
         bean.setError(new FMError("200", "ok"));
 
-        ApiResponse apiResponse = serviceInvokeManager.auth("我是id", bean);
+        ApiResponse apiResponse = serviceInvokeManager.auth("FM100001", bean);
         log.info("测试结束：object = " + apiResponse.getObject());
     }
 
@@ -127,11 +127,14 @@ public class MangerTestController {
         log.info("开始测试 publicKey");
 
         PublicKey publicKey = new PublicKey();
-        publicKey.setKey("key");
+        publicKey.setKey("-----BEGIN PUBLIC KEY-----\n" +
+                "      MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW\n" +
+                "      9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH\n" +
+                "      -----END PUBLIC KEY-----");
         publicKey.setRevision(1);
-        publicKey.setExpireDate("20206666");
+        publicKey.setExpireDate("2020418");
 
-        ApiResponse apiResponse = serviceInvokeManager.publicKey("我是 publicKey id", publicKey);
+        ApiResponse apiResponse = serviceInvokeManager.publicKey("FM100001", publicKey);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 

@@ -1,21 +1,17 @@
 package cc.mrbird.febs.asu;
 
-import cc.mrbird.febs.asu.entity.enums.ResultEnum;
-import cc.mrbird.febs.asu.entity.manager.*;
+import cc.mrbird.febs.asu.enums.ResultEnum;
+import cc.mrbird.febs.asu.dto.manager.*;
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +26,8 @@ public class ServiceInvokeManager {
 
 //    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 //    private final String baseUrl = "https://asufm.russianpost.ru/rcs-manager/v1";
-    private final String baseUrl = "http://localhost/p/test/manager";
+    private final String baseUrl = "http://test.asufm-test.10.238.33.32.xip.io/rcs-manager";
+//    private final String baseUrl = "http://localhost/p/test/manager";
 
     /**
      * 发送机器状况
@@ -188,7 +185,10 @@ public class ServiceInvokeManager {
     private HttpHeaders getHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         //todo 处理秘钥
-        httpHeaders.add("X-API-KEY", "myKeyIsNotNull");
+        httpHeaders.add("X-API-KEY", "-----BEGIN PUBLIC KEY-----\n" +
+                "      MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW\n" +
+                "      9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH\n" +
+                "      -----END PUBLIC KEY-----");
         return httpHeaders;
     }
 
@@ -206,6 +206,8 @@ public class ServiceInvokeManager {
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
         log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
+            //todo 需要一些测试，指定 frankmachineId=XXX001的时候，不发送消息给俄罗斯，直接返回对应的内容即可，所以，当需要添加这个功能的时候，就需要
+            //todo 在这里修改相关的代码，把操作类型 frankmachineId参数也传进来作为判断
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
             ResponseEntity<ApiResponse> responseEntity;
             if (uriVariables == null){
@@ -213,7 +215,7 @@ public class ServiceInvokeManager {
             }else{
                 responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class, uriVariables);
             }
-
+            log.info("responseEntity = " + responseEntity.toString());
             if (ResultEnum.SUCCESS.getCode() == responseEntity.getStatusCodeValue()) {
                 ApiResponse apiResponse = responseEntity.getBody();
                 log.info("manager返回的结果 ApiResponse = {}", apiResponse.toString());

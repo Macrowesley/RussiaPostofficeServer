@@ -35,6 +35,13 @@ spring:
   messages:
     basename: static/i18n/message
 
+  cache:
+    redis:
+      # 过期时间
+      time-to-live: 1d
+      # 写入redis时是否使用键前缀。
+      use-key-prefix: true
+    cache-names: pos
 
 jasypt:
   encryptor:

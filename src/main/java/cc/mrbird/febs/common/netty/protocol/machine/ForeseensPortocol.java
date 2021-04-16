@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.manager.Foreseen;
-import cc.mrbird.febs.asu.entity.manager.ForeseenProduct;
+import cc.mrbird.febs.asu.dto.manager.Foreseen;
+import cc.mrbird.febs.asu.dto.manager.ForeseenProduct;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;

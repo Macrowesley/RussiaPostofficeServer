@@ -1,6 +1,6 @@
 package cc.mrbird.febs.asu;
 
-import cc.mrbird.febs.asu.entity.manager.*;
+import cc.mrbird.febs.asu.dto.manager.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +23,6 @@ public class ServiceManageCenter {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
-    /**
-     * 【FM状态改变协议】调用本方法
-     *
-     * @param frankMachine
-     */
-    public void changeStatus(FrankMachine frankMachine) {
-        /*//todo 收到了FM消息
-        switch (frankMachine.getEvent()) {
-            case STATUS:
-                changeStatusEvent(frankMachine);
-                break;
-            case RATE_TABLE_UPDATE:
-                rateTableUpdateEvent(frankMachine);
-                break;
-            default:
-                //todo 处理异常
-                break;
-        }*/
-    }
 
     /**
      * 机器状态改变事件
@@ -154,6 +135,8 @@ public class ServiceManageCenter {
      * 请求打印任务
      */
     public void foreseens(Foreseen foreseen) {
+        //todo 先判断机器状态，然后判断 job是否完成
+
         //todo 收到了FM消息
 
         //todo 从数据库中给foreseen补充信息
@@ -176,6 +159,8 @@ public class ServiceManageCenter {
      * 交易
      */
     public void transactions(Transaction transaction) {
+        //todo 先判断机器状态，然后判断 job是否完成
+
         //todo 收到了FM消息
 
         //todo 从数据库中给transaction补充信息
@@ -200,6 +185,7 @@ public class ServiceManageCenter {
      * 取消任务
      */
     public void cancelJob(String frankMachineId, String foreseenId, String cancelMessage) {
+        //todo 判断是否可以取消 查看状态
         //todo 收到了FM消息
 
         //todo 从数据库中给transaction补充信息

@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.manager.Frank;
-import cc.mrbird.febs.asu.entity.manager.Transaction;
+import cc.mrbird.febs.asu.dto.manager.Frank;
+import cc.mrbird.febs.asu.dto.manager.Transaction;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;

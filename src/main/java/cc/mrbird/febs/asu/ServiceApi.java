@@ -1,9 +1,9 @@
 package cc.mrbird.febs.asu;
 
-import cc.mrbird.febs.asu.entity.manager.ApiError;
-import cc.mrbird.febs.asu.entity.manager.ApiResponse;
-import cc.mrbird.febs.asu.entity.manager.PublicKey;
-import cc.mrbird.febs.asu.entity.service.*;
+import cc.mrbird.febs.asu.dto.manager.ApiError;
+import cc.mrbird.febs.asu.dto.manager.ApiResponse;
+import cc.mrbird.febs.asu.dto.manager.PublicKey;
+import cc.mrbird.febs.asu.dto.service.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,11 @@
 package cc.mrbird.febs.asu;
 
-import cc.mrbird.febs.asu.entity.manager.*;
+import cc.mrbird.febs.asu.dto.manager.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 

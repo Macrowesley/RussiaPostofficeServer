@@ -1,8 +1,8 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.entity.enums.EventEnum;
-import cc.mrbird.febs.asu.entity.enums.FMStatusEnum;
-import cc.mrbird.febs.asu.entity.manager.FrankMachine;
+import cc.mrbird.febs.asu.enums.EventEnum;
+import cc.mrbird.febs.asu.enums.FMStatusEnum;
+import cc.mrbird.febs.asu.dto.manager.FrankMachine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;

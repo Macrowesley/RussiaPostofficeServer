@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.handler;
 
-import cc.mrbird.febs.asu.entity.manager.ApiResponse;
+import cc.mrbird.febs.asu.dto.manager.ApiResponse;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
