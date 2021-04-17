@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.dto.manager.Foreseen;
-import cc.mrbird.febs.asu.dto.manager.ForeseenProduct;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -63,14 +63,14 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         // 产品列表？ 总金额 机器其他信息
 
 
-        Foreseen foreseen = new Foreseen();
+        ForeseenDTO foreseen = new ForeseenDTO();
         foreseen.setId("");
         foreseen.setPostOffice("");
         foreseen.setUserId("");
         foreseen.setContractId("");
         foreseen.setContractNum(0);
         foreseen.setTotalCount(0);
-        foreseen.setProducts(new ForeseenProduct[]{new ForeseenProduct()});
+        foreseen.setProducts(new ForeseenProductDTO[]{new ForeseenProductDTO()});
         foreseen.setFrankMachineId("");
         foreseen.setTaxVersion("");
         foreseen.setMailVal(0.0D);

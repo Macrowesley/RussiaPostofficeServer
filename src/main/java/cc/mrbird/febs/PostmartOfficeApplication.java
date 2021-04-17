@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableScheduling
-@MapperScan("cc.mrbird.febs.*.mapper")
+@MapperScan("cc.mrbird.febs.*.mapper,cc.mrbird.febs.rcs.*.mapper")
 public class PostmartOfficeApplication {
 
     public static void main(String[] args) {

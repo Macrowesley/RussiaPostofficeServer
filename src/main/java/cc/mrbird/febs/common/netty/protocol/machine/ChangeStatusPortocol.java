@@ -1,8 +1,8 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.enums.EventEnum;
-import cc.mrbird.febs.asu.enums.FMStatusEnum;
-import cc.mrbird.febs.asu.dto.manager.FrankMachine;
+import cc.mrbird.febs.rcs.dto.manager.FrankMachineDTO;
+import cc.mrbird.febs.rcs.common.enums.EventEnum;
+import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -74,7 +74,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         FMStatusEnum status = FMStatusEnum.getStatusByType(statusType);
 
         //todo 解析得到机器信息
-        FrankMachine machine = new FrankMachine();
+        FrankMachineDTO machine = new FrankMachineDTO();
         machine.setId("");
         machine.setDateTime("");
         machine.setStatus(FMStatusEnum.ENABLED);

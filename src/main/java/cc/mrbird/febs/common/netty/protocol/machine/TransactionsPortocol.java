@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.asu.dto.manager.Frank;
-import cc.mrbird.febs.asu.dto.manager.Transaction;
+import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
+import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -59,26 +59,26 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         //todo 解析什么
-        Transaction transaction = new Transaction();
-        transaction.setId("");
-        transaction.setForeseenId("");
-        transaction.setPostOffice("");
-        transaction.setFrankMachineId("");
-        transaction.setContractId("");
-        transaction.setContractNum(0);
-        transaction.setStartDateTime("");
-        transaction.setStopDateTime("");
-        transaction.setUserId("");
-        transaction.setCreditVal(0.0D);
-        transaction.setAmount(0.0D);
-        transaction.setCount(0);
-        transaction.setGraphId("");
-        transaction.setTaxVersion("");
-        transaction.setFranks(new Frank[]{new Frank(),new Frank()});
+        TransactionDTO transactionDTO = new TransactionDTO();
+        transactionDTO.setId("");
+        transactionDTO.setForeseenId("");
+        transactionDTO.setPostOffice("");
+        transactionDTO.setFrankMachineId("");
+        transactionDTO.setContractId("");
+        transactionDTO.setContractNum(0);
+        transactionDTO.setStartDateTime("");
+        transactionDTO.setStopDateTime("");
+        transactionDTO.setUserId("");
+        transactionDTO.setCreditVal(0.0D);
+        transactionDTO.setAmount(0.0D);
+        transactionDTO.setCount(0);
+        transactionDTO.setGraphId("");
+        transactionDTO.setTaxVersion("");
+        transactionDTO.setFranks(new FrankDTO[]{new FrankDTO(),new FrankDTO()});
 
 
 
-        serviceManageCenter.transactions(transaction);
+        serviceManageCenter.transactions(transactionDTO);
 
 
         //返回 todo 返回需要写清楚点

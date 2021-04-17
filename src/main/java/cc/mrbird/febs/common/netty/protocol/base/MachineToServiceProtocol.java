@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
-import cc.mrbird.febs.asu.ServiceManageCenter;
+import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol;
 
-import cc.mrbird.febs.asu.dto.manager.ApiResponse;
-import cc.mrbird.febs.asu.dto.manager.ManagerBalance;
-import cc.mrbird.febs.asu.dto.service.ChangeStatusRequest;
-import cc.mrbird.febs.asu.dto.service.TaxVersion;
+import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
+import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
+import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
@@ -127,9 +127,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     /**
      * 服务器改变机器状态
      * @param frankMachineId
-     * @param changeStatusRequest
+     * @param changeStatusRequestDTO
      */
-    public void changeStatus(String frankMachineId, ChangeStatusRequest changeStatusRequest) {
+    public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) {
         //TODO 根据frankMachineId得到Acnum  考虑把协议中的Acnum改成frankMachineId
 
         /**
@@ -155,9 +155,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     /**
      * 同步tax信息
      * todo 所有FM都需要同步tax信息吗？
-     * @param taxVersion
+     * @param taxVersionDTO
      */
-    public void updateTaxes(TaxVersion taxVersion) {
+    public void updateTaxes(TaxVersionDTO taxVersionDTO) {
         /**
          *
          同步tax信息(待定，可能是文件)
@@ -175,9 +175,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     /**
      * 同步余额
      * @param frankMachineId
-     * @param managerBalance
+     * @param managerBalanceDTO
      */
-    public void balance(String frankMachineId, ManagerBalance managerBalance) {
+    public void balance(String frankMachineId, ManagerBalanceDTO managerBalanceDTO) {
         /**
          typedef  struct{
              unsigned char length;				 //一个字节

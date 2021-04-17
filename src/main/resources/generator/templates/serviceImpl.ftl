@@ -5,8 +5,8 @@ import ${basePackage}.${entityPackage}.${className};
 import ${basePackage}.${mapperPackage}.${className}Mapper;
 import ${basePackage}.${servicePackage}.I${className}Service;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transactionDTO.annotation.Transactional;
+import org.springframework.transactionDTO.annotation.Propagation;
 import lombok.RequiredArgsConstructor;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
