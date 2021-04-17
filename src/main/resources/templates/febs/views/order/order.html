@@ -155,20 +155,20 @@
         {{#
         layui.each(d.btnList, function(index, item){
         }}
-        <a lay-eventEnum="{{ item.eventEnum }}">{{ item.title }} </a>
+        <a lay-event="{{ item.event }}">{{ item.title }} </a>
         {{# }); }}
 
         {{# if(d.btnList.length === 0){ }}
         <span class="layui-badge-dot febs-bg-orange"></span> <span  th:text="#{noPermission}"></span>
         {{# } }}
 
-        <!--<a lay-eventEnum="editBtn">修改</a>
-        <a lay-eventEnum="submitInjectionBtn">注资审核</a>
-        <a lay-eventEnum="submitCloseBtn">闭环审核</a>
-        <a lay-eventEnum="auditDetail">审核详情</a>
-        <a lay-eventEnum="repealBtn">注销</a>
-        <a lay-eventEnum="freezeBtn">冻结</a>
-        <a lay-eventEnum="unfreezeBtn">解冻</a>-->
+        <!--<a lay-event="editBtn">修改</a>
+        <a lay-event="submitInjectionBtn">注资审核</a>
+        <a lay-event="submitCloseBtn">闭环审核</a>
+        <a lay-event="auditDetail">审核详情</a>
+        <a lay-event="repealBtn">注销</a>
+        <a lay-event="freezeBtn">冻结</a>
+        <a lay-event="unfreezeBtn">解冻</a>-->
     </div>
 </script>
 <script data-th-inline="none" type="text/javascript">
@@ -265,7 +265,7 @@
             /*//更多——弹出窗
             dropdown.render({
                 elem: $view.find('.action-more'),
-                click: function (name, elem, eventEnum) {
+                click: function (name, elem, event) {
                     var checkStatus = table.checkStatus('orderTable');
                     if (name === 'add') {
                         febs.modal.open('新增设备', 'order/add', {
@@ -331,7 +331,7 @@
         function initTableTool() {
             table.on('tool(orderTable)', function (obj) {
                 var data = obj.data,
-                    layEvent = obj.eventEnum;
+                    layEvent = obj.event;
                 //修改
                 if (layEvent === 'editBtn') {
                     febs.modal.open(i18n("order.editOrder"), 'order/update/' + data.orderId, {
@@ -397,7 +397,7 @@
                                 febs.alert.info(i18n("order.repealSuccess"));
                                 queryTable(0);
                             } else {
-                                febs.alert.apiError(res.message);
+                                febs.alert.error(res.message);
                             }
                         })
                     })
@@ -411,7 +411,7 @@
                                 febs.alert.info(i18n("order.freezeSuccess"));
                                 queryTable(0);
                             } else {
-                                febs.alert.apiError(res.message);
+                                febs.alert.error(res.message);
                             }
                         })
                     })
@@ -425,7 +425,7 @@
                                 febs.alert.info(i18n("order.confirmUnfreeze"));
                                 queryTable(0);
                             } else {
-                                febs.alert.apiError(res.message);
+                                febs.alert.error(res.message);
                             }
                         })
                     })

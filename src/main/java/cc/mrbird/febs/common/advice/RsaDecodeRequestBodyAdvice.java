@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 /**
  * @desc 请求数据解密
  */
-@ControllerAdvice(basePackages = "cc.mrbird.febs.cc.mrbird.test.controller")
+@ControllerAdvice(basePackages = "cc.mrbird.febs.test.controller")
 public class RsaDecodeRequestBodyAdvice implements RequestBodyAdvice {
 
     private Logger logger = LoggerFactory.getLogger(RsaDecodeRequestBodyAdvice.class);

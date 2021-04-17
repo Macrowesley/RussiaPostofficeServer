@@ -82,7 +82,7 @@
     <span shiro:lacksPermission="job:log:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> 无权限
     </span>
-    <a lay-eventEnum="del" shiro:hasPermission="job:log:delete"><i
+    <a lay-event="del" shiro:hasPermission="job:log:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
@@ -105,7 +105,7 @@
 
         dropdown.render({
             elem: $view.find('.action-more'),
-            click: function (name, elem, eventEnum) {
+            click: function (name, elem, event) {
                 var checkStatus = table.checkStatus('jobLogTable');
                 if (name === 'delete') {
                     if (!checkStatus.data.length) {
@@ -151,7 +151,7 @@
 
         table.on('tool(jobLogTable)', function (obj) {
             var data = obj.data,
-                layEvent = obj.eventEnum;
+                layEvent = obj.event;
             if (layEvent === 'del') {
                 febs.modal.confirm('删除调度日志', '确定删除调度日志？', function () {
                     deleteJobsLogs(data.logId);
@@ -189,7 +189,7 @@
                     {field: 'methodName', title: '方法名称', maxWidth: 200},
                     {field: 'params', title: '方法参数', maxWidth: 180},
                     {title: '状态', templet: '#jobLog-status'},
-                    {field: 'apiError', title: '异常信息', maxWidth: 200},
+                    {field: 'error', title: '异常信息', maxWidth: 200},
                     {title: '耗时', templet: '#jobLog-times'},
                     {field: 'createTime', title: '执行时间', minWidth: 180, sort: true},
                     {title: '操作', toolbar: '#jobLog-option', minWidth: 140}

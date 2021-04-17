@@ -53,11 +53,11 @@
                         data: data
                     });
                 }
-            }, apiError: function (res) {
+            }, error: function (res) {
                 //请求异常回调
-                console.apiError(res);
-                febs.view.loadBar.apiError();
-                febs.alert.apiError('导入失败！');
+                console.error(res);
+                febs.view.loadBar.error();
+                febs.alert.error('导入失败！');
             }
         });
 

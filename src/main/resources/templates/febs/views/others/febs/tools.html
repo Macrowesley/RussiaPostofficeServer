@@ -13,13 +13,13 @@
             <div class="layui-card">
                 <div class="layui-card-header">弹出层</div>
                 <div class="layui-card-body">
-                    <p>febs.modal.info / warn / success / apiError()，使用 layer.alert()
+                    <p>febs.modal.info / warn / success / error()，使用 layer.alert()
                         实现，参数与官网一致。</p>
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-normal" id="modal-info">信息</button>
                         <button class="layui-btn layui-btn-warm" id="modal-warn">警告</button>
                         <button class="layui-btn layui-btn-success" id="modal-success">成功</button>
-                        <button class="layui-btn layui-btn-danger" id="modal-apiError">错误</button>
+                        <button class="layui-btn layui-btn-danger" id="modal-error">错误</button>
                         <button class="layui-btn layui-btn-normal" id="modal-confirm">confirm</button>
                     </div>
                 </div>
@@ -29,13 +29,13 @@
             <div class="layui-card">
                 <div class="layui-card-header">提示层</div>
                 <div class="layui-card-body">
-                    <p>febs.alert.info / warn / success / apiError()，使用 layer.alert()
+                    <p>febs.alert.info / warn / success / error()，使用 layer.alert()
                         实现，参数与官网一致。</p>
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-normal" id="alert-info">信息</button>
                         <button class="layui-btn layui-btn-warm" id="alert-warn">警告</button>
                         <button class="layui-btn layui-btn-success" id="alert-success">成功</button>
-                        <button class="layui-btn layui-btn-danger" id="alert-apiError">错误</button>
+                        <button class="layui-btn layui-btn-danger" id="alert-error">错误</button>
                     </div>
                 </div>
             </div>
@@ -117,7 +117,7 @@ var url = febs.route.href;
                     <p>点击查看效果：</p>
                     <button class="layui-btn layui-btn-normal" id="load-start">开始 Start</button>
                     <button class="layui-btn layui-btn-normal" id="load-finish">结束 Finish</button>
-                    <button class="layui-btn layui-btn-danger" id="load-apiError">错误 Error</button>
+                    <button class="layui-btn layui-btn-danger" id="load-error">错误 Error</button>
                 </div>
             </div>
         </div>
@@ -146,8 +146,8 @@ var url = febs.route.href;
                 febs.alert.info("确定按钮回调");
             });
         });
-        $view.find('#modal-apiError').on('click', function () {
-            febs.modal.apiError('请输入标题', '请输入内容', function () {
+        $view.find('#modal-error').on('click', function () {
+            febs.modal.error('请输入标题', '请输入内容', function () {
                 febs.alert.info("确定按钮回调");
             });
         });
@@ -169,8 +169,8 @@ var url = febs.route.href;
         $view.find('#alert-success').on('click', function () {
             febs.alert.success("成功信息");
         });
-        $view.find('#alert-apiError').on('click', function () {
-            febs.alert.apiError("错误信息");
+        $view.find('#alert-error').on('click', function () {
+            febs.alert.error("错误信息");
         });
 
         // -------------------- popup ----------------------
@@ -228,10 +228,10 @@ var url = febs.route.href;
         $view.find('#load-finish').on('click', function () {
             febs.view.loadBar.finish();
         });
-        $view.find('#load-apiError').on('click', function () {
+        $view.find('#load-error').on('click', function () {
             febs.view.loadBar.start();
             setTimeout(function () {
-                febs.view.loadBar.apiError();
+                febs.view.loadBar.error();
             }, 1000);
         });
     });

@@ -65,7 +65,7 @@
             type: "POST",   //提交的方法
             dataType: "json",
             contentType : 'application/json',//添加这句话
-            url:ctx + 'cc.mrbird.test/rsaTest?className=一班&teacher=王老师', //提交的地址
+            url:ctx + 'test/rsaTest?className=一班&teacher=王老师', //提交的地址
             async: false,
             data:myEncrypt(jsonObj),
 
@@ -82,7 +82,7 @@
             type: "POST",   //提交的方法
             dataType: "json",
             contentType : 'application/json',//添加这句话
-            url:ctx + 'cc.mrbird.test/rsaTest2', //提交的地址
+            url:ctx + 'test/rsaTest2', //提交的地址
             async: false,
             data:JSON.stringify(jsonObj),
 

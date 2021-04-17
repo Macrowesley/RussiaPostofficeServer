@@ -113,12 +113,12 @@
     </span>
 
     <div shiro:hasPermission="audit:update">
-        <!--<a lay-eventEnum="pass">通过</a>
-        <a lay-eventEnum="noPass">驳回</a>-->
+        <!--<a lay-event="pass">通过</a>
+        <a lay-event="noPass">驳回</a>-->
         {{#
         layui.each(d.btnList, function(index, item){
         }}
-        <a lay-eventEnum="{{ item.eventEnum }}">{{ item.title }} </a>
+        <a lay-event="{{ item.event }}">{{ item.title }} </a>
         {{# }); }}
 
         {{# if(d.btnList.length === 0){ }}
@@ -235,7 +235,7 @@
         function initTableTool() {
             table.on('tool(auditTable)', function (obj) {
                 var data = obj.data,
-                    layEvent = obj.eventEnum;
+                    layEvent = obj.event;
 
                 //通过
                 if (layEvent == 'pass') {
@@ -245,7 +245,7 @@
                                 febs.alert.info(i18n("operationSuccess"));
                                 queryTable(0);
                             } else {
-                                febs.alert.apiError(res.message);
+                                febs.alert.error(res.message);
                             }
                         })
                     })

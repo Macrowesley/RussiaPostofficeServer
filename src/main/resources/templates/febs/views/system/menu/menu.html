@@ -137,7 +137,7 @@
 
         dropdown.render({
             elem: $view.find('.action-more'),
-            click: function (name, elem, eventEnum) {
+            click: function (name, elem, event) {
                 if (name === 'add') {
                     reset();
                     var selected = _menuTree.getChecked(false, true);

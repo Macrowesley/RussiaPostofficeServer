@@ -13,7 +13,7 @@
                 <script type="text/html" template>
                     {{#
                     var successL = POPUP_DATA.data.length;
-                    var failL = POPUP_DATA.apiError.length;
+                    var failL = POPUP_DATA.error(.length;
                     var time = POPUP_DATA.time;
                     if(successL === 0 && failL === 0) {
                     }}
@@ -29,7 +29,7 @@
                     {{#
                     } else if (successL === 0 && failL !== 0) {
                     }}
-                    <span class="febs-alert-base febs-alert-apiError">
+                    <span class="febs-alert-base febs-alert-error">
                         全部导入失败，共
                         <a class="bold"> {{failL}} </a>条记录，
                         耗时 <span class="bold">{{time}}</span>
@@ -99,7 +99,7 @@
 
         function renderFailTable() {
             var data = [];
-            layui.each(result.apiError, function (key, item) {
+            layui.each(result.error(, function (key, item) {
                 var row = item.row;
                 layui.each(item.errorFields, function (k, v) {
                     v.row = row;
@@ -124,10 +124,10 @@
         }
 
         function initTabs() {
-            if (result.data.length !== 0 && result.apiError.length === 0) {
+            if (result.data.length !== 0 && result.error(.length === 0) {
                 renderSuccessTable();
                 element.tabDelete('result-tab', 'fail-tab');
-            } else if (result.data.length === 0 && result.apiError.length !== 0) {
+            } else if (result.data.length === 0 && result.error(.length !== 0) {
                 renderFailTable();
                 element.tabDelete('result-tab', 'success-tab');
             } else {

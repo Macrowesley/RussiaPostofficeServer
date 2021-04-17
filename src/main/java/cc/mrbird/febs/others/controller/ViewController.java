@@ -99,6 +99,6 @@ public class ViewController {
 
     @GetMapping("datapermission")
     public String dataPermissionTest() {
-        return FebsUtil.view("others/datapermission/cc.mrbird.test");
+        return FebsUtil.view("others/datapermission/test");
     }
 }
