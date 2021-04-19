@@ -18,6 +18,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("rcs_customer")
 public class Customer {
 
+    @TableId(value = "id")
+    private String id;
+
     /**
      * 合同id
      */
@@ -30,11 +33,7 @@ public class Customer {
     @TableField("created_time")
     private Date createdTime;
 
-    /**
-     * 
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private String id;
+
 
     /**
      * 【待定】

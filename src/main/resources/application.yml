@@ -48,7 +48,7 @@ jasypt:
     password: ADCBiQKBgQDBwlcnX0dBhYcjua
 
 mybatis-plus:
-  # 别名 利用包扫描来做，批量定义默认的类的别名，是类名首字母小写 ;cc.mrbird.febs.rcs.*.entity  ;classpath*:mapper/rcs/**/*.xml
+  # 别名 利用包扫描来做，批量定义默认的类的别名，是类名首字母小写
   type-aliases-package: cc.mrbird.febs.**.entity
   mapper-locations: classpath*:mapper/**/*.xml,classpath*:mapper/rcs/**/*.xml
   configuration:

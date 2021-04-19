@@ -45,7 +45,7 @@ public class PostalProduct {
     /**
      * 【待定】
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private String id;
 
     /**

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.ToString;
 
 /**
  * 合同表 Entity
@@ -15,6 +16,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @date 2021-04-17 14:45:48
  */
 @Data
+@ToString
 @TableName("rcs_contract")
 public class Contract {
 
@@ -33,7 +35,7 @@ public class Contract {
     /**
      * 
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private String id;
 
     /**

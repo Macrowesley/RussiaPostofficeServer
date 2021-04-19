@@ -16,6 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 
 /**
  * @author FiseTch
@@ -75,9 +76,10 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                     Runtime.getRuntime().exec("cmd  /c  start " + url);
                 }
             }
-
-//            test();
-            startNetty();
+            //本地环境，暂时关闭netty
+            if (!"local".equals(active)) {
+                startNetty();
+            }
         }
     }
 
@@ -95,46 +97,4 @@ public class FebsStartedUpRunner implements ApplicationRunner {
         });
     }
 
-
-/*    @Autowired
-    AlarmThreadPool alarmThreadPool;
-
-    private void test() {
-        ExecutorService service = Executors.newFixedThreadPool(6);
-        service.submit(new testRun("AAA"));
-        service.submit(new testRun("AAA"));
-        service.submit(new testRun("AAA"));
-    }
-
-    class testRun implements Runnable {
-
-        private String acnum;
-
-        public testRun(String acnum) {
-            this.acnum = acnum;
-        }
-
-        @Override
-        public void run() {
-            myTest(acnum);
-        }
-
-
-    }
-
-    private void myTest(String acnum) {
-        try {
-            List<String> list = new ArrayList<>();
-            int num = 500;
-            log.info(acnum + "开始添加");
-            for (int i = 0; i < 500; i++) {
-                list.add(acnum + String.format("%05d", i));
-//                log.info("第" + i + "次循环中");
-                alarmThreadPool.addAlarm((long) i);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
 }

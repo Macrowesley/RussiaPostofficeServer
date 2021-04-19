@@ -63,7 +63,7 @@ public class Statistics {
     /**
      * 
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private String id;
 
     /**

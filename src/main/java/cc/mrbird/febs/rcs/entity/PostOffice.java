@@ -39,7 +39,7 @@ public class PostOffice {
     /**
      * 邮局索引（id）
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private String id;
 
     /**

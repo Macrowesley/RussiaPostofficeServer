@@ -19,6 +19,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 public class Balance {
 
     /**
+     * balance主键
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
      * 当前余额
      */
     @TableField("consolidate")
@@ -60,11 +66,7 @@ public class Balance {
     @TableField("from_type")
     private Integer fromType;
 
-    /**
-     * balance主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+
 
     /**
      * 【待定】
