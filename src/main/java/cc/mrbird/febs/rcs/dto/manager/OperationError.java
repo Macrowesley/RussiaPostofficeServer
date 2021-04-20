@@ -20,5 +20,5 @@ public class OperationError {
     int code;
     @NotBlank
     String message;
-    ManagerBalanceDTO managerBalanceDTO;
+    ManagerBalanceDTO balance;
 }

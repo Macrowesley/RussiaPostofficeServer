@@ -1,6 +1,5 @@
 package cc.mrbird.febs.common.handler;
 
-import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
@@ -8,6 +7,12 @@ import cc.mrbird.febs.common.exception.LimitAccessException;
 import cc.mrbird.febs.common.exception.LimitAccessViewException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.rcs.common.exception.RcsManagerApiException;
+import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
+import cc.mrbird.febs.rcs.common.exception.RcsServiceApiException;
+import cc.mrbird.febs.rcs.dto.manager.ApiError;
+import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.dto.manager.OperationError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -17,6 +22,7 @@ import org.apache.shiro.session.ExpiredSessionException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,6 +73,46 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理我们调用俄罗斯接口时发生的异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = RcsManagerApiException.class)
+    public ApiResponse handleRcsManagerApiException(RcsManagerApiException e) {
+        log.error("RCS manager api 错误 {}", e.getMessage());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
+    }
+
+    /**
+     * 处理我们调用俄罗斯接口时 关于金额的异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = RcsManagerBalanceException.class)
+    public ApiResponse handleRcsManagerBalanceException(RcsManagerBalanceException e) {
+        log.error("RCS 金额异常 {} , balance = {}", e.getMessage(), e.getManagerBalanceDTO().toString());
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),
+                new OperationError(HttpStatus.BAD_REQUEST.value(),e.getMessage(),e.getManagerBalanceDTO()));
+    }
+
+    /**
+     * 处理俄罗斯访问我们接口时发生的异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = RcsServiceApiException.class)
+    public ApiResponse handleRcsServiceApiException(RcsServiceApiException e) {
+        log.error("RCS service api 错误 {}", e.getMessage());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
+    }
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ApiResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("RCS handleHttpMessageNotReadableException 错误 {}", e.getMessage());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
+    }
+
+    /**
      * 统一处理请求参数校验(实体对象传参-form)
      *
      * @param e BindException
@@ -74,6 +120,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     public ApiResponse validExceptionHandler(BindException e) {
+        log.error("请求参数校验(实体对象传参-form) 错误 {}", e.getMessage());
+        e.printStackTrace();
         StringBuilder message = new StringBuilder();
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         for (FieldError error : fieldErrors) {
@@ -81,26 +129,7 @@ public class GlobalExceptionHandler {
         }
         message = new StringBuilder(message.substring(0, message.length() - 1));
 //        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
-        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),message.toString());
-    }
-
-    /**
-     * 统一处理请求参数校验(普通传参)
-     *
-     * @param e ConstraintViolationException
-     * @return FebsResponse
-     */
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    public FebsResponse handleConstraintViolationException(ConstraintViolationException e) {
-        StringBuilder message = new StringBuilder();
-        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
-        for (ConstraintViolation<?> violation : violations) {
-            Path path = violation.getPropertyPath();
-            String[] pathArr = StringUtils.splitByWholeSeparatorPreserveAllTokens(path.toString(), ".");
-            message.append(pathArr[1]).append(violation.getMessage()).append(",");
-        }
-        message = new StringBuilder(message.substring(0, message.length() - 1));
-        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString()));
     }
 
     /**
@@ -111,6 +140,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("请求参数校验(json) 错误 {}", e.getMessage());
+        e.printStackTrace();
         StringBuilder message = new StringBuilder();
         for (FieldError error : e.getBindingResult().getFieldErrors()) {
             message.append(error.getField()).append(error.getDefaultMessage()).append(",");
@@ -118,8 +149,31 @@ public class GlobalExceptionHandler {
         message = new StringBuilder(message.substring(0, message.length() - 1));
         log.error(message.toString());
 //        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
-        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),message.toString());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString()));
     }
+
+
+    /**
+     * 统一处理请求参数校验(普通传参)
+     *
+     * @param e ConstraintViolationException
+     * @return FebsResponse
+     */
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ApiResponse handleConstraintViolationException(ConstraintViolationException e) {
+        log.error("统一处理请求参数校验(普通传参) 错误 {}", e.getMessage());
+        StringBuilder message = new StringBuilder();
+        Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+        for (ConstraintViolation<?> violation : violations) {
+            Path path = violation.getPropertyPath();
+            String[] pathArr = StringUtils.splitByWholeSeparatorPreserveAllTokens(path.toString(), ".");
+            message.append(pathArr[1]).append(violation.getMessage()).append(",");
+        }
+        message = new StringBuilder(message.substring(0, message.length() - 1));
+//        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString()));
+    }
+
 
 
     @ExceptionHandler(value = UnauthorizedException.class)

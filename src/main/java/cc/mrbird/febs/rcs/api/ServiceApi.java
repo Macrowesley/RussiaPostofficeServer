@@ -1,13 +1,13 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.rcs.common.exception.AsuApiException;
-import cc.mrbird.febs.rcs.dto.manager.ApiError;
-import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
-import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
-import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import org.apache.commons.lang3.StringUtils;
+import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
+import cc.mrbird.febs.rcs.common.exception.RcsServiceApiException;
+import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.rcs.dto.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +21,10 @@ import javax.validation.constraints.NotNull;
  * TODO 过滤IP，只接受一个IP
  *
  */
-@RequestMapping("/s")
+@Slf4j
+@RequestMapping("/rcs-service")
 @RestController
+@Validated
 public class ServiceApi {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
@@ -67,13 +69,20 @@ public class ServiceApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
-    public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId, @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws AsuApiException {
-        //TODO 检查请求的有效性
-        if (StringUtils.isEmpty(frankMachineId)){
-            //TODO 拦截这种错误，发送错误请求给服务器
-            throw new AsuApiException("error");
+    public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
+                                    @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
+        log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
+        if (true){
+            /*return new ApiResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    new OperationError(
+                            HttpStatus.BAD_REQUEST.value(),
+                            "金额返回咯",
+                            new ManagerBalanceDTO("111", "222", 100, 1000D, 2000D)
+                    )
+            );*/
+            throw new RcsManagerBalanceException("金额有问题",new ManagerBalanceDTO("111", "222", 100, 1000D, 2000D));
         }
-
         //TODO 想想有没有其他需要验证的
 
         //todo 【收到了服务器消息】
@@ -85,8 +94,8 @@ public class ServiceApi {
 
         //TODO 如果都没问题，最后返回200
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
+      /*  apiResponse =  new ApiResponse(400, new ApiError());
+        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 
