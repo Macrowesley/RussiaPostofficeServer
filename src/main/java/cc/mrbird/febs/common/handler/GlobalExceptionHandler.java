@@ -7,9 +7,9 @@ import cc.mrbird.febs.common.exception.LimitAccessException;
 import cc.mrbird.febs.common.exception.LimitAccessViewException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.rcs.common.exception.RcsManagerApiException;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
-import cc.mrbird.febs.rcs.common.exception.RcsServiceApiException;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.OperationError;
@@ -72,16 +72,18 @@ public class GlobalExceptionHandler {
         return mav;
     }
 
+
     /**
-     * 处理我们调用俄罗斯接口时发生的异常
+     * 处理我们调用俄罗斯接口时 关于金额的异常
      * @param e
      * @return
      */
-    @ExceptionHandler(value = RcsManagerApiException.class)
-    public ApiResponse handleRcsManagerApiException(RcsManagerApiException e) {
-        log.error("RCS manager api 错误 {}", e.getMessage());
-        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
-    }
+    /*@ExceptionHandler(value = FmException.class)
+    public ApiResponse handleFmException(FmException e) {
+        log.error("RCS 金额异常 {} ", e.getMessage());
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),
+                new OperationError(HttpStatus.BAD_REQUEST.value(),e.getMessage(),e.getManagerBalanceDTO()));
+    }*/
 
     /**
      * 处理我们调用俄罗斯接口时 关于金额的异常
@@ -100,9 +102,9 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ExceptionHandler(value = RcsServiceApiException.class)
-    public ApiResponse handleRcsServiceApiException(RcsServiceApiException e) {
-        log.error("RCS service api 错误 {}", e.getMessage());
+    @ExceptionHandler(value = RcsApiException.class)
+    public ApiResponse handleRcsApiException(RcsApiException e) {
+        log.error("RCS api 错误 {}", e.getMessage());
         return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
     }
 

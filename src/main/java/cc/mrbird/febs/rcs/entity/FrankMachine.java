@@ -42,6 +42,13 @@ public class FrankMachine {
     private Integer curFmStatus;
 
     /**
+     * 机器想要达到的状态
+     */
+    @TableField("future_fm_status")
+    private Integer futureFmStatus;
+
+
+    /**
      * 错误代码
      */
     @TableField("error_code")
@@ -66,11 +73,6 @@ public class FrankMachine {
     @TableField("fm_event")
     private Integer fmEvent;
 
-    /**
-     * 机器想要达到的状态
-     */
-    @TableField("future_fm_status")
-    private String futureFmStatus;
 
     /**
      * 机器主键uuid

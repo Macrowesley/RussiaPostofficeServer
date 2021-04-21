@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.entity.FrankMachine;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +52,11 @@ public interface IFrankMachineService extends IService<FrankMachine> {
      * @param frankMachine frankMachine
      */
     void deleteFrankMachine(FrankMachine frankMachine);
+
+    /**
+     * 俄罗斯改变机器状态
+     * @param frankMachineId
+     * @param changeStatusRequestDTO
+     */
+    void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO);
 }

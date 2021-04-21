@@ -71,7 +71,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         String statusStr = "0";
-        FMStatusEnum status = FMStatusEnum.getStatus(statusStr);
+        FMStatusEnum status = FMStatusEnum.getByStatus(statusStr);
 
         //todo 解析得到机器信息
         FrankMachineDTO machine = new FrankMachineDTO();

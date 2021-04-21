@@ -8,7 +8,7 @@ package cc.mrbird.febs.rcs.common.enums;
 5 LOST
  */
 public enum FMStatusEnum {
-    ENABLED("ENABLED"),
+/*    ENABLED("ENABLED"),
     DEMO("DEMO"),
     BLOCKED("BLOCKED"),
     UNAUTHORIZED("UNAUTHORIZED"),
@@ -19,7 +19,7 @@ public enum FMStatusEnum {
         this.status = status;
     }
 
-    public static FMStatusEnum getStatus(String status) {
+    public static FMStatusEnum getByStatus(String status) {
         for (FMStatusEnum item: FMStatusEnum.values()){
             if (item.getStatus().equals(status)){
                 return item;
@@ -30,10 +30,10 @@ public enum FMStatusEnum {
 
     public String getStatus() {
         return status;
-    }
+    }*/
 
 
-    /*ENABLED(1,"ENABLED", "可用的"),
+    ENABLED(1,"ENABLED", "可用的"),
     DEMO(2,"DEMO","准备在演示模式下工作"),
     BLOCKED(3,"BLOCKED","封锁"),
     UNAUTHORIZED(4,"UNAUTHORIZED","无权限的"),
@@ -48,9 +48,18 @@ public enum FMStatusEnum {
         this.message = message;
     }
 
-    public static FMStatusEnum getStatusByType(int statusType) {
+    public static FMStatusEnum getByType(int statusType) {
         for (FMStatusEnum item: FMStatusEnum.values()){
             if (item.getType()== statusType){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static FMStatusEnum getByStatus(String status) {
+        for (FMStatusEnum item: FMStatusEnum.values()){
+            if (item.getStatus().equals(status)){
                 return item;
             }
         }
@@ -67,6 +76,6 @@ public enum FMStatusEnum {
 
     public int getType() {
         return type;
-    }*/
+    }
 }
 

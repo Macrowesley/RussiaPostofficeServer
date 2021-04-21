@@ -1,13 +1,11 @@
 package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
-import cc.mrbird.febs.rcs.common.exception.RcsServiceApiException;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.dto.service.*;
+import cc.mrbird.febs.rcs.service.IFrankMachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +29,9 @@ public class ServiceApi {
 
     @Autowired
     ServiceInvokeManager serviceInvokeManager;
+
+    @Autowired
+    IFrankMachineService frankMachineService;
 
 
     /**
@@ -72,30 +73,17 @@ public class ServiceApi {
     public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
-        if (true){
-            /*return new ApiResponse(
-                    HttpStatus.BAD_REQUEST.value(),
-                    new OperationError(
-                            HttpStatus.BAD_REQUEST.value(),
-                            "金额返回咯",
-                            new ManagerBalanceDTO("111", "222", 100, 1000D, 2000D)
-                    )
-            );*/
-            throw new RcsManagerBalanceException("金额有问题",new ManagerBalanceDTO("111", "222", 100, 1000D, 2000D));
-        }
+
         //TODO 想想有没有其他需要验证的
 
-        //todo 【收到了服务器消息】
+        //保存要更改的状态
+        frankMachineService.changeStatus(frankMachineId, changeStatusRequestDTO);
 
-        //todo 在一个线程中执行：发送指令给FM
-        //线程中
+        //在一个线程中执行：发送指令给FM
         serviceToMachineProtocol.changeStatus(frankMachineId, changeStatusRequestDTO);
-        //线程中
 
-        //TODO 如果都没问题，最后返回200
+        //执行到这就返回给俄罗斯
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
-      /*  apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
         return apiResponse;
     }
 

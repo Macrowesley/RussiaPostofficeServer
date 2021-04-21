@@ -21,6 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
@@ -38,7 +39,22 @@ public class FebsConfigure {
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(200);
         executor.setKeepAliveSeconds(30);
-        executor.setThreadNamePrefix("Febs-Async-Thread");
+        executor.setThreadNamePrefix("Febs-Async-Thread-");
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(60);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(FebsConstant.RCS_ASYNC_POOL)
+    public ThreadPoolTaskExecutor rcsAsyncThreadPoolTaskExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(30);
+        executor.setMaxPoolSize(100);
+        executor.setQueueCapacity(500);
+        executor.setKeepAliveSeconds(30);
+        executor.setThreadNamePrefix("RCS-Async-Thread-");
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());

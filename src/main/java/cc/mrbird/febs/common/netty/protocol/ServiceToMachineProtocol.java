@@ -1,5 +1,8 @@
 package cc.mrbird.febs.common.netty.protocol;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
@@ -9,9 +12,11 @@ import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -124,32 +129,51 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     }
 
+    volatile int i = 0;
     /**
      * 服务器改变机器状态
      * @param frankMachineId
      * @param changeStatusRequestDTO
      */
+    @Async(FebsConstant.RCS_ASYNC_POOL)
     public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) {
         //TODO 根据frankMachineId得到Acnum  考虑把协议中的Acnum改成frankMachineId
 
-        /**
-         状态数字的含义
-         1 ENABLED
-         2 DEMO
-         3 BLOCKED
-         4 UNAUTHORIZED
-         5 LOST
-         typedef  struct{
-             unsigned char length;				 //一个字节
-             unsigned char head;				 	 //0xC3
-             unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + 状态（1 ）+ postOffice()
-             unsigned char check;				 //校验位
-             unsigned char tail;					 //0xD0
-         }__attribute__((packed))status, *status;
-         **/
+        try {
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByKey(frankMachineId);
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
 
 
+            /**
+             状态数字的含义
+             1 ENABLED
+             2 DEMO
+             3 BLOCKED
+             4 UNAUTHORIZED
+             5 LOST
+             typedef  struct{
+                 unsigned char length;				 //一个字节
+                 unsigned char head;				 	 //0xC3
+                 unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + 状态（1 ）+ postOffice()
+                 unsigned char check;				 //校验位
+                 unsigned char tail;					 //0xD0
+             }__attribute__((packed))status, *status;
+             **/
+            //准备数据
+            String version = "001";
+            int status = changeStatusRequestDTO.getStatus().getType();
+            String postOffice = changeStatusRequestDTO.getPostOffice();
+            String content = version + frankMachineId + status + postOffice;
+            String entryctContent = AESUtils.encrypt(content, tempKey);
 
+            //发送数据
+            wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC3));
+        }catch (Exception e){
+            log.error("服务器改变机器状态" + e.getMessage());
+            //待处理
+            throw new FmException(e.getMessage());
+        }
     }
 
     /**

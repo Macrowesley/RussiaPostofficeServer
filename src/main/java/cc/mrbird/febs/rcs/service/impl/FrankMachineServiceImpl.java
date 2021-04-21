@@ -1,6 +1,9 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.entity.FrankMachine;
 import cc.mrbird.febs.rcs.mapper.FrankMachineMapper;
 import cc.mrbird.febs.rcs.service.IFrankMachineService;
@@ -62,4 +65,38 @@ public class FrankMachineServiceImpl extends ServiceImpl<FrankMachineMapper, Fra
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    /**
+     * 俄罗斯改变机器状态
+     *
+     * @param frankMachineId
+     * @param changeStatusRequestDTO
+     */
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException{
+        checkStatus(frankMachineId);
+        FrankMachine frankMachine = new FrankMachine();
+        frankMachine.setId(frankMachineId);
+        frankMachine.setFutureFmStatus(changeStatusRequestDTO.getStatus().getType());
+        frankMachine.setPostOffice(changeStatusRequestDTO.getPostOffice());
+        //开始修改的话，把流程状态改成进行中
+        frankMachine.setFlow(FlowEnum.FlowIng.getCode());
+        this.saveOrUpdate(frankMachine);
+    }
+
+    private void checkStatus(String frankMachineId) {
+        //todo 缓存要加上来
+        LambdaQueryWrapper<FrankMachine> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(FrankMachine::getId, frankMachineId);
+        FrankMachine frankMachine = this.getOne(wrapper);
+
+        if (frankMachine == null){
+            throw new RcsApiException("无法找到id为" + frankMachineId + "的frankMachine");
+        }
+
+        if (frankMachine.getFlow() == FlowEnum.FlowIng.getCode()){
+            throw new RcsApiException("上次修改没有完成，请稍等");
+        }
+    }
 }
