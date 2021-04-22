@@ -104,7 +104,7 @@ public class ChannelMapperUtils {
      * @param acnum
      * @return
      */
-    public static ChannelHandlerContext getChannelByKey(String acnum){
+    public static ChannelHandlerContext getChannelByAcnum(String acnum){
         if (!StringUtils.isEmpty(acnum) && channelMap.containsKey(acnum)){
             return channelMap.get(acnum);
         }

@@ -22,7 +22,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 @Excel("设备表")
-@TableName("t_device")
+@TableName("rcs_device")
 public class Device implements Serializable {
 
     private static final long serialVersionUID = 5768453074428486556L;
@@ -76,13 +76,6 @@ public class Device implements Serializable {
     @TableField("valid_days")
     private Integer validDays;
 
-    /**
-     * 状态：1正常 0冻结
-     */
-    @ExcelField(value = "状态")
-    @NotBlank(message = "{required}")
-    @TableField("device_status")
-    private String deviceStatus;
 
     /**
      * 是否使用加密锁 0 不使用 1 使用
@@ -102,7 +95,79 @@ public class Device implements Serializable {
     @ExcelField(value = "添加时间", writeConverter = TimeConverter.class)
     @TableField("create_time")
     private Date createTime;
-    public Long getId() {
-        return deviceId;
-    }
+
+
+    /**
+     * 【待定】机器当前状态
+     1 ENABLED
+     2 DEMO
+     3 BLOCKED
+     4 UNAUTHORIZED
+     5 LOST
+     */
+    @TableField("cur_fm_status")
+    private Integer curFmStatus;
+
+    /**
+     * 机器想要达到的状态
+     */
+    @TableField("future_fm_status")
+    private Integer futureFmStatus;
+
+
+    /**
+     * 错误代码
+     */
+    @TableField("error_code")
+    private String errorCode;
+
+    /**
+     * 错误信息
+     */
+    @TableField("error_message")
+    private String errorMessage;
+
+    /**
+     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
+     */
+    @TableField("flow")
+    private Integer flow;
+
+    /**
+     * 1 STATUS
+     2 RATE_TABLE_UPDATE
+     */
+    @TableField("fm_event")
+    private Integer fmEvent;
+
+
+    /**
+     * 机器主键uuid
+     */
+    @TableId(value = "frank_machine_id")
+    private String frankMachineId;
+
+    /**
+     * 邮局信息
+     */
+    @TableField("post_office")
+    private String postOffice;
+
+    /**
+     * tax版本
+     */
+    @TableField("tax_version")
+    private String taxVersion;
+
+    /**
+     * 更新时间
+     */
+    @TableField("updated_time")
+    private Date updatedTime;
+
+    /**
+     * 【待定】
+     */
+    @TableField("user_id")
+    private String userId;
 }

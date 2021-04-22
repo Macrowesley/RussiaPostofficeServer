@@ -6,6 +6,7 @@ import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
+import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -116,4 +117,18 @@ public interface IDeviceService extends IService<Device> {
     UserDeviceVO findByDeviceIdAndRoleId(Long deviceId, Long roleId);
 
     Device findDeviceByAcnum(String acnum);
+
+    /**
+     * 俄罗斯改变机器状态
+     * @param frankMachineId
+     * @param changeStatusRequestDTO
+     */
+    void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO);
+
+    /**
+     * 通过frankMachineId得到acnum
+     * @param frankMachineId
+     * @return
+     */
+    String getAcnumByFMId(String frankMachineId);
 }

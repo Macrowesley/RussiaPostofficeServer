@@ -70,6 +70,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
 
+
+
         String statusStr = "0";
         FMStatusEnum status = FMStatusEnum.getByStatus(statusStr);
 

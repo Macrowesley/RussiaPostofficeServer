@@ -1,18 +1,17 @@
 package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.utils.AESUtils;
+import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
-import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
-import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
-import cc.mrbird.febs.common.utils.AESUtils;
-import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,9 @@ import org.springframework.stereotype.Component;
 public class ServiceToMachineProtocol extends BaseProtocol {
     @Autowired
     public TempKeyUtils tempKeyUtils;
+
+    @Autowired
+    IDeviceService deviceService;
 
     public ServiceToMachineProtocol() {
     }
@@ -44,7 +46,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             }*/
 
 
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByKey(acnum);
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(acnum);
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -82,7 +84,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public void closeSshProtocol(String acnum) {
         try {
 
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByKey(acnum);
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(acnum);
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -139,10 +141,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         //TODO 根据frankMachineId得到Acnum  考虑把协议中的Acnum改成frankMachineId
 
         try {
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByKey(frankMachineId);
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(frankMachineId));
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
-
 
             /**
              状态数字的含义
@@ -176,6 +177,10 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             //待处理
             throw new FmException(e.getMessage());
         }
+    }
+
+    private String getAcnumByFMId(String frankMachineId) {
+        return deviceService.getAcnumByFMId(frankMachineId);
     }
 
     /**

@@ -1,9 +1,11 @@
 package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.dto.manager.ApiError;
+import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
-import cc.mrbird.febs.rcs.service.IFrankMachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +33,7 @@ public class ServiceApi {
     ServiceInvokeManager serviceInvokeManager;
 
     @Autowired
-    IFrankMachineService frankMachineService;
+    IDeviceService deviceService;
 
 
     /**
@@ -77,7 +79,7 @@ public class ServiceApi {
         //TODO 想想有没有其他需要验证的
 
         //保存要更改的状态
-        frankMachineService.changeStatus(frankMachineId, changeStatusRequestDTO);
+        deviceService.changeStatus(frankMachineId, changeStatusRequestDTO);
 
         //在一个线程中执行：发送指令给FM
         serviceToMachineProtocol.changeStatus(frankMachineId, changeStatusRequestDTO);

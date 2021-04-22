@@ -1,5 +1,7 @@
 package cc.mrbird.febs.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -59,6 +61,9 @@ public class MoneyUtils {
      * @return
      */
     public static String moneySaveTwoDecimal(String money){
+        if (StringUtils.isEmpty(money)){
+            money = "0";
+        }
         DecimalFormat format = new DecimalFormat("0.00");
         String a = format.format(new BigDecimal(money));
         return a;
