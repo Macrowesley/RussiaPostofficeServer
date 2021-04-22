@@ -129,7 +129,6 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     }
 
-    volatile int i = 0;
     /**
      * 服务器改变机器状态
      * @param frankMachineId
@@ -168,7 +167,10 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             String entryctContent = AESUtils.encrypt(content, tempKey);
 
             //发送数据
-            wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC3));
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8),
+                    (byte) 0xC3));
         }catch (Exception e){
             log.error("服务器改变机器状态" + e.getMessage());
             //待处理
@@ -212,6 +214,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          }__attribute__((packed))updateTaxes, *updateTaxes;
          */
 
+        //todo 需要同步账户余额
 
     }
 }

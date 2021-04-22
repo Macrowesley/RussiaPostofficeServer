@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -43,6 +44,18 @@ public class Contract {
      */
     @TableField("num")
     private String num;
+
+    /**
+     * 当前可用资金（包括持有）
+     */
+    @TableField("current")
+    private String current;
+
+    /**
+     * 当前余额（仅事实）
+     */
+    @TableField("consolidate")
+    private String consolidate;
 
     /**
      * 更新时间

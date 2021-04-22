@@ -174,6 +174,7 @@ public class ServiceManageCenter {
             //todo 更新数据库
             ManagerBalanceDTO managerBalanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
 
+            //todo 需要同步账户余额
 
             //todo 发送消息给机器
             serviceToMachineProtocol.balance(transactionDTO.getFrankMachineId(), managerBalanceDTO);
