@@ -35,7 +35,7 @@ public class AuthPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         /*
         状态
         1 ENABLED

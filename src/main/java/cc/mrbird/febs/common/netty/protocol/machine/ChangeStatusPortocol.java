@@ -44,7 +44,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         /*
 
         【使用说明】
@@ -78,6 +78,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             unsigned char length;				//0x09
             unsigned char type;					//0xB4
             unsigned char acnum[6];             //机器表头号
+            unsigned char version[3];             //版本号
             unsigned char content[?];			//加密后内容: StatusDTO对象的json
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
@@ -89,23 +90,45 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
 
-        //加密内容解密
-        String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
-        log.info("解析得到的内容：decryptContent={}",decryptContent);
+        //版本号
+        String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+        pos += VERSION_LEN;
 
-        StatusDTO statusDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN,StatusDTO.class);
-        log.info("解析得到的对象：statusDTO={}",statusDTO.toString());
+        switch (version){
+            case "001":
+                parseStatus(bytes, ctx, pos);
+                break;
+            default:
+                break;
+        }
+
+        //返回 todo 返回需要写清楚点
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //0xB4
+         unsigned char content[?];				 // 加密内容  event(1) + status(1) + result(1)
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))auth, *auth;
+         */
+        byte[] data = new byte[]{(byte) 0x01};
+        return getWriteContent(data);
+    }
+
+    private void parseStatus(byte[] bytes, ChannelHandlerContext ctx, int pos) throws Exception {
+        StatusDTO statusDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusDTO.class);
+        log.info("解析得到的对象：statusDTO={}", statusDTO.toString());
 
         //解析参数
-        String version = "";
-        String frankMachineId = "";
-        String statusStr = "";
-        String postOffice = "";
-        String taxVersion = "";
-        int eventType = 0;
-        int isLost = 0;
+        String frankMachineId = statusDTO.getFrankMachineId();
+        int statusType = statusDTO.getStatus();
+        String postOffice = statusDTO.getPostOffice();
+        String taxVersion = statusDTO.getTaxVersion();
+        int eventType = statusDTO.getEvent();
+        int isLost = statusDTO.getIsLost();
 
-        FMStatusEnum status = FMStatusEnum.getByStatus(statusStr);
+        FMStatusEnum status = FMStatusEnum.getByType(statusType);
         EventEnum event = EventEnum.getEventByType(eventType);
 
         FrankMachineDTO device = new FrankMachineDTO();
@@ -117,7 +140,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
         switch (event){
             case STATUS:
-
                 switch (status){
                     case AUTHORIZED:
                         serviceManageCenter.auth(device);
@@ -134,7 +156,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                         serviceManageCenter.changeStatusEvent(device);
                         break;
                 }
-
                 break;
             case RATE_TABLE_UPDATE:
                 serviceManageCenter.rateTableUpdateEvent(device);
@@ -144,21 +165,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 //todo 这个情况怎么处理
                 break;
         }
-
-
-
-        //返回 todo 返回需要写清楚点
-        /**
-         typedef  struct{
-         unsigned char length;				     //一个字节
-         unsigned char head;				 	 //0xB4
-         unsigned char content[?];				 // 加密内容  event(1) + status(1) + result(1)
-         unsigned char check;				     //校验位
-         unsigned char tail;					 //0xD0
-         }__attribute__((packed))auth, *auth;
-         */
-        byte[] data = new byte[]{(byte) 0x01};
-        return getWriteContent(data);
     }
 
 

@@ -136,7 +136,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * @param frankMachineId
      * @param changeStatusRequestDTO
      */
-    @Async(FebsConstant.RCS_ASYNC_POOL)
+    @Async(FebsConstant.ASYNC_POOL)
     public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) {
         //TODO 根据frankMachineId得到Acnum  考虑把协议中的Acnum改成frankMachineId
 

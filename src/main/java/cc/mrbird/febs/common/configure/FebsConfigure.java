@@ -31,12 +31,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class FebsConfigure {
 
     private final FebsProperties properties;
+    private int corePoolSize = Runtime.getRuntime().availableProcessors();
 
     @Bean(FebsConstant.ASYNC_POOL)
     public ThreadPoolTaskExecutor asyncThreadPoolTaskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(20);
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(corePoolSize);
         executor.setQueueCapacity(200);
         executor.setKeepAliveSeconds(30);
         executor.setThreadNamePrefix("Febs-Async-Thread-");
@@ -47,14 +48,14 @@ public class FebsConfigure {
         return executor;
     }
 
-    @Bean(FebsConstant.RCS_ASYNC_POOL)
-    public ThreadPoolTaskExecutor rcsAsyncThreadPoolTaskExecutor(){
+    @Bean(FebsConstant.NETTY_ASYNC_POOL)
+    public ThreadPoolTaskExecutor nettyAsyncThreadPoolTaskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(30);
-        executor.setMaxPoolSize(100);
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(corePoolSize);
         executor.setQueueCapacity(500);
         executor.setKeepAliveSeconds(30);
-        executor.setThreadNamePrefix("RCS-Async-Thread-");
+        executor.setThreadNamePrefix("Netty-Async-Thread-");
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());

@@ -1,7 +1,11 @@
 package cc.mrbird.febs.common.netty;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.machine.*;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.BalanceResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.UpdateTaxesResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
@@ -14,8 +18,10 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,27 +52,45 @@ public class ProtocolService {
     @Autowired
     CloseSSHResultPortocol closeSSHResultPortocol;
 
+    @Autowired
+    BalanceResultPortocol balanceResultPortocol;
+
+    @Autowired
+    UpdateTaxesResultPortocol updateTaxesResultPortocol;
+
+    @Autowired
+    ChangeStatusPortocol changeStatusPortocol;
+
+    @Autowired
+    ForeseensPortocol foreseensPortocol;
+
+    @Autowired
+    CancelJobPortocol cancelJobPortocol;
+
+    @Autowired
+    TransactionsPortocol transactionsPortocol;
+
     //出问题了返回该结果
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    public MachineToServiceProtocol parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
+//    @Async(FebsConstant.NETTY_ASYNC_POOL)
+    public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
         if (msg == null) {
             log.error("socketData为null，不可用");
-            return null;
+            return;
         }
-        MachineToServiceProtocol protocol = null;
+
         try {
-            log.error("客户端【" + ctx.channel().id() + "】发送数据给客户端");
+            log.info("线程" + Thread.currentThread().getName() + "中，客户端【" + ctx.channel().id() + "】发送数据给客户端");
             wrieteToCustomer(ctx, parseContentAndRspone(msg.getContent(), ctx));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             ReferenceCountUtil.release(msg);
         }
-        return protocol;
     }
 
     /**
@@ -96,7 +120,7 @@ public class ProtocolService {
      * @param data
      * @return
      */
-    public byte[] parseContentAndRspone(byte[] data, ChannelHandlerContext ctx) {
+    public synchronized byte[] parseContentAndRspone(byte[] data, ChannelHandlerContext ctx) {
         //验证校验位
         if (BaseTypeUtils.checkChkSum(data, data.length - 2)) {
             //解析类型
@@ -124,6 +148,24 @@ public class ProtocolService {
                     break;
                 case CloseSSHResultPortocol.PROTOCOL_TYPE:
                     baseProtocol = closeSSHResultPortocol;
+                    break;
+                case BalanceResultPortocol.PROTOCOL_TYPE:
+                    baseProtocol = balanceResultPortocol;
+                    break;
+                case UpdateTaxesResultPortocol.PROTOCOL_TYPE:
+                    baseProtocol = updateTaxesResultPortocol;
+                    break;
+                case ChangeStatusPortocol.PROTOCOL_TYPE:
+                    baseProtocol = changeStatusPortocol;
+                    break;
+                case ForeseensPortocol.PROTOCOL_TYPE:
+                    baseProtocol = foreseensPortocol;
+                    break;
+                case CancelJobPortocol.PROTOCOL_TYPE:
+                    baseProtocol = cancelJobPortocol;
+                    break;
+                case TransactionsPortocol.PROTOCOL_TYPE:
+                    baseProtocol = transactionsPortocol;
                     break;
                 default:
                     return emptyResBytes;

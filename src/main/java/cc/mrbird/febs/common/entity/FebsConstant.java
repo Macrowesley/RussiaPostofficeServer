@@ -50,7 +50,7 @@ public interface FebsConstant {
     /**
      * RCS异步线程池名称
      */
-    String RCS_ASYNC_POOL = "RcsAsyncThreadPool";
+    String NETTY_ASYNC_POOL = "NettyAsyncThreadPool";
     /**
      * 开发环境
      */

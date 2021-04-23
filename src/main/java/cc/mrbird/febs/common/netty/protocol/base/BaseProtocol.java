@@ -120,7 +120,7 @@ public class BaseProtocol {
      * @throws Exception
      */
     public String getDecryptContent(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN) throws Exception {
-        String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+        String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
@@ -142,8 +142,61 @@ public class BaseProtocol {
      */
     public <T> T parseEnctryptToObject(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN, Class<T> clazz) throws Exception {
         String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
+        log.info("解析得到的内容：decryptContent={}",decryptContent);
         T bean = JSON.parseObject(decryptContent, clazz);
         return bean;
     }
 
+    public static void main(String[] args) throws Exception {
+        String enctryptContent = "0TGmd/f+wCr7JW5Aj4EgZGFmZecRRYyztyWUn/tLZxuhDH/NLn3aC9a5u9ghNcLr9Ploz2VE4vq4FtFP0T1xlZJXjxRupTTC1mg3odRK+6pDZYzLrZMSZVQPcbqJb9v9";
+        String decryptContent = AESUtils.decrypt(enctryptContent, "2c52b82ced2e2ec2");
+        String json = decryptContent.substring(6 + VERSION_LEN);
+        log.info("解析得到的内容：decryptContent={}",decryptContent);
+        log.info("解析得到的内容：json={}",json);
+        ProductCode bean = JSON.parseObject(json, ProductCode.class);
+        log.info("bean = {}", bean.toString());
+    }
+    private static class ProductCode{
+        String productCode;
+        String count;
+        String weight;
+        String amount ;
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public void setProductCode(String productCode) {
+            this.productCode = productCode;
+        }
+
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
+        }
+
+        public String getWeight() {
+            return weight;
+        }
+
+        public void setWeight(String weight) {
+            this.weight = weight;
+        }
+
+        public String getAmount() {
+            return amount;
+        }
+
+        public void setAmount(String amount) {
+            this.amount = amount;
+        }
+
+        @Override
+        public String toString() {
+            return productCode + " " + weight + " " + amount;
+        }
+    }
 }

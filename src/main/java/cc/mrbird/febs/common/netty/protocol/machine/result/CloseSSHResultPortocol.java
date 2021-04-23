@@ -37,7 +37,7 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
