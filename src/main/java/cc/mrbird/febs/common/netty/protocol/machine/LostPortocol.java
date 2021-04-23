@@ -61,7 +61,7 @@ public class LostPortocol extends MachineToServiceProtocol {
         FrankMachineDTO machine = new FrankMachineDTO();
         machine.setId("");
         machine.setDateTime("");
-        machine.setStatus(FMStatusEnum.ENABLED);
+        machine.setStatus(FMStatusEnum.AUTH_CANCELED);
         machine.setPostOffice("");
         machine.setTaxVersion("");
         //校验事件

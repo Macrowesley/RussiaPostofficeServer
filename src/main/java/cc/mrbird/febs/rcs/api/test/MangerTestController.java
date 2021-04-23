@@ -30,7 +30,7 @@ public class MangerTestController {
         FrankMachineDTO bean = new FrankMachineDTO();
         bean.setId("FM100001");
         bean.setDateTime("2");
-        bean.setStatus(FMStatusEnum.ENABLED);
+        bean.setStatus(FMStatusEnum.DEMO);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);
@@ -64,7 +64,7 @@ public class MangerTestController {
         FrankMachineDTO bean = new FrankMachineDTO();
         bean.setId("1");
         bean.setDateTime("2");
-        bean.setStatus(FMStatusEnum.ENABLED);
+        bean.setStatus(FMStatusEnum.AUTHORIZED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);
@@ -86,7 +86,7 @@ public class MangerTestController {
         FrankMachineDTO bean = new FrankMachineDTO();
         bean.setId("1");
         bean.setDateTime("2");
-        bean.setStatus(FMStatusEnum.ENABLED);
+        bean.setStatus(FMStatusEnum.AUTH_CANCELED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);
@@ -108,7 +108,7 @@ public class MangerTestController {
         FrankMachineDTO bean = new FrankMachineDTO();
         bean.setId("1");
         bean.setDateTime("2");
-        bean.setStatus(FMStatusEnum.ENABLED);
+        bean.setStatus(FMStatusEnum.AUTH_CANCELED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);

@@ -1,11 +1,15 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.netty.protocol.machine.DTO.StatusDTO;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
@@ -104,6 +108,42 @@ public class BaseProtocol {
         buf.writeBytes(bytes);
         ctx.write(buf);
         ctx.flush();
+    }
+
+    /**
+     * 给加密内容解密
+     * @param bytes
+     * @param ctx
+     * @param pos
+     * @param REQ_ACNUM_LEN
+     * @return
+     * @throws Exception
+     */
+    public String getDecryptContent(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN) throws Exception {
+        String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+
+        //解密后内容
+        return AESUtils.decrypt(enctryptContent, tempKey);
+    }
+
+    /**
+     * 解析加密内容成对象
+     * @param bytes
+     * @param ctx
+     * @param pos
+     * @param REQ_ACNUM_LEN
+     * @param clazz
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public <T> T parseEnctryptToObject(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN, Class<T> clazz) throws Exception {
+        String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
+        T bean = JSON.parseObject(decryptContent, clazz);
+        return bean;
     }
 
 }

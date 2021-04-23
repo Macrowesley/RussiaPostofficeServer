@@ -1,13 +1,61 @@
 package cc.mrbird.febs.rcs.common.enums;
 
-/*
-1 ENABLED
-2 DEMO
-3 BLOCKED
-4 UNAUTHORIZED
-5 LOST
- */
+
 public enum FMStatusEnum {
+    // , , , , , , , , , ,
+    UNKNOWN(1,"UNKNOWN", "未知"),
+    REGISTERED(2,"REGISTERED","注册"),
+    AUTHORIZED(3,"AUTHORIZED","授权"),
+    OPERATING(4,"OPERATING","操作的"),
+    PENDING_WITHDRAWN(5,"PENDING_WITHDRAWN","待提款"),
+    TEMPORARILY_WITHDRAWN(6,"TEMPORARILY_WITHDRAWN","暂时撤回"),
+    PERMANENTLY_WITHDRAWN(7,"PERMANENTLY_WITHDRAWN","永久提款"),
+    IN_TRANSFER(8,"IN_TRANSFER","转让中"),
+    MISSING(9,"MISSING","丢失的"),
+    SCRAPPED(10,"SCRAPPED","报废"),
+    MAINTENENCE(11,"MAINTENENCE","维护"),
+    BLOCKED(12,"BLOCKED","已封锁"),
+    AUTH_CANCELED(13,"AUTH_CANCELED","取消授权"),
+    DEMO(14,"DEMO","演示");
+
+    private final int type;
+    private final String status;
+    private final String message;
+    FMStatusEnum(int type, String status, String message){
+        this.type = type;
+        this.status = status;
+        this.message = message;
+    }
+
+    public static FMStatusEnum getByType(int statusType) {
+        for (FMStatusEnum item: FMStatusEnum.values()){
+            if (item.getType()== statusType){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static FMStatusEnum getByStatus(String status) {
+        for (FMStatusEnum item: FMStatusEnum.values()){
+            if (item.getStatus().equals(status)){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public int getType() {
+        return type;
+    }
 /*    ENABLED("ENABLED"),
     DEMO("DEMO"),
     BLOCKED("BLOCKED"),
@@ -32,8 +80,7 @@ public enum FMStatusEnum {
         return status;
     }*/
 
-
-    ENABLED(1,"ENABLED", "可用的"),
+    /*ENABLED(1,"ENABLED", "可用的"),
     DEMO(2,"DEMO","准备在演示模式下工作"),
     BLOCKED(3,"BLOCKED","封锁"),
     UNAUTHORIZED(4,"UNAUTHORIZED","无权限的"),
@@ -76,6 +123,6 @@ public enum FMStatusEnum {
 
     public int getType() {
         return type;
-    }
+    }*/
 }
 
