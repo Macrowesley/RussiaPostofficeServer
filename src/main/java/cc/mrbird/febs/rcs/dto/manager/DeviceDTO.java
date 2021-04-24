@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 @ToString
-public class FrankMachineDTO {
+public class DeviceDTO {
     /*
     {
       "id": "FM100001",

@@ -6,6 +6,8 @@ import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -119,11 +121,18 @@ public interface IDeviceService extends IService<Device> {
     Device findDeviceByAcnum(String acnum);
 
     /**
-     * 俄罗斯改变机器状态
+     * 改变机器状态：开始
      * @param frankMachineId
      * @param changeStatusRequestDTO
      */
-    void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO);
+    void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO);
+
+    /**
+     * 改变机器状态：结束
+     * @param deviceDTO
+     * @param flowRes
+     */
+    void changeStatusEnd(DeviceDTO deviceDTO, boolean isSuccess);
 
     /**
      * 通过frankMachineId得到acnum
@@ -131,4 +140,6 @@ public interface IDeviceService extends IService<Device> {
      * @return
      */
     String getAcnumByFMId(String frankMachineId);
+
+    Device getDeviceByFrankMachineId(String frankMachineId);
 }

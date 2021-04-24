@@ -17,15 +17,15 @@ public class ManagerApi {
      * 机器状况
      */
     @PutMapping("frankMachines")
-    public ApiResponse frankMachines(@Validated @RequestBody FrankMachineDTO frankMachineDTO, HttpServletRequest request){
-        log.info("收到消息：{}", frankMachineDTO.toString());
+    public ApiResponse frankMachines(@Validated @RequestBody DeviceDTO deviceDTO, HttpServletRequest request){
+        log.info("收到消息：{}", deviceDTO.toString());
         log.info("收到的header X-API-KEY={}", request.getHeader("X-API-KEY"));
-        frankMachineDTO.setId("666 manager收到了");
+        deviceDTO.setId("666 manager收到了");
         int code = 400;
         ApiResponse apiResponse;
         switch (code){
             case 200:
-                apiResponse =  new ApiResponse(200, frankMachineDTO);
+                apiResponse =  new ApiResponse(200, deviceDTO);
                 break;
             case 400:
                 ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
@@ -52,15 +52,15 @@ public class ManagerApi {
     /**
      * FM授权请求
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/auth")
-    public ApiResponse auth(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachineDTO frankMachineDTO){
+    public ApiResponse auth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
         log.info("manager auth frankMachineId={}",frankMachineId);
-        log.info("manager auth frankMachine={}", frankMachineDTO.toString());
+        log.info("manager auth frankMachine={}", deviceDTO.toString());
 
-        frankMachineDTO.setId("manager auth 新的id");
+        deviceDTO.setId("manager auth 新的id");
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
 
         return apiResponse;
@@ -69,11 +69,11 @@ public class ManagerApi {
     /**
      * 取消授权
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/unauth")
-    public ApiResponse unauth(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachineDTO frankMachineDTO){
+    public ApiResponse unauth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
 
         ApiResponse apiResponse =  new ApiResponse(200, "ok");
         apiResponse =  new ApiResponse(500, new ApiError());
@@ -83,13 +83,13 @@ public class ManagerApi {
     /**
      * 取消授权
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/lost")
-    public ApiResponse lost(@PathVariable @NotBlank String frankMachineId, @RequestBody FrankMachineDTO frankMachineDTO){
+    public ApiResponse lost(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
         log.info("manager lost frankMachineId={}", frankMachineId);
-        log.info("manager lost frankMachine={}", frankMachineDTO);
+        log.info("manager lost frankMachine={}", deviceDTO);
         ApiResponse apiResponse =  new ApiResponse(200, "ok 666");
         apiResponse =  new ApiResponse(500, new ApiError(500, "错误"));
         return apiResponse;

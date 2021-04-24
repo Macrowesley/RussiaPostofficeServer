@@ -79,7 +79,7 @@ public class ServiceApi {
         //TODO 想想有没有其他需要验证的
 
         //保存要更改的状态
-        deviceService.changeStatus(frankMachineId, changeStatusRequestDTO);
+        deviceService.changeStatusBegin(frankMachineId, changeStatusRequestDTO);
 
         //在一个线程中执行：发送指令给FM
         serviceToMachineProtocol.changeStatus(frankMachineId, changeStatusRequestDTO);

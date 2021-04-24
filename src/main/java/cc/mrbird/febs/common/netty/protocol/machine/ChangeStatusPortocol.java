@@ -1,18 +1,17 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
+import cc.mrbird.febs.common.entity.FMResultEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.machine.DTO.StatusDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.StatusDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
-import cc.mrbird.febs.rcs.dto.manager.FrankMachineDTO;
-import com.alibaba.fastjson.JSON;
+import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Slf4j
 @Component
@@ -82,41 +81,34 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             unsigned char content[?];			//加密后内容: StatusDTO对象的json
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
-        }__attribute__((packed))auth, *auth;
+        }__attribute__((packed))status, *status;
          */
-        int pos = TYPE_LEN;
+        String version = null;
+        String res;
+        try {
+            int pos = TYPE_LEN;
 
-        //表头号
-        String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
-        pos += REQ_ACNUM_LEN;
+            //表头号
+            String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
+            pos += REQ_ACNUM_LEN;
 
-        //版本号
-        String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
-        pos += VERSION_LEN;
+            //版本号
+            version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+            pos += VERSION_LEN;
 
-        switch (version){
-            case "001":
-                parseStatus(bytes, ctx, pos);
-                break;
-            default:
-                break;
+            switch (version) {
+                case "001":
+                    return parseStatus(bytes, version, ctx, pos);
+                default:
+                    return getErrorResult(ctx, version);
+            }
+        }catch (Exception e){
+            return getErrorResult(ctx, version);
         }
 
-        //返回 todo 返回需要写清楚点
-        /**
-         typedef  struct{
-         unsigned char length;				     //一个字节
-         unsigned char head;				 	 //0xB4
-         unsigned char content[?];				 // 加密内容  event(1) + status(1) + result(1)
-         unsigned char check;				     //校验位
-         unsigned char tail;					 //0xD0
-         }__attribute__((packed))auth, *auth;
-         */
-        byte[] data = new byte[]{(byte) 0x01};
-        return getWriteContent(data);
     }
 
-    private void parseStatus(byte[] bytes, ChannelHandlerContext ctx, int pos) throws Exception {
+    private byte[] parseStatus(byte[] bytes, String version, ChannelHandlerContext ctx, int pos) throws Exception {
         StatusDTO statusDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusDTO.class);
         log.info("解析得到的对象：statusDTO={}", statusDTO.toString());
 
@@ -131,7 +123,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         FMStatusEnum status = FMStatusEnum.getByType(statusType);
         EventEnum event = EventEnum.getEventByType(eventType);
 
-        FrankMachineDTO device = new FrankMachineDTO();
+        DeviceDTO device = new DeviceDTO();
         device.setId(frankMachineId);
         device.setStatus(status);
         device.setPostOffice(postOffice);
@@ -152,7 +144,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                         }
                         break;
                     default:
-                        //todo 这个情况怎么处理
                         serviceManageCenter.changeStatusEvent(device);
                         break;
                 }
@@ -162,10 +153,41 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 break;
             default:
                 //处理异常
-                //todo 这个情况怎么处理
-                break;
+                throw new FmException("状态不匹配，无法响应");
         }
+
+        return getSuccessResult(version, ctx, statusType, eventType, FMResultEnum.SUCCESS.getCode());
     }
 
+    private byte[] getErrorResult(ChannelHandlerContext ctx, String version) throws Exception {
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //0xB4
+         unsigned char content[?];				 //加密内容:   result(1 为1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
+                                                              result(1 为0,操作失败) + 版本内容(3)
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))status, *status;
+         */
 
+        //返回内容的原始数据
+        String responseData = FMResultEnum.FAIL.getCode() + version;
+        //返回内容的加密数据
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+        log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
+
+    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int statusType, int eventType, int res) throws Exception {
+        String responseData = res + version + String.valueOf(eventType) + statusType ;
+        //返回内容的加密数据
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+        log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
 }

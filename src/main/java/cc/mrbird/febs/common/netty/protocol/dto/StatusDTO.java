@@ -1,13 +1,11 @@
-package cc.mrbird.febs.common.netty.protocol.machine.DTO;
+package cc.mrbird.febs.common.netty.protocol.dto;
 
-import cc.mrbird.febs.rcs.entity.PostOffice;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
 public class StatusDTO {
-    String version;
     String frankMachineId;
     String postOffice;
     String taxVersion;

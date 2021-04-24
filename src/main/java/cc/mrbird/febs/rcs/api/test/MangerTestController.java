@@ -27,7 +27,7 @@ public class MangerTestController {
     @GetMapping("frankMachines")
     public void frankMachines(){
         log.info("开始测试frankMachines");
-        FrankMachineDTO bean = new FrankMachineDTO();
+        DeviceDTO bean = new DeviceDTO();
         bean.setId("FM100001");
         bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.DEMO);
@@ -39,8 +39,8 @@ public class MangerTestController {
 
         switch (ResultEnum.getByCode(apiResponse.getCode())) {
             case SUCCESS:
-                FrankMachineDTO frankMachineDTO = (FrankMachineDTO) apiResponse.getObject();
-                log.info("从manager服务器得到的数据 {}", frankMachineDTO.toString());
+                DeviceDTO deviceDTO = (DeviceDTO) apiResponse.getObject();
+                log.info("从manager服务器得到的数据 {}", deviceDTO.toString());
                 break;
             case OPERATION_ERROR:
                 OperationError operationError = (OperationError) apiResponse.getObject();
@@ -61,7 +61,7 @@ public class MangerTestController {
     public void auth(){
         log.info("开始测试auth");
 
-        FrankMachineDTO bean = new FrankMachineDTO();
+        DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
         bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTHORIZED);
@@ -83,7 +83,7 @@ public class MangerTestController {
     public void unauth(){
         log.info("开始测试unauth");
 
-        FrankMachineDTO bean = new FrankMachineDTO();
+        DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
         bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTH_CANCELED);
@@ -105,7 +105,7 @@ public class MangerTestController {
     public void lost(){
         log.info("开始测试 lost");
 
-        FrankMachineDTO bean = new FrankMachineDTO();
+        DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
         bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTH_CANCELED);

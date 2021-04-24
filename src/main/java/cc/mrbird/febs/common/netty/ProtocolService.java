@@ -168,18 +168,27 @@ public class ProtocolService {
                     baseProtocol = transactionsPortocol;
                     break;
                 default:
-                    return emptyResBytes;
+                    return getErrorRes(protocolType);
             }
 
             try {
                 return baseProtocol.parseContentAndRspone(data, ctx);
             } catch (Exception e) {
                 log.error("返回结果出错：" + e.getMessage());
-                return emptyResBytes;
+                return getErrorRes(protocolType);
             }
         } else {
             log.error("校验位验证错误");
             return emptyResBytes;
         }
+    }
+
+    /**
+     * 特殊异常
+     * @param protocolType
+     * @return
+     */
+    private byte[] getErrorRes(byte protocolType) {
+        return new byte[]{(byte) 0x03, protocolType, (byte) 0x00, (byte) 0xD0};
     }
 }

@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.rcs.dto.manager.FrankMachineDTO;
+import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
@@ -58,7 +58,7 @@ public class LostPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         //todo 解析得到机器信息
-        FrankMachineDTO machine = new FrankMachineDTO();
+        DeviceDTO machine = new DeviceDTO();
         machine.setId("");
         machine.setDateTime("");
         machine.setStatus(FMStatusEnum.AUTH_CANCELED);

@@ -34,9 +34,9 @@ public class ServiceInvokeManager {
      *
      * @PutMapping("frankMachines")
      */
-    public ApiResponse frankMachines(FrankMachineDTO frankMachineDTO) {
+    public ApiResponse frankMachines(DeviceDTO deviceDTO) {
         String url = baseUrl + "/frankMachines";
-        return doExchange(url, frankMachineDTO, HttpMethod.PUT, FrankMachineDTO.class,null);
+        return doExchange(url, deviceDTO, HttpMethod.PUT, String.class,null);
     }
 
 
@@ -44,16 +44,16 @@ public class ServiceInvokeManager {
      * FM授权请求
      *
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
-    public ApiResponse auth(String frankMachineId, FrankMachineDTO frankMachineDTO) {
+    public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, frankMachineDTO, HttpMethod.POST, String.class, map);
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
 
     }
 
@@ -61,17 +61,17 @@ public class ServiceInvokeManager {
      * 取消授权
      *
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/unauth")
      */
-    public ApiResponse unauth(String frankMachineId, FrankMachineDTO frankMachineDTO) {
+    public ApiResponse unauth(String frankMachineId, DeviceDTO deviceDTO) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
 
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, frankMachineDTO, HttpMethod.POST, String.class, map);
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
     }
 
 
@@ -79,17 +79,17 @@ public class ServiceInvokeManager {
      * 取消授权
      *
      * @param frankMachineId
-     * @param frankMachineDTO
+     * @param deviceDTO
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/lost")
      */
-    public ApiResponse lost(String frankMachineId, FrankMachineDTO frankMachineDTO) {
+    public ApiResponse lost(String frankMachineId, DeviceDTO deviceDTO) {
         String url = baseUrl + "/frankMachines/{frankMachineId}/lost";
 
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, frankMachineDTO, HttpMethod.POST, String.class, map);
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
     }
 
     /**

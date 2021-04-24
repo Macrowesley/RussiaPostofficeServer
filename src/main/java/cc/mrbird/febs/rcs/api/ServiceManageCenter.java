@@ -1,8 +1,13 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.dto.manager.*;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @NoArgsConstructor
+@Slf4j
 public class ServiceManageCenter {
 
     @Autowired
@@ -23,36 +29,46 @@ public class ServiceManageCenter {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
+    @Autowired
+    IDeviceService deviceService;
 
     /**
      * 机器状态改变事件
      * 【FM状态改变协议】
-     * @param frankMachineDTO
+     * @param deviceDTO
      */
-    public void changeStatusEvent(FrankMachineDTO frankMachineDTO) {
+    public void changeStatusEvent(DeviceDTO deviceDTO) {
 
+        //判断再次访问这个接口的时候，需要的验证
+        /**
+         * 正常情况下，访问这个接口，机器的flow为 0
+         * 当完成这个闭环的时候，flow为1了，当机器再次访问这个接口的时候
+         * 如果flow为0 继续往后走
+         * 如果flow为1，不继续了
+         */
+
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(deviceDTO.getId());
+        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()){
+            throw new FmException("机器的状态已经修改结束了，请勿操作");
+        }
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(frankMachineDTO);
-        //todo 收到了俄罗斯消息
+        ApiResponse apiResponse = serviceInvokeManager.frankMachines(deviceDTO);
 
-        if (changeStatusResponse.isOK()) {
-            FrankMachineDTO responseFrankMachineDTO = (FrankMachineDTO) changeStatusResponse.getObject();
-            // 更新数据库
-
-        }
+        //更新数据库
+        deviceService.changeStatusEnd(deviceDTO, apiResponse.isOK());
     }
 
     /**
      * 收到费率表事件
      * 【FM状态改变协议】
-     * @param frankMachineDTO
+     * @param deviceDTO
      */
-    public void rateTableUpdateEvent(FrankMachineDTO frankMachineDTO) {
+    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
 
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(frankMachineDTO);
+        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(deviceDTO);
         //todo 收到了俄罗斯消息
 
         if (changeStatusResponse.isOK()) {
@@ -65,13 +81,13 @@ public class ServiceManageCenter {
     /**
      * 【机器请求授权协议】调用本方法
      *
-     * @param frankMachineDTO
+     * @param deviceDTO
      */
-    public void auth(FrankMachineDTO frankMachineDTO) throws Exception {
+    public void auth(DeviceDTO deviceDTO) throws Exception {
         //todo 收到了FM消息
 
         //访问俄罗斯服务器，请求授权
-        ApiResponse authResponse = serviceInvokeManager.auth(frankMachineDTO.getId(), frankMachineDTO);
+        ApiResponse authResponse = serviceInvokeManager.auth(deviceDTO.getId(), deviceDTO);
 
         //todo 收到了俄罗斯消息
 
@@ -89,7 +105,7 @@ public class ServiceManageCenter {
             publicKeyDTO.setRevision(0);
             publicKeyDTO.setExpireDate("");
 
-            ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineDTO.getId(), publicKeyDTO);
+            ApiResponse publickeyResponse = serviceInvokeManager.publicKey(deviceDTO.getId(), publicKeyDTO);
 
             if (publickeyResponse.isOK()) {
                 //todo 更新公钥数据库
@@ -102,12 +118,12 @@ public class ServiceManageCenter {
     /**
      * 【机器请求取消授权协议】调用本方法
      *
-     * @param frankMachineDTO
+     * @param deviceDTO
      */
-    public void unauth(FrankMachineDTO frankMachineDTO) {
+    public void unauth(DeviceDTO deviceDTO) {
         //todo 收到了FM消息
 
-        ApiResponse unauthResponse = serviceInvokeManager.unauth(frankMachineDTO.getId(), frankMachineDTO);
+        ApiResponse unauthResponse = serviceInvokeManager.unauth(deviceDTO.getId(), deviceDTO);
         //todo 收到了俄罗斯消息
 
         //更新数据库
@@ -118,12 +134,12 @@ public class ServiceManageCenter {
     /**
      * 【机器请求lost协议】调用本方法
      *
-     * @param frankMachineDTO
+     * @param deviceDTO
      */
-    public void lost(FrankMachineDTO frankMachineDTO) {
+    public void lost(DeviceDTO deviceDTO) {
         //todo 收到了FM消息
 
-        ApiResponse unauthResponse = serviceInvokeManager.lost(frankMachineDTO.getId(), frankMachineDTO);
+        ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);
         //todo 收到了俄罗斯消息
 
         //更新数据库

@@ -2,6 +2,7 @@ package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.StatusDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -9,9 +10,12 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
+import cc.mrbird.febs.rcs.entity.PostOffice;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,21 +128,12 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     }
 
     /**
-     * 服务器向机器返回授权结果 todo 待定
-     * @param response
-     */
-    public void authResult(ApiResponse response) {
-
-    }
-
-    /**
      * 服务器改变机器状态
      * @param frankMachineId
      * @param changeStatusRequestDTO
      */
     @Async(FebsConstant.ASYNC_POOL)
     public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) {
-        //TODO 根据frankMachineId得到Acnum  考虑把协议中的Acnum改成frankMachineId
 
         try {
             ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(frankMachineId));
@@ -146,25 +141,26 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
             /**
-             状态数字的含义
-             1 ENABLED
-             2 DEMO
-             3 BLOCKED
-             4 UNAUTHORIZED
-             5 LOST
-             typedef  struct{
+                typedef  struct{
                  unsigned char length;				 //一个字节
                  unsigned char head;				 	 //0xC3
-                 unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + 状态（1 ）+ postOffice()
+                 unsigned char content[?];            //加密后内容 版本内容(3) + StatusDTO的json 包含了：frankMachineId  + status+ postOffice
                  unsigned char check;				 //校验位
                  unsigned char tail;					 //0xD0
              }__attribute__((packed))status, *status;
              **/
             //准备数据
             String version = "001";
-            int status = changeStatusRequestDTO.getStatus().getType();
-            String postOffice = changeStatusRequestDTO.getPostOffice();
-            String content = version + frankMachineId + status + postOffice;
+            StatusDTO statusDTO = new StatusDTO();
+            statusDTO.setFrankMachineId(frankMachineId);
+            statusDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
+            statusDTO.setStatus(changeStatusRequestDTO.getStatus().getType());
+            statusDTO.setEvent(1);
+
+            /*int status = changeStatusRequestDTO.getStatus().getType();
+            String postOffice = changeStatusRequestDTO.getPostOffice();*/
+
+            String content = version + JSON.toJSONString(statusDTO);
             String entryctContent = AESUtils.encrypt(content, tempKey);
 
             //发送数据
@@ -172,6 +168,45 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                     ctx,
                     getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8),
                     (byte) 0xC3));
+        }catch (Exception e){
+            log.error("服务器改变机器状态" + e.getMessage());
+            //待处理
+            throw new FmException(e.getMessage());
+        }
+    }
+
+
+    //发送给机器后，不需要机器的返回
+    public void changeStatusEnd(DeviceDTO deviceDTO, boolean isOk) {
+
+        try {
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(deviceDTO.getId()));
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            /**
+
+             typedef  struct{
+             unsigned char length;				    //一个字节
+             unsigned char head;				 	 //0xC4
+             unsigned char content[?];              //加密后内容 版本内容(3) + frankMachineId() + 状态（1）+ 结果(1)
+             unsigned char check;				    //校验位
+             unsigned char tail;					 //0xD0
+             }__attribute__((packed))statusEnd, *statusEnd;
+             **/
+            //准备数据
+           /* String version = "001";
+            int status = changeStatusRequestDTO.getStatus().getType();
+            String postOffice = changeStatusRequestDTO.getPostOffice();
+            //todo 转json
+            String content = version + frankMachineId + status + postOffice;
+            String entryctContent = AESUtils.encrypt(content, tempKey);
+
+            //发送数据
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xC4));*/
         }catch (Exception e){
             log.error("服务器改变机器状态" + e.getMessage());
             //待处理
@@ -194,7 +229,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          同步tax信息(待定，可能是文件)
          typedef  struct{
              unsigned char length;				 //一个字节
-             unsigned char head;				 	 //0xC4
+             unsigned char head;				 	 //0xC5
              unsigned char content[?];            //加密后内容 版本内容(3) + taxId(自己数据库中的 )  + ？？
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
@@ -212,7 +247,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         /**
          typedef  struct{
              unsigned char length;				 //一个字节
-             unsigned char head;				 	 //0xC5
+             unsigned char head;				 	 //0xC6
              unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractId(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
@@ -222,4 +257,5 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         //todo 需要同步账户余额
 
     }
+
 }

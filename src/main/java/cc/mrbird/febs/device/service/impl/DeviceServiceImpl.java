@@ -19,6 +19,7 @@ import cc.mrbird.febs.device.service.IUserDeviceService;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserRole;
@@ -334,14 +335,14 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     /**
-     * 俄罗斯改变机器状态
+     * 改变机器状态：开始
      *
      * @param frankMachineId
      * @param changeStatusRequestDTO
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException{
+    public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException{
         checkStatus(frankMachineId);
         Device device = new Device();
         device.setFrankMachineId(frankMachineId);
@@ -349,7 +350,55 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         device.setPostOffice(changeStatusRequestDTO.getPostOffice());
         //开始修改的话，把流程状态改成进行中
         device.setFlow(FlowEnum.FlowIng.getCode());
-        this.saveOrUpdate(device);
+
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
+        this.update(device, wrapper);
+    }
+
+    /**
+     * 改变机器状态：结束
+     *
+     * @param deviceDTO
+     * @param flowRes
+     */
+    @Override
+    public void changeStatusEnd(DeviceDTO deviceDTO, boolean isSuccess) {
+        /*DeviceDTO device = new DeviceDTO();
+        device.setId(frankMachineId);
+        device.setStatus(status);
+        device.setPostOffice(postOffice);
+        device.setTaxVersion(taxVersion);
+        device.setEventEnum(event);*/
+
+        Device dbDevice = getDeviceByFrankMachineId(deviceDTO.getId());
+
+        //判断状态是否正常
+        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()){
+            throw new RcsApiException("状态已经修改完了，请勿重复操作");
+        }
+
+        int dbCurStatus = dbDevice.getCurFmStatus();
+        int dbFurStatus = dbDevice.getFutureFmStatus();
+
+        //fm想要改变的状态
+        int fmChangeStatus = deviceDTO.getStatus().getType();
+        if (fmChangeStatus == dbFurStatus) {
+            throw new RcsApiException("状态不匹配：机器要改的状态为："+ fmChangeStatus + " 数据库中状态需要改成：" + dbFurStatus);
+        }
+
+        Device device = new Device();
+        if (isSuccess) {
+            device.setCurFmStatus(fmChangeStatus);
+            device.setFlow(FlowEnum.FlowEndSuccess.getCode());
+        } else {
+            device.setFlow(FlowEnum.FlowEndFail.getCode());
+        }
+
+        //更新数据库
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Device::getFrankMachineId, deviceDTO.getId());
+        this.update(device, wrapper);
     }
 
     private void checkStatus(String frankMachineId) {
@@ -374,7 +423,9 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return device.getAcnum();
     }
 
-    private Device getDeviceByFrankMachineId(String frankMachineId) {
+    //需要加缓存
+    @Override
+    public Device getDeviceByFrankMachineId(String frankMachineId) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, frankMachineId);
         Device device = this.getOne(wrapper);
