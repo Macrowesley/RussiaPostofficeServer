@@ -9,12 +9,10 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
-import cc.mrbird.febs.rcs.entity.PostOffice;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -154,7 +152,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             StatusDTO statusDTO = new StatusDTO();
             statusDTO.setFrankMachineId(frankMachineId);
             statusDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
-            statusDTO.setStatus(changeStatusRequestDTO.getStatus().getType());
+            statusDTO.setStatus(changeStatusRequestDTO.getStatus().getCode());
             statusDTO.setEvent(1);
 
             /*int status = changeStatusRequestDTO.getStatus().getType();

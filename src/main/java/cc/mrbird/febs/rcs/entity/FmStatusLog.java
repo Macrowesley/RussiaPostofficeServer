@@ -34,7 +34,13 @@ public class FmStatusLog {
      * 机器当前状态
      */
     @TableField("cur_fm_status")
-    private String curFmStatus;
+    private int curFmStatus;
+
+    /**
+     * 机器想要达到的状态
+     */
+    @TableField("future_fm_status")
+    private int futureFmStatus;
 
     /**
      * 错误代码
@@ -55,6 +61,12 @@ public class FmStatusLog {
     private Integer flow;
 
     /**
+     * 各种FlowXXXEnum的状态
+     */
+    @TableField("flow_detail")
+    private Integer flowDetail;
+
+    /**
      * 1 STATUS 
 									 2 RATE_TABLE_UPDATE
      */
@@ -67,11 +79,7 @@ public class FmStatusLog {
     @TableField("frank_machine_id")
     private String frankMachineId;
 
-    /**
-     * 机器想要达到的状态
-     */
-    @TableField("future_fm_status")
-    private String futureFmStatus;
+
 
     /**
      * 

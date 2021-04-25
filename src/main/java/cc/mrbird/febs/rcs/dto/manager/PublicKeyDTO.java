@@ -37,4 +37,6 @@ public class PublicKeyDTO {
     @NotBlank
     String expireDate;
 
+    private String alg;
+
 }

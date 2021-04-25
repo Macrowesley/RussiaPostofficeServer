@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.entity.FMResultEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusDTO;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
@@ -11,11 +12,18 @@ import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class ChangeStatusPortocol extends MachineToServiceProtocol {
+    @Autowired
+    RedisService redisService;
+
+    //预计一次操作的最长等待时间
+    public static final long WAIT_TIME = 60L;
+
     public static final byte PROTOCOL_TYPE = (byte) 0xB4;
 
     //表头号长度
@@ -97,6 +105,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
             pos += VERSION_LEN;
 
+
+            //下面的操作都是同步的，机器一直等着最后的结果
             switch (version) {
                 case "001":
                     return parseStatus(bytes, version, ctx, pos);
@@ -122,8 +132,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         int eventType = statusDTO.getEvent();
         int isLost = statusDTO.getIsLost();
 
-        FMStatusEnum status = FMStatusEnum.getByType(statusType);
-        EventEnum event = EventEnum.getEventByType(eventType);
+        FMStatusEnum status = FMStatusEnum.getByCode(statusType);
+        EventEnum event = EventEnum.getByCode(eventType);
 
         DeviceDTO device = new DeviceDTO();
         device.setId(frankMachineId);
@@ -132,11 +142,22 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         device.setTaxVersion(taxVersion);
         device.setEventEnum(event);
 
+        //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
+//        String key = ctx.channel().id().toString() + event.getEvent()  + status.getStatus();
+        String key = ctx.channel().id().toString();
+        if (redisService.hasKey(key)){
+            return getOverTimeResult(version,ctx, FMResultEnum.Overtime.getCode());
+        }else{
+            log.info("操作{}放入redis", key);
+            redisService.set(key,"wait", WAIT_TIME);
+        }
+
+        boolean operationRes = false;
         switch (event){
             case STATUS:
                 switch (status){
                     case AUTHORIZED:
-                        serviceManageCenter.auth(device);
+                        operationRes = serviceManageCenter.auth(device);
                         break;
                     case AUTH_CANCELED:
                         if(isLost == 1){
@@ -158,7 +179,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 throw new FmException("状态不匹配，无法响应");
         }
         log.info("机器改变状态，通知服务器，服务器通知俄罗斯，整个过程耗时：{}",(System.currentTimeMillis() - t1));
-        return getSuccessResult(version, ctx, statusType, eventType, FMResultEnum.SUCCESS.getCode());
+        return getSuccessResult(version, ctx, statusType, eventType, operationRes);
     }
 
     private byte[] getErrorResult(ChannelHandlerContext ctx, String version) throws Exception {
@@ -172,6 +193,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
          unsigned char tail;					 //0xD0
          }__attribute__((packed))status, *status;
          */
+        //删除redis缓存
+        redisService.del(ctx.channel().id().toString());
 
         //返回内容的原始数据
         String responseData = FMResultEnum.FAIL.getCode() + version;
@@ -183,13 +206,34 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 
-    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int statusType, int eventType, int res) throws Exception {
+    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int statusType, int eventType, boolean res) throws Exception {
+        //删除redis缓存
+        redisService.del(ctx.channel().id().toString());
+
         String responseData = res + version + String.valueOf(eventType) + statusType ;
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
+
+    /**
+     * 指定时间内多次请求返回结果
+     * @param version
+     * @param ctx
+     * @param res
+     * @return
+     * @throws Exception
+     */
+    private byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, int res) throws Exception {
+        log.info("指定时间内多次请求返回结果");
+        String responseData = res + version ;
+        //返回内容的加密数据
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 }

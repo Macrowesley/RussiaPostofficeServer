@@ -18,18 +18,18 @@ public enum FMStatusEnum {
     AUTH_CANCELED(13,"AUTH_CANCELED","取消授权"),
     DEMO(14,"DEMO","演示");
 
-    private final int type;
+    private final int code;
     private final String status;
     private final String message;
-    FMStatusEnum(int type, String status, String message){
-        this.type = type;
+    FMStatusEnum(int code, String status, String message){
+        this.code = code;
         this.status = status;
         this.message = message;
     }
 
-    public static FMStatusEnum getByType(int statusType) {
+    public static FMStatusEnum getByCode(int statusType) {
         for (FMStatusEnum item: FMStatusEnum.values()){
-            if (item.getType()== statusType){
+            if (item.getCode()== statusType){
                 return item;
             }
         }
@@ -53,8 +53,8 @@ public enum FMStatusEnum {
         return message;
     }
 
-    public int getType() {
-        return type;
+    public int getCode() {
+        return code;
     }
 /*    ENABLED("ENABLED"),
     DEMO("DEMO"),

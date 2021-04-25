@@ -3,9 +3,15 @@ package cc.mrbird.febs.rcs.api;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Slf4j
 public class ServiceManageCenter {
+    int waitTime = 1;
 
     @Autowired
     ServiceInvokeManager serviceInvokeManager;
@@ -31,6 +38,9 @@ public class ServiceManageCenter {
 
     @Autowired
     IDeviceService deviceService;
+
+    @Autowired
+    IPublicKeyService publicKeyService;
 
     /**
      * 机器状态改变事件
@@ -59,59 +69,102 @@ public class ServiceManageCenter {
         deviceService.changeStatusEnd(deviceDTO, apiResponse.isOK());
     }
 
-    /**
-     * 收到费率表事件
-     * 【FM状态改变协议】
-     * @param deviceDTO
-     */
-    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
-
-
-        //访问俄罗斯服务器，改变状态
-        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(deviceDTO);
-        //todo 收到了俄罗斯消息
-
-        if (changeStatusResponse.isOK()) {
-            // 更新数据库
-
-        }
-    }
-
 
     /**
      * 【机器请求授权协议】调用本方法
      *
      * @param deviceDTO
      */
-    public void auth(DeviceDTO deviceDTO) throws Exception {
-        //todo 收到了FM消息
+    public boolean auth(DeviceDTO deviceDTO) throws Exception {
+        String frankMachineId = deviceDTO.getId();
+        log.info("服务器收到了设备{}发送的auth协议", frankMachineId);
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
 
-        //访问俄罗斯服务器，请求授权
-        ApiResponse authResponse = serviceInvokeManager.auth(deviceDTO.getId(), deviceDTO);
+        FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
+        //当前的进度
+        FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbDevice.getFlowDetail());
+        FMStatusEnum dbFutureStatus = FMStatusEnum.getByCode(dbDevice.getFutureFmStatus());
 
-        //todo 收到了俄罗斯消息
-
-        //todo 更新数据库中机器状态
-
-
-        //服务器向机器返回授权结果 这里需要吗?
-//        serviceToMachineProtocol.authResult(authResponse);
-
-        //如果授权成功，更新公钥，发送给俄罗斯
-        if (authResponse.isOK()) {
-            //todo 更新公钥
-            PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-            publicKeyDTO.setKey("");
-            publicKeyDTO.setRevision(0);
-            publicKeyDTO.setExpireDate("");
-
-            ApiResponse publickeyResponse = serviceInvokeManager.publicKey(deviceDTO.getId(), publicKeyDTO);
-
-            if (publickeyResponse.isOK()) {
-                //todo 更新公钥数据库
+        //是否是第一次请求授权
+        boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
+        /**
+         * 过滤：
+         * 1. 闭环的不通过
+         * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
+         */
+        if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess){
+            return true;
+        }else{
+            if(dbFutureStatus != FMStatusEnum.AUTHORIZED){
+                //todo
+                return false;
             }
         }
 
+
+        /**
+         * 接下来都是未闭环的操作
+         * 情况1：第一次，全部走一遍
+         *      is First Auth
+         * 情况2：第一次碰到了问题，第二次再次走一遍
+         *      is not First Auth
+         *      - error1
+         *          auth publickey
+         *      - error2
+         *          publickey
+         *      - fail
+         *          auth publickey
+         */
+
+        //访问俄罗斯服务器，请求授权
+
+        //todo 什么条件才能调用这个方法
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
+            ApiResponse authResponse = serviceInvokeManager.auth(frankMachineId, deviceDTO);
+
+            if (!authResponse.isOK()) {
+                if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                    //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthError1);
+                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId);
+                } else {
+                    //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
+                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndFail);
+                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                }
+                return false;
+            }
+        }
+        //如果授权成功，更新公钥，发送给俄罗斯
+        //过期天数
+        int expire = 7;
+        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
+        publicKeyDTO.setKey(PublicKeyKit.getPublicKey());
+        publicKeyDTO.setRevision(0);
+        publicKeyDTO.setExpireDate(DateKit.offsetDate(expire));
+
+        //todo 什么条件才能调用这个方法
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError2 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
+            ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
+
+            if (!publickeyResponse.isOK()) {
+                if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                    //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthError2);
+                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
+                } else {
+                    //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndFail);
+                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                }
+                return false;
+            }
+
+            publicKeyService.saveOrUpdate(frankMachineId, publicKeyDTO);
+            deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndSuccess);
+            log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
+        }
+        return true;
     }
 
 
@@ -129,6 +182,24 @@ public class ServiceManageCenter {
         //更新数据库
 
 
+    }
+
+    /**
+     * 收到费率表事件
+     * 【FM状态改变协议】
+     * @param deviceDTO
+     */
+    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
+
+
+        //访问俄罗斯服务器，改变状态
+        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(deviceDTO);
+        //todo 收到了俄罗斯消息
+
+        if (changeStatusResponse.isOK()) {
+            // 更新数据库
+
+        }
     }
 
     /**

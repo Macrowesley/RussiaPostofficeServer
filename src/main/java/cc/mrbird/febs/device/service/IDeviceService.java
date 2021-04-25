@@ -6,7 +6,7 @@ import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
-import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -135,6 +135,12 @@ public interface IDeviceService extends IService<Device> {
     void changeStatusEnd(DeviceDTO deviceDTO, boolean isSuccess);
 
     /**
+     * 改变auth状态
+     * @param id
+     * @param curFlowDetail
+     */
+    void changeAuthStatus(Device dbDevice, String id, FlowDetailEnum curFlowDetail);
+    /**
      * 通过frankMachineId得到acnum
      * @param frankMachineId
      * @return
@@ -142,4 +148,7 @@ public interface IDeviceService extends IService<Device> {
     String getAcnumByFMId(String frankMachineId);
 
     Device getDeviceByFrankMachineId(String frankMachineId);
+
+    FlowDetailEnum getFlowDetail(String frankMachineId, int min, int max);
+
 }

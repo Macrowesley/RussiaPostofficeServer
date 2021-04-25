@@ -1,6 +1,9 @@
 package cc.mrbird.febs.rcs.service.impl;
+import java.util.Date;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.mapper.PublicKeyMapper;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
@@ -8,7 +11,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mchange.v2.beans.BeansUtils;
 import lombok.RequiredArgsConstructor;
+import org.jasypt.commons.CommonUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,4 +68,17 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void saveOrUpdate(String frankMachineId, PublicKeyDTO publicKeyDTO) {
+        PublicKey publicKey = new PublicKey();
+        BeanUtils.copyProperties(publicKeyDTO, publicKey);
+
+        publicKey.setFrankMachineId(frankMachineId);
+        publicKey.setPublicKey(publicKeyDTO.getKey());
+        publicKey.setCreatedTime(new Date());
+
+        this.saveOrUpdate(publicKey);
+    }
 }

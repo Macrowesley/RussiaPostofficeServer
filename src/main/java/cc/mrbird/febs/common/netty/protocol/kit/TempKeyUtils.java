@@ -22,8 +22,6 @@ public class TempKeyUtils {
      */
     public synchronized void addTempKey(ChannelHandlerContext ctx, String tempKey){
         redisService.set(createKeyName(ctx), tempKey);
-        //6分钟超时
-//        redisService.expire(createKeyName(acnum), 360L);
     }
 
     /**

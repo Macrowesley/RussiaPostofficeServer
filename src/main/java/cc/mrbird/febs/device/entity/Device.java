@@ -93,17 +93,12 @@ public class Device implements Serializable {
      * 添加时间
      */
     @ExcelField(value = "添加时间", writeConverter = TimeConverter.class)
-    @TableField("create_time")
-    private Date createTime;
+    @TableField("created_time")
+    private Date createdTime;
 
 
     /**
      * 【待定】机器当前状态
-     1 ENABLED
-     2 DEMO
-     3 BLOCKED
-     4 UNAUTHORIZED
-     5 LOST
      */
     @TableField("cur_fm_status")
     private Integer curFmStatus;
@@ -113,6 +108,21 @@ public class Device implements Serializable {
      */
     @TableField("future_fm_status")
     private Integer futureFmStatus;
+
+    /**
+     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
+     * 得到一个请求，先判断是否在闭环中
+     * 未闭环，判断各种环节
+     * 已闭环，直接开始新的操作
+     */
+    @TableField("flow")
+    private Integer flow;
+
+    /**
+     * 各种FlowXXXEnum的状态
+     */
+    @TableField("flow_detail")
+    private Integer flowDetail;
 
 
     /**
@@ -127,11 +137,7 @@ public class Device implements Serializable {
     @TableField("error_message")
     private String errorMessage;
 
-    /**
-     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
-     */
-    @TableField("flow")
-    private Integer flow;
+
 
     /**
      * 1 STATUS

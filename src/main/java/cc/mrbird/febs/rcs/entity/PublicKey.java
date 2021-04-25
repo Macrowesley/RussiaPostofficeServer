@@ -30,17 +30,12 @@ public class PublicKey {
     @TableField("expire_time")
     private Date expireTime;
 
-    /**
-     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
-     */
-    @TableField("flow")
-    private Integer flow;
 
     /**
-     * 
+     * 机器id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableField("frank_machine_id")
+    private String frankMachineId;
 
     /**
      * 公钥
@@ -53,5 +48,9 @@ public class PublicKey {
      */
     @TableField("revision")
     private String revision;
+
+    @TableField("alg")
+    private String alg;
+
 
 }

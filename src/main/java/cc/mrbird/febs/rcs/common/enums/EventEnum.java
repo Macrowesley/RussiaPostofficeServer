@@ -5,11 +5,11 @@ public enum EventEnum {
     STATUS(1,"STATUS"),
     RATE_TABLE_UPDATE(2,"RATE_TABLE_UPDATE");
 
-    private final int type;
+    private final int code;
     private final String event;
 
-    EventEnum(int type, String event){
-        this.type = type;
+    EventEnum(int code, String event){
+        this.code = code;
         this.event = event;
     }
 
@@ -17,13 +17,13 @@ public enum EventEnum {
         return event;
     }
 
-    public int getType() {
-        return type;
+    public int getCode() {
+        return code;
     }
 
-    public static EventEnum getEventByType(int eventType){
+    public static EventEnum getByCode(int code){
         for (EventEnum item: EventEnum.values()){
-            if (item.getType()== eventType){
+            if (item.getCode()== code){
                 return item;
             }
         }

@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +52,6 @@ public interface IPublicKeyService extends IService<PublicKey> {
      * @param publicKey publicKey
      */
     void deletePublicKey(PublicKey publicKey);
+
+    void saveOrUpdate(String frankMachineId, PublicKeyDTO publicKeyDTO);
 }
