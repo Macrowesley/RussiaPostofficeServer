@@ -162,7 +162,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
             String content = version + JSON.toJSONString(statusDTO);
             String entryctContent = AESUtils.encrypt(content, tempKey);
-
+            log.info("服务器改变机器状态 content={},加密后entryctContent={}", content, entryctContent);
             //发送数据
             wrieteToCustomer(
                     ctx,

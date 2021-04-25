@@ -24,6 +24,13 @@ public class MyDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buffer, List<Object> list) throws Exception {
 //        log.info("decode 字节流 所在的通道是 " + channelHandlerContext.toString());
 //        log.info("接收到的数据长度：{}",buffer.readableBytes());
+
+        /*test(buffer, list);
+        boolean isTest = true;
+        if (isTest){
+            return;
+        }*/
+
         // 可读长度必须大于基本长度
         if (buffer.readableBytes() >= BASE_LENGTH && buffer.isReadable()) {
             long time1 = System.currentTimeMillis();
@@ -92,5 +99,43 @@ public class MyDecoder extends ByteToMessageDecoder {
         list.add(socketData);
 
         ReferenceCountUtil.release(buffer);*/
+    }
+    private void test(ByteBuf buffer, List<Object> list){
+        if (buffer.readableBytes() >= BASE_LENGTH && buffer.isReadable()) {
+            long time1 = System.currentTimeMillis();
+            // 防止socket字节流攻击
+            // 防止，客户端传来的数据过大
+            // 因为，太大的数据，是不合理的
+            if (buffer.readableBytes() > 2048) {
+                log.error("数据包过大，不合理");
+                buffer.skipBytes(buffer.readableBytes());
+                return;
+            }
+
+            /*长度至少为9
+                    第一个字节为AA,否则跳过
+            第二个字节长度，然后得到长度后面的数据的验证字节是否OK
+            OK的话，保存，不OK的话，跳过*/
+
+            //开始读的位置
+            int beginReaderIndex = buffer.readerIndex();
+
+            byte headByte = buffer.readByte();
+//            log.info("解析头部字节内容" + BaseTypeUtils.bytesToHexString(new byte[]{headByte}));
+
+            //读长度
+            byte lengthByte = buffer.readByte();
+            int length = BaseTypeUtils.byte2Int(lengthByte);
+            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
+
+            // 读取data数据
+            byte[] data = new byte[lengthByte];
+            buffer.readBytes(data);
+
+            log.info("得到数据 len={}, data = {}", lengthByte, BaseTypeUtils.bytesToHexString(data));
+            SocketData socketData = new SocketData();
+            socketData.setContent(data);
+            list.add(socketData);
+        }
     }
 }

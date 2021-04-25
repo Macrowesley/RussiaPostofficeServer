@@ -83,6 +83,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))status, *status;
          */
+        log.info("机器开始改变状态");
         String version = null;
         String res;
         try {
@@ -109,6 +110,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
     }
 
     private byte[] parseStatus(byte[] bytes, String version, ChannelHandlerContext ctx, int pos) throws Exception {
+        long t1 = System.currentTimeMillis();
         StatusDTO statusDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusDTO.class);
         log.info("解析得到的对象：statusDTO={}", statusDTO.toString());
 
@@ -155,7 +157,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 //处理异常
                 throw new FmException("状态不匹配，无法响应");
         }
-
+        log.info("机器改变状态，通知服务器，服务器通知俄罗斯，整个过程耗时：{}",(System.currentTimeMillis() - t1));
         return getSuccessResult(version, ctx, statusType, eventType, FMResultEnum.SUCCESS.getCode());
     }
 
