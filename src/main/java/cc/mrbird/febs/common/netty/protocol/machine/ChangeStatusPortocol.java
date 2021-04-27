@@ -10,6 +10,7 @@ import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,7 +149,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         if (redisService.hasKey(key)){
             return getOverTimeResult(version,ctx, FMResultEnum.Overtime.getCode());
         }else{
-            log.info("操作{}放入redis", key);
+            log.info("channelId={}的操作记录放入redis", key);
             redisService.set(key,"wait", WAIT_TIME);
         }
 
@@ -198,11 +199,20 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
         //返回内容的原始数据
         String responseData = FMResultEnum.FAIL.getCode() + version;
+
+        //test
+        StatusDTO statusDTO = new StatusDTO();
+        statusDTO.setEvent(1);
+        statusDTO.setFrankMachineId("myId");
+        statusDTO.setPostOffice("hello world");
+        responseData = JSON.toJSONString(statusDTO);
+        log.info("json = {}", responseData);
+
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        log.info("改变状态：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 
@@ -211,11 +221,12 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         redisService.del(ctx.channel().id().toString());
 
         String responseData = res + version + String.valueOf(eventType) + statusType ;
+
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("查询是否有数据包：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        log.info("改变状态：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 

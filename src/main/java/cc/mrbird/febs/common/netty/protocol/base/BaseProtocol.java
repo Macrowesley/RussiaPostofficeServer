@@ -15,8 +15,11 @@ import java.io.ByteArrayOutputStream;
 @Slf4j
 public class BaseProtocol {
 
-    //记录整条数据长度数值的长度
-    public static final int LENGTH_LEN = 1;
+    //请求长度：记录整条数据长度数值的长度
+    public static final int REQUEST_LENGTH_LEN = 2;
+
+    //响应长度：记录整条数据长度数值的长度
+    public static final int RESPONSE_LENGTH_LEN = 1;
     //协议的数据类型长度
     public static final int TYPE_LEN = 1;
     //校验位长度
@@ -41,7 +44,7 @@ public class BaseProtocol {
      */
     public int getResponseProtocolLen(byte[] data) {
         if (isContainFirstLen) {
-            return LENGTH_LEN + TYPE_LEN + data.length + CHECK_LEN + END_LEN;
+            return RESPONSE_LENGTH_LEN + TYPE_LEN + data.length + CHECK_LEN + END_LEN;
         } else {
             return TYPE_LEN + data.length + CHECK_LEN + END_LEN;
         }
@@ -64,11 +67,11 @@ public class BaseProtocol {
         if (isContainFirstLen) {
             totalLen = protocolLen;
         } else {
-            totalLen = LENGTH_LEN + protocolLen;
+            totalLen = RESPONSE_LENGTH_LEN + protocolLen;
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLen);
-        baos.write(length, 0, LENGTH_LEN);
+        baos.write(length, 0, RESPONSE_LENGTH_LEN);
         baos.write(typeData, 0, TYPE_LEN);
         baos.write(data, 0, data.length);
         baos.write(checkSume, 0, CHECK_LEN);

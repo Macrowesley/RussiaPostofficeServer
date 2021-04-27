@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -128,11 +129,16 @@ public class MyDecoder extends ByteToMessageDecoder {
             int length = BaseTypeUtils.byte2Int(lengthByte);
             log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
 
+            /*byte[] lengthBytes = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
+            buffer.readBytes(lengthBytes);
+            int length = BaseTypeUtils.ByteArray2IntConsOnLenght(lengthBytes);
+            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(lengthBytes));*/
+
             // 读取data数据
-            byte[] data = new byte[lengthByte];
+            byte[] data = new byte[length];
             buffer.readBytes(data);
 
-            log.info("得到数据 len={}, data = {}", lengthByte, BaseTypeUtils.bytesToHexString(data));
+            log.info("得到数据 len={}, data = {}", length, BaseTypeUtils.bytesToHexString(data));
             SocketData socketData = new SocketData();
             socketData.setContent(data);
             list.add(socketData);

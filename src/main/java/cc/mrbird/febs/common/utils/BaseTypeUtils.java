@@ -324,6 +324,29 @@ public class BaseTypeUtils {
     }
 
     /**
+     * 2个字节的长度转数字（反序）
+     * @param b
+     * @return
+     */
+    public static int ByteArray2IntConsOnLenght(byte[] b){
+        int result = (int) ((b[0] & 0xFF)
+                | ((b[1] & 0xFF) << 8));
+        return result;
+    }
+
+    /**
+     * 长度转2个字节 反序
+     * @param i
+     * @return
+     */
+    public static byte[] int2ByteArrayConsOnLenght(int i) {
+        byte[] result = new byte[2];
+        result[1] = (byte) ((i >> 8) & 0xFF);
+        result[0] = (byte) (i & 0xFF);
+        return result;
+    }
+
+    /**
      * 反序
      * @param i
      * @return
@@ -340,6 +363,8 @@ public class BaseTypeUtils {
     public static int byte2Int(byte b){
         return b & 0xff;
     }
+
+
 
     /**
      * int 类型转换为byte 类型
@@ -499,8 +524,18 @@ public class BaseTypeUtils {
 
 
     public static void main(String[] args) {
-        byte[] arr = new byte[]{0x01,0x34,0x17, (byte) 0x8A};
+        int a = 161;
+        byte[] bytes = int2ByteArrayConsOnLenght(a);
+        int b = ByteArray2IntConsOnLenght(bytes);
+        System.out.println("a = " + a + " b = " + b + " bytes = " + bytesToHexString(bytes));
+
+        a = 300;
+        bytes = int2ByteArrayConsOnLenght(a);
+        b = ByteArray2IntConsOnLenght(bytes);
+        System.out.println("a = " + a + " b = " + b + " bytes = " + bytesToHexString(bytes));
+
+        /*byte[] arr = new byte[]{0x01,0x34,0x17, (byte) 0x8A};
         System.out.println(byteArray2IntPos(arr,0,4));
-        System.out.println(bytesToHexString(int2ByteArraysPos(byteArray2IntPos(arr))));
+        System.out.println(bytesToHexString(int2ByteArraysPos(byteArray2IntPos(arr))));*/
     }
 }
