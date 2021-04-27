@@ -7,10 +7,22 @@ import cc.mrbird.febs.rcs.common.exception.FmException;
  */
 public enum FlowDetailEnum {
     DEFAULT(0, "最初始状态"),
-    AuthError1(21, "未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
-    AuthError2(22, "未闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，未收到俄罗斯返回"),
-    AuthEndFail(23, "闭环：服务器收到，发给俄罗斯，收到返回，但返回状态码不是200"),
-    AuthEndSuccess(24, "闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，收到俄罗斯返回");
+    AuthEndSuccess(21, "闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，收到俄罗斯返回"),
+    AuthEndFail(22, "闭环：服务器收到，发给俄罗斯，收到返回，但返回状态码不是200"),
+    AuthError1(23, "未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
+    AuthError2(24, "未闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，未收到俄罗斯返回"),
+    UnauthEndSuccess(31,""),
+    UnAuthEndFail(32,""),
+    UnAuthError(32,"错误1"),
+    LostEndSuccess(41,""),
+    LostEndFail(42,""),
+    LostError(43,"错误1"),
+    TaxError1(51,""),
+    JobEndSuccess(61,""),
+    JobEndFail(62,""),
+    JobError1(63,""),
+    BalanceEndSuccess(63,""),
+    end(-1,"占位");
     int code;
     String msg;
 

@@ -161,18 +161,18 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                         break;
                     case AUTH_CANCELED:
                         if(isLost == 1){
-                            serviceManageCenter.lost(device);
+                            operationRes = serviceManageCenter.lost(device);
                         }else{
-                            serviceManageCenter.unauth(device);
+                            operationRes = serviceManageCenter.unauth(device);
                         }
                         break;
                     default:
-                        serviceManageCenter.changeStatusEvent(device);
+                        operationRes = serviceManageCenter.changeStatusEvent(device);
                         break;
                 }
                 break;
             case RATE_TABLE_UPDATE:
-                serviceManageCenter.rateTableUpdateEvent(device);
+                operationRes = serviceManageCenter.rateTableUpdateEvent(device);
                 break;
             default:
                 //处理异常

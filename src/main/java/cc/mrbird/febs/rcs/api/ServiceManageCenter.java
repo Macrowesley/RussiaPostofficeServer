@@ -47,7 +47,7 @@ public class ServiceManageCenter {
      * 【FM状态改变协议】
      * @param deviceDTO
      */
-    public void changeStatusEvent(DeviceDTO deviceDTO) {
+    public boolean changeStatusEvent(DeviceDTO deviceDTO) {
 
         //判断再次访问这个接口的时候，需要的验证
         /**
@@ -67,6 +67,8 @@ public class ServiceManageCenter {
 
         //更新数据库
         deviceService.changeStatusEnd(deviceDTO, apiResponse.isOK());
+
+        return apiResponse.isOK();
     }
 
 
@@ -173,15 +175,24 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public void unauth(DeviceDTO deviceDTO) {
-        //todo 收到了FM消息
+    public boolean unauth(DeviceDTO deviceDTO) {
+        String frankMachineId = deviceDTO.getId();
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+
+        FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
+        //当前的进度
+        FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbDevice.getFlowDetail());
+        FMStatusEnum dbFutureStatus = FMStatusEnum.getByCode(dbDevice.getFutureFmStatus());
+
+        //是否是第一次请求授权
+        boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
         ApiResponse unauthResponse = serviceInvokeManager.unauth(deviceDTO.getId(), deviceDTO);
         //todo 收到了俄罗斯消息
 
         //更新数据库
 
-
+        return true;
     }
 
     /**
@@ -189,7 +200,7 @@ public class ServiceManageCenter {
      * 【FM状态改变协议】
      * @param deviceDTO
      */
-    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
+    public boolean rateTableUpdateEvent(DeviceDTO deviceDTO) {
 
 
         //访问俄罗斯服务器，改变状态
@@ -200,6 +211,7 @@ public class ServiceManageCenter {
             // 更新数据库
 
         }
+        return true;
     }
 
     /**
@@ -207,7 +219,7 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public void lost(DeviceDTO deviceDTO) {
+    public boolean lost(DeviceDTO deviceDTO) {
         //todo 收到了FM消息
 
         ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);
@@ -215,6 +227,7 @@ public class ServiceManageCenter {
 
         //更新数据库
 
+        return true;
     }
 
     /**
