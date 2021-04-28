@@ -467,6 +467,39 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         statusLogService.saveOrUpdate(fmStatusLog);
     }
 
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeUnauthStatus(Device device, String frankMachineId, FlowDetailEnum curFlowDetail) {
+//        Device device = new Device();
+        device.setFrankMachineId(frankMachineId);
+
+        switch (curFlowDetail){
+            case UnauthEndSuccess:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                device.setCurFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
+                break;
+            case UnAuthEndFail:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                break;
+            default:
+                device.setFlow(FlowEnum.FlowIng.getCode());
+                break;
+        }
+
+        device.setFutureFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
+        device.setFlowDetail(curFlowDetail.getCode());
+        device.setUpdatedTime(new Date());
+        this.update(device,new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId,frankMachineId));
+
+        //保存状态
+        FmStatusLog fmStatusLog = new FmStatusLog();
+        BeanUtils.copyProperties(device,fmStatusLog);
+        fmStatusLog.setChangeFrom(ChangeFromEnum.Machine.getCode());
+        fmStatusLog.setInterfaceName(InterfaceNameEnum.UnAuth.getCode());
+        fmStatusLog.setUpdatedTime(new Date());
+        statusLogService.saveOrUpdate(fmStatusLog);
+    }
+
     /**
      * 通过frankMachineId得到acnum
      *

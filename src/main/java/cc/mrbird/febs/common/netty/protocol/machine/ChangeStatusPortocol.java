@@ -136,12 +136,12 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         FMStatusEnum status = FMStatusEnum.getByCode(statusType);
         EventEnum event = EventEnum.getByCode(eventType);
 
-        DeviceDTO device = new DeviceDTO();
-        device.setId(frankMachineId);
-        device.setStatus(status);
-        device.setPostOffice(postOffice);
-        device.setTaxVersion(taxVersion);
-        device.setEventEnum(event);
+        DeviceDTO deviceDto = new DeviceDTO();
+        deviceDto.setId(frankMachineId);
+        deviceDto.setStatus(status);
+        deviceDto.setPostOffice(postOffice);
+        deviceDto.setTaxVersion(taxVersion);
+        deviceDto.setEventEnum(event);
 
         //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
 //        String key = ctx.channel().id().toString() + event.getEvent()  + status.getStatus();
@@ -158,22 +158,22 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             case STATUS:
                 switch (status){
                     case AUTHORIZED:
-                        operationRes = serviceManageCenter.auth(device);
+                        operationRes = serviceManageCenter.auth(deviceDto);
                         break;
                     case AUTH_CANCELED:
                         if(isLost == 1){
-                            operationRes = serviceManageCenter.lost(device);
+                            operationRes = serviceManageCenter.lost(deviceDto);
                         }else{
-                            operationRes = serviceManageCenter.unauth(device);
+                            operationRes = serviceManageCenter.unauth(deviceDto);
                         }
                         break;
                     default:
-                        operationRes = serviceManageCenter.changeStatusEvent(device);
+                        operationRes = serviceManageCenter.changeStatusEvent(deviceDto);
                         break;
                 }
                 break;
             case RATE_TABLE_UPDATE:
-                operationRes = serviceManageCenter.rateTableUpdateEvent(device);
+                operationRes = serviceManageCenter.rateTableUpdateEvent(deviceDto);
                 break;
             default:
                 //处理异常

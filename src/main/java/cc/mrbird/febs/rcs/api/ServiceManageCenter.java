@@ -78,6 +78,7 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public boolean auth(DeviceDTO deviceDTO) throws Exception {
+        String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
         log.info("服务器收到了设备{}发送的auth协议", frankMachineId);
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
@@ -95,13 +96,16 @@ public class ServiceManageCenter {
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
         if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess){
+            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可",operationName);
             return true;
-        }else{
-            if(dbFutureStatus != FMStatusEnum.AUTHORIZED){
-                //todo
-                return false;
-            }
         }
+
+        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTHORIZED) {
+            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",
+                    dbFutureStatus, FMStatusEnum.AUTHORIZED );
+            return false;
+        }
+
 
 
         /**
@@ -128,11 +132,11 @@ public class ServiceManageCenter {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthError1);
-                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
                     deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndFail);
-                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 }
                 return false;
             }
@@ -176,6 +180,7 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public boolean unauth(DeviceDTO deviceDTO) {
+        String operationName = "unauth";
         String frankMachineId = deviceDTO.getId();
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
 
@@ -187,11 +192,33 @@ public class ServiceManageCenter {
         //是否是第一次请求授权
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
-        ApiResponse unauthResponse = serviceInvokeManager.unauth(deviceDTO.getId(), deviceDTO);
-        //todo 收到了俄罗斯消息
 
-        //更新数据库
+        if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess){
+            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可",operationName);
+            return true;
+        }
 
+        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTH_CANCELED) {
+            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",dbFutureStatus, FMStatusEnum.AUTH_CANCELED);
+            return false;
+        }
+
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthError) {
+            ApiResponse unauthResponse = serviceInvokeManager.unauth(deviceDTO.getId(), deviceDTO);
+            if (!unauthResponse.isOK()) {
+                if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                    //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                    deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthError);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                } else {
+                    //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
+                    deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthEndFail);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                }
+                return false;
+            }
+            deviceService.changeUnauthStatus(dbDevice,frankMachineId, FlowDetailEnum.UnauthEndSuccess);
+        }
         return true;
     }
 
@@ -201,7 +228,6 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public boolean rateTableUpdateEvent(DeviceDTO deviceDTO) {
-
 
         //访问俄罗斯服务器，改变状态
         ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(deviceDTO);
@@ -220,6 +246,7 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public boolean lost(DeviceDTO deviceDTO) {
+
         //todo 收到了FM消息
 
         ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);

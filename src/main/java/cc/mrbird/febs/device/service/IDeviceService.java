@@ -140,6 +140,7 @@ public interface IDeviceService extends IService<Device> {
      * @param curFlowDetail
      */
     void changeAuthStatus(Device dbDevice, String id, FlowDetailEnum curFlowDetail);
+    void changeUnauthStatus(Device dbDevice, String id, FlowDetailEnum curFlowDetail);
     /**
      * 通过frankMachineId得到acnum
      * @param frankMachineId
