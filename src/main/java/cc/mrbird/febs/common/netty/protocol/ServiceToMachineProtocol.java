@@ -2,7 +2,7 @@ package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.StatusDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -149,16 +149,16 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              **/
             //准备数据
             String version = "001";
-            StatusDTO statusDTO = new StatusDTO();
-            statusDTO.setFrankMachineId(frankMachineId);
-            statusDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
-            statusDTO.setStatus(changeStatusRequestDTO.getStatus().getCode());
-            statusDTO.setEvent(1);
+            StatusFMDTO statusFMDTO = new StatusFMDTO();
+            statusFMDTO.setFrankMachineId(frankMachineId);
+            statusFMDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
+            statusFMDTO.setStatus(changeStatusRequestDTO.getStatus().getCode());
+            statusFMDTO.setEvent(1);
 
             /*int status = changeStatusRequestDTO.getStatus().getType();
             String postOffice = changeStatusRequestDTO.getPostOffice();*/
 
-            String content = version + JSON.toJSONString(statusDTO);
+            String content = version + JSON.toJSONString(statusFMDTO);
             String entryctContent = AESUtils.encrypt(content, tempKey);
             log.info("服务器改变机器状态 content={},加密后entryctContent={}", content, entryctContent);
             //发送数据

@@ -2,7 +2,7 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FMResultEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.StatusDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -83,7 +83,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x09
+            unsigned char length[2];				//
             unsigned char type;					//0xB4
             unsigned char acnum[6];             //机器表头号
             unsigned char version[3];             //版本号
@@ -122,16 +122,17 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
     private byte[] parseStatus(byte[] bytes, String version, ChannelHandlerContext ctx, int pos) throws Exception {
         long t1 = System.currentTimeMillis();
-        StatusDTO statusDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusDTO.class);
-        log.info("解析得到的对象：statusDTO={}", statusDTO.toString());
+        StatusFMDTO statusFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusFMDTO.class);
+
+        log.info("解析得到的对象：statusDTO={}", statusFMDTO.toString());
 
         //解析参数
-        String frankMachineId = statusDTO.getFrankMachineId();
-        int statusType = statusDTO.getStatus();
-        String postOffice = statusDTO.getPostOffice();
-        String taxVersion = statusDTO.getTaxVersion();
-        int eventType = statusDTO.getEvent();
-        int isLost = statusDTO.getIsLost();
+        String frankMachineId = statusFMDTO.getFrankMachineId();
+        int statusType = statusFMDTO.getStatus();
+        String postOffice = statusFMDTO.getPostOffice();
+        String taxVersion = statusFMDTO.getTaxVersion();
+        int eventType = statusFMDTO.getEvent();
+        int isLost = statusFMDTO.getIsLost();
 
         FMStatusEnum status = FMStatusEnum.getByCode(statusType);
         EventEnum event = EventEnum.getByCode(eventType);
@@ -201,11 +202,11 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         String responseData = FMResultEnum.FAIL.getCode() + version;
 
         //test
-        StatusDTO statusDTO = new StatusDTO();
-        statusDTO.setEvent(1);
-        statusDTO.setFrankMachineId("myId");
-        statusDTO.setPostOffice("hello world");
-        responseData = JSON.toJSONString(statusDTO);
+        StatusFMDTO statusFMDTO = new StatusFMDTO();
+        statusFMDTO.setEvent(1);
+        statusFMDTO.setFrankMachineId("myId");
+        statusFMDTO.setPostOffice("hello world");
+        responseData = JSON.toJSONString(statusFMDTO);
         log.info("json = {}", responseData);
 
         //返回内容的加密数据

@@ -243,7 +243,7 @@ public class ServiceInvokeManager {
                 return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值1");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             log.error(e.getMessage());
             return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
         }

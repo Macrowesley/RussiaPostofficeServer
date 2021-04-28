@@ -40,7 +40,7 @@ public class UpdateTaxesResultPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x09
+            unsigned char length[2];				//
             unsigned char type;					//0xC4
             unsigned char acnum[?];             //frankMachineId
             unsigned char result;				//加密内容： taxId（） + result(0x00 失败  0x01 成功)

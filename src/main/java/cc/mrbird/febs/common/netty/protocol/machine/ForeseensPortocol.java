@@ -1,9 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -53,15 +53,22 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))Foreseens, *Foreseens;
          */
+        log.info("机器开始 Foreseens");
+        String version = null;
         int pos = TYPE_LEN;
 
         //表头号
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
         pos += REQ_ACNUM_LEN;
 
+        //版本号
+        version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+        pos += VERSION_LEN;
+
         //todo 解析什么
         // 产品列表？ 总金额 机器其他信息
-
+        ForeseenDTO foreseenDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenDTO.class);
+        log.info("解析得到的对象：foreseenDTO={}", foreseenDTO.toString());
 
         ForeseenDTO foreseen = new ForeseenDTO();
         foreseen.setId("");

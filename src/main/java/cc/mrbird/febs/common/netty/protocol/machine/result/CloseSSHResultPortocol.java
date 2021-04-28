@@ -41,7 +41,7 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x09
+            unsigned char length[2];				//
             unsigned char type;					//0xB2
             unsigned char acnum[6];             //机器表头号
             unsigned char result;				//0x00 失败  0x01 成功

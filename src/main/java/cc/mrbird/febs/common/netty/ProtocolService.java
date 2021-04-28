@@ -84,7 +84,6 @@ public class ProtocolService {
         }
 
         try {
-            log.info("线程" + Thread.currentThread().getName() + "中，客户端【" + ctx.channel().id() + "】发送数据给客户端");
             wrieteToCustomer(ctx, parseContentAndRspone(msg.getContent(), ctx));
         } catch (Exception e) {
             e.printStackTrace();

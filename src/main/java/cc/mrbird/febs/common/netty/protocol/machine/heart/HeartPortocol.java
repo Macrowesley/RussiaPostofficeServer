@@ -47,7 +47,7 @@ public class HeartPortocol extends MachineToServiceProtocol {
         if (!ChannelMapperUtils.containsKey(acnum)) {
             ChannelMapperUtils.addChannel(acnum, ctx);
         }
-        log.info("心跳包中表头号：" + acnum);
+//        log.info("心跳包中表头号：" + acnum);
 
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);

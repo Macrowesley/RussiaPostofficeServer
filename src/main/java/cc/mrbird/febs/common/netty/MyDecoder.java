@@ -18,8 +18,9 @@ public class MyDecoder extends ByteToMessageDecoder {
      * AA 长度 类型 内容 验证码 D0
      * </pre>
      */
-    public final int BASE_LENGTH = 2;
+    public final int BASE_LENGTH = 1 + BaseProtocol.REQUEST_LENGTH_LEN;
     private final byte HEAD_BYTE = (byte) 0xAA;
+    private final int MAX_LEN = 2048;
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buffer, List<Object> list) throws Exception {
@@ -38,7 +39,7 @@ public class MyDecoder extends ByteToMessageDecoder {
             // 防止socket字节流攻击
             // 防止，客户端传来的数据过大
             // 因为，太大的数据，是不合理的
-            if (buffer.readableBytes() > 2048) {
+            if (buffer.readableBytes() > MAX_LEN) {
                 log.error("数据包过大，不合理");
                 buffer.skipBytes(buffer.readableBytes());
                 return;
@@ -60,10 +61,20 @@ public class MyDecoder extends ByteToMessageDecoder {
             }
 
             //读长度
-            byte lengthByte = buffer.readByte();
+           /* byte lengthByte = buffer.readByte();
             int length = BaseTypeUtils.byte2Int(lengthByte);
-//            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
+            //log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
+            */
+            byte[] lengthByte = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
+            buffer.readBytes(lengthByte);
+            int length = BaseTypeUtils.ByteArray2IntConsOnLenght(lengthByte);
+//            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(lengthByte));
+
             // 判断请求数据包数据是否到齐
+            if (length > MAX_LEN) {
+                log.error("读取的长度 = {}，太大了，不合理", length);
+                return;
+            }
             if (buffer.readableBytes() < length) {
                 // 还原读指针
                 log.info("长度不够，还原读指针位置");
@@ -127,7 +138,7 @@ public class MyDecoder extends ByteToMessageDecoder {
             //读长度
             byte lengthByte = buffer.readByte();
             int length = BaseTypeUtils.byte2Int(lengthByte);
-            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
+//            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(new byte[]{lengthByte}));
 
             /*byte[] lengthBytes = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
             buffer.readBytes(lengthBytes);

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -8,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
@@ -76,7 +78,10 @@ public class BaseProtocol {
         baos.write(data, 0, data.length);
         baos.write(checkSume, 0, CHECK_LEN);
         baos.write(end, 0, END_LEN);
-        log.info("最后发送给客户端的数据：" + BaseTypeUtils.bytesToHexString(baos.toByteArray()));
+
+        if (type != (byte) 0xa0) {
+            log.info("最后发送给客户端的数据：" + BaseTypeUtils.bytesToHexString(baos.toByteArray()));
+        }
         return baos.toByteArray();
     }
 
@@ -156,6 +161,33 @@ public class BaseProtocol {
         log.info("解析得到的内容：json={}",json);
         ProductCode bean = JSON.parseObject(json, ProductCode.class);
         log.info("bean = {}", bean.toString());
+
+
+        json = "{\n" +
+                "  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n" +
+                "  \"foreseenId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n" +
+                "  \"postOffice\": \"string\",\n" +
+                "  \"frankMachineId\": \"string\",\n" +
+                "  \"contractId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n" +
+                "  \"startTime\": \"2021-04-28\",\n" +
+                "  \"stopTime\": \"2021-04-28\",\n" +
+                "  \"userId\": \"string\",\n" +
+                "  \"creditVal\": 0,\n" +
+                "  \"mailVal\": 0,\n" +
+                "  \"count\": 0,\n" +
+                "  \"graphId\": \"string\",\n" +
+                "  \"taxVersion\": \"string\",\n" +
+                "  \"franks\": [\n" +
+                "    {\n" +
+                "      \"dm_message\": \"string\"\n" +
+                "    },\n" +
+                "{\n" +
+                "      \"dm_message\": \"string\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        TransactionFMDTO transactionFMDTO = JSON.parseObject(json, TransactionFMDTO.class);
+        log.info("transactionFMDTO = {}", transactionFMDTO.toString());
     }
     private static class ProductCode{
         String productCode;
