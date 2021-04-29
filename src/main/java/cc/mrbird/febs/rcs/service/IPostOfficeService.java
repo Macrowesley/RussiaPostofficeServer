@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +52,6 @@ public interface IPostOfficeService extends IService<PostOffice> {
      * @param postOffice postOffice
      */
     void deletePostOffice(PostOffice postOffice);
+
+    void savePostOfficeDTO(PostOfficeDTO postOfficeDTO);
 }

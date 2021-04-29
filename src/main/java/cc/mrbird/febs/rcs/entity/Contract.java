@@ -22,22 +22,11 @@ import lombok.ToString;
 public class Contract {
 
     /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
-
-    /**
-     * 【待定】0 不可用 1 可用
-     */
-    @TableField("enable")
-    private String enable;
-
-    /**
-     * 
+     *
      */
     @TableId(value = "id")
     private String id;
+
 
     /**
      * 数量
@@ -46,16 +35,29 @@ public class Contract {
     private String num;
 
     /**
+     * 【待定】0 不可用 1 可用
+     */
+    @TableField("enable")
+    private Integer enable;
+
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
+
+
+    /**
      * 当前可用资金（包括持有）
      */
     @TableField("current")
-    private String current;
+    private Double current;
 
     /**
      * 当前余额（仅事实）
      */
     @TableField("consolidate")
-    private String consolidate;
+    private Double consolidate;
 
     /**
      * 更新时间

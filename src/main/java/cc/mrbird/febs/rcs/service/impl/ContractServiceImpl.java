@@ -1,18 +1,30 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.ContractDTO;
+import cc.mrbird.febs.rcs.dto.service.CustomerDTO;
+import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.Customer;
+import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
 import cc.mrbird.febs.rcs.service.IContractService;
+import cc.mrbird.febs.rcs.service.ICustomerService;
+import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,11 +33,13 @@ import java.util.List;
  * @author mrbird
  * @date 2021-04-17 14:45:48
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> implements IContractService {
-
+    private final ICustomerService customerService;
+    private final IPostOfficeService postOfficeService;
     private final ContractMapper contractMapper;
 
     @Override
@@ -62,4 +76,43 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    @Override
+    @Transactional(rollbackFor = ApiException.class)
+    public void saveContractDto(ContractDTO contractDTO) {
+        log.info("接收服务器传递过来的合同数据 开始");
+
+        Contract contract = new Contract();
+        BeanUtils.copyProperties(contractDTO,contract);
+        contract.setCreatedTime(new Date());
+        if (checkIsExist(contractDTO.getId())) {
+            contract.setUpdatedTime(new Date());
+        }
+        this.saveOrUpdate(contract);
+
+        CustomerDTO customerDTO = contractDTO.getCustomer();
+        Customer customer = new Customer();
+        customer.setId(customerDTO.getId());
+        customer.setContractId(contract.getId());
+        customer.setInnRu(customerDTO.getInn_ru());
+        customer.setKppRu(customerDTO.getKpp_ru());
+        customer.setName(customerDTO.getName());
+        customer.setCreatedTime(new Date());
+        customer.setUpdatedTime(new Date());
+        customerService.saveOrUpdate(customer);
+
+        PostOfficeDTO[] postOfficeArr = contractDTO.getPostOffice();
+        for (PostOfficeDTO postOfficeDTO : postOfficeArr){
+            postOfficeService.savePostOfficeDTO(postOfficeDTO);
+        }
+        //todo 要不要保留邮局和合同的关系
+        log.info("接收服务器传递过来的合同数据 结束");
+    }
+
+    @Override
+    public boolean checkIsExist(String contractId) {
+        LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
+
+        return contractMapper.selectCount(queryWrapper.eq(Contract::getId, contractId)) != 0;
+    }
 }

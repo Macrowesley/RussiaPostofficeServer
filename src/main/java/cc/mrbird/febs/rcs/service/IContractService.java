@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +52,8 @@ public interface IContractService extends IService<Contract> {
      * @param contract contract
      */
     void deleteContract(Contract contract);
+
+    void saveContractDto(ContractDTO contractDTO);
+
+    boolean checkIsExist(String contractId);
 }

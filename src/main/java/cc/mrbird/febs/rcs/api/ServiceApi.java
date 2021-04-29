@@ -6,6 +6,8 @@ import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
+import cc.mrbird.febs.rcs.service.IContractService;
+import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import cc.mrbird.febs.rcs.service.ITaxService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,12 @@ public class ServiceApi {
 
     @Autowired
     ITaxService taxService;
+
+    @Autowired
+    IPostOfficeService postOfficeService;
+
+    @Autowired
+    IContractService contractService;
 
 
     /**
@@ -98,15 +106,8 @@ public class ServiceApi {
      */
     @PutMapping("/postOffices")
     public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
-        /**
-         * todo 接收邮局信息
-         * 1. 更新邮局信息
-         * 2. 更新邮局和合同的关系表
-         */
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
-        return apiResponse;
+        postOfficeService.savePostOfficeDTO(postOfficeDTO);
+        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -132,15 +133,10 @@ public class ServiceApi {
      */
     @PutMapping("/contracts")
     public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
-        /**
-         * TODO 接收服务器传递过来的合同数据
-         * 1. 合同插入数据库
-         *
-         */
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
-        return apiResponse;
+        contractService.saveContractDto(contractDTO);
+
+
+        return new ApiResponse(200, "ok");
     }
 
     /**
