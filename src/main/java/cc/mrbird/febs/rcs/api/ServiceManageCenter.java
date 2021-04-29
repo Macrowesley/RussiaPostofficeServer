@@ -15,6 +15,7 @@ import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Component;
 
 /**
@@ -142,12 +143,8 @@ public class ServiceManageCenter {
             }
         }
         //如果授权成功，更新公钥，发送给俄罗斯
-        //过期天数
-        int expire = 7;
-        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-        publicKeyDTO.setKey(PublicKeyKit.getPublicKey());
-        publicKeyDTO.setRevision(0);
-        publicKeyDTO.setExpireDate(DateKit.offsetDate(expire));
+
+        PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
         //todo 什么条件才能调用这个方法
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError2 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
@@ -166,7 +163,7 @@ public class ServiceManageCenter {
                 return false;
             }
 
-            publicKeyService.saveOrUpdate(frankMachineId, publicKeyDTO);
+
             deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndSuccess);
             log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
         }

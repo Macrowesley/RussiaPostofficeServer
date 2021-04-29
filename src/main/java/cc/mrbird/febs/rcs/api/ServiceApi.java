@@ -1,17 +1,16 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.device.service.IDeviceService;
-import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
-import cc.mrbird.febs.rcs.service.IBalanceService;
-import cc.mrbird.febs.rcs.service.IContractService;
-import cc.mrbird.febs.rcs.service.IPostOfficeService;
-import cc.mrbird.febs.rcs.service.ITaxService;
+import cc.mrbird.febs.rcs.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +50,13 @@ public class ServiceApi {
     @Autowired
     IBalanceService balanceService;
 
+    @Autowired
+    IPublicKeyService publicKeyService;
+
+
+    @Autowired
+    @Qualifier(FebsConstant.ASYNC_POOL)
+    ThreadPoolTaskExecutor poolTaskExecutor;
 
     /**
      * 公钥请求
@@ -60,25 +66,23 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
-        //todo 【收到了服务器消息】
 
-        //todo 生成publickey，更新数据库
+        if (regenerate) {
+            //生成publickey，更新数据库
+            PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
-        //todo 线程中调用俄罗斯的publickey接口，把public传递过去
-        //线程中
-        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-        ApiResponse response = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
-        if (response.isOK()){
-            //todo 发送了public，更新步骤
-
+            //异步：线程中调用俄罗斯的publickey接口，把public传递过去
+            log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的publickey发送给了俄罗斯");
+            poolTaskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    ApiResponse response = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
+                    log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的publickey发送给了俄罗斯，得到俄罗斯返回的结果：{}", response.toString());
+                }
+            });
         }
-        //线程中
 
-
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
-        return apiResponse;
+        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -99,8 +103,7 @@ public class ServiceApi {
         serviceToMachineProtocol.changeStatus(frankMachineId, changeStatusRequestDTO);
 
         //执行到这就返回给俄罗斯
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        return apiResponse;
+        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -121,12 +124,10 @@ public class ServiceApi {
      */
     @PutMapping("/taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
-
         taxService.saveTaxVersion(taxVersionDTO);
 
         //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
 //        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
-
         return new ApiResponse(200, "ok");
     }
 
@@ -149,9 +150,7 @@ public class ServiceApi {
      */
     @PutMapping("/contracts/{contractId}/balance")
     public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
-
         balanceService.saveBalance(contractId, serviceBalanceDTO);
-
         return new ApiResponse(200, "ok");
     }
 

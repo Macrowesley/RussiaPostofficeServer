@@ -47,7 +47,7 @@ public class PublicKey {
      * 公钥的版本（序列号）
      */
     @TableField("revision")
-    private String revision;
+    private Integer revision;
 
     @TableField("alg")
     private String alg;

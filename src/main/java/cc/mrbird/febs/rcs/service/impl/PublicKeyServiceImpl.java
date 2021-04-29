@@ -1,8 +1,9 @@
 package cc.mrbird.febs.rcs.service.impl;
-import java.util.Date;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.mapper.PublicKeyMapper;
@@ -11,14 +12,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mchange.v2.beans.BeansUtils;
 import lombok.RequiredArgsConstructor;
-import org.jasypt.commons.CommonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ import java.util.List;
  * @author mrbird
  * @date 2021-04-17 14:45:23
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -44,9 +46,9 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
 
     @Override
     public List<PublicKey> findPublicKeys(PublicKey publicKey) {
-	    LambdaQueryWrapper<PublicKey> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
-		return this.baseMapper.selectList(queryWrapper);
+        LambdaQueryWrapper<PublicKey> queryWrapper = new LambdaQueryWrapper<>();
+        // TODO 设置查询条件
+        return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -65,20 +67,36 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
     @Transactional(rollbackFor = Exception.class)
     public void deletePublicKey(PublicKey publicKey) {
         LambdaQueryWrapper<PublicKey> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
-	    this.remove(wrapper);
-	}
+        // TODO 设置删除条件
+        this.remove(wrapper);
+    }
+
+
 
     @Override
-    @Transactional(rollbackFor = RcsApiException.class)
-    public void saveOrUpdate(String frankMachineId, PublicKeyDTO publicKeyDTO) {
+    public PublicKeyDTO saveOrUpdatePublicKey(String frankMachineId) {
+        log.info("更新服务器public 开始");
+        PublicKey dbPublicKey = this.getById(frankMachineId);
+        int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
+
+        //过期天数
+        int expire = 7;
         PublicKey publicKey = new PublicKey();
-        BeanUtils.copyProperties(publicKeyDTO, publicKey);
-
         publicKey.setFrankMachineId(frankMachineId);
-        publicKey.setPublicKey(publicKeyDTO.getKey());
+        publicKey.setPublicKey(PublicKeyKit.getPublicKey());
+        publicKey.setRevision(revision);
+        publicKey.setAlg("");
+        publicKey.setExpireTime(DateKit.offsetDate(expire));
         publicKey.setCreatedTime(new Date());
+        this.save(publicKey);
 
-        this.saveOrUpdate(publicKey);
+
+        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
+        publicKeyDTO.setKey(publicKey.getPublicKey());
+        publicKeyDTO.setExpireDate(DateKit.offsetDateStr(expire));
+        publicKeyDTO.setRevision(revision);
+        publicKeyDTO.setAlg(publicKey.getAlg());
+        log.info("更新服务器public 结束");
+        return publicKeyDTO;
     }
 }

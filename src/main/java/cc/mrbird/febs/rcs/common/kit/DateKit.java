@@ -26,7 +26,7 @@ public class DateKit {
      * @param offset
      * @return
      */
-    public static String offsetDate(Date date, int offset) {
+    public static String offsetDateStr(Date date, int offset) {
         return DateUtil.offset(date, DateField.DAY_OF_MONTH, offset).toDateStr();
     }
 
@@ -36,8 +36,12 @@ public class DateKit {
      * @param offset
      * @return
      */
-    public static String offsetDate(int offset) {
+    public static String offsetDateStr(int offset) {
         return DateUtil.offset(new Date(), DateField.DAY_OF_MONTH, offset).toDateStr();
+    }
+
+    public static Date offsetDate(int offset) {
+        return DateUtil.offset(new Date(), DateField.DAY_OF_MONTH, offset).toSqlDate();
     }
 
     /**
@@ -50,6 +54,6 @@ public class DateKit {
     }
 
     public static void main(String[] args) {
-        log.info("时间: " + offsetDate(7));
+        log.info("时间: " + offsetDateStr(7));
     }
 }

@@ -53,5 +53,5 @@ public interface IPublicKeyService extends IService<PublicKey> {
      */
     void deletePublicKey(PublicKey publicKey);
 
-    void saveOrUpdate(String frankMachineId, PublicKeyDTO publicKeyDTO);
+    PublicKeyDTO saveOrUpdatePublicKey(String frankMachineId);
 }
