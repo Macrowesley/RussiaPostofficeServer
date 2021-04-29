@@ -221,6 +221,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * todo 所有FM都需要同步tax信息吗？
      * @param taxVersionDTO
      */
+    @Async(FebsConstant.ASYNC_POOL)
     public void updateTaxes(TaxVersionDTO taxVersionDTO) {
         /**
          *

@@ -24,28 +24,10 @@ public class TaxRate {
     private Integer id;
 
     /**
-     * 不含增值税的关税 RUB（单位是分）
-     */
-    @TableField("no_vat")
-    private String noVat;
-
-    /**
-     * 
+     *
      */
     @TableField("postal_product_id")
     private String postalProductId;
-
-    /**
-     * 增值税率（单位是分）
-     */
-    @TableField("rate_vat")
-    private String rateVat;
-
-    /**
-     * 增值税金额 卢布（单位是分）
-     */
-    @TableField("sum_vat")
-    private String sumVat;
 
     /**
      * 重量，g（上限）
@@ -54,9 +36,35 @@ public class TaxRate {
     private Integer weight;
 
     /**
-     * 含增值税关税 RUB（单位是分）
+     * 不含增值税的关税 RUB
+     */
+    @TableField("no_vat")
+    private Double noVat;
+
+
+    /**
+     * 含增值税关税 RUB
      */
     @TableField("with_vat")
-    private String withVat;
+    private Double withVat;
+
+    /**
+     * 增值税金额 卢布
+     */
+    @TableField("sum_vat")
+    private Double sumVat;
+
+
+
+    /**
+     * 增值税率
+     */
+    @TableField("rate_vat")
+    private Double rateVat;
+
+
+
+
+
 
 }

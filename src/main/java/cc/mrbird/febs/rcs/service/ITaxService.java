@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.rcs.entity.Tax;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +52,6 @@ public interface ITaxService extends IService<Tax> {
      * @param tax tax
      */
     void deleteTax(Tax tax);
+
+    void saveTaxVersion(TaxVersionDTO taxVersionDTO);
 }

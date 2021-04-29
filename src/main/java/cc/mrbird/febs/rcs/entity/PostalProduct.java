@@ -21,53 +21,8 @@ public class PostalProduct {
     /**
      * 【待定】
      */
-    @TableField("code")
-    private String code;
-
-    /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
-
-    /**
-     * 运输方向  1-内部（RTM-2）;  2-外向国际（RTM-2）;
-     */
-    @TableField("directctg")
-    private Integer directctg;
-
-    /**
-     * 偏远地区； 1-长达2000公里，2-超过2000公里
-     */
-    @TableField("distance_type")
-    private Integer distanceType;
-
-    /**
-     * 【待定】
-     */
     @TableId(value = "id")
     private String id;
-
-    /**
-     * 邮件类别的名称
-									 #*简单-0
-									 #*定制-1
-									 #*申报价值-2
-     */
-    @TableField("mail_ctg")
-    private Integer mailCtg;
-
-    /**
-     * 邮件类型代码  2-字母  3-包裹邮寄
-     */
-    @TableField("mail_type")
-    private Integer mailType;
-
-    /**
-     * 邮政物品的最大重量
-     */
-    @TableField("max_weight")
-    private Integer maxWeight;
 
     /**
      * 【待定】
@@ -76,10 +31,67 @@ public class PostalProduct {
     private String name;
 
     /**
+     * 【待定】
+     */
+    @TableField("code")
+    private String code;
+
+
+    /**
      * 转发区域； 1-内部，2-外部
      */
     @TableField("region_type")
     private Integer regionType;
+
+    /**
+     * 关税区（值1-5）
+     */
+    @TableField("zone_code")
+    private Integer zoneCode;
+
+    /**
+     * 偏远地区； 1-长达2000公里，2-超过2000公里
+     */
+    @TableField("distance_type")
+    private Integer distanceType;
+
+
+    /**
+     * 邮政物品的最大重量
+     */
+    @TableField("max_weight")
+    private Integer maxWeight;
+
+
+    /**
+     * 邮件类别的名称
+     #*简单-0
+     #*定制-1
+     #*申报价值-2
+     */
+    @TableField("mail_ctg")
+    private Integer mailCtg;
+
+
+    /**
+     * 邮件类型代码  2-字母  3-包裹邮寄
+     */
+    @TableField("mail_type")
+    private Integer mailType;
+
+
+    /**
+     * 运输方向  1-内部（RTM-2）;  2-外向国际（RTM-2）;
+     */
+    @TableField("directctg")
+    private Integer directctg;
+
+    //和PostalProductDTO不同的参数
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
 
     /**
      * 
@@ -93,10 +105,6 @@ public class PostalProduct {
     @TableField("updated_time")
     private Date updatedTime;
 
-    /**
-     * 关税区（值1-5）
-     */
-    @TableField("zone_code")
-    private Integer zoneCode;
+
 
 }

@@ -6,6 +6,7 @@ import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
+import cc.mrbird.febs.rcs.service.ITaxService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +35,9 @@ public class ServiceApi {
 
     @Autowired
     IDeviceService deviceService;
+
+    @Autowired
+    ITaxService taxService;
 
 
     /**
@@ -76,8 +80,6 @@ public class ServiceApi {
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
-        //TODO 想想有没有其他需要验证的
-
         //保存要更改的状态
         deviceService.changeStatusBegin(frankMachineId, changeStatusRequestDTO);
 
@@ -114,24 +116,13 @@ public class ServiceApi {
      */
     @PutMapping("/taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
-        //todo 【收到了服务器消息】
 
-        //todo 保存信息到数据库
+        taxService.saveTaxVersion(taxVersionDTO);
 
+        //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
+//        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
 
-        //todo 在一个线程中执行：发送指令给所有的FM，FM不在线怎么办？
-        //todo
-        //线程中
-        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
-        //线程中
-
-
-        //todo 返回结果
-
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
-        return apiResponse;
+        return new ApiResponse(200, "ok");
     }
 
     /**

@@ -19,22 +19,11 @@ import java.util.Date;
 public class Tax {
 
     /**
-     * 【待定】
+     *
      */
-    @TableField("apply_time")
-    private Date applyTime;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
-    /**
-     * 【待定】
-     */
-    @TableField("change_time")
-    private Date changeTime;
-
-    /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
 
     /**
      * 描述
@@ -42,29 +31,7 @@ public class Tax {
     @TableField("description")
     private String description;
 
-    /**
-     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
-     */
-    @TableField("flow")
-    private Integer flow;
 
-    /**
-     * 
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
-
-    /**
-     * 邮局id
-     */
-    @TableField("post_office_id")
-    private String postOfficeId;
-
-    /**
-     * 【待定】
-     */
-    @TableField("publish_time")
-    private Date publishTime;
 
     /**
      * 【待定：长度，含义，来源】
@@ -77,5 +44,30 @@ public class Tax {
      */
     @TableField("version")
     private String version;
+
+
+    /**
+     * 【待定】
+     */
+    @TableField("apply_date")
+    private Date applyDate;
+
+    /**
+     * 【待定】
+     */
+    @TableField("change_date")
+    private Date changeDate;
+
+    /**
+     * 创建时间
+     */
+    @TableField("created_date")
+    private Date createDate;
+
+    /**
+     * 【待定】
+     */
+    @TableField("publish_date")
+    private Date publishDate;
 
 }
