@@ -115,4 +115,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         return contractMapper.selectCount(queryWrapper.eq(Contract::getId, contractId)) != 0;
     }
+
+    @Override
+    public Contract getByConractId(String contractId) {
+        LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
+        return getOne(queryWrapper.eq(Contract::getId, contractId));
+    }
 }

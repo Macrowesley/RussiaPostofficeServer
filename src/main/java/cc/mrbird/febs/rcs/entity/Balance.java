@@ -25,18 +25,6 @@ public class Balance {
     private Integer id;
 
     /**
-     * 当前余额
-     */
-    @TableField("consolidate")
-    private String consolidate;
-
-    /**
-     * 【待定】当前可用资金
-     */
-    @TableField("contract_current")
-    private String contractCurrent;
-
-    /**
      * 合同id
      */
     @TableField("contract_id")
@@ -48,17 +36,25 @@ public class Balance {
     @TableField("contract_num")
     private Integer contractNum;
 
-    /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
 
     /**
-     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
+     * 【待定】当前可用资金
      */
-    @TableField("flow")
-    private Integer flow;
+    @TableField("contract_current")
+    private Double current;
+
+    /**
+     * 当前余额
+     */
+    @TableField("consolidate")
+    private Double consolidate;
+
+
+    /**
+     * 【待定】
+     */
+    @TableField("operation_id")
+    private String operationId;
 
     /**
      * 1 从机器发往俄罗斯服务器的数据  2 从俄罗斯服务器返回的数据
@@ -67,12 +63,11 @@ public class Balance {
     private Integer fromType;
 
 
-
     /**
-     * 【待定】
+     * 创建时间
      */
-    @TableField("operation_id")
-    private String operationId;
+    @TableField("created_time")
+    private Date createdTime;
 
     /**
      * 更新时间

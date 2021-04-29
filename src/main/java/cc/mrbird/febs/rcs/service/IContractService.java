@@ -56,4 +56,6 @@ public interface IContractService extends IService<Contract> {
     void saveContractDto(ContractDTO contractDTO);
 
     boolean checkIsExist(String contractId);
+
+    Contract getByConractId(String contractId);
 }

@@ -2,6 +2,7 @@ package cc.mrbird.febs.rcs.service;
 
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.service.ServiceBalanceDTO;
 import cc.mrbird.febs.rcs.entity.Balance;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -52,4 +53,6 @@ public interface IBalanceService extends IService<Balance> {
      * @param balance balance
      */
     void deleteBalance(Balance balance);
+
+    void saveBalance(String contractId, ServiceBalanceDTO serviceBalanceDTO);
 }

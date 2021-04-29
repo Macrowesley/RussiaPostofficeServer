@@ -6,6 +6,7 @@ import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
+import cc.mrbird.febs.rcs.service.IBalanceService;
 import cc.mrbird.febs.rcs.service.IContractService;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import cc.mrbird.febs.rcs.service.ITaxService;
@@ -46,6 +47,9 @@ public class ServiceApi {
 
     @Autowired
     IContractService contractService;
+
+    @Autowired
+    IBalanceService balanceService;
 
 
     /**
@@ -134,8 +138,6 @@ public class ServiceApi {
     @PutMapping("/contracts")
     public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
         contractService.saveContractDto(contractDTO);
-
-
         return new ApiResponse(200, "ok");
     }
 
@@ -146,12 +148,11 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/contracts/{contractId}/balance")
-    public ApiResponse contracts(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
+    public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
 
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(400, new ApiError());
-        apiResponse =  new ApiResponse(500, new ApiError());
-        return apiResponse;
+        balanceService.saveBalance(contractId, serviceBalanceDTO);
+
+        return new ApiResponse(200, "ok");
     }
 
 }
