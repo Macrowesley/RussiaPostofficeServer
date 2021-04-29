@@ -18,28 +18,22 @@ import lombok.Data;
 public class PrintJob {
 
     /**
-     * 取消原因
+     * 自增长id
      */
-    @TableField("cancel_msg")
-    private String cancelMsg;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
-    /**
-     * 合同id
-     */
     @TableField("contract_id")
     private String contractId;
 
-    /**
-     * foreseen id
-     */
     @TableField("foreseen_id")
     private String foreseenId;
 
-    /**
-     * 0 流程中 1 闭环
-     */
-    @TableField("foreseen_status")
-    private Integer foreseenStatus;
+    @TableField("transaction_id")
+    private String transactionId;
+    
+    @TableField("user_id")
+    String userId;
 
     /**
      * 机器id
@@ -47,28 +41,33 @@ public class PrintJob {
     @TableField("frank_machine_id")
     private String frankMachineId;
 
-    /**
-     * 
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
 
     /**
-     * 整个流程状态 0 未闭环  1 正常闭环 上面2个都为1才真正的闭环  -1 点击了取消job
+     * 整个流程状态 0 未闭环  1 闭环
      */
-    @TableField("job_flow")
-    private Integer jobFlow;
+    @TableField("flow")
+    private Integer flow;
 
-    /**
-     * 
-     */
-    @TableField("transaction_id")
-    private String transactionId;
+    @TableField("flow_detail")
+    private Integer flowDetail;
+
 
     /**
      * 0 流程中 1 闭环
      */
     @TableField("transaction_status")
     private Integer transactionStatus;
+
+    /**
+     * 取消原因
+     */
+    @TableField("cancel_msg_code")
+    private Integer cancelMsgCode;
+
+    @TableField("updated_time")
+    private Data updatedTime;
+
+    @TableField("created_time")
+    private Data createdTime;
 
 }

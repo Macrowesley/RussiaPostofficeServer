@@ -162,16 +162,16 @@ public class MangerTestController {
         log.info("开始测试 foreseens");
 
         ForeseenProductDTO foreseenProduct = new ForeseenProductDTO();
-        foreseenProduct.setProductCode("1");
+        foreseenProduct.setProductId("1");
         foreseenProduct.setCount(10);
-        foreseenProduct.setWeight(1.0D);
-        foreseenProduct.setAmount(1.0D);
+        foreseenProduct.setExpectedWeight(1.0D);
+        foreseenProduct.setExpectedValue(1.0D);
 
         ForeseenProductDTO foreseenProduct2 = new ForeseenProductDTO();
-        foreseenProduct2.setProductCode("2");
+        foreseenProduct2.setProductId("2");
         foreseenProduct2.setCount(20);
-        foreseenProduct2.setWeight(2.0D);
-        foreseenProduct2.setAmount(2.0D);
+        foreseenProduct2.setExpectedWeight(2.0D);
+        foreseenProduct2.setExpectedValue(2.0D);
 
 
 
@@ -226,11 +226,11 @@ public class MangerTestController {
         transactionDTO.setFrankMachineId("");
         transactionDTO.setContractId("");
         transactionDTO.setContractNum(0);
-        transactionDTO.setStartDateTime("");
-        transactionDTO.setStopDateTime("");
+        transactionDTO.setStartTime("");
+        transactionDTO.setStopTime("");
         transactionDTO.setUserId("");
         transactionDTO.setCreditVal(0.0D);
-        transactionDTO.setAmount(0.0D);
+        transactionDTO.setMailVal(0.0D);
         transactionDTO.setCount(0);
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion("");

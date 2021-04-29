@@ -32,18 +32,18 @@ public class TransactionDTO {
     /**
      * format: 'date-time'
      */
-    String startDateTime;
+    String startTime;
 
     /**
      * format: 'date-time'
      */
-    String stopDateTime;
+    String stopTime;
 
     String userId;
 
     Double creditVal;
 
-    Double amount;
+    Double mailVal;
 
     int count;
 

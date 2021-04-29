@@ -43,12 +43,11 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x0 ?
+            unsigned char length[2];				//
             unsigned char type;					//0xB5
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容:
-            版本内容（长度3）+ FrankMachineId() + TaxVersion() + PostOffice(6) + userId() + ContractId() + ContractNum(int 4) + TotalCount(int 4) + MailVal(8 double 类型 最后2位是小数)
-             + 产品数组（int 4） +  【productCode() + count(int 4) + weight(double 8) + amount(double 8)】 一直拼接
+            unsigned char version[3];           //版本号
+            unsigned char content[?];			//加密后内容: ForeseenFMDTO的json
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))Foreseens, *Foreseens;

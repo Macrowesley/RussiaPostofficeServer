@@ -528,7 +528,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     //todo 需要加缓存
     @Override
-    public FlowDetailEnum getFlowDetail(String frankMachineId, int min, int max) {
-        return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail(), min, max);
+    public FlowDetailEnum getFlowDetail(String frankMachineId) {
+        return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail());
     }
 }

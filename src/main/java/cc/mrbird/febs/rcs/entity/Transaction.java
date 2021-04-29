@@ -19,10 +19,30 @@ import java.util.Date;
 public class Transaction {
 
     /**
-     * 金额（单位是分）
+     * format: uuid
      */
-    @TableField("amount")
-    private String amount;
+    @TableId(value = "id")
+    private String id;
+
+    /**
+     * foreseen id
+     */
+    @TableField("foreseen_id")
+    private String foreseenId;
+
+
+    /**
+     * 邮局信息
+     */
+    @TableField("post_office")
+    private String postOffice;
+
+
+    /**
+     * 机器id
+     */
+    @TableField("frank_machine_id")
+    private String frankMachineId;
 
     /**
      * 合同id
@@ -37,28 +57,37 @@ public class Transaction {
     private Integer contractNum;
 
     /**
-     * 创建时间
+     * 开始时间
      */
-    @TableField("created_time")
-    private Date createdTime;
+    @TableField("start_time")
+    private Date startTime;
+
+    /**
+     * 停止时间
+     */
+    @TableField("stop_time")
+    private Date stopTime;
+
+    @TableField("user_id")
+    private String userId;
 
     /**
      * 【待定】
      */
     @TableField("credit_val")
-    private String creditVal;
+    private Double creditVal;
 
     /**
-     * foreseen id
+     * 金额（单位是分）
      */
-    @TableField("foreseen_id")
-    private String foreseenId;
+    @TableField("mail_val")
+    private Double mailVal;
 
     /**
-     * 机器id
+     * 总数量
      */
-    @TableField("frank_machine_id")
-    private String frankMachineId;
+    @TableField("total_count")
+    private Integer count;
 
     /**
      * 【待定】
@@ -67,40 +96,10 @@ public class Transaction {
     private String graphId;
 
     /**
-     * 
-     */
-    @TableId(value = "id")
-    private String id;
-
-    /**
-     * 邮局信息
-     */
-    @TableField("post_office")
-    private String postOffice;
-
-    /**
-     * 开始时间
-     */
-    @TableField("start_date_time")
-    private Date startDateTime;
-
-    /**
-     * 停止时间
-     */
-    @TableField("stop_date_time")
-    private Date stopDateTime;
-
-    /**
      * tax版本
      */
     @TableField("tax_version")
     private String taxVersion;
-
-    /**
-     * 总数量
-     */
-    @TableField("total_count")
-    private Integer totalCount;
 
     /**
      * 0 流程中 1 闭环
@@ -113,5 +112,11 @@ public class Transaction {
      */
     @TableField("updated_time")
     private Date updatedTime;
+
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
 
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -17,6 +18,20 @@ import java.util.Date;
 @Data
 @TableName("rcs_foreseen")
 public class Foreseen {
+    /**
+     * 主键uuid
+     */
+    @TableId(value = "id")
+    private String id;
+
+    /**
+     * 邮局信息
+     */
+    @TableField("post_office")
+    private String postOffice;
+
+    @TableField("user_id")
+    String userId;
 
     /**
      * 合同id
@@ -30,11 +45,6 @@ public class Foreseen {
     @TableField("contract_num")
     private Integer contractNum;
 
-    /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
 
     /**
      * 0 流程中 1 闭环
@@ -42,35 +52,6 @@ public class Foreseen {
     @TableField("foreseen_status")
     private Integer foreseenStatus;
 
-    /**
-     * 机器id
-     */
-    @TableField("frank_machine_id")
-    private String frankMachineId;
-
-    /**
-     * 主键uuid
-     */
-    @TableId(value = "id")
-    private String id;
-
-    /**
-     * 【待定】
-     */
-    @TableField("mail_val")
-    private String mailVal;
-
-    /**
-     * 邮局信息
-     */
-    @TableField("post_office")
-    private String postOffice;
-
-    /**
-     * tax版本
-     */
-    @TableField("tax_version")
-    private String taxVersion;
 
     /**
      * 总数量
@@ -79,9 +60,33 @@ public class Foreseen {
     private Integer totalCount;
 
     /**
+     * 机器id
+     */
+    @TableField("frank_machine_id")
+    private String frankMachineId;
+
+    /**
+     * tax版本
+     */
+    @TableField("tax_version")
+    private String taxVersion;
+
+
+    /**
+     * 【待定】
+     */
+    @TableField("mail_val")
+    private Double mailVal;
+
+    /**
      * 更新时间
      */
     @TableField("updated_time")
     private Date updatedTime;
 
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
 }

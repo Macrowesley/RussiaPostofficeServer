@@ -40,10 +40,11 @@ public class CancelJobPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x0 ?
+            unsigned char length[2];				//0x0 ?
             unsigned char type;					//0xB7
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容: 版本内容（长度3） + frankMachineId(?) + foreseenId(?) + cancelMessage（?）
+            unsigned char version[3];           //版本号
+            unsigned char content[?];			//加密后内容: CancelJobFMDTO
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))CancelJob, *CancelJob;
@@ -60,6 +61,8 @@ public class CancelJobPortocol extends MachineToServiceProtocol {
         String cancelMessage = "";
 
         serviceManageCenter.cancelJob(frankMachineId,foreseenId,cancelMessage);
+
+        //todo 判断transtion是否在进行中
 
 
         //返回 todo 返回需要写清楚点

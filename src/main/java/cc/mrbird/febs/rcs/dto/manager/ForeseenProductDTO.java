@@ -10,14 +10,14 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class ForeseenProductDTO {
     @NotBlank
-    String productCode;
+    String productId;
 
     @NotNull
     Integer count;
 
     @NotNull
-    Double weight;
+    Double expectedWeight;
 
     @NotNull
-    Double amount;
+    Double expectedValue;
 }

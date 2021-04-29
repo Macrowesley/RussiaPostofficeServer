@@ -3,7 +3,6 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import io.netty.channel.ChannelHandlerContext;
@@ -45,11 +44,11 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length;				//0x0 ?
+            unsigned char length[2];				//
             unsigned char type;					//0xB6
             unsigned char acnum[6];             //机器表头号
-            unsigned char content[?];			//加密后内容: 版本内容（长度3） + ForeseenId() + PostOffice(6) + FrankMachineId() + ContractId() + StartDateTime() + StopDateTime +
-                                                            UserId() + CreditVal(8 Double) + Amount(8 Double) + Count(int 4) + GraphId() + TaxVersion() + franksNum(4 数组数量) + Franks(定长)
+    		unsigned char version[3];           //版本号
+            unsigned char content[?];			//加密后内容: TransactionFMDTO的json
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))Transactions, *Transactions;
@@ -79,11 +78,11 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
         transactionDTO.setFrankMachineId("");
         transactionDTO.setContractId("");
         transactionDTO.setContractNum(0);
-        transactionDTO.setStartDateTime("");
-        transactionDTO.setStopDateTime("");
+        transactionDTO.setStartTime("");
+        transactionDTO.setStopTime("");
         transactionDTO.setUserId("");
         transactionDTO.setCreditVal(0.0D);
-        transactionDTO.setAmount(0.0D);
+        transactionDTO.setMailVal(0.0D);
         transactionDTO.setCount(0);
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion("");

@@ -16,19 +16,6 @@ import lombok.Data;
 @Data
 @TableName("rcs_foreseen_product")
 public class ForeseenProduct {
-
-    /**
-     * 金额(单位是分)
-     */
-    @TableField("amount")
-    private String amount;
-
-    /**
-     * 预算订单id
-     */
-    @TableField("foreseen_id")
-    private String foreseenId;
-
     /**
      * 主键id
      */
@@ -36,21 +23,41 @@ public class ForeseenProduct {
     private Integer id;
 
     /**
-     * 数量
+     * 预算订单id
      */
-    @TableField("p_count")
-    private Integer pCount;
+    @TableField("foreseen_id")
+    private String foreseenId;
+
 
     /**
      * 【待定】
      */
-    @TableField("product_code")
-    private String productCode;
+    @TableField("product_id")
+    private String productId;
+
+    /**
+     * 数量
+     */
+    @TableField("p_count")
+    private Integer count;
 
     /**
      * 重量
      */
-    @TableField("weight")
-    private Integer weight;
+    @TableField("expected_weight")
+    private Double expectedWeight;
+
+    /**
+     * 金额
+     */
+    @TableField("expected_value")
+    private Double expectedValue;
+
+
+
+
+
+
+
 
 }

@@ -150,6 +150,6 @@ public interface IDeviceService extends IService<Device> {
 
     Device getDeviceByFrankMachineId(String frankMachineId);
 
-    FlowDetailEnum getFlowDetail(String frankMachineId, int min, int max);
+    FlowDetailEnum getFlowDetail(String frankMachineId);
 
 }
