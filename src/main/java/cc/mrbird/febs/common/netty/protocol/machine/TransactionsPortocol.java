@@ -98,7 +98,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char head;				 	 //0xB6
-         unsigned char content;				     //加密内容: result(0 失败 1 成功) + transactionId（？）
+         unsigned char content;				     //加密内容: result(0 失败 1 成功) + transactionId（36）+ consolidate(8 分为单位) + current(8 分为单位)
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))TransactionsResult, *TransactionsResult;

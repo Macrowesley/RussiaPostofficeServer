@@ -19,21 +19,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ChangeStatusPortocol extends MachineToServiceProtocol {
-    @Autowired
-    RedisService redisService;
+    
 
-    //预计一次操作的最长等待时间
-    public static final long WAIT_TIME = 60L;
+
 
     public static final byte PROTOCOL_TYPE = (byte) 0xB4;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-
-
     //返回数据长度
     private static final int RES_DATA_LEN = 1;
+    
+    private static final String OPERATION_NAME = "ChangeStatusPortocol";
 
     /**
      * 获取协议类型
@@ -112,10 +110,10 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 case "001":
                     return parseStatus(bytes, version, ctx, pos);
                 default:
-                    return getErrorResult(ctx, version);
+                    return getErrorResult(ctx, version,OPERATION_NAME);
             }
         }catch (Exception e){
-            return getErrorResult(ctx, version);
+            return getErrorResult(ctx, version,OPERATION_NAME);
         }
 
     }
@@ -146,9 +144,9 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
         //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
 //        String key = ctx.channel().id().toString() + event.getEvent()  + status.getStatus();
-        String key = ctx.channel().id().toString();
+        String key = ctx.channel().id().toString() +"_" + OPERATION_NAME;
         if (redisService.hasKey(key)){
-            return getOverTimeResult(version,ctx, FMResultEnum.Overtime.getCode());
+            return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
         }else{
             log.info("channelId={}的操作记录放入redis", key);
             redisService.set(key,"wait", WAIT_TIME);
@@ -184,39 +182,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         return getSuccessResult(version, ctx, statusType, eventType, operationRes);
     }
 
-    private byte[] getErrorResult(ChannelHandlerContext ctx, String version) throws Exception {
-        /**
-         typedef  struct{
-         unsigned char length;				     //一个字节
-         unsigned char head;				 	 //0xB4
-         unsigned char content[?];				 //加密内容:   result(1 为1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
-                                                              result(1 为0,操作失败) + 版本内容(3)
-         unsigned char check;				     //校验位
-         unsigned char tail;					 //0xD0
-         }__attribute__((packed))status, *status;
-         */
-        //删除redis缓存
-        redisService.del(ctx.channel().id().toString());
-
-        //返回内容的原始数据
-        String responseData = FMResultEnum.FAIL.getCode() + version;
-
-        //test
-        StatusFMDTO statusFMDTO = new StatusFMDTO();
-        statusFMDTO.setEvent(1);
-        statusFMDTO.setFrankMachineId("myId");
-        statusFMDTO.setPostOffice("hello world");
-        responseData = JSON.toJSONString(statusFMDTO);
-        log.info("json = {}", responseData);
-
-        //返回内容的加密数据
-        //获取临时密钥
-        String tempKey = tempKeyUtils.getTempKey(ctx);
-        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("改变状态：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
-        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
-    }
-
     private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int statusType, int eventType, boolean res) throws Exception {
         //删除redis缓存
         redisService.del(ctx.channel().id().toString());
@@ -231,21 +196,4 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 
-    /**
-     * 指定时间内多次请求返回结果
-     * @param version
-     * @param ctx
-     * @param res
-     * @return
-     * @throws Exception
-     */
-    private byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, int res) throws Exception {
-        log.info("指定时间内多次请求返回结果");
-        String responseData = res + version ;
-        //返回内容的加密数据
-        //获取临时密钥
-        String tempKey = tempKeyUtils.getTempKey(ctx);
-        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
-    }
 }

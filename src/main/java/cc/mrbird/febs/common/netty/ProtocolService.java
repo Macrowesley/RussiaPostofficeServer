@@ -1,6 +1,5 @@
 package cc.mrbird.febs.common.netty;
 
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.*;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
@@ -18,10 +17,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -65,7 +62,7 @@ public class ProtocolService {
     ForeseensPortocol foreseensPortocol;
 
     @Autowired
-    CancelJobPortocol cancelJobPortocol;
+    ForeseensCancelPortocol foreseensCancelPortocol;
 
     @Autowired
     TransactionsPortocol transactionsPortocol;
@@ -160,8 +157,8 @@ public class ProtocolService {
                 case ForeseensPortocol.PROTOCOL_TYPE:
                     baseProtocol = foreseensPortocol;
                     break;
-                case CancelJobPortocol.PROTOCOL_TYPE:
-                    baseProtocol = cancelJobPortocol;
+                case ForeseensCancelPortocol.PROTOCOL_TYPE:
+                    baseProtocol = foreseensCancelPortocol;
                     break;
                 case TransactionsPortocol.PROTOCOL_TYPE:
                     baseProtocol = transactionsPortocol;

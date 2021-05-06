@@ -1,11 +1,12 @@
 package cc.mrbird.febs.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-
+@Slf4j
 public class MoneyUtils {
     /**
      * 元转分，确保price保留两位有效数字
@@ -55,6 +56,23 @@ public class MoneyUtils {
         return amount;
     }
 
+    public static double changeF2Y(String fen) {
+        return BigDecimal.valueOf(Long.valueOf(fen)).divide(new BigDecimal(100)).doubleValue();
+        /*String amount = String.valueOf(price);
+        NumberFormat format = NumberFormat.getInstance();
+        try {
+            Number number = format.parse(amount);
+            double temp = number.doubleValue() / 100.0;
+            format.setGroupingUsed(false);
+            // 设置返回的小数部分所允许的最大位数
+            format.setMaximumFractionDigits(2);
+            amount = format.format(temp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return amount;*/
+    }
+
     /**
      * 金额保留2位小数
      * @param money
@@ -81,7 +99,14 @@ public class MoneyUtils {
 
     public static void main(String[] args) {
 //        test1();
-        test2();
+//        test2();
+        test3();
+    }
+
+    private static void test3() {
+        String fen =  "130";
+        double yuan = changeF2Y(fen);
+        log.info("fen={},yuan={}", fen, yuan);
     }
 
     private static void test2() {

@@ -7,6 +7,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class ForeseenFMDTO {
+    String id;
     String contractId;
     String frankMachineId;
     String foreseenId;

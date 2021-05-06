@@ -500,6 +500,25 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         statusLogService.saveOrUpdate(fmStatusLog);
     }
 
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeForeseensStatus(Device dbDevice, FlowDetailEnum curFlowDetail) {
+        String frankMachineId = dbDevice.getFrankMachineId();
+
+        //当没有异常发生的时候，则等着进入下一环节，
+        //出现异常：闭环
+        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess){
+            dbDevice.setFlow(FlowEnum.FlowIng.getCode());
+        }else{
+            dbDevice.setFlow(FlowEnum.FlowEnd.getCode());
+        }
+
+        //更新device的flow和flowDetail
+        dbDevice.setFlowDetail(curFlowDetail.getCode());
+        dbDevice.setUpdatedTime(new Date());
+        this.update(dbDevice,new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId,frankMachineId));
+    }
+
     /**
      * 通过frankMachineId得到acnum
      *

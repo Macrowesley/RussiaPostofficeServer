@@ -1,21 +1,24 @@
 package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
-import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
-import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
-import cc.mrbird.febs.rcs.common.enums.FlowEnum;
-import cc.mrbird.febs.rcs.common.enums.ResultEnum;
+import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
+import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.service.IContractService;
+import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,9 +46,16 @@ public class ServiceManageCenter {
     @Autowired
     IPublicKeyService publicKeyService;
 
+    @Autowired
+    IPrintJobService printJobService;
+
+    @Autowired
+    IContractService contractService;
+
     /**
      * 机器状态改变事件
      * 【FM状态改变协议】
+     *
      * @param deviceDTO
      */
     public boolean changeStatusEvent(DeviceDTO deviceDTO) {
@@ -59,7 +69,7 @@ public class ServiceManageCenter {
          */
 
         Device dbDevice = deviceService.getDeviceByFrankMachineId(deviceDTO.getId());
-        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()){
+        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()) {
             throw new FmException("机器的状态已经修改结束了，请勿操作");
         }
 
@@ -96,17 +106,16 @@ public class ServiceManageCenter {
          * 1. 闭环的不通过
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
-        if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess){
-            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可",operationName);
+        if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess) {
+            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             return true;
         }
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTHORIZED) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",
-                    dbFutureStatus, FMStatusEnum.AUTHORIZED );
+                    dbFutureStatus, FMStatusEnum.AUTHORIZED);
             return false;
         }
-
 
 
         /**
@@ -132,11 +141,11 @@ public class ServiceManageCenter {
             if (!authResponse.isOK()) {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthError1);
+                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError1);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
-                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndFail);
+                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 }
                 return false;
@@ -153,18 +162,18 @@ public class ServiceManageCenter {
             if (!publickeyResponse.isOK()) {
                 if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthError2);
+                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError2);
                     log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                    deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndFail);
+                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
                     log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
                 }
                 return false;
             }
 
 
-            deviceService.changeAuthStatus(dbDevice,frankMachineId, FlowDetailEnum.AuthEndSuccess);
+            deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndSuccess);
             log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
         }
         return true;
@@ -190,13 +199,13 @@ public class ServiceManageCenter {
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
 
-        if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess){
-            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可",operationName);
+        if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
+            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             return true;
         }
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTH_CANCELED) {
-            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",dbFutureStatus, FMStatusEnum.AUTH_CANCELED);
+            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.AUTH_CANCELED);
             return false;
         }
 
@@ -214,7 +223,7 @@ public class ServiceManageCenter {
                 }
                 return false;
             }
-            deviceService.changeUnauthStatus(dbDevice,frankMachineId, FlowDetailEnum.UnauthEndSuccess);
+            deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnauthEndSuccess);
         }
         return true;
     }
@@ -222,6 +231,7 @@ public class ServiceManageCenter {
     /**
      * 收到费率表事件
      * 【FM状态改变协议】
+     *
      * @param deviceDTO
      */
     public boolean rateTableUpdateEvent(DeviceDTO deviceDTO) {
@@ -258,24 +268,65 @@ public class ServiceManageCenter {
      * 【机器请求foreseens协议】调用本方法
      * 请求打印任务
      */
-    public void foreseens(ForeseenDTO foreseenDTO) {
-        //todo 先判断机器状态，然后判断 job是否完成
+    public Contract foreseens(ForeseenFMDTO foreseenFMDTO) {
+        String operationName = "foreseens";
+        String frankMachineId = foreseenFMDTO.getFrankMachineId();
+        log.info("开始 {}, frankMachineId={}", operationName, frankMachineId);
 
-        //todo 收到了FM消息
+        //判断机器状态是否正常
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+        Integer dbCurFmStatus = dbDevice.getCurFmStatus();
+        FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
+        if (dbCurFmStatus <= FMStatusEnum.UNKNOWN.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
+            throw new FmException("机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
+        }
 
-        //todo 从数据库中给foreseen补充信息
+        //判断上一次打印是否闭环
+        PrintJob dbPrintJob = printJobService.getUnFinishJobByFmId(frankMachineId);
+        if (dbPrintJob != null) {
+            throw new FmException("上一次的打印任务没有闭环，进度为：" + FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail()).getMsg());
+        }
+
+        Contract dbContract = contractService.getByConractId(foreseenFMDTO.getContractId());
+        Double dbCurrent = dbContract.getCurrent();
+        Double dbConsolidate = dbContract.getConsolidate();
+        Integer dbEnable = dbContract.getEnable();
+        //判断合同状态是否可用
+        if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
+            throw new FmException("订单状态不可用，当前订单的状态为：" + dbEnable);
+        }
+
+        //判断合同金额是否够用 todo dbCurrent 还是 dbConsolidate
+        double fmCurrent = MoneyUtils.changeF2Y(foreseenFMDTO.getMailVal());
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmCurrent)) {
+            throw new FmException("订单金额为" + fmCurrent + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
+        }
+
+        //fm信息转ForeseenDTO
+        ForeseenDTO foreseenDTO = new ForeseenDTO();
+        BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
+        foreseenDTO.setMailVal(fmCurrent);
 
         ApiResponse foreseensResponse = serviceInvokeManager.foreseens(foreseenDTO);
-        //todo 收到了俄罗斯消息
-
-        if (foreseensResponse.isOK()){
-            //todo 更新数据库
-            ManagerBalanceDTO managerBalanceDTO = (ManagerBalanceDTO) foreseensResponse.getObject();
-
-
-            //todo 发送消息给机器
-            serviceToMachineProtocol.balance(foreseenDTO.getFrankMachineId(), managerBalanceDTO);
+        if (!foreseensResponse.isOK()) {
+            if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseensUnKnowError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+            } else {
+                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
+                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseens4xxError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+            }
+            throw new FmException("foreseensResponse.isOK() false ");
         }
+
+        //正常接收俄罗斯返回，更新数据库
+        printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess);
+
+        log.info("结束 {}, frankMachineId={}", operationName, frankMachineId);
+        return dbContract;
+        //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
     }
 
     /**
@@ -290,11 +341,10 @@ public class ServiceManageCenter {
         //todo 从数据库中给transaction补充信息
 
 
-
         ApiResponse transactionsResponse = serviceInvokeManager.transactions(transactionDTO);
         //todo 收到了俄罗斯消息
 
-        if (transactionsResponse.isOK()){
+        if (transactionsResponse.isOK()) {
             //todo 更新数据库
             ManagerBalanceDTO managerBalanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
 
@@ -309,24 +359,51 @@ public class ServiceManageCenter {
      * 【机器请求cancelJob协议】调用本方法
      * 取消任务
      */
-    public void cancelJob(String frankMachineId, String foreseenId, String cancelMessage) {
-        //todo 判断是否可以取消 查看状态
-        //todo 收到了FM消息
+    public Contract cancelJob(CancelJobFMDTO cancelJobFMDTO) {
+        String operationName = "cancelJob";
+        String frankMachineId = cancelJobFMDTO.getFrankMachineId();
+        String foreseenId = cancelJobFMDTO.getForeseenId();
+        String cancelMessage = CancelMsgEnum.getByCode(cancelJobFMDTO.getCancelMsgCode()).getMsg();
 
-        //todo 从数据库中给transaction补充信息
+        log.info("开始 {}, frankMachineId={}", operationName, frankMachineId);
 
-
-
-        ApiResponse cancelResponse = serviceInvokeManager.cancel(foreseenId, new ForeseenCancel("cancelMessage"));
-        //todo 收到了俄罗斯消息
-
-        if (cancelResponse.isOK()){
-            //todo 更新数据库
-            ManagerBalanceDTO managerBalanceDTO = (ManagerBalanceDTO) cancelResponse.getObject();
-
-
-            //todo 发送消息给机器
-            serviceToMachineProtocol.balance(frankMachineId, managerBalanceDTO);
+        /**
+         判断订单状态是否符合条件：
+         只有以下2种情况才能取消订单： JobingForeseensSuccess 或者 JobErrorForeseensCancelUnKnowError
+         */
+        PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
+        FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
+        FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
+        if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
+                curFlowDetail != FlowDetailEnum.JobErrorForeseensCancelUnKnowError) {
+            throw new FmException("订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
+
+        //判断合同状态是否可用
+        Contract dbContract = contractService.getByConractId(dbPrintJob.getContractId());
+        Integer dbEnable = dbContract.getEnable();
+        if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
+            throw new FmException("订单状态不可用，当前订单的状态为：" + dbEnable);
+        }
+
+
+        //给俄罗斯发消息
+        ApiResponse cancelResponse = serviceInvokeManager.cancel(foreseenId, new ForeseenCancel(cancelMessage));
+        if (!cancelResponse.isOK()) {
+            if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobErrorForeseensCancelUnKnowError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+            } else {
+                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器，不保存进度
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobEndFailForeseensCancel4xxError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+            }
+            throw new FmException("foreseensResponse.isOK() false ");
+        }
+        printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobEndFailForeseensCancelSuccess);
+
+        log.info("结束 {}, frankMachineId={}", operationName, frankMachineId);
+        return dbContract;
     }
 }

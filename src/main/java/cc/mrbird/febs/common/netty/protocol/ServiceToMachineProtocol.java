@@ -139,12 +139,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
             /**
-                typedef  struct{
+             typedef  struct{
                  unsigned char length;				 //一个字节
-                 unsigned char head;				 	 //0xC3
-                 unsigned char content[?];            //加密后内容 版本内容(3) + StatusDTO的json 包含了：frankMachineId  + status+ postOffice
+                 unsigned char head;				 //0xC3
+                 unsigned char version[3];			 //版本内容(3)
+                 unsigned char content[?];           //加密后内容   StatusDTO的json 包含了：frankMachineId  + status+ postOffice
                  unsigned char check;				 //校验位
-                 unsigned char tail;					 //0xD0
+                 unsigned char tail;				 //0xD0
              }__attribute__((packed))status, *status;
              **/
             //准备数据
@@ -158,13 +159,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             /*int status = changeStatusRequestDTO.getStatus().getType();
             String postOffice = changeStatusRequestDTO.getPostOffice();*/
 
-            String content = version + JSON.toJSONString(statusFMDTO);
+            String content = JSON.toJSONString(statusFMDTO);
             String entryctContent = AESUtils.encrypt(content, tempKey);
             log.info("服务器改变机器状态 content={},加密后entryctContent={}", content, entryctContent);
             //发送数据
             wrieteToCustomer(
                     ctx,
-                    getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8),
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
                     (byte) 0xC3));
         }catch (Exception e){
             log.error("服务器改变机器状态" + e.getMessage());

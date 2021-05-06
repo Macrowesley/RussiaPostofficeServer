@@ -135,12 +135,13 @@ public interface IDeviceService extends IService<Device> {
     void changeStatusEnd(DeviceDTO deviceDTO, boolean isSuccess);
 
     /**
-     * 改变auth状态
+     * 改变device flow 状态
      * @param id
      * @param curFlowDetail
      */
-    void changeAuthStatus(Device dbDevice, String id, FlowDetailEnum curFlowDetail);
-    void changeUnauthStatus(Device dbDevice, String id, FlowDetailEnum curFlowDetail);
+    void changeAuthStatus(Device dbDevice, String frankMachineId, FlowDetailEnum curFlowDetail);
+    void changeUnauthStatus(Device dbDevice, String frankMachineId, FlowDetailEnum curFlowDetail);
+    void changeForeseensStatus(Device dbDevice, FlowDetailEnum curFlowDetail);
     /**
      * 通过frankMachineId得到acnum
      * @param frankMachineId

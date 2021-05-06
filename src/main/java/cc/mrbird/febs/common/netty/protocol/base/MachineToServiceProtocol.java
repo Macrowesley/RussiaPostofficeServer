@@ -1,5 +1,9 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.common.entity.FMResultEnum;
+import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.common.utils.AESUtils;
+import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Slf4j
 public abstract class MachineToServiceProtocol extends BaseProtocol {
+    @Autowired
+    public RedisService redisService;
 
     @Autowired
     public ServiceManageCenter serviceManageCenter;
+
+    //预计一次操作的最长等待时间
+    public static final long WAIT_TIME = 60L;
 
     /**
      * 获取协议类型
@@ -40,4 +49,48 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
     public byte[] getWriteContent(byte[] data) {
         return super.getWriteContent(data, getProtocolType());
     }
+
+    public byte[] getErrorResult(ChannelHandlerContext ctx, String version, String operationName) throws Exception {
+        /**
+         typedef  struct{
+         unsigned char length;				     //一个字节
+         unsigned char head;				 	 //
+         unsigned char content[?];				 //加密内容:   result(1 为1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
+         result(1 为0,操作失败) + 版本内容(3)
+         unsigned char check;				     //校验位
+         unsigned char tail;					 //0xD0
+         }__attribute__((packed))status, *status;
+         */
+        //删除redis缓存
+        redisService.del(ctx.channel().id().toString());
+
+        //返回内容的原始数据
+        String responseData = FMResultEnum.FAIL.getCode() + version;
+
+        //返回内容的加密数据
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+        log.info("操作名："+operationName+"：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
+
+    /**
+     * 指定时间内多次请求返回结果
+     * @param version
+     * @param ctx
+     * @param res
+     * @return
+     * @throws Exception
+     */
+    public byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, String key, int res) throws Exception {
+        log.info("操作{} 在指定时间内多次请求返回结果", key);
+        String responseData = res + version ;
+        //返回内容的加密数据
+        //获取临时密钥
+        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
+
 }

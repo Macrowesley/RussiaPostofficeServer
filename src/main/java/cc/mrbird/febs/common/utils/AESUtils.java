@@ -160,7 +160,16 @@ public class AESUtils {
 //        test3();
 //          test4();
 //        test5();
+//        test6();
+        test7();
+    }
 
+    private static void test7() {
+        String uuid = createUUID();
+        System.out.println(uuid);
+    }
+
+    private static void test6() {
         String dectryptContent = "00110000004900012345";
         int pos = 3 ;
         String res =  dectryptContent.substring(pos, pos+1);

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 预算订单产品 Entity
  *
@@ -53,11 +55,10 @@ public class ForeseenProduct {
     @TableField("expected_value")
     private Double expectedValue;
 
-
-
-
-
-
-
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
 
 }

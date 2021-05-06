@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 打印任务表 Entity
  *
@@ -51,13 +53,6 @@ public class PrintJob {
     @TableField("flow_detail")
     private Integer flowDetail;
 
-
-    /**
-     * 0 流程中 1 闭环
-     */
-    @TableField("transaction_status")
-    private Integer transactionStatus;
-
     /**
      * 取消原因
      */
@@ -65,9 +60,9 @@ public class PrintJob {
     private Integer cancelMsgCode;
 
     @TableField("updated_time")
-    private Data updatedTime;
+    private Date updatedTime;
 
     @TableField("created_time")
-    private Data createdTime;
+    private Date createdTime;
 
 }

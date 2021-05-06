@@ -1,6 +1,10 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
+import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -51,4 +55,25 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param printJob printJob
      */
     void deletePrintJob(PrintJob printJob);
+
+    /**
+     * 通过frankMachineId找到没有闭环的打印任务
+     * @param frankMachineId
+     * @return
+     */
+    PrintJob getUnFinishJobByFmId(String frankMachineId);
+
+    PrintJob getByForeseenId(String foreseenId);
+
+    /**
+     * job流程中，foreseens的进度更新
+     */
+    void changeForeseensStatus(ForeseenDTO foreseenDTO,  FlowDetailEnum curFlowDetail);
+
+    /**
+     * job流程中，foreseensCancel的进度更新
+     * @param cancelJobFMDTO
+     * @param flowDetailEnum
+     */
+    void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail);
 }
