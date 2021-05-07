@@ -2,17 +2,17 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.device.entity.Device;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
-import cc.mrbird.febs.rcs.common.enums.CancelMsgEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
-import cc.mrbird.febs.rcs.entity.Foreseen;
-import cc.mrbird.febs.rcs.entity.ForeseenProduct;
-import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
+import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -48,6 +48,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     private final ITransactionService transactionService;
     private final IFrankService frankService;
     private final IDeviceService deviceService;
+    private final IContractService contractService;
 
     @Override
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
@@ -175,5 +176,63 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         dbPrintJob.setUpdatedTime(new Date());
         dbPrintJob.setCancelMsgCode(cancelJobFMDTO.getCancelMsgCode());
         this.updatePrintJob(dbPrintJob);
+    }
+
+    /**
+     * job流程中，Transaction的进度更新
+     *
+     * @param dbPrintJob
+     * @param transactionDTO
+     * @param curFlowDetail
+     */
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract , TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
+        //更新PrintJob
+        if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
+            //todo 碰到这种异常，怎么再次触发，还是选择jobcancel
+            dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
+        }else{
+            dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
+        }
+        dbPrintJob.setUpdatedTime(new Date());
+        this.updatePrintJob(dbPrintJob);
+
+        //添加 transaction
+        Transaction transaction = new Transaction();
+        BeanUtils.copyProperties(transactionDTO,transaction);
+        transaction.setTransactionStatus(FlowEnum.FlowEnd.getCode());
+        transaction.setUpdatedTime(new Date());
+        transaction.setCreatedTime(new Date());
+        transactionService.createTransaction(transaction);
+
+        //添加frank
+        List<Frank> frankList = new ArrayList<>();
+        for (FrankDTO frankDTO: transactionDTO.getFranks()) {
+            Frank frank = new Frank();
+            frank.setDmMessage(frankDTO.getDm_message());
+            frank.setId(AESUtils.createUUID());
+            frank.setStatisticsId("");
+            frank.setTransactionId(transaction.getId());
+            frank.setCreatedTime(new Date());
+            frankList.add(frank);
+        }
+        frankService.saveBatch(frankList);
+
+        //如果一切OK，更新contract的金额 todo 确定金额是哪个减哪个
+        if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
+            Double current = dbContract.getCurrent();
+            Double consolidate = dbContract.getConsolidate();
+
+            double newCurrent = DoubleKit.sub(current, transaction.getMailVal());
+            double newConsolidate = DoubleKit.sub(consolidate, transaction.getCreditVal());
+
+            dbContract.setCurrent(newCurrent);
+            dbContract.setConsolidate(newConsolidate);
+            contractService.saveOrUpdate(dbContract);
+        }
+
+        //返回最新的contract
+        return dbContract;
     }
 }

@@ -51,12 +51,20 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
     }
 
     public byte[] getErrorResult(ChannelHandlerContext ctx, String version, String operationName) throws Exception {
+        return getErrorResult(ctx, version,operationName, FMResultEnum.DefaultError.getCode());
+    }
+    public byte[] getErrorResult(ChannelHandlerContext ctx, String version, String operationName, int resCode) throws Exception {
         /**
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char head;				 	 //
-         unsigned char content[?];				 //加密内容:   result(1 为1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
-         result(1 为0,操作失败) + 版本内容(3)
+         unsigned char content[?];				 //加密内容:   result(1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
+                                                             result(不为1,操作失败 FMResultEnum为准
+                                                                         0 其他异常导致的失败
+                                                                         2 请求太频繁，1分钟内请勿重复请求
+                                                                         3 TransactionError异常，需要继续执行transaction
+                                                                         4 没有闭环，请等待
+                                                                         5 版本信息不对) + 版本内容(3)
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))status, *status;
@@ -65,7 +73,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
         redisService.del(ctx.channel().id().toString());
 
         //返回内容的原始数据
-        String responseData = FMResultEnum.FAIL.getCode() + version;
+        String responseData = resCode + version;
 
         //返回内容的加密数据
         //获取临时密钥
@@ -79,13 +87,13 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
      * 指定时间内多次请求返回结果
      * @param version
      * @param ctx
-     * @param res
+     * @param resCode
      * @return
      * @throws Exception
      */
-    public byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, String key, int res) throws Exception {
+    public byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, String key, int resCode) throws Exception {
         log.info("操作{} 在指定时间内多次请求返回结果", key);
-        String responseData = res + version ;
+        String responseData = resCode + version ;
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);

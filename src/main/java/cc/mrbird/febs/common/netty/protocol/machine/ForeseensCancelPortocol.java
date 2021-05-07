@@ -91,12 +91,14 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
 
                     return getSuccessResult(version, ctx, cancelJobFMDTO, dbContract);
                 default:
-                    return getErrorResult(ctx, version, OPERATION_NAME);
+                    return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
 
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
+        } finally {
+            log.info("机器结束 ForeseensCancelPortocol");
         }
     }
 
@@ -105,7 +107,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char head;				 	 //0xB7
-         unsigned char content;				     //加密内容: result(0 失败 1 成功) + version + foreseenId（36）+ consolidate(8 分为单位) + current(8 分为单位)
+         unsigned char content;				     //加密内容: result(1 成功) + version + foreseenId（36）+ consolidate(8 分为单位) + current(8 分为单位)
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))CancelJobResult, *CancelJobResult;

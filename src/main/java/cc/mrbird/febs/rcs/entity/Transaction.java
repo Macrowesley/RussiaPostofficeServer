@@ -60,13 +60,13 @@ public class Transaction {
      * 开始时间
      */
     @TableField("start_time")
-    private Date startTime;
+    private String startTime;
 
     /**
      * 停止时间
      */
     @TableField("stop_time")
-    private Date stopTime;
+    private String stopTime;
 
     @TableField("user_id")
     private String userId;

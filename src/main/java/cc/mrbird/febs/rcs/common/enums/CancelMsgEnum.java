@@ -1,7 +1,8 @@
 package cc.mrbird.febs.rcs.common.enums;
 
 public enum CancelMsgEnum {
-    Default(1,"未知原因");
+    Default(0,"未知原因"),
+    Error(1,"未知原因");
     int code;
     String msg;
 

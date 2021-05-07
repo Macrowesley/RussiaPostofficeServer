@@ -5,6 +5,8 @@ import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
+import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -76,4 +78,12 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param flowDetailEnum
      */
     void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail);
+
+    /**
+     * job流程中，Transaction的进度更新
+     * @param dbPrintJob
+     * @param transactionDTO
+     * @param curFlowDetail
+     */
+    Contract changeTransactionStatus(PrintJob dbPrintJob,Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail);
 }

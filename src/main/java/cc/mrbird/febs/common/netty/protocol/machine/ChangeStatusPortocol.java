@@ -110,7 +110,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 case "001":
                     return parseStatus(bytes, version, ctx, pos);
                 default:
-                    return getErrorResult(ctx, version,OPERATION_NAME);
+                    return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
         }catch (Exception e){
             return getErrorResult(ctx, version,OPERATION_NAME);

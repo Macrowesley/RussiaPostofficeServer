@@ -7,6 +7,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class TransactionFMDTO {
+    String id;
     String foreseenId;
     String postOffice;
     String frankMachineId;
