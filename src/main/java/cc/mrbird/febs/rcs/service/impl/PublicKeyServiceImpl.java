@@ -1,7 +1,6 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
@@ -14,7 +13,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,14 +84,14 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
         publicKey.setPublicKey(PublicKeyKit.getPublicKey());
         publicKey.setRevision(revision);
         publicKey.setAlg("");
-        publicKey.setExpireTime(DateKit.offsetDate(expire));
+        publicKey.setExpireTime(DateKit.offsetDayDate(expire));
         publicKey.setCreatedTime(new Date());
         this.save(publicKey);
 
 
         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
         publicKeyDTO.setKey(publicKey.getPublicKey());
-        publicKeyDTO.setExpireDate(DateKit.offsetDateStr(expire));
+        publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));
         publicKeyDTO.setRevision(revision);
         publicKeyDTO.setAlg(publicKey.getAlg());
         log.info("更新服务器public 结束");

@@ -62,6 +62,8 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))Foreseens, *Foreseens;
          */
+            log.info("机器开始 Foreseens");
+
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
             if (redisService.hasKey(key)){
@@ -71,8 +73,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                 redisService.set(key,"wait", WAIT_TIME);
             }
 
-
-            log.info("机器开始 Foreseens");
 
             int pos = TYPE_LEN;
 
@@ -101,6 +101,8 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
+        } finally {
+            log.info("机器结束 Foreseens");
         }
 
     }

@@ -25,10 +25,10 @@ public enum FlowDetailEnum {
     JobEndFailForeseens4xxError(63,"闭环：Foreseen请求返回4XX或者5XX错误"),
     JobEndFailForeseensCancel4xxError(64,"闭环：ForeseensCancel请求返回4XX或者5XX错误"),
     JobEndFailForeseensCancelSuccess(65,"闭环：ForeseensCancel请求成功，闭环"),
+    JobEndFailTransaction4xxError(66,"闭环：Transaction请求返回4XX或者5XX错误"),
     //异常的各种状态,
-    JobErrorForeseensCancelUnKnowError(66,"未闭环：ForeseensCancel请求未成功发送给俄罗斯"),
-    JobErrorTransactionUnKnow(67,"未闭环：Transaction请求未成功发送给俄罗斯"),
-    JobErrorTransaction4xx(68,"未闭环：Transaction请求返回4XX或者5XX错误"),
+    JobErrorForeseensCancelUnKnowError(67,"未闭环：ForeseensCancel请求未成功发送给俄罗斯"),
+    JobErrorTransactionUnKnow(68,"未闭环：Transaction请求未成功发送给俄罗斯"),
     //进行中的状态
     JobingForeseensSuccess(69,"未闭环：Foreseen请求成功"),
 
