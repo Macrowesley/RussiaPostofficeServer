@@ -63,7 +63,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              *     }__attribute__((packed))ssh, *ssh;
              */
             //准备数据
-            String version = "001";
+            String version = FebsConstant.FmVersion1;
             String domain = "device.uprins.com";
             String domainPort = "9091";
             String sshPort = "22";
@@ -101,7 +101,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              *     }__attribute__((packed))ssh, *ssh;
              */
             //准备数据
-            String version = "001";
+            String version = FebsConstant.FmVersion1;
             String entryctContent = AESUtils.encrypt(version, tempKey);
 
             //发送数据
@@ -149,7 +149,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              }__attribute__((packed))status, *status;
              **/
             //准备数据
-            String version = "001";
+            String version = FebsConstant.FmVersion1;
             StatusFMDTO statusFMDTO = new StatusFMDTO();
             statusFMDTO.setFrankMachineId(frankMachineId);
             statusFMDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
@@ -194,7 +194,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              }__attribute__((packed))statusEnd, *statusEnd;
              **/
             //准备数据
-           /* String version = "001";
+           /* String version = FebsConstant.Version1;
             int status = changeStatusRequestDTO.getStatus().getType();
             String postOffice = changeStatusRequestDTO.getPostOffice();
             //todo 转json

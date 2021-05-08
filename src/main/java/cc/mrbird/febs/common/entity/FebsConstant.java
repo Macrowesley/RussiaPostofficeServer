@@ -60,4 +60,9 @@ public interface FebsConstant {
      * Windows 操作系统
      */
     String SYSTEM_WINDOWS = "windows";
+
+    /**
+     * 机器版本
+     */
+    String FmVersion1 = "001";
 }

@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
-import cc.mrbird.febs.common.entity.FMResultEnum;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;

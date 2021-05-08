@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
-import cc.mrbird.febs.common.entity.FMResultEnum;
+import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
@@ -83,7 +84,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
             pos += VERSION_LEN;
 
             switch (version) {
-                case "001":
+                case FebsConstant.FmVersion1:
                     CancelJobFMDTO cancelJobFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CancelJobFMDTO.class);
                     log.info("解析得到的对象：cancelJobFMDTO={}", cancelJobFMDTO.toString());
 

@@ -1,4 +1,4 @@
-package cc.mrbird.febs.common.entity;
+package cc.mrbird.febs.rcs.common.enums;
 
 public enum FMResultEnum {
     SUCCESS(1,"成功"),
