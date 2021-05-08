@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import com.alibaba.fastjson.JSONObject;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -115,6 +117,7 @@ public class ServiceInvokeManager {
      * @return
      * @PutMapping("/rateTables")
      */
+    @Async(value = FebsConstant.ASYNC_POOL)
     public ApiResponse rateTables(RateTableFeedbackDTO rateTableFeedbackDTO) {
         String url = baseUrl + "/rateTables";
         return doExchange(url, rateTableFeedbackDTO, HttpMethod.PUT, String.class,null);

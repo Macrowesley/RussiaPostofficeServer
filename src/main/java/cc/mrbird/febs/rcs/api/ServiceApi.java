@@ -2,11 +2,14 @@ package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
+import cc.mrbird.febs.rcs.dto.manager.RateTableFeedbackDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.service.*;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,6 +55,9 @@ public class ServiceApi {
 
     @Autowired
     IPublicKeyService publicKeyService;
+
+    @Autowired
+    RedisService redisService;
 
 
     @Autowired
@@ -124,7 +130,19 @@ public class ServiceApi {
      */
     @PutMapping("/taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
+        //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
+
+        //todo 什么时候通知俄罗斯税率结果
+       /*RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
+        rateTableFeedbackDTO.setTaxVersion(taxVersionDTO.getVersion());
+        rateTableFeedbackDTO.setStatus(true);
+        rateTableFeedbackDTO.setRcsVersions(null);
+        serviceInvokeManager.rateTables(rateTableFeedbackDTO);*/
+
+        //redis保存版本内容  https://www.sojson.com/可以恢复
+        redisService.set(taxVersionDTO.getVersion(),JSON.toJSONString(taxVersionDTO));
+        log.info("redis保存对象");
 
         //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
 //        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
