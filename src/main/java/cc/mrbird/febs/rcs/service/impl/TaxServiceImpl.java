@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.dto.service.PostalProductDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxRateDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
@@ -41,6 +42,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
     private final IPostalProductService postalProductService;
     private final ITaxRateService taxRateService;
     private final TaxMapper taxMapper;
+    private final IDeviceService deviceService;
 
     @Override
     public IPage<Tax> findTaxs(QueryRequest request, Tax tax) {
@@ -109,6 +111,17 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
         }
 
         taxRateService.saveBatch(taxRates);
+
+        //更新所有device的taxIsUpdate 全都改成0
+        deviceService.changeTaxUpdateStatus();
+
         log.info("保存tax结束，耗时：{}", (System.currentTimeMillis() - t1));
+    }
+
+    @Override
+    public Tax getLastTax() {
+        LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(Tax::getId).last("limit 0,1");
+        return this.getOne(queryWrapper);
     }
 }

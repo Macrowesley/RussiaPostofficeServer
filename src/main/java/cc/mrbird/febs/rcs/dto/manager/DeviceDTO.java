@@ -26,6 +26,7 @@ public class DeviceDTO {
     /**
      * FM编号
      * FM100001
+     * frankmachineId
      */
     String id;
 
@@ -33,7 +34,7 @@ public class DeviceDTO {
      * date-time
      * 2021-01-01T09:00:00.001+03:00
      */
-    String dateTime;
+    String timeStamp;
 
     FMStatusEnum status;
 

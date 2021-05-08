@@ -166,6 +166,15 @@ public class Device implements Serializable {
     private String taxVersion;
 
     /**
+     * todo 可以考虑加上：是否更新版本，解决版本更新问题
+     * tax是否更新
+     * 默认为1 最新状态
+     * 0 没有更新到最新状态
+     */
+    @TableField("tax_is_update")
+    private Integer taxIsUpdate;
+
+    /**
      * 更新时间
      */
     @TableField("updated_time")

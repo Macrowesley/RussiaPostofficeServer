@@ -29,6 +29,7 @@ public class TestController {
 
 
     //https://auto.uprins.com/p/test/openSsh
+    @Deprecated
     @GetMapping("/openSsh")
     public String openSsh() {
         //执行指令
@@ -43,6 +44,7 @@ public class TestController {
     }
 
     //https://auto.uprins.com/p/test/closeSsh
+    @Deprecated
     @GetMapping("/closeSsh")
     public String closeSsh() {
         //执行关闭指令

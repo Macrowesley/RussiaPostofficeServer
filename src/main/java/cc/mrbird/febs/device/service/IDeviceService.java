@@ -153,4 +153,14 @@ public interface IDeviceService extends IService<Device> {
 
     FlowDetailEnum getFlowDetail(String frankMachineId);
 
+    /**
+     * 更新所有device的taxIsUpdate 全都改成0
+     */
+    void changeTaxUpdateStatus();
+
+    /**
+     * 更新device的taxIsUpdate信息和其他信息
+     * @param device
+     */
+    void updateDeviceTaxVersionStatus(DeviceDTO deviceDTO);
 }

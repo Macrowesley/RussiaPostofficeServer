@@ -62,7 +62,7 @@ public class Tax {
      * 创建时间
      */
     @TableField("created_date")
-    private Date createDate;
+    private Date createdDate;
 
     /**
      * 【待定】

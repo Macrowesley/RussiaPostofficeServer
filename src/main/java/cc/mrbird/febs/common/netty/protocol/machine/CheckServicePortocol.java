@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 /**
  * todo 检查服务器的协议，检查以下部分：
  * 1. 状态是否可用
- * 2. 是否有新的版本更新
+ * 2. 是否有新的版本更新：检查device的版本是否更新状态
  */
 @Slf4j
 @Component

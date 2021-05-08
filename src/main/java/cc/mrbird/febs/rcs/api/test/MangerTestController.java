@@ -29,7 +29,6 @@ public class MangerTestController {
         log.info("开始测试frankMachines");
         DeviceDTO bean = new DeviceDTO();
         bean.setId("FM100001");
-        bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.DEMO);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
@@ -63,7 +62,6 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTHORIZED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
@@ -85,7 +83,6 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTH_CANCELED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
@@ -107,7 +104,6 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setDateTime("2");
         bean.setStatus(FMStatusEnum.AUTH_CANCELED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");

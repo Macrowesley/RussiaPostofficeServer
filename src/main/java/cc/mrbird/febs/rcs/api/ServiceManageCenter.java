@@ -14,9 +14,11 @@ import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.IContractService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
+import cc.mrbird.febs.rcs.service.ITaxService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +57,9 @@ public class ServiceManageCenter {
 
     @Autowired
     IContractService contractService;
+
+    @Autowired
+    ITaxService taxService;
 
     /**
      * 机器状态改变事件
@@ -234,20 +239,43 @@ public class ServiceManageCenter {
 
     /**
      * 收到费率表事件
-     * 【FM状态改变协议】
+     * 机器更新了taxVersion后，调用这个协议，触发该方法
      *
      * @param deviceDTO
      */
     public boolean rateTableUpdateEvent(DeviceDTO deviceDTO) {
+        String operationName = "rateTableUpdateEvent";
+        String frankMachineId = deviceDTO.getId();
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse changeStatusResponse = serviceInvokeManager.frankMachines(deviceDTO);
-        //todo 收到了俄罗斯消息
+        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
 
-        if (changeStatusResponse.isOK()) {
-            // 更新数据库
+        //todo 这里是否要调用俄罗斯的rateTables接口
 
+        if (!changeTaxVersionResponse.isOK()) {
+            if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+            } else {
+                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+            }
+            return false;
         }
+
+        Tax tax = taxService.getLastTax();
+
+        String fmTaxVersion = deviceDTO.getTaxVersion();
+        String dbTaxVersion = tax.getVersion();
+
+        if (!fmTaxVersion.equals(dbTaxVersion)) {
+            log.error("发送版本和最新的版本信息不一致，无法更新，fmTaxVersion={}, dbTaxVersion={} ",fmTaxVersion, dbTaxVersion);
+            return false;
+        }
+
+        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
+        deviceService.updateDeviceTaxVersionStatus(deviceDTO);
+
         return true;
     }
 

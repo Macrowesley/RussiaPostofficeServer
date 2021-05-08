@@ -1,4 +1,5 @@
 package cc.mrbird.febs.device.service.impl;
+
 import java.util.Date;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
@@ -346,10 +347,10 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException{
+    public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
 
-        if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()){
+        if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
             throw new RcsApiException("上次修改没有完成，请稍等");
         }
 
@@ -367,7 +368,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         //保存状态
         FmStatusLog fmStatusLog = new FmStatusLog();
-        BeanUtils.copyProperties(device,fmStatusLog);
+        BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
         fmStatusLog.setUpdatedTime(new Date());
@@ -392,7 +393,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         Device dbDevice = getDeviceByFrankMachineId(deviceDTO.getId());
 
         //判断状态是否正常
-        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()){
+        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()) {
             throw new RcsApiException("状态已经修改完了，请勿重复操作");
         }
 
@@ -402,7 +403,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         //fm想要改变的状态
         int fmChangeStatus = deviceDTO.getStatus().getCode();
         if (fmChangeStatus == dbFurStatus) {
-            throw new RcsApiException("状态不匹配：机器要改的状态为："+ fmChangeStatus + " 数据库中状态需要改成：" + dbFurStatus);
+            throw new RcsApiException("状态不匹配：机器要改的状态为：" + fmChangeStatus + " 数据库中状态需要改成：" + dbFurStatus);
         }
 
         Device device = new Device();
@@ -421,7 +422,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         //保存状态
         FmStatusLog fmStatusLog = new FmStatusLog();
-        BeanUtils.copyProperties(device,fmStatusLog);
+        BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
         fmStatusLog.setUpdatedTime(new Date());
@@ -440,7 +441,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 //        Device device = new Device();
         device.setFrankMachineId(frankMachineId);
 
-        switch (curFlowDetail){
+        switch (curFlowDetail) {
             case AuthEndSuccess:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 device.setCurFmStatus(FMStatusEnum.AUTHORIZED.getCode());
@@ -456,11 +457,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         device.setFutureFmStatus(FMStatusEnum.AUTHORIZED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
         device.setUpdatedTime(new Date());
-        this.update(device,new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId,frankMachineId));
+        this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
 
         //保存状态
         FmStatusLog fmStatusLog = new FmStatusLog();
-        BeanUtils.copyProperties(device,fmStatusLog);
+        BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Machine.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.Auth.getCode());
         fmStatusLog.setUpdatedTime(new Date());
@@ -473,7 +474,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 //        Device device = new Device();
         device.setFrankMachineId(frankMachineId);
 
-        switch (curFlowDetail){
+        switch (curFlowDetail) {
             case UnauthEndSuccess:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 device.setCurFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
@@ -489,11 +490,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         device.setFutureFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
         device.setUpdatedTime(new Date());
-        this.update(device,new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId,frankMachineId));
+        this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
 
         //保存状态
         FmStatusLog fmStatusLog = new FmStatusLog();
-        BeanUtils.copyProperties(device,fmStatusLog);
+        BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Machine.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.UnAuth.getCode());
         fmStatusLog.setUpdatedTime(new Date());
@@ -507,16 +508,16 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         //当没有异常发生的时候，则等着进入下一环节，
         //出现异常：闭环
-        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess){
+        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess) {
             dbDevice.setFlow(FlowEnum.FlowIng.getCode());
-        }else{
+        } else {
             dbDevice.setFlow(FlowEnum.FlowEnd.getCode());
         }
 
         //更新device的flow和flowDetail
         dbDevice.setFlowDetail(curFlowDetail.getCode());
         dbDevice.setUpdatedTime(new Date());
-        this.update(dbDevice,new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId,frankMachineId));
+        this.update(dbDevice, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
     }
 
     /**
@@ -534,12 +535,13 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     //todo 需要加缓存
     @Override
+    @Transactional(rollbackFor = RcsApiException.class)
     public Device getDeviceByFrankMachineId(String frankMachineId) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, frankMachineId);
         Device device = this.getOne(wrapper);
 
-        if (device == null){
+        if (device == null) {
             throw new RcsApiException("无法找到id为" + frankMachineId + "的frankMachine");
         }
         return device;
@@ -549,5 +551,39 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     public FlowDetailEnum getFlowDetail(String frankMachineId) {
         return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail());
+    }
+
+    /**
+     * 更新所有device的taxIsUpdate 全都改成0
+     */
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeTaxUpdateStatus() {
+        Device device = new Device();
+        device.setTaxIsUpdate(TaxUpdateEnum.NOT_UPDATE.getCode());
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.gt(Device::getTaxIsUpdate, 0);
+        this.update(device, wrapper);
+    }
+
+    /**
+     * 更新device的taxIsUpdate信息和其他信息
+     *
+     * @param device
+     */
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void updateDeviceTaxVersionStatus(DeviceDTO deviceDTO) {
+        Device device = new Device();
+        device.setFrankMachineId(deviceDTO.getId());
+        device.setPostOffice(deviceDTO.getPostOffice());
+        device.setTaxVersion(deviceDTO.getTaxVersion());
+
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
+
+        device.setTaxIsUpdate(TaxUpdateEnum.UPDATE.getCode());
+        this.update(device, wrapper);
+
     }
 }
