@@ -63,9 +63,8 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 String tempKey = AESUtils.createKey(16);
                 long timestamp = System.currentTimeMillis();
                 //todo 要删掉这段代码，用下面的代码，需要添加一个时间戳
-                String entryptContent = AESUtils.encrypt(tempKey , uuid);
-//                String entryptContent = AESUtils.encrypt(tempKey + String.valueOf(timestamp), uuid);
-
+//                String entryptContent = AESUtils.encrypt(tempKey , uuid);
+                String entryptContent = AESUtils.encrypt(tempKey + String.valueOf(timestamp), uuid);
 
 
                 //保存临时密钥

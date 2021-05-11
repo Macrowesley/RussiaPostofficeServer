@@ -44,9 +44,9 @@ public class HeartPortocol extends MachineToServiceProtocol {
         }
 
         //todo 临时代码，要删掉
-        if (!ChannelMapperUtils.containsKey(acnum)) {
+        /*if (!ChannelMapperUtils.containsKey(acnum)) {
             ChannelMapperUtils.addChannel(acnum, ctx);
-        }
+        }*/
 //        log.info("心跳包中表头号：" + acnum);
 
         byte[] data = new byte[]{(byte) 0x01};

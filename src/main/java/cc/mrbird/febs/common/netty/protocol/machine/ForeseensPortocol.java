@@ -131,7 +131,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         } finally {
             log.info("机器结束 Foreseens");
         }
-
     }
 
     private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, String foreseenId, Contract contract) throws Exception{

@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.CheckIsExistDTO;
 import cc.mrbird.febs.device.dto.SendDeviceDTO;
@@ -119,5 +120,13 @@ public class DeviceController extends BaseController {
         }
         Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
         return new FebsResponse().success().data(res);
+    }
+
+    @ControllerEndpoint(operation = "从Netty中移除指定的表头号连接", exceptionMessage = "{device.operation.checkAcnumError}")
+    @PostMapping("removeChannelFromNetty")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    public FebsResponse removeChannelFromNetty(String acnum) {
+        ChannelMapperUtils.deleteChannelByKey(acnum);
+        return new FebsResponse().success().data("ok");
     }
 }

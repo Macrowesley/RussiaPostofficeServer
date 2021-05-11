@@ -84,7 +84,14 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                         res[0] = 0x01;
 
                         //保存到缓存
-                        ChannelMapperUtils.addChannel(acnum, ctx);
+                        if (!ChannelMapperUtils.containsKey(acnum)) {
+                            ChannelMapperUtils.addChannel(acnum, ctx);
+                        }else{
+                            res[0] = 0x00;
+                            log.info("有问题：服务器中保存的表头号为"+acnum + " ChannelMapperUtils.getChannelByAcnum(acnum) = "
+                                    +ChannelMapperUtils.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
+                        }
+
                     }
 
 

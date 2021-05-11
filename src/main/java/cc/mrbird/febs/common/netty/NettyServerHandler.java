@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.netty;
 
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
@@ -31,6 +32,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
     @Autowired
     public TempKeyUtils tempKeyUtils;
+
+    @Autowired
+    public TempTimeUtils tempTimeUtils;
     /**
      * 管理一个全局map，保存连接进服务端的通道数量
      */
@@ -87,6 +91,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
         //把临时密钥从redis中删除
         tempKeyUtils.deleteTempKey(ctx);
+
+        tempTimeUtils.deleteTempTime(ctx);
 
         //包含此客户端才去删除
         if (CHANNEL_MAP.containsKey(channelId)) {

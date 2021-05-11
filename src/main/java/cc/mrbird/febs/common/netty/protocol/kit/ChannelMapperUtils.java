@@ -52,7 +52,7 @@ public class ChannelMapperUtils {
     }
 
     /**
-     * 根据key删除连接缓存
+     * 根据key删除连接缓存(出现异常，手动移除出了问题的连接)
      * @param acnum
      */
     public static void deleteChannelByKey(String acnum){
