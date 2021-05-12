@@ -160,7 +160,7 @@ public class Device implements Serializable {
     private String postOffice;
 
     /**
-     * tax版本
+     * tax版本 device当前的版本 不一定是最新的版本
      */
     @TableField("tax_version")
     private String taxVersion;

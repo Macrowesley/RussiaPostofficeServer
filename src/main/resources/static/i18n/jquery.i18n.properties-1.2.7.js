@@ -414,7 +414,7 @@
     }
 
     /** Make sure namespace exists (for keys with dots in name) */
-    // TODO key parts that start with numbers quietly fail. i.e. month.short.1=Jan
+    //  key parts that start with numbers quietly fail. i.e. month.short.1=Jan
     function checkKeyNamespace(key) {
 
         var regDot = /\./;

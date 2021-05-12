@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+//todo 待定，不一定需要
 @Slf4j
 @Component
 public class UpdateTaxesResultPortocol extends MachineToServiceProtocol {

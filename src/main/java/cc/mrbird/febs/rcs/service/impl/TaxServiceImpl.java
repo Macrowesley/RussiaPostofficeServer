@@ -113,7 +113,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
         taxRateService.saveBatch(taxRates);
 
         //更新所有device的taxIsUpdate 全都改成0
-        deviceService.changeTaxUpdateStatus();
+        deviceService.updateLastestTaxVersionUpdateStatuts();
 
         log.info("保存tax结束，耗时：{}", (System.currentTimeMillis() - t1));
     }

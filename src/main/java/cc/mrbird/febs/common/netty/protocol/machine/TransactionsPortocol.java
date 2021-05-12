@@ -97,18 +97,18 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                     transactionFMDTO.setId(transactionId);
 
                     Contract dbContract = null;
+                    //取消订单
                     if(Long.valueOf(transactionFMDTO.getMailVal()) == 0){
                         CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
                         cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
                         cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
                         dbContract = serviceManageCenter.cancelJob(cancelJobFMDTO);
-                    }else {
+                    } else {
                         //处理transaction
                         dbContract = serviceManageCenter.transactions(transactionFMDTO);
                     }
                     return getSuccessResult(version, ctx, transactionId, dbContract);
-
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME);
             }

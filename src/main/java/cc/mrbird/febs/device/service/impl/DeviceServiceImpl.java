@@ -552,22 +552,21 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public FlowDetailEnum getFlowDetail(String frankMachineId) {
         return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail());
     }
-
     /**
      * 更新所有device的taxIsUpdate 全都改成0
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeTaxUpdateStatus() {
+    public void updateLastestTaxVersionUpdateStatuts() {
         Device device = new Device();
         device.setTaxIsUpdate(TaxUpdateEnum.NOT_UPDATE.getCode());
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
-        wrapper.gt(Device::getTaxIsUpdate, 0);
+        wrapper.gt(Device::getTaxIsUpdate, -1);
         this.update(device, wrapper);
     }
 
     /**
-     * 更新device的taxIsUpdate信息和其他信息
+     * 更新device的taxIsUpdate TaxVersion信息和其他信息
      *
      * @param device
      */

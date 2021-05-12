@@ -156,7 +156,7 @@ public interface IDeviceService extends IService<Device> {
     /**
      * 更新所有device的taxIsUpdate 全都改成0
      */
-    void changeTaxUpdateStatus();
+    void updateLastestTaxVersionUpdateStatuts();
 
     /**
      * 更新device的taxIsUpdate信息和其他信息

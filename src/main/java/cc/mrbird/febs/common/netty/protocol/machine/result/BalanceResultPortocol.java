@@ -59,8 +59,6 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
 
         log.info("{}机器同步金额结果：{}", acnum, res.equals("1")? "成功":"失败");
 
-        //todo 机器收到了消息
-
 
         //返回 todo 返回需要写清楚点
         byte[] data = new byte[]{(byte) 0x01};
