@@ -16,8 +16,8 @@
         <if test="device.nickname != null and device.nickname != ''">
             and d.nickname = #{device.nickname}
         </if>
-        <if test="device.deviceStatus != null and device.deviceStatus != ''">
-            and d.device_status = #{device.deviceStatus}
+        <if test="device.curFmStatus != null and device.curFmStatus != ''">
+            and d.device_status = #{device.curFmStatus}
         </if>
 
 

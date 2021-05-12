@@ -1,7 +1,5 @@
 package cc.mrbird.febs.device.service.impl;
 
-import java.util.Date;
-
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
@@ -19,6 +17,7 @@ import cc.mrbird.febs.device.mapper.DeviceMapper;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.device.service.IUserDeviceService;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
+import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
@@ -68,7 +67,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         }
         LambdaQueryWrapper<Device> queryWrapper = new LambdaQueryWrapper<>();
 
-        Page<Device> page = new Page<>(request.getPageNum(), request.getPageSize());
+//        Page<Device> page = new Page<>(request.getPageNum(), request.getPageSize());
+        Page<Device> page = new Page<>();
         SortUtil.handlePageSort(request, page, "device_id", FebsConstant.ORDER_DESC, false);
 
 
@@ -84,9 +84,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 queryWrapper.eq(Device::getNickname, device.getNickname());
             }
 
-
-            queryWrapper.eq(Device::getCurFmStatus, device.getCurFmStatus());
-
+            if (device.getCurFmStatus() == null){
+                queryWrapper.gt(Device::getCurFmStatus, -1);
+            }else{
+                queryWrapper.eq(Device::getCurFmStatus, device.getCurFmStatus());
+            }
 
             return this.page(page, queryWrapper);
         } else {
@@ -128,6 +130,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public void updateDevice(UpdateDeviceDTO updateDeviceDTO) {
         Device device = new Device();
         BeanUtils.copyProperties(updateDeviceDTO, device);
+        device.setCurFmStatus(Integer.valueOf(updateDeviceDTO.getDeviceStatus()));
 
         editMoney(device);
         this.saveOrUpdate(device);
@@ -185,6 +188,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public void saveDeviceList(AddDeviceDTO addDeviceDTO) {
         Device device = new Device();
         BeanUtils.copyProperties(addDeviceDTO, device);
+        device.setCurFmStatus(Integer.valueOf(addDeviceDTO.getDeviceStatus()));
         List<String> list = Arrays.asList(addDeviceDTO.getAcnumList().trim().toUpperCase().split(","));
 //        long curUserId = FebsUtil.getCurrentUser().getUserId();
         List<UserDevice> userDeviceList = new ArrayList<>();

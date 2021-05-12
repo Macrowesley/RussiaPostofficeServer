@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotBlank;
  * @date 2020-05-27 14:56:25
  */
 @Data
+@ToString
 @Excel("设备表")
 @TableName("rcs_device")
 public class Device implements Serializable {

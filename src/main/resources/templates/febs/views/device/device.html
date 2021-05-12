@@ -22,7 +22,7 @@
                                     <!--<div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">创建时间</label>
                                         <div class="layui-input-inline">
-                                            <input type="text" name="createTime" id="device-createTime"
+                                            <input type="text" name="createdTime" id="device-createTime"
                                                    class="layui-input">
                                         </div>
                                     </div>-->
@@ -67,7 +67,7 @@
     var status = {
     1: {title: i18n("device.normal"), color: 'green'},
     0: {title: i18n("device.freeze"), color: 'volcano'}
-    }[d.deviceStatus];
+    }[d.curFmStatus];
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
 </script>
@@ -96,7 +96,7 @@
             $refreshQuery = $view.find('#refreshQuery'),
             $reset = $view.find('#reset'),
             $searchForm = $view.find('form'),
-            sortObject = {field: 'createTime', type: null},
+            sortObject = {field: 'createdTime', type: null},
             tableIns,
             createTimeFrom,
             createTimeTo;
@@ -220,8 +220,8 @@
                     {field: 'warnAmount', title: i18n("device.warnAmount")},
                     {field: 'maxAmount', title: i18n("device.maxAmount"), minWidth: 165},
                     {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
-                    {title: i18n("device.status"), templet: '#device-status'},
-                    {field: 'createTime', title: i18n("createTime"), minWidth: 180, sort: false},
+                    // {title: i18n("device.status"), templet: '#device-status'},
+                    {field: 'createdTime', title: i18n("createTime"), minWidth: 180, sort: false},
                     {title: i18n("operation"), toolbar: '#device-option', minWidth: 140}
                 ]]
             });
@@ -276,7 +276,7 @@
          * 获取查询信息
          */
         function getQueryParams() {
-            /*var createTime = $searchForm.find('input[name="createTime"]').val();
+            /*var createTime = $searchForm.find('input[name="createdTime"]').val();
             if (createTime) {
                 createTimeFrom = createTime.split(' - ')[0];
                 createTimeTo = createTime.split(' - ')[1];
@@ -286,7 +286,7 @@
                 // createTimeTo: createTimeTo,
                 acnum: $searchForm.find('input[name="acnum"]').val().trim(),
                 nickname: $searchForm.find('input[name="nickname"]').val().trim(),
-                deviceStatus: $searchForm.find("select[name='deviceStatus']").val(),
+                curFmStatus: $searchForm.find("select[name='deviceStatus']").val(),
                 invalidate_ie_cache: new Date()
             };
         }

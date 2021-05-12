@@ -48,7 +48,7 @@ public class DeviceController extends BaseController {
     @RequiresPermissions("device:list")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse devicePageList(QueryRequest request, Device device) {
-        log.info("request = " + request.toString());
+        log.info("request = " + request.toString() + " device = " + device.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
         return new FebsResponse().success().data(dataTable);
     }
