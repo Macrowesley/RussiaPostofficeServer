@@ -55,5 +55,5 @@ public interface ITaxService extends IService<Tax> {
 
     void saveTaxVersion(TaxVersionDTO taxVersionDTO);
 
-    Tax getLastTax();
+    Tax getLastestTax();
 }

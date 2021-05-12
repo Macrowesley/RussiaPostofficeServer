@@ -7,6 +7,7 @@ import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -65,6 +66,8 @@ public interface IPrintJobService extends IService<PrintJob> {
      */
     PrintJob getUnFinishJobByFmId(String frankMachineId);
 
+    PrintJob getLastestJobByFmId(String frankMachineId);
+
     PrintJob getByForeseenId(String foreseenId);
 
     /**
@@ -86,4 +89,7 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param curFlowDetail
      */
     Contract changeTransactionStatus(PrintJob dbPrintJob,Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail);
+
+
+    Foreseen getForeseenById(String foreseenId);
 }

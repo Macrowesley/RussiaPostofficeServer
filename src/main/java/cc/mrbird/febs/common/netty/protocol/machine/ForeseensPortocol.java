@@ -108,7 +108,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
                         if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
-                            log.error("foreseens TransactionError异常  FrankMachineId = "+ dbPrintJob.getFrankMachineId()+" 的机器取消上一次的打印任务，ForeseenId = " + dbPrintJob.getForeseenId());
+                            log.error("foreseens TransactionError异常  FrankMachineId = "+ dbPrintJob.getFrankMachineId()+" 的机器 访问俄罗斯transaction接口时，没有访问成功，ForeseenId = " + dbPrintJob.getForeseenId());
                             return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.TransactionError.getCode());
                         }
                         //还未闭环，请等待

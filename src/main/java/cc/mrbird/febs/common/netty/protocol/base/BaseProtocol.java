@@ -21,7 +21,8 @@ public class BaseProtocol {
     public static final int REQUEST_LENGTH_LEN = 2;
 
     //响应长度：记录整条数据长度数值的长度
-    public static final int RESPONSE_LENGTH_LEN = 1;
+    public static final int RESPONSE_LENGTH_LEN = 2;
+
     //协议的数据类型长度
     public static final int TYPE_LEN = 1;
     //校验位长度

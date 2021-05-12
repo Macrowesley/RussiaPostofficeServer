@@ -105,7 +105,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             switch (version) {
                 case 1:
                 /*typedef  struct{
-                    unsigned char length;				 //一个字节
+                    unsigned char length[2];				 //2个字节
                     unsigned char head;				 	 //0xA1
                     unsigned char content[?];            //加密后内容 版本内容（3）+ 结果（1） + 机器订单ID（8）+ 注资金额（8）
                     unsigned char check;				 //校验位

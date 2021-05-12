@@ -55,7 +55,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
             /**
              *     typedef  struct{
-             *         unsigned char length;				 //一个字节
+             *         unsigned char length[2];				 //2个字节
              *         unsigned char head;				 	 //0xC1
              *         unsigned char content[?];             //加密后内容 版本内容(3) + 域名(17) + 域名端口(4) + ssh端口(2) + 密码(11)
              *         unsigned char check;				     //校验位
@@ -93,7 +93,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
             /**
              *     typedef  struct{
-             *         unsigned char length;				 //一个字节
+             *         unsigned char length[2];				 //2个字节
              *         unsigned char head;				 	 //0xC2
              *         unsigned char content[?];             //加密后内容 版本内容(3)
              *         unsigned char check;				     //校验位
@@ -140,7 +140,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
             /**
              typedef  struct{
-                 unsigned char length;				 //一个字节
+                 unsigned char length[2];				 //2个字节
                  unsigned char head;				 //0xC3
                  unsigned char version[3];			 //版本内容(3)
                  unsigned char content[?];           //加密后内容   StatusDTO的json 包含了：frankMachineId  + status+ postOffice
@@ -228,7 +228,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          *
          同步tax信息(待定，可能是文件)
          typedef  struct{
-             unsigned char length;				 //一个字节
+             unsigned char length[2];				 //2个字节
              unsigned char head;				 	 //0xC5
              unsigned char content[?];            //加密后内容 版本内容(3) + taxId(自己数据库中的 )  + ？？
              unsigned char check;				 //校验位
@@ -246,7 +246,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public void balance(String frankMachineId, ManagerBalanceDTO managerBalanceDTO) {
         /**
          typedef  struct{
-             unsigned char length;				 //一个字节
+             unsigned char length[2];				 //2个字节
              unsigned char head;				 	 //0xC6
              unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractId(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位

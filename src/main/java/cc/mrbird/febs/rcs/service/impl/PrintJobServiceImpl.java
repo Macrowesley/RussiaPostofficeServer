@@ -100,6 +100,15 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     }
 
     @Override
+    public PrintJob getLastestJobByFmId(String frankMachineId) {
+        LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
+        wrapper.orderByDesc(PrintJob::getId);
+        wrapper.last("limit 1");
+        return this.getOne(wrapper);
+    }
+
+    @Override
     public PrintJob getByForeseenId(String foreseenId) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getForeseenId, foreseenId);
@@ -190,8 +199,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract , TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
         //更新PrintJob
         if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
-            //todo 碰到这种异常，怎么再次触发，还是选择jobcancel
+            //todo 碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
+            dbPrintJob.setUpdatedTime(new Date());
+            this.updatePrintJob(dbPrintJob);
+            return dbContract;
         }else{
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
@@ -234,5 +246,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //返回最新的contract
         return dbContract;
+    }
+
+    @Override
+    public Foreseen getForeseenById(String foreseenId) {
+       return foreseenService.getById(foreseenId);
     }
 }

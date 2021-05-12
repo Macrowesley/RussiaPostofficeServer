@@ -100,7 +100,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         2.2 服务器返回临时加密秘钥
 
         typedef  struct{
-            unsigned char length;				 //一个字节
+            unsigned char length[2];				 //2个字节
             unsigned char head;				 	 //0xA4
             unsigned char version[3];            //版本内容 001
             unsigned char content[?];			//【改动】加密内容 临时秘钥（16）+ 时间戳（13）

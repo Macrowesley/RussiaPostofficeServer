@@ -263,7 +263,7 @@ public class ServiceManageCenter {
             return false;
         }
 
-        Tax tax = taxService.getLastTax();
+        Tax tax = taxService.getLastestTax();
 
         String fmTaxVersion = deviceDTO.getTaxVersion();
         String dbTaxVersion = tax.getVersion();

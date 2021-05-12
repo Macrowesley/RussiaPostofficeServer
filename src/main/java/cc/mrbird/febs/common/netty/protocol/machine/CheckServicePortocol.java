@@ -13,12 +13,16 @@ import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +49,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @Autowired
     IPrintJobService printJobService;
+
 
     @Autowired
     IDeviceService deviceService;
@@ -80,6 +85,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                 unsigned char type;					//0xB8
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
+                unsigned char content[?];			//加密后内容: FrankMachineId(36)
                 unsigned char check;				//校验位
                 unsigned char tail;					//0xD0
             }__attribute__((packed))CheckService, *CheckService;
@@ -115,11 +121,23 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     int curStatus = dbDevice.getCurFmStatus();
 
                     //2. 返回上一次打印任务信息
+                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
+                    String frankMachineId = decryptContent.trim();
 
                     //数据库的合同信息
+                    PrintJob dbPrintJob = printJobService.getLastestJobByFmId(frankMachineId);
+                    boolean isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
+                    ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
+                    if (!isPrintEnd){
+                        //没有闭环，foreseen信息  问问小刘 需不需要细节？ 需不需要transaction信息
+                        String foreseenId = dbPrintJob.getForeseenId();
+                        Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
 
+                        BeanUtils.copyProperties(dbForeseen,foreseenFMDTO);
+                        foreseenFMDTO.setMailVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getMailVal())));
+                    }
 
-                    return getSuccessResult(version,ctx,curStatus);
+                    return getSuccessResult(version,ctx,curStatus, isPrintEnd, foreseenFMDTO);
                 default:
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
@@ -132,17 +150,19 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     }
 
-    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int curStatus) throws Exception{
+    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int curStatus, boolean isPrintEnd, ForeseenFMDTO foreseenFMDTO) throws Exception{
         /**
          typedef  struct{
-         unsigned char length;				     //一个字节
+         unsigned char length[2];				 //2个字节
          unsigned char head;				 	 //0xB8
-         unsigned char content;				     //加密内容: result(1 成功) + version + statuscode(2) + 订单是否结束（1 结束 0 未结束） + 订单信息Json（）
+         unsigned char content;				     //加密内容: result(1 成功) + version + statuscode(2) + 订单是否结束（1 结束 0 未结束） + ForeseenFMDTO的Json
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))CheckServiceResult, *CheckServiceResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getCode() + version + String.format("%08d",curStatus);
+        String responseData = FMResultEnum.SUCCESS.getCode() +
+                version + String.format("%08d",curStatus) + isPrintEnd
+                + JSON.toJSONString(foreseenFMDTO);
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

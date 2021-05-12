@@ -119,9 +119,9 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
     }
 
     @Override
-    public Tax getLastTax() {
+    public Tax getLastestTax() {
         LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.orderByDesc(Tax::getId).last("limit 0,1");
+        queryWrapper.orderByDesc(Tax::getId).last("limit 1");
         return this.getOne(queryWrapper);
     }
 }

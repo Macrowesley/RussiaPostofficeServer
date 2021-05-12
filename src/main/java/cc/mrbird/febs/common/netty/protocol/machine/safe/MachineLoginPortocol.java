@@ -97,7 +97,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
                     //返回结果
                     /*typedef  struct{
-                        unsigned char length;				 //一个字节
+                        unsigned char length[2];				 //2个字节
                         unsigned char head;				 	 //0xA5
                         unsigned char res;                   //01 正常  00 失败 失败的话，只能重新执行请求密钥，再发送机器信息
                         unsigned char check;				 //校验位

@@ -10,7 +10,6 @@ public class ForeseenFMDTO {
     String id;
     String contractId;
     String frankMachineId;
-    String foreseenId;
     String userId;
     String postOffice;
     Integer totalCount;
