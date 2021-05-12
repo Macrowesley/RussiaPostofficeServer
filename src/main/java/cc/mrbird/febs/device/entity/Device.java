@@ -24,7 +24,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @ToString
 @Excel("设备表")
-@TableName("rcs_device")
+@TableName("t_device")
 public class Device implements Serializable {
 
     private static final long serialVersionUID = 5768453074428486556L;

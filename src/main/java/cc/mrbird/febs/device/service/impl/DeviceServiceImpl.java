@@ -3,6 +3,7 @@ package cc.mrbird.febs.device.service.impl;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
+import cc.mrbird.febs.common.entity.UserSpecialConstant;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -17,7 +18,6 @@ import cc.mrbird.febs.device.mapper.DeviceMapper;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.device.service.IUserDeviceService;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
-import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
@@ -179,7 +179,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     /**
      * 批量添加设备
-     *
+     * 添加设备的时候，绑定设备到机构管理员
      * @param device
      * @param acnumList
      */
@@ -212,6 +212,26 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     /**
+     * todo 从FM中的信息中添加设备
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void bindFMDeviceToUser(Device device) {
+        Device dbDevice = getDeviceByFrankMachineId(device.getFrankMachineId());
+        if (dbDevice != null){
+            log.error("机器通过协议添加device到数据库，但是这个{}}已经保存在数据库了", device.getFrankMachineId());
+            return;
+        }
+        this.save(device);
+
+        UserDevice userDevice = new UserDevice();
+        userDevice.setDeviceId(device.getDeviceId());
+        userDevice.setUserId(UserSpecialConstant.elsAdmin);
+        userDeviceService.save(userDevice);
+        log.info("机器通过协议添加device到数据库");
+    }
+
+    /**
      * 金额保留2位
      *
      * @param device
@@ -235,6 +255,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     /**
      * 把设备列表绑定到用户上
+     * 机构管理员绑定设备到指定工作人员
      *
      * @param deviceIds
      * @param sendUserId

@@ -20,10 +20,6 @@ import java.util.Date;
 @Slf4j
 @Component
 public class ChangeStatusPortocol extends MachineToServiceProtocol {
-    
-
-
-
     public static final byte PROTOCOL_TYPE = (byte) 0xB4;
 
     //表头号长度
@@ -109,7 +105,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             //下面的操作都是同步的，机器一直等着最后的结果
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    return parseStatus(bytes, version, ctx, pos);
+                    return parseStatus(bytes, version, ctx, pos, acnum);
                 default:
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
@@ -119,7 +115,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
     }
 
-    private byte[] parseStatus(byte[] bytes, String version, ChannelHandlerContext ctx, int pos) throws Exception {
+    private byte[] parseStatus(byte[] bytes, String version, ChannelHandlerContext ctx, int pos, String acnum) throws Exception {
         long t1 = System.currentTimeMillis();
         StatusFMDTO statusFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusFMDTO.class);
 
@@ -158,6 +154,9 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         switch (event){
             case STATUS:
                 switch (status){
+                    case ADD:
+                        operationRes = serviceManageCenter.register(acnum, deviceDto);
+                        break;
                     case AUTHORIZED:
                         operationRes = serviceManageCenter.auth(deviceDto);
                         break;

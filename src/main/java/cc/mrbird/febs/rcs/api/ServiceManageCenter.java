@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -91,6 +92,30 @@ public class ServiceManageCenter {
         return apiResponse.isOK();
     }
 
+    /**
+     * 注册机器信息到服务器
+     * @param deviceDTO
+     * @return
+     * @throws Exception
+     */
+    public boolean register(String acnum, DeviceDTO deviceDTO) throws Exception {
+        Device device = new Device();
+        BeanUtils.copyProperties(deviceDTO, device);
+        device.setAcnum(acnum);
+        device.setNickname(acnum);
+        device.setSecretKey(AESUtils.generateUUID16Len());
+        device.setCreatedTime(new Date());
+        device.setFrankMachineId(deviceDTO.getId());
+        device.setCurFmStatus(FMStatusEnum.ADD.getCode());
+        device.setFlow(FlowEnum.FlowEnd.getCode());
+        device.setFlowDetail(FlowDetailEnum.DEFAULT.getCode());
+        device.setFmEvent(1);
+        device.setUpdatedTime(new Date());
+        device.setCreatedTime(new Date());
+
+        deviceService.bindFMDeviceToUser(device);
+        return true;
+    }
 
     /**
      * 【机器请求授权协议】调用本方法

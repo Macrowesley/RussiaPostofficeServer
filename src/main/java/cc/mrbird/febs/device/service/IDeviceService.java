@@ -79,6 +79,11 @@ public interface IDeviceService extends IService<Device> {
     void bindDevicesToUser(String deviceIds, Long sendUserId);
 
     /**
+     * 从FM中的信息中添加设备
+     */
+    void bindFMDeviceToUser(Device device);
+
+    /**
      * 通过绑定的userId删除所有的关系
      * @param userId
      */

@@ -17,7 +17,7 @@
             and d.nickname = #{device.nickname}
         </if>
         <if test="device.curFmStatus != null and device.curFmStatus != ''">
-            and d.device_status = #{device.curFmStatus}
+            and d.cur_fm_status = #{device.curFmStatus}
         </if>
 
 
