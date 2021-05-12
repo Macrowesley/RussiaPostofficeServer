@@ -2,11 +2,13 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
+import cc.mrbird.febs.rcs.common.enums.CancelMsgEnum;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.entity.Contract;
 import io.netty.channel.ChannelHandlerContext;
@@ -94,10 +96,19 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                     String transactionId = AESUtils.createUUID();
                     transactionFMDTO.setId(transactionId);
 
-                    //处理transaction
-                    Contract dbContract = serviceManageCenter.transactions(transactionFMDTO);
-
+                    Contract dbContract = null;
+                    if(Long.valueOf(transactionFMDTO.getMailVal()) == 0){
+                        CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
+                        cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
+                        cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
+                        cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
+                        dbContract = serviceManageCenter.cancelJob(cancelJobFMDTO);
+                    }else {
+                        //处理transaction
+                        dbContract = serviceManageCenter.transactions(transactionFMDTO);
+                    }
                     return getSuccessResult(version, ctx, transactionId, dbContract);
+
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME);
             }
