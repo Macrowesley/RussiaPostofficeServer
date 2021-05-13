@@ -64,7 +64,8 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 long timestamp = System.currentTimeMillis();
                 //todo 要删掉这段代码，用下面的代码，需要添加一个时间戳
 //                String entryptContent = AESUtils.encrypt(tempKey , uuid);
-                String entryptContent = AESUtils.encrypt(tempKey + String.valueOf(timestamp), uuid);
+                String content = tempKey + String.valueOf(timestamp);
+                String entryptContent = AESUtils.encrypt(content, uuid);
 
 
                 //保存临时密钥
@@ -81,7 +82,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);
                 baos.write(versionBytes, 0, versionBytes.length);
                 baos.write(encryptBytes, 0, encryptBytes.length);
-                log.info("获取临时密钥：  结束 ， 临时密钥= {} 发给机器的是{}", tempKey, entryptContent);
+                log.info("获取临时密钥：  结束 ， 临时密钥= {} content = {} 发给机器的是{}", tempKey, content, entryptContent);
 
                 return getWriteContent(baos.toByteArray());
             default:

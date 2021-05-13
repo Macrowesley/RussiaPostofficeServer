@@ -197,13 +197,15 @@ public class ProtocolService {
                     boolean isLogin = ChannelMapperUtils.containsValue(ctx);
                     if (!isLogin){
                         //如果没有登录 删除ctx
-                        log.error("ctx = {} 没有通过验证，无法使用，踢掉", ctx);
+                        log.error("ctx = {} 没有通过验证，无法使用，踢掉  当前协议{}", ctx ,  BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));
                         nettyServerHandler.channelInactive(ctx);
+                        return getErrorRes(protocolType);
                     }
                 }
 
                 return baseProtocol.parseContentAndRspone(data, ctx);
             } catch (Exception e) {
+                e.printStackTrace();
                 log.error("返回结果出错：" + e.getMessage());
                 return getErrorRes(protocolType);
             }

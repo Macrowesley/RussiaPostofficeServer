@@ -188,7 +188,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         //删除redis缓存
         redisService.del(ctx.channel().id().toString());
 
-        String responseData = res + version + String.valueOf(eventType) + statusType ;
+        String responseData = (res == true? 1: 0) + version + String.valueOf(eventType) + statusType ;
 
         //返回内容的加密数据
         //获取临时密钥

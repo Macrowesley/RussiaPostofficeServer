@@ -161,7 +161,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
          }__attribute__((packed))CheckServiceResult, *CheckServiceResult;
          */
         String responseData = FMResultEnum.SUCCESS.getCode() +
-                version + String.format("%08d",curStatus) + isPrintEnd
+                version + String.format("%08d",curStatus) + (isPrintEnd==true?1:0)
                 + JSON.toJSONString(foreseenFMDTO);
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);

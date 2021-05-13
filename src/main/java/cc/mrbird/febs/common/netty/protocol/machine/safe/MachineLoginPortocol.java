@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.misc.Version;
 
 /**
  * 机器登录校验协议
@@ -48,7 +49,8 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             unsigned char length;               //
             unsigned char type;                 //0xA5
             unsigned char acnum[6];             //机器的表头号
-            unsigned char content[?];           //版本内容(3) + 时间戳(13)
+            unsigned char version[3];           //版本内容(3)
+            unsigned char content[?];           //加密内容：时间戳(13)
             unsigned char check;                //校验位
             unsigned char tail;                 //0xD0
         }__attribute__((packed))machineInfo,*machineInfo;
@@ -61,22 +63,27 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
 
+            //解析版本
+            String versionContent = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+            pos += VERSION_LEN;
+
             //加密内容
-            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
-            String versionContent = dectryptContent.substring(0, VERSION_LEN);
+//            String versionContent = dectryptContent.substring(0, VERSION_LEN);
             //解析版本号
             int version = Integer.valueOf(versionContent);
             switch (version) {
                 case 1:
                     pos = VERSION_LEN;
 
-                    String timestamp = dectryptContent.substring(pos, pos + TIMESTAMP_LEN);
+//                    String timestamp = dectryptContent.substring(pos, pos + TIMESTAMP_LEN);
+                    String timestamp = dectryptContent.trim();
 
                     //验证时间是否正常
                     byte[] res = new byte[0x00];

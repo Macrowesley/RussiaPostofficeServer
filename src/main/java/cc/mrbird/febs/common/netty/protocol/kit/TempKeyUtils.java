@@ -22,7 +22,7 @@ public class TempKeyUtils {
      */
     public synchronized void addTempKey(ChannelHandlerContext ctx, String tempKey){
         //todo 测试
-        tempKey = "2c52b82ced2e2ec2";
+//        tempKey = "2c52b82ced2e2ec2";
         redisService.set(createKeyName(ctx), tempKey);
     }
 
@@ -32,8 +32,9 @@ public class TempKeyUtils {
      * @return
      */
     public synchronized String getTempKey(ChannelHandlerContext ctx) throws Exception{
-//        return (String) redisService.get(createKeyName(ctx));
-        return "2c52b82ced2e2ec2";
+        return (String) redisService.get(createKeyName(ctx));
+        //todo 测试
+//        return "2c52b82ced2e2ec2";
     }
 
     /**

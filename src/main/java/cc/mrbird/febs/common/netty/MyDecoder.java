@@ -68,7 +68,7 @@ public class MyDecoder extends ByteToMessageDecoder {
             byte[] lengthByte = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
             buffer.readBytes(lengthByte);
             int length = BaseTypeUtils.ByteArray2IntConsOnLenght(lengthByte);
-            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(lengthByte));
+//            log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(lengthByte));
 
             // 判断请求数据包数据是否到齐
             if (length > MAX_LEN) {
@@ -96,7 +96,7 @@ public class MyDecoder extends ByteToMessageDecoder {
             socketData.setContent(data);
             list.add(socketData);
 
-            log.info("decode 总耗时：" + (System.currentTimeMillis() - time1));
+//            log.info("decode 总耗时：" + (System.currentTimeMillis() - time1));
         }
 
         //定长 解析没有问题
