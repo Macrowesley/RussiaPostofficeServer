@@ -87,7 +87,8 @@ public class MyDecoder extends ByteToMessageDecoder {
             buffer.readBytes(data);
             if (!BaseTypeUtils.checkChkSum(data, data.length - 2)){
                 log.error("验证不成功，跳过这些数据");
-                log.error("长度 = " + length + " data = "  + BaseTypeUtils.bytesToHexString(data));
+                log.info("长度 = " + length + "  长度内容 = " + BaseTypeUtils.bytesToHexString(lengthByte));
+                log.error("长度 = " + length + " 从第4个字节开始 data = "  + BaseTypeUtils.bytesToHexString(data));
                 return;
             }
 //            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
@@ -112,6 +113,7 @@ public class MyDecoder extends ByteToMessageDecoder {
 
         ReferenceCountUtil.release(buffer);*/
     }
+    @Deprecated
     private void test(ByteBuf buffer, List<Object> list){
         if (buffer.readableBytes() >= BASE_LENGTH && buffer.isReadable()) {
             long time1 = System.currentTimeMillis();

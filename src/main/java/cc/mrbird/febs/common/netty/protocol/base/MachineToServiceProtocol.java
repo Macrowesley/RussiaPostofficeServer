@@ -51,6 +51,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
     }
 
     public byte[] getErrorResult(ChannelHandlerContext ctx, String version, String operationName) throws Exception {
+        log.error("返回错误结果");
         return getErrorResult(ctx, version,operationName, FMResultEnum.DefaultError.getCode());
     }
     public byte[] getErrorResult(ChannelHandlerContext ctx, String version, String operationName, int resCode) throws Exception {

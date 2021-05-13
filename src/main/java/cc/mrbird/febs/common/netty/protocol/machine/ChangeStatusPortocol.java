@@ -110,6 +110,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
         }catch (Exception e){
+            log.error(e.getMessage());
             return getErrorResult(ctx, version,OPERATION_NAME);
         }
 
