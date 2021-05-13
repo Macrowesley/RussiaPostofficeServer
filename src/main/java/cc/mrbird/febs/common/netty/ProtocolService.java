@@ -1,16 +1,21 @@
 package cc.mrbird.febs.common.netty;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.machine.*;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.machine.ChangeStatusPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.ForeseensCancelPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.ForeseensPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.TransactionsPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.BalanceResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.UpdateTaxesResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
-import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.BalanceResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.result.CloseSSHResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.result.OpenSSHResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.UpdateTaxesResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.safe.MachineLoginPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -21,12 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * 协议处理
  */
 @Slf4j
 @Component
 public class ProtocolService {
+
+    @Autowired
+    NettyServerHandler nettyServerHandler;
 
     @Autowired
     HeartPortocol heartPortocol;
@@ -66,6 +76,9 @@ public class ProtocolService {
 
     @Autowired
     TransactionsPortocol transactionsPortocol;
+
+    @Autowired
+    MachineLoginPortocol machineLoginPortocol;
 
     //出问题了返回该结果
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
@@ -123,16 +136,26 @@ public class ProtocolService {
             byte protocolType = MachineToServiceProtocol.parseType(data);
 
             MachineToServiceProtocol baseProtocol = null;
+
+            boolean isNeedLogin = true;
             switch (protocolType) {
                 case HeartPortocol.PROTOCOL_TYPE:
                     baseProtocol = heartPortocol;
+                    isNeedLogin = false;
                     break;
                 case QueryIDPortocol.PROTOCOL_TYPE:
                     baseProtocol = queryIDPortocol;
+                    isNeedLogin = false;
                     break;
                 case QueryTemKeyPortocol.PROTOCOL_TYPE:
                     baseProtocol = queryTemKeyPortocol;
+                    isNeedLogin = false;
                     break;
+                case MachineLoginPortocol.PROTOCOL_TYPE:
+                    baseProtocol = machineLoginPortocol;
+                    isNeedLogin = false;
+                    break;
+                    //下面所有的操作必须登录了才能执行
                 case QueryProtocol.PROTOCOL_TYPE:
                     baseProtocol = queryProtocol;
                     break;
@@ -168,6 +191,17 @@ public class ProtocolService {
             }
 
             try {
+                //判断是否通过验证
+                if (isNeedLogin){
+                    //检查改连接是否保存在缓存中
+                    boolean isLogin = ChannelMapperUtils.containsValue(ctx);
+                    if (!isLogin){
+                        //如果没有登录 删除ctx
+                        log.error("ctx = {} 没有通过验证，无法使用，踢掉", ctx);
+                        nettyServerHandler.channelInactive(ctx);
+                    }
+                }
+
                 return baseProtocol.parseContentAndRspone(data, ctx);
             } catch (Exception e) {
                 log.error("返回结果出错：" + e.getMessage());
@@ -185,6 +219,6 @@ public class ProtocolService {
      * @return
      */
     private byte[] getErrorRes(byte protocolType) {
-        return new byte[]{(byte) 0x03, protocolType, (byte) 0x00, (byte) 0xD0};
+        return new byte[]{(byte) 0x03, 0x00, protocolType, (byte) 0x00, (byte) 0xD0};
     }
 }
