@@ -199,6 +199,7 @@ public class ProtocolService {
                         //如果没有登录 删除ctx
                         log.error("ctx = {} 没有通过验证，无法使用，踢掉", ctx);
                         nettyServerHandler.channelInactive(ctx);
+                        return getErrorRes(protocolType);
                     }
                 }
 
