@@ -3,7 +3,6 @@ package cc.mrbird.febs.device.service.impl;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
-import cc.mrbird.febs.common.entity.UserSpecialConstant;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -216,19 +215,19 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void bindFMDeviceToUser(Device device) {
-        Device dbDevice = getDeviceByFrankMachineId(device.getFrankMachineId());
-        if (dbDevice != null){
-            log.error("机器通过协议添加device到数据库，但是这个{}}已经保存在数据库了", device.getFrankMachineId());
-            return;
-        }
-        this.save(device);
+    public void addMachineInfo(Device dbDevice, DeviceDTO deviceDTO) {
+        BeanUtils.copyProperties(deviceDTO, dbDevice);
+        dbDevice.setFrankMachineId(deviceDTO.getId());
+        dbDevice.setCurFmStatus(FMStatusEnum.ADD_MACHINE_INFO.getCode());
+        dbDevice.setFutureFmStatus(FMStatusEnum.ADD_MACHINE_INFO.getCode());
+        dbDevice.setFlow(FlowEnum.FlowEnd.getCode());
+        dbDevice.setFlowDetail(FlowDetailEnum.DEFAULT.getCode());
+        dbDevice.setFmEvent(1);
+        dbDevice.setUpdatedTime(new Date());
 
-        UserDevice userDevice = new UserDevice();
-        userDevice.setDeviceId(device.getDeviceId());
-        userDevice.setUserId(UserSpecialConstant.elsAdmin);
-        userDeviceService.save(userDevice);
-        log.info("机器通过协议添加device到数据库");
+        this.saveOrUpdate(dbDevice);
+
+        log.info("机器通过协议更新信息device到数据库");
     }
 
     /**

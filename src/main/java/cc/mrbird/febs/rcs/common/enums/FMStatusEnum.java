@@ -2,7 +2,7 @@ package cc.mrbird.febs.rcs.common.enums;
 
 
 public enum FMStatusEnum {
-    ADD(0,"ADD","机器出厂的时候添加信息到服务器数据库 这是自己定义的状态，不需要发给俄罗斯"),
+    ADD_MACHINE_INFO(0,"ADD","机器出厂的时候添加信息到服务器数据库 数据库有了基本的机器信息，加上这个信息就完整了 这是自己定义的状态，不需要发给俄罗斯"),
     UNKNOWN(1,"UNKNOWN", "未知"),
     REGISTERED(2,"REGISTERED","注册"),
     AUTHORIZED(3,"AUTHORIZED","授权"),

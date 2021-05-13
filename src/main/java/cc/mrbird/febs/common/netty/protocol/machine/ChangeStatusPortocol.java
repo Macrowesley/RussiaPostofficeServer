@@ -154,8 +154,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         switch (event){
             case STATUS:
                 switch (status){
-                    case ADD:
-                        operationRes = serviceManageCenter.register(acnum, deviceDto);
+                    case ADD_MACHINE_INFO:
+                        operationRes = serviceManageCenter.addMachineInfo(acnum, deviceDto);
                         break;
                     case AUTHORIZED:
                         operationRes = serviceManageCenter.auth(deviceDto);
