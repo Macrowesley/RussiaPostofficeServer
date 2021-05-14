@@ -18,7 +18,7 @@ public class ChannelMapperUtils {
      * 管理一个全局map，保存连接进服务端的通道数量
      */
     private static ConcurrentHashMap<String, ChannelHandlerContext> channelMap = new ConcurrentHashMap<>(100);
-    private static volatile AtomicInteger channelCount = new AtomicInteger();
+    private static volatile AtomicInteger channelCount = new AtomicInteger(0);
 
     public ChannelMapperUtils() {
     }

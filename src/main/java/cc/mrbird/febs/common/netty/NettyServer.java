@@ -51,7 +51,7 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         //如果客户端60秒没有任何请求,就关闭客户端连接（很重要）
-                        socketChannel.pipeline().addLast("readtime",new ReadTimeoutHandler(60));
+                        socketChannel.pipeline().addLast("readtime",new ReadTimeoutHandler(20));
                         // 解决粘包问题 通过解析不定长的协议
                         socketChannel.pipeline().addLast("decoder", new MyDecoder());
 

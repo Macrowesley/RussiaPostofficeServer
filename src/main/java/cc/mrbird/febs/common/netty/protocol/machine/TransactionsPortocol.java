@@ -114,7 +114,8 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             }
 
         } catch (Exception e) {
-            log.error(OPERATION_NAME + "error info = " + e.getMessage());
+            e.printStackTrace();
+            log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
             log.info("机器结束 transaction");

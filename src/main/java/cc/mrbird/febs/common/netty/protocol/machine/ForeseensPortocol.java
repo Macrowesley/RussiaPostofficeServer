@@ -70,6 +70,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))Foreseens, *Foreseens;
          */
+
             log.info("机器开始 Foreseens");
 
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果

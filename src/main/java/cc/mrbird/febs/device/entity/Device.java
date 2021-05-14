@@ -152,7 +152,7 @@ public class Device implements Serializable {
     /**
      * 机器主键uuid
      */
-    @TableId(value = "frank_machine_id")
+    @TableField(value = "frank_machine_id")
     private String frankMachineId;
 
     /**

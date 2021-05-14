@@ -48,7 +48,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
 
         String clientIp = insocket.getAddress().getHostAddress();
@@ -59,13 +58,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
         //如果map中不包含此连接，就保存连接
         if (CHANNEL_MAP.containsKey(channelId)) {
-            log.info("客户端【" + channelId + "】是连接状态，连接通道数量: " + CHANNEL_MAP.size() + " insocket="+insocket.toString());
+            log.info("客户端【" + channelId + "】是连接状态，连接通道数量: " + CHANNEL_MAP.size() + " insocket="+insocket.toString()  + " 有效连接数量：" + ChannelMapperUtils.getChannleSize());
         } else {
             //保存连接
             CHANNEL_MAP.put(channelId, ctx);
 
             log.info("客户端【" + channelId + "】连接netty服务器[IP:" + clientIp + "--->PORT:" + clientPort + "]" + " insocket="+insocket.toString());
-            log.info("连接通道数量: " + CHANNEL_MAP.size());
+            log.info("连接通道数量: " + CHANNEL_MAP.size() + " 有效连接数量：" + ChannelMapperUtils.getChannleSize() );
         }
     }
 
@@ -94,20 +93,16 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
         tempTimeUtils.deleteTempTime(ctx);
 
+        ChannelMapperUtils.deleteChannelByValue(ctx);
+
         //包含此客户端才去删除
         if (CHANNEL_MAP.containsKey(channelId)) {
 
-            ChannelHandlerContext temp = CHANNEL_MAP.get(channelId);
-            ChannelMapperUtils.deleteChannelByValue(temp);
-
             //删除连接
             CHANNEL_MAP.remove(channelId);
-            log.info("删除handler中保存的连接通道");
 
-
-            System.out.println();
             log.info("客户端【" + channelId + "】退出netty服务器[IP:" + clientIp + "--->PORT:" + insocket.getPort() + "]");
-            log.info("连接通道数量: " + CHANNEL_MAP.size());
+            log.info("连接通道数量: " + CHANNEL_MAP.size() + " 有效连接数量：" + ChannelMapperUtils.getChannleSize() );
         }
     }
 
@@ -129,12 +124,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
                 log.info("Client: " + socketString + " READER_IDLE 读超时");
+                removeCache(ctx);
                 ctx.disconnect();
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 log.info("Client: " + socketString + " WRITER_IDLE 写超时");
+                removeCache(ctx);
                 ctx.disconnect();
             } else if (event.state() == IdleState.ALL_IDLE) {
                 log.info("Client: " + socketString + " ALL_IDLE 总超时");
+                removeCache(ctx);
                 ctx.disconnect();
             }
         }
@@ -147,7 +145,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.info("客户端发生异常，断开连接");
         removeCache(ctx);
-        log.info(ctx.channel().id() + " 发生了错误,此连接被关闭" + "此时连通数量: " + CHANNEL_MAP.size());
+        log.info(ctx.channel().id() + " 发生了错误,此连接被关闭" + "此时连通数量: " + CHANNEL_MAP.size()  + " 有效连接数量：" + ChannelMapperUtils.getChannleSize());
         cause.printStackTrace();
         ctx.close();
     }

@@ -323,7 +323,7 @@ public class ServiceManageCenter {
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
         Integer dbCurFmStatus = dbDevice.getCurFmStatus();
         FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus <= FMStatusEnum.UNKNOWN.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
+        if (dbCurFmStatus <= FMStatusEnum.ADD_MACHINE_INFO.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
             throw new FmException("foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
         }
 
@@ -385,6 +385,9 @@ public class ServiceManageCenter {
          只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow
          */
         PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
+        if (dbPrintJob == null){
+            throw new FmException("dbPrintJob == null foreseenId="+foreseenId);
+        }
         FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
