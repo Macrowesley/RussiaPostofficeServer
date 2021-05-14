@@ -323,10 +323,11 @@ public class ServiceManageCenter {
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
         Integer dbCurFmStatus = dbDevice.getCurFmStatus();
         FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus <= FMStatusEnum.ADD_MACHINE_INFO.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
+        if (dbCurFmStatus < FMStatusEnum.ADD_MACHINE_INFO.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
             throw new FmException("foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
         }
 
+        log.info("foreseenFMDTO.getContractId() = {}", foreseenFMDTO.getContractId());
         Contract dbContract = contractService.getByConractId(foreseenFMDTO.getContractId());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();

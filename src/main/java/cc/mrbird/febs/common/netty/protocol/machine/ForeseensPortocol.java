@@ -127,7 +127,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
         } catch (Exception e) {
-            log.error(OPERATION_NAME + "error info = " + e.getMessage());
+            log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
             log.info("机器结束 Foreseens");

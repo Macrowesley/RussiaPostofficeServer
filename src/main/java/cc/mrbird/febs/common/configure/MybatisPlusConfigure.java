@@ -17,11 +17,11 @@ public class MybatisPlusConfigure {
     /**
      * 注册数据权限
      */
-    @Bean
+   /* @Bean
     @Order(-1)
     public DataPermissionInterceptor dataPermissionInterceptor() {
         return new DataPermissionInterceptor();
-    }
+    }*/
 
     /**
      * 注册分页插件
@@ -30,9 +30,9 @@ public class MybatisPlusConfigure {
     @Order(-2)
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
-        List<ISqlParser> sqlParserList = new ArrayList<>();
-        sqlParserList.add(new BlockAttackSqlParser());
-        paginationInterceptor.setSqlParserList(sqlParserList);
+//        List<ISqlParser> sqlParserList = new ArrayList<>();
+//        sqlParserList.add(new BlockAttackSqlParser());
+//        paginationInterceptor.setSqlParserList(sqlParserList);
         return paginationInterceptor;
     }
 }
