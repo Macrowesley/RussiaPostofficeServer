@@ -72,6 +72,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
+            log.info("enctryptContent = {} tempKey = {}", enctryptContent, tempKey);
 
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
@@ -86,7 +87,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                     String timestamp = dectryptContent.trim();
 
                     //验证时间是否正常
-                    byte[] res = new byte[0x00];
+                    byte[] res = new byte[]{0x00};
                     if(tempTimeUtils.isValidTime(ctx, Long.valueOf(timestamp))){
                         res[0] = 0x01;
 
@@ -104,7 +105,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
                     //返回结果
                     /*typedef  struct{
-                        unsigned char length[2];				 //2个字节
+                        unsigned char length[2];			 //2个字节
                         unsigned char head;				 	 //0xA5
                         unsigned char res;                   //01 正常  00 失败 失败的话，只能重新执行请求密钥，再发送机器信息
                         unsigned char check;				 //校验位
@@ -118,6 +119,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                     throw new Exception("获取唯一id：版本不存在");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("机器登录校验协议： 解析出错" + e.getMessage());
             throw new Exception(e.getMessage());
         }
