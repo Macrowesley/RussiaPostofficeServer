@@ -129,9 +129,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
          创建foreseens和ForeseenProduct
          */
 
+        boolean isForeseensSuccess = curFlowDetail == FlowDetailEnum.JobingForeseensSuccess;
         //创建job
         PrintJob printJob = new PrintJob();
-        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess){
+        if (isForeseensSuccess){
             log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess");
             printJob.setFlow(FlowEnum.FlowIng.getCode());
         }else{
@@ -170,6 +171,20 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
 
         foreseenProductService.saveBatch(foreseenProductList);
+
+        //todo 修改合同的申请金额管理
+        /**
+         * 申请foreseen通过了，那就需要更新合同金额
+         * 然后取消foreseen后，也需要把那笔金额给退回去
+         * transaction以实际消耗金额为主，申请金额也要改成这个
+         */
+        if (isForeseensSuccess) {
+            Contract dbContract = contractService.getByConractId(foreseenDTO.getContractId());
+            Double consolidate = dbContract.getConsolidate();
+            double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getMailVal());
+            dbContract.setConsolidate(newConsolidate);
+            contractService.saveOrUpdate(dbContract);
+        }
     }
 
     /**
@@ -181,10 +196,24 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Override
     public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail) {
         //更新PrintJob
-        if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnowError){
+        if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnowError) {
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
+        }else if(curFlowDetail == FlowDetailEnum.JobEndFailForeseensCancel4xxError){
+            dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
         }else{
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
+
+            //todo 修改合同的申请金额管理
+            Contract dbContract = contractService.getByConractId(dbPrintJob.getContractId());
+            Double consolidate = dbContract.getConsolidate();
+
+            //foreseen的金额
+            Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
+            Double usedConsolidate = dbForeseen.getMailVal();
+
+            double newConsolidate = DoubleKit.add(consolidate, usedConsolidate);
+            dbContract.setConsolidate(newConsolidate);
+            contractService.saveOrUpdate(dbContract);
         }
         dbPrintJob.setUpdatedTime(new Date());
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
@@ -213,6 +242,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }else{
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
             dbPrintJob.setUpdatedTime(new Date());
+            dbPrintJob.setTransactionId(transactionDTO.getId());
             this.updatePrintJob(dbPrintJob);
         }
 
@@ -239,13 +269,22 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
         frankService.saveBatch(frankList);
 
-        //如果一切OK，更新contract的金额 todo 确定金额是哪个减哪个
+        //如果一切OK，更新contract的实际消耗金额 todo 确定金额是哪个减哪个
+        //todo 修改合同的申请金额管理 实际申请金额 和实际使用金额一致，然后更新申请金额
         if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
-            Double current = dbContract.getCurrent();
-            Double consolidate = dbContract.getConsolidate();
+            Double dbCurrent = dbContract.getCurrent();
+            Double dbConsolidate = dbContract.getConsolidate();
 
-            double newCurrent = DoubleKit.sub(current, transaction.getMailVal());
-            double newConsolidate = DoubleKit.sub(consolidate, transaction.getCreditVal());
+            //金额： 合同余额减去transaction的金额
+            double newCurrent = DoubleKit.sub(dbCurrent, transaction.getMailVal());
+
+            //foreseen的金额
+            Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
+            Double usedConsolidate = dbForeseen.getMailVal();
+
+            //todo 这里逻辑待定：Consolidate 金额： 当前合同金额 + foreseen中的金额 — 实际消耗的金额
+            double newConsolidate = DoubleKit.add(dbConsolidate, usedConsolidate);
+            newConsolidate = DoubleKit.sub(newConsolidate, transaction.getCreditVal());
 
             dbContract.setCurrent(newCurrent);
             dbContract.setConsolidate(newConsolidate);

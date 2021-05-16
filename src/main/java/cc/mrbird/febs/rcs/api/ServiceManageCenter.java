@@ -338,9 +338,9 @@ public class ServiceManageCenter {
         }
 
         //判断合同金额是否够用
-        //todo 用哪个判断：dbCurrent 还是 dbConsolidate
+        //todo 用哪个判断：dbCurrent 还是 dbConsolidate  申请的时候，用哪个来管钱？
         double fmMailVal = MoneyUtils.changeF2Y(foreseenFMDTO.getMailVal());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmMailVal) || Long.valueOf(foreseenFMDTO.getMailVal()) == 0) {
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmMailVal) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmMailVal) || Long.valueOf(foreseenFMDTO.getMailVal()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmMailVal为" + fmMailVal + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
