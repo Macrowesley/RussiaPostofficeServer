@@ -65,7 +65,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
                                                                          2 请求太频繁，1分钟内请勿重复请求
                                                                          3 TransactionError异常，需要继续执行transaction
                                                                          4 没有闭环，请等待
-                                                                         5 版本信息不对) + 版本内容(3)
+                                                                         5 版本信息不对
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))status, *status;

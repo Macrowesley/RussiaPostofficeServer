@@ -21,14 +21,14 @@ public enum FlowDetailEnum {
 
     //结束的各种状态
     JobEndSuccess(61,"闭环：Foreseen和Transaction 都成功了"),
-    JobEndFailForeseensUnKnowError(62,"闭环：Foreseen请求未成功发送给俄罗斯"),
+    JobEndFailForeseensUnKnowError(62,"闭环：Foreseen请求，未成功发送给俄罗斯"),
     JobEndFailForeseens4xxError(63,"闭环：Foreseen请求返回4XX或者5XX错误"),
     JobEndFailForeseensCancel4xxError(64,"闭环：ForeseensCancel请求返回4XX或者5XX错误"),
     JobEndFailForeseensCancelSuccess(65,"闭环：ForeseensCancel请求成功，闭环"),
     JobEndFailTransaction4xxError(66,"闭环：Transaction请求返回4XX或者5XX错误"),
     //异常的各种状态,
-    JobErrorForeseensCancelUnKnowError(67,"未闭环：ForeseensCancel请求未成功发送给俄罗斯"),
-    JobErrorTransactionUnKnow(68,"未闭环：Transaction请求未成功发送给俄罗斯"),
+    JobErrorForeseensCancelUnKnowError(67,"未闭环：ForeseensCancel请求，未成功发送给俄罗斯"),
+    JobErrorTransactionUnKnow(68,"未闭环：Transaction请求，未成功发送给俄罗斯"),
     //进行中的状态
     JobingForeseensSuccess(69,"未闭环：Foreseen请求成功"),
 
@@ -48,19 +48,19 @@ public enum FlowDetailEnum {
                 return item;
             }
         }
-        throw new FmException("code=" + code + ",没有对应的FlowDetailEnum");
+        throw new RuntimeException("code=" + code + ",没有对应的FlowDetailEnum");
     }
 
     public static FlowDetailEnum getByCode(int code, int min, int max) {
         if (code < min || code > max) {
-            throw new FmException("不在范围内 code=" + code + ", min=" + min + " max = " + max);
+            throw new RuntimeException("不在范围内 code=" + code + ", min=" + min + " max = " + max);
         }
         for (FlowDetailEnum item : FlowDetailEnum.values()) {
             if (item.getCode() == code) {
                 return item;
             }
         }
-        throw new FmException("code=" + code + ",没有对应的FlowDetailEnum");
+        throw new RuntimeException("code=" + code + ",没有对应的FlowDetailEnum");
     }
 
     public int getCode() {

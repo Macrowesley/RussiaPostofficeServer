@@ -10,6 +10,7 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.CancelMsgEnum;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -98,11 +99,12 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
                     Contract dbContract = null;
                     //取消订单
-                    if(Long.valueOf(transactionFMDTO.getMailVal()) == 0){
+                    if (Long.valueOf(transactionFMDTO.getMailVal()) == 0) {
                         CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
                         cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
                         cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
+                        cancelJobFMDTO.setContractId(transactionFMDTO.getContractId());
                         dbContract = serviceManageCenter.cancelJob(cancelJobFMDTO);
                     } else {
                         //处理transaction
@@ -110,9 +112,16 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                     }
                     return getSuccessResult(version, ctx, transactionId, dbContract);
                 default:
-                    return getErrorResult(ctx, version, OPERATION_NAME);
+                    return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
 
+        }catch (FmException e){
+            log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
+            if (-1 != e.getCode()) {
+                return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
+            }else{
+                return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             log.error(OPERATION_NAME + " error info = " + e.getMessage());

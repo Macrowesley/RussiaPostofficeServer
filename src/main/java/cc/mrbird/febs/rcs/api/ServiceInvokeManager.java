@@ -28,8 +28,12 @@ public class ServiceInvokeManager {
 
 //    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 //    private final String baseUrl = "https://asufm.russianpost.ru/rcs-manager/v1";
-    private final String baseUrl = "http://test.asufm-test.10.238.33.32.xip.io/rcs-manager";
+    //废弃
+//    private final String baseUrl = "http://test.asufm-test.10.238.33.32.xip.io/rcs-manager";
+    //最新
+    private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
+    private final String testContractId = "111-aaa-333-bbb-555-666";
 
     /**
      * 发送机器状况
@@ -131,6 +135,10 @@ public class ServiceInvokeManager {
      * @PostMapping("/foreseens")
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
+        //todo 当看到特殊合同号，返回模拟结果
+        if (foreseenDTO.getContractId().equals(testContractId)){
+            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
+        }
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -143,7 +151,12 @@ public class ServiceInvokeManager {
      * @return
      * @PostMapping("/foreseens/{foreseenId}/cancel")
      */
-    public ApiResponse cancel(String foreseenId, ForeseenCancel foreseenCancel) {
+    public ApiResponse cancel(String foreseenId, String contractId, ForeseenCancel foreseenCancel) {
+        //todo 当看到特殊合同号，返回模拟结果
+        if (contractId.equals(testContractId)){
+            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
+        }
+
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
 
         Map<String, String> map = new HashMap<>();
@@ -157,6 +170,10 @@ public class ServiceInvokeManager {
      * @PostMapping("/transactions")
      */
     public ApiResponse transactions(TransactionDTO transactionDTO) {
+        //todo 当看到特殊合同号，返回模拟结果
+        if (transactionDTO.getContractId().equals(testContractId)){
+            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
+        }
         String url = baseUrl + "/transactions";
         return doExchange(url, transactionDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }

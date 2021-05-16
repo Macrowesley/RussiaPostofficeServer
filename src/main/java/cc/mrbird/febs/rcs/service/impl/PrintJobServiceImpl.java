@@ -132,8 +132,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //创建job
         PrintJob printJob = new PrintJob();
         if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess){
+            log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess");
             printJob.setFlow(FlowEnum.FlowIng.getCode());
         }else{
+            log.info("curFlowDetail == FlowEnum.FlowEnd.getCode");
             printJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
 
@@ -153,6 +155,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         Foreseen foreseen = new Foreseen();
         BeanUtils.copyProperties(foreseenDTO,foreseen);
         foreseen.setForeseenStatus(FlowEnum.FlowEnd.getCode());
+        foreseen.setForeseenStatus(1);
         foreseen.setUpdatedTime(new Date());
         foreseen.setCreatedTime(new Date());
         foreseenService.createForeseen(foreseen);
@@ -160,6 +163,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         List<ForeseenProduct> foreseenProductList = new ArrayList<>();
         for (ForeseenProductDTO productDto: foreseenDTO.getProducts()){
             ForeseenProduct foreseenProduct = new ForeseenProduct();
+            BeanUtils.copyProperties(productDto,  foreseenProduct);
             foreseenProduct.setForeseenId(foreseen.getId());
             foreseenProduct.setCreatedTime(new Date());
             foreseenProductList.add(foreseenProduct);
@@ -183,6 +187,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
         dbPrintJob.setUpdatedTime(new Date());
+        dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         dbPrintJob.setCancelMsgCode(cancelJobFMDTO.getCancelMsgCode());
         this.updatePrintJob(dbPrintJob);
     }
@@ -197,6 +202,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract , TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
+        dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         //更新PrintJob
         if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
             //todo 碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
@@ -206,9 +212,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             return dbContract;
         }else{
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
+            dbPrintJob.setUpdatedTime(new Date());
+            this.updatePrintJob(dbPrintJob);
         }
-        dbPrintJob.setUpdatedTime(new Date());
-        this.updatePrintJob(dbPrintJob);
+
 
         //添加 transaction
         Transaction transaction = new Transaction();
@@ -216,6 +223,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         transaction.setTransactionStatus(FlowEnum.FlowEnd.getCode());
         transaction.setUpdatedTime(new Date());
         transaction.setCreatedTime(new Date());
+        transaction.setTransactionStatus(1);
         transactionService.createTransaction(transaction);
 
         //添加frank
