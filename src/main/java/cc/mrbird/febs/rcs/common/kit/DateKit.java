@@ -6,7 +6,11 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Slf4j
 public class DateKit {
@@ -89,6 +93,40 @@ public class DateKit {
      */
     public static String formatDate(Date date) {
         return DatePattern.NORM_DATE_FORMAT.format(date);
+    }
+
+    /**
+     * 日期格式转换yyyy-MM-dd'T'HH:mm:ss.SSSXXX  (yyyy-MM-dd'T'HH:mm:ss.SSSZ) TO  yyyy-MM-dd HH:mm:ss
+     * 2020-04-09T23:00:00.000+08:00 TO 2020-04-09 23:00:00
+     * @throws ParseException
+     */
+    public static String dealDateFormat(String oldDateStr) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
+        Date  date = df.parse(oldDateStr);
+        SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+        Date date1 =  df1.parse(date.toString());
+        DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return df2.format(date1);
+    }
+
+    /**
+     * 日期格式转换 yyyy-MM-dd HH:mm:ss  TO yyyy-MM-dd'T'HH:mm:ss.SSSXXX  (yyyy-MM-dd'T'HH:mm:ss.SSSZ)
+     * 2020-04-09 23:00:00 TO 2020-04-09T23:00:00.000+08:00
+     * @throws ParseException
+     */
+    public static String dealDateFormatReverse(String oldDateStr) throws ParseException{
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date1 =  df2.parse(oldDateStr);
+        return df.format(date1);
+    }
+
+    public static String createRussiatime(){
+        try {
+            return dealDateFormatReverse(formatDateTime(new Date()));
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     public static void main(String[] args) {
