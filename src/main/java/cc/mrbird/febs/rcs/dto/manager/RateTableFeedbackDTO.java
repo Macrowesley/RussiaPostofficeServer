@@ -30,4 +30,9 @@ public class RateTableFeedbackDTO {
      * - E0042015A
      */
     String[] rcsVersions;
+
+    //todo 确定后，数据库添加这个字段
+    String internals;
+
+
 }

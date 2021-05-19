@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.common.enums;
 public enum ResultEnum {
 
     SUCCESS(200, "成功"),
+    SUCCESS_204(204, "成功"),
 
     OPERATION_ERROR(400, "操作错误"),
 

@@ -139,7 +139,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         deviceDto.setPostOffice(postOffice);
         deviceDto.setTaxVersion(taxVersion);
         deviceDto.setEventEnum(event);
-        deviceDto.setTimeStamp(DateKit.formatDate(new Date()));
+        deviceDto.setDateTime(DateKit.createRussiatime());
 
         //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
 //        String key = ctx.channel().id().toString() + event.getEvent()  + status.getStatus();

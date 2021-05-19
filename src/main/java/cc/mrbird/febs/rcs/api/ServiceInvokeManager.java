@@ -2,7 +2,9 @@ package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +57,36 @@ public class ServiceInvokeManager {
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
     public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
+        /*String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
+        HashMap<String, String> map = new HashMap<>();
+        map.put("frankMachineId", frankMachineId);
+
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);*/
+
+        frankMachineId = "FM100001";
+        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
+        DeviceTest deviceTest = new DeviceTest();
+        deviceTest.setId(frankMachineId);
+
+
+        /*deviceTest.setId(frankMachineId);
+        deviceTest.setPostOffice("131000");
+        deviceTest.setDateTime(DateKit.createRussiatime());
+        deviceTest.setStatus("ENABLED");
+        deviceTest.setTaxVersion("1.0");*/
+
+        deviceTest.setPostOffice("394040");
+        deviceTest.setDateTime(DateKit.createRussiatime());
+        deviceTest.setStatus("ENABLED");
+        deviceTest.setTaxVersion("1.0");
+
+        log.info(JSON.toJSONString(deviceTest));
+
+        return doExchange(url, deviceTest, HttpMethod.POST, String.class, map);
 
     }
 
@@ -182,6 +209,7 @@ public class ServiceInvokeManager {
      * @param registersDTO
      * @PostMapping("/refills")
      */
+    @Deprecated
     public ApiResponse refills(RegistersDTO registersDTO) {
         String url = baseUrl + "/refills";
         return doExchange(url, registersDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
@@ -191,6 +219,7 @@ public class ServiceInvokeManager {
      * @param statisticsDTO
      * @PostMapping("/franking/stats")
      */
+    @Deprecated
     public ApiResponse stats(StatisticsDTO statisticsDTO) {
         String url = baseUrl + "/franking/stats";
         return doExchange(url, statisticsDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
@@ -242,8 +271,12 @@ public class ServiceInvokeManager {
                 switch (ResultEnum.getByCode(apiResponse.getCode())) {
                     case SUCCESS:
                         T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
-                        log.info("manager返回的结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
+                        log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
                         apiResponse.setObject(bean);
+                        return apiResponse;
+                    case SUCCESS_204:
+                        log.info("manager返回204结果 OK");
+                        apiResponse.setObject("OK");
                         return apiResponse;
                     case OPERATION_ERROR:
                         OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);

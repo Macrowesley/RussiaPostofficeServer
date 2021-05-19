@@ -8,20 +8,23 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 @ToString
-public class DeviceDTO {
+public class DeviceTest {
     /*
     {
-      "id": "FM100001",
-      "dateTime": "2021-01-01T09:00:00.001+03:00",
-      "status": "ENABLED",
-      "postOffice": "131000",
-      "taxVersion": "A0042015A",
-      "event": "STATUS",
-      "error": {
-        "code": "200",
-        "message": "ok"
-      }
-    }
+    "id":"NE100700",
+    "postOffice":"394040",
+    "status":"ENABLED",
+    "taxVersion":"1.0",
+    "dateTime":"2021-05-14T09:00:00.001+03:00"
+}
+
+{
+    "id":"NE100700",
+    "postOffice":"394040",
+    "status":"ENABLED",
+    "taxVersion":"1.0",
+    "dateTime":"2021-05-14T09:00:00.001+03:00"
+}
      */
     /**
      * FM编号
@@ -36,7 +39,8 @@ public class DeviceDTO {
      */
     String dateTime;
 
-    FMStatusEnum status;
+
+    String status;
 
     /**
      * 131000
@@ -49,15 +53,4 @@ public class DeviceDTO {
      */
     String taxVersion;
 
-    /**
-     * type: string
-     * enum:
-     * - STATUS
-     * - RATE_TABLE_UPDATE
-     * example:
-     * 'STATUS'
-     */
-    EventEnum eventEnum;
-
-    FMError error;
 }

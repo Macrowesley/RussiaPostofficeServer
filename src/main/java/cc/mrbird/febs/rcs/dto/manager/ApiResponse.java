@@ -30,6 +30,6 @@ public class ApiResponse {
     }
 
     public boolean isOK(){
-        return this.code == ResultEnum.SUCCESS.getCode();
+        return this.code == ResultEnum.SUCCESS.getCode() || this.code == ResultEnum.SUCCESS_204.getCode();
     }
 }
