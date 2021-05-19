@@ -30,10 +30,8 @@ public class ServiceInvokeManager {
 
 //    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 //    private final String baseUrl = "https://asufm.russianpost.ru/rcs-manager/v1";
-    //废弃
-//    private final String baseUrl = "http://test.asufm-test.10.238.33.32.xip.io/rcs-manager";
     //最新
-    private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
+	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
     private final String testContractId = "111-aaa-333-bbb-555-666";
 
