@@ -8,7 +8,6 @@ import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
-import cc.mrbird.febs.rcs.common.enums.CancelMsgEnum;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
@@ -99,7 +98,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
                     Contract dbContract = null;
                     //取消订单
-                    if (Long.valueOf(transactionFMDTO.getMailVal()) == 0) {
+                    if (Long.valueOf(transactionFMDTO.getAmount()) == 0) {
                         CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
                         cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());

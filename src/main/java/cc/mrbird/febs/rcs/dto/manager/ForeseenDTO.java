@@ -42,5 +42,5 @@ public class ForeseenDTO {
      */
     String taxVersion;
 
-    Double mailVal;
+    Double totalAmmount;
 }

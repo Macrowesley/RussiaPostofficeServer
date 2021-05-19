@@ -59,14 +59,14 @@ public class Transaction {
     /**
      * 开始时间
      */
-    @TableField("start_time")
-    private String startTime;
+    @TableField("start_date_time")
+    private String startDateTime;
 
     /**
      * 停止时间
      */
-    @TableField("stop_time")
-    private String stopTime;
+    @TableField("stop_date_time")
+    private String stopDateTime;
 
     @TableField("user_id")
     private String userId;
@@ -80,13 +80,13 @@ public class Transaction {
     /**
      * 金额（单位是分）
      */
-    @TableField("mail_val")
-    private Double mailVal;
+    @TableField("amount")
+    private Double amount;
 
     /**
      * 总数量
      */
-    @TableField("total_count")
+    @TableField("count")
     private Integer count;
 
     /**

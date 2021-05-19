@@ -181,7 +181,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         if (isForeseensSuccess) {
             Contract dbContract = contractService.getByConractId(foreseenDTO.getContractId());
             Double consolidate = dbContract.getConsolidate();
-            double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getMailVal());
+            double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getTotalAmmount());
             dbContract.setConsolidate(newConsolidate);
             contractService.saveOrUpdate(dbContract);
         }
@@ -209,7 +209,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             //foreseen的金额
             Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
-            Double usedConsolidate = dbForeseen.getMailVal();
+            Double usedConsolidate = dbForeseen.getTotalAmmount();
 
             double newConsolidate = DoubleKit.add(consolidate, usedConsolidate);
             dbContract.setConsolidate(newConsolidate);
@@ -260,7 +260,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         List<Frank> frankList = new ArrayList<>();
         for (FrankDTO frankDTO: transactionDTO.getFranks()) {
             Frank frank = new Frank();
-            frank.setDmMessage(frankDTO.getDm_message());
+            frank.setDmMessage(frankDTO.getDmMessage());
             frank.setId(AESUtils.createUUID());
             frank.setStatisticsId("");
             frank.setTransactionId(transaction.getId());
@@ -276,11 +276,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             Double dbConsolidate = dbContract.getConsolidate();
 
             //金额： 合同余额减去transaction的金额
-            double newCurrent = DoubleKit.sub(dbCurrent, transaction.getMailVal());
+            double newCurrent = DoubleKit.sub(dbCurrent, transaction.getAmount());
 
             //foreseen的金额
             Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
-            Double usedConsolidate = dbForeseen.getMailVal();
+            Double usedConsolidate = dbForeseen.getTotalAmmount();
 
             //todo 这里逻辑待定：Consolidate 金额： 当前合同金额 + foreseen中的金额 — 实际消耗的金额
             double newConsolidate = DoubleKit.add(dbConsolidate, usedConsolidate);

@@ -18,7 +18,7 @@ public class TransactionFMDTO {
     String costTime;
     String userId;
     String creditVal;
-    String mailVal;
+    String amount;
     int count;
     String graphId;
     String taxVersion;

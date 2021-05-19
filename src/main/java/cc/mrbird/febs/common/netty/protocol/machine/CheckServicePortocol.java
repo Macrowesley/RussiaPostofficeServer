@@ -10,18 +10,13 @@ import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
-import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
-import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
-import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -134,7 +129,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
 
                         BeanUtils.copyProperties(dbForeseen,foreseenFMDTO);
-                        foreseenFMDTO.setMailVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getMailVal())));
+                        foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
                     }
 
                     return getSuccessResult(version,ctx,curStatus, isPrintEnd, foreseenFMDTO);

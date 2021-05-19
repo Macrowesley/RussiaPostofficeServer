@@ -6,5 +6,5 @@ import lombok.ToString;
 @Data
 @ToString
 public class FrankDTO {
-    String dm_message;
+    String dmMessage;
 }

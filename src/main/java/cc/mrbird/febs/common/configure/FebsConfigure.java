@@ -105,6 +105,7 @@ public class FebsConfigure {
     @Bean
     public RestTemplate restTemplate(){
         HttpsClientRequestFactory requestFactory = new HttpsClientRequestFactory();
+        //todo 暂定10s超时
         requestFactory.setConnectTimeout(10000);
         requestFactory.setReadTimeout(10000);
         return new RestTemplate(requestFactory);

@@ -34,8 +34,8 @@ public class ForeseenProduct {
     /**
      * 【待定】
      */
-    @TableField("product_id")
-    private String productId;
+    @TableField("product_code")
+    private String productCode;
 
     /**
      * 数量
@@ -46,14 +46,14 @@ public class ForeseenProduct {
     /**
      * 重量
      */
-    @TableField("expected_weight")
-    private Double expectedWeight;
+    @TableField("weight")
+    private Double weight;
 
     /**
      * 金额
      */
-    @TableField("expected_value")
-    private Double expectedValue;
+    @TableField("amount")
+    private Double amount;
 
     /**
      * 创建时间

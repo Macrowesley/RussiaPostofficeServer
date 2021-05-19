@@ -15,5 +15,5 @@ public class ForeseenFMDTO {
     Integer totalCount;
     ForeseenProductDTO[] products;
     String taxVersion;
-    String mailVal;
+    String totalAmmount;
 }

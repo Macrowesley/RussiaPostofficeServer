@@ -159,16 +159,16 @@ public class MangerTestController {
         log.info("开始测试 foreseens");
 
         ForeseenProductDTO foreseenProduct = new ForeseenProductDTO();
-        foreseenProduct.setProductId("1");
+        foreseenProduct.setProductCode("1");
         foreseenProduct.setCount(10);
-        foreseenProduct.setExpectedWeight(1.0D);
-        foreseenProduct.setExpectedValue(1.0D);
+        foreseenProduct.setWeight(1.0D);
+        foreseenProduct.setAmount(1.0D);
 
         ForeseenProductDTO foreseenProduct2 = new ForeseenProductDTO();
-        foreseenProduct2.setProductId("2");
+        foreseenProduct2.setProductCode("2");
         foreseenProduct2.setCount(20);
-        foreseenProduct2.setExpectedWeight(2.0D);
-        foreseenProduct2.setExpectedValue(2.0D);
+        foreseenProduct2.setWeight(2.0D);
+        foreseenProduct2.setAmount(2.0D);
 
 
 
@@ -182,7 +182,7 @@ public class MangerTestController {
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
         foreseenDTO.setFrankMachineId("30");
         foreseenDTO.setTaxVersion("V50");
-        foreseenDTO.setMailVal(1000.0D);
+        foreseenDTO.setTotalAmmount(1000.0D);
 
 
         ApiResponse apiResponse = serviceInvokeManager.foreseens(foreseenDTO);
@@ -210,10 +210,10 @@ public class MangerTestController {
     public void transactions(){
         log.info("开始测试 transactions");
         FrankDTO frank = new FrankDTO();
-        frank.setDm_message("111");
+        frank.setDmMessage("111");
 
         FrankDTO frank2 = new FrankDTO();
-        frank2.setDm_message("222");
+        frank2.setDmMessage("222");
 
 
         TransactionDTO transactionDTO = new TransactionDTO();
@@ -223,11 +223,11 @@ public class MangerTestController {
         transactionDTO.setFrankMachineId("");
         transactionDTO.setContractId("");
         transactionDTO.setContractNum(0);
-        transactionDTO.setStartTime("");
-        transactionDTO.setStopTime("");
+        transactionDTO.setStartDateTime("");
+        transactionDTO.setStopDateTime("");
         transactionDTO.setUserId("");
         transactionDTO.setCreditVal(0.0D);
-        transactionDTO.setMailVal(0.0D);
+        transactionDTO.setAmount(0.0D);
         transactionDTO.setCount(0);
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion("");
@@ -284,10 +284,10 @@ public class MangerTestController {
         transactionDataDTO2.setTaxVersion("");
 
         FrankDTO frank = new FrankDTO();
-        frank.setDm_message("111");
+        frank.setDmMessage("111");
 
         FrankDTO frank2 = new FrankDTO();
-        frank2.setDm_message("222");
+        frank2.setDmMessage("222");
 
         StatisticsDTO statisticsDTO = new StatisticsDTO();
         statisticsDTO.setId("statistics ID");

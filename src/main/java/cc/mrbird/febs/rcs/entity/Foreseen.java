@@ -75,8 +75,8 @@ public class Foreseen {
     /**
      * 【待定】
      */
-    @TableField("mail_val")
-    private Double mailVal;
+    @TableField("total_ammount")
+    private Double totalAmmount;
 
     /**
      * 更新时间
