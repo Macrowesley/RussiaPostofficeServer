@@ -10,7 +10,7 @@ public class ApiResponse {
     int code;
     Object object;
 
-    ApiResponse(){
+    public ApiResponse(){
 
     }
 

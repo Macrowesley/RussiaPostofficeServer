@@ -14,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class ServiceInvokeManager {
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);*/
 
         frankMachineId = "FM100001";
-        frankMachineId = "NE100700";
+//        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
@@ -253,17 +254,21 @@ public class ServiceInvokeManager {
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
         log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
-            //todo 需要一些测试，指定 frankmachineId=XXX001的时候，不发送消息给俄罗斯，直接返回对应的内容即可，所以，当需要添加这个功能的时候，就需要
-            //todo 在这里修改相关的代码，把操作类型 frankmachineId参数也传进来作为判断
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
             ResponseEntity<ApiResponse> responseEntity;
-            if (uriVariables == null){
+            if (uriVariables == null) {
                 responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class);
-            }else{
+            } else {
                 responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class, uriVariables);
             }
             log.info("responseEntity = " + responseEntity.toString());
-            if (ResultEnum.SUCCESS.getCode() == responseEntity.getStatusCodeValue()) {
+            log.info("code={}, header={}, body={}", responseEntity.getStatusCodeValue(), responseEntity.getHeaders().toString(), responseEntity.getBody());
+
+            int statusCodeValue = responseEntity.getStatusCodeValue();
+
+            return getApiResponse(responseObjectClass, statusCodeValue, responseEntity.getBody());
+
+            /*if (ResultEnum.SUCCESS.getCode() == statusCodeValue || ResultEnum.SUCCESS_204.getCode() == statusCodeValue) {
                 ApiResponse apiResponse = responseEntity.getBody();
                 log.info("manager返回的结果 ApiResponse = {}", apiResponse.toString());
                 switch (ResultEnum.getByCode(apiResponse.getCode())) {
@@ -292,11 +297,70 @@ public class ServiceInvokeManager {
             } else {
                 log.info("网络问题，错误代码{} ", responseEntity.getStatusCodeValue());
                 return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值1");
-            }
+            }*/
+
+        } catch (HttpClientErrorException e){
+            return getApiResponse(responseObjectClass, e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error(e.getMessage());
             return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
+        }
+    }
+
+    private <T> ApiResponse getApiResponse(Class<T> responseObjectClass, int statusCodeValue, Object object ) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(statusCodeValue);
+        apiResponse.setObject(object);
+
+        /*switch (ResultEnum.getByCode(statusCodeValue)) {
+            case SUCCESS:
+                T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
+                log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
+                apiResponse.setObject(bean);
+                return apiResponse;
+            case SUCCESS_204:
+                log.info("manager返回204结果 OK");
+                apiResponse.setObject("OK");
+                return apiResponse;
+            case OPERATION_ERROR:
+                OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
+                log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
+                apiResponse.setObject(operationError);
+                return apiResponse;
+            case INTERNAL_SERVICE_ERROR:
+                ApiError apiError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), ApiError.class);
+                log.info("manager返回500结果 apiError = {}", apiError.toString());
+                apiResponse.setObject(apiError);
+                return apiResponse;
+            default:
+                return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
+        }*/
+
+        if (statusCodeValue == ResultEnum.SUCCESS.getCode()){
+//            T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
+            T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
+            log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
+            apiResponse.setObject(bean);
+            return apiResponse;
+        } else if (statusCodeValue == ResultEnum.SUCCESS_204.getCode()){
+            log.info("manager返回204结果 OK");
+            apiResponse.setObject("OK");
+            return apiResponse;
+        }else if (statusCodeValue >= 400 && statusCodeValue < 500){
+//            OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
+            OperationError operationError = JSONObject.parseObject(apiResponse.getObject().toString(), OperationError.class);
+            log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
+            apiResponse.setObject(operationError);
+            return apiResponse;
+        } else if(statusCodeValue == ResultEnum.INTERNAL_SERVICE_ERROR.getCode()){
+//            ApiError apiError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), ApiError.class);
+            ApiError apiError = JSONObject.parseObject(apiResponse.getObject().toString(), ApiError.class);
+            log.info("manager返回500结果 apiError = {}", apiError.toString());
+            apiResponse.setObject(apiError);
+            return apiResponse;
+        }else{
+            return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
         }
     }
 
