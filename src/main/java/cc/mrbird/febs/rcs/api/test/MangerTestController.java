@@ -55,6 +55,7 @@ public class MangerTestController {
     /**
      * 机器状况
      * http://localhost/p/test/managerTest/auth
+     * http://localhost/p/test/managerTest/auth
      */
     @GetMapping("auth")
     public void auth(){

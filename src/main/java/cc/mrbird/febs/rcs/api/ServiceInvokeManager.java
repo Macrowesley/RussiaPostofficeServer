@@ -2,7 +2,9 @@ package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ public class ServiceInvokeManager {
     //废弃
 //    private final String baseUrl = "http://test.asufm-test.10.238.33.32.xip.io/rcs-manager";
     //最新
+//    private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
     private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
     private final String testContractId = "111-aaa-333-bbb-555-666";
@@ -55,11 +58,35 @@ public class ServiceInvokeManager {
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
     public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
+        /*String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
+        HashMap<String, String> map = new HashMap<>();
+        map.put("frankMachineId", frankMachineId);
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
+        */
+
+        /**
+         * {
+         *  "dateTime":"2021-05-18T15:56:06.000+08:00",
+         *  "id":"NE100700",
+         *  "postOffice":"394040",
+         *  "status":"ENABLED",
+         *  "taxVersion":"1.0"
+         * }
+         */
+        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
+        DeviceTestDTO deviceTestDTO = new DeviceTestDTO();
+        deviceTestDTO.setId(frankMachineId);
+        deviceTestDTO.setPostOffice("394040");
+        deviceTestDTO.setStatus("ENABLED");
+        deviceTestDTO.setTaxVersion("1.0");
+        deviceTestDTO.setDateTime(DateKit.createRussiatime());
+        log.info("测试发给俄罗斯服务器的auth: " + JSON.toJSONString(deviceTestDTO));
+
+        return doExchange(url, deviceTestDTO, HttpMethod.POST, String.class, map);
 
     }
 
