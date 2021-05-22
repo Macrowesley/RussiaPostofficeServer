@@ -71,15 +71,34 @@
     }}
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
 </script>
+
+<script type="text/html" id="device-isOnline">
+    {{#
+        var status = {
+            1: {title: i18n("device.isOnlineTrue"), color: 'green'},
+            0: {title: i18n("device.isOnlineFalse"), color: 'red'}
+        }[d.isOnline];
+    }}
+    <span  class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
 <script type="text/html" id="device-option">
     <span shiro:lacksPermission="device:add,device:update,device:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
     <!--<a lay-event="detail" shiro:hasPermission="device:view"><i
-            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
+            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
     <a lay-event="edit" shiro:hasPermission="device:update"><i
-            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
-    <!--<a lay-event="del" shiro:hasPermission="device:delete"><i
+            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
+    <a lay-event="detail"><i class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
+    <a lay-event="edit" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe642;</i></a>
+
+    <!--todo-->
+    <a lay-event="openSSH" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe841;</i></a>
+    <a lay-event="closeSSH" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe842;</i></a>
+    <a lay-event="removeConnect" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe88c;</i></a>
+
+
+    <!--  <a lay-event="del" shiro:hasPermission="device:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
 </script>
 <script data-th-inline="none" type="text/javascript">
@@ -217,6 +236,7 @@
                     {type: 'checkbox'},
                     {field: 'acnum', title: i18n("acnum"), minWidth: 100},
                     {field: 'nickname', title: i18n("device.nickname"), minWidth: 100},
+                    {title: i18n("isOnline"), templet: '#device-isOnline'},
                     {field: 'warnAmount', title: i18n("device.warnAmount")},
                     {field: 'maxAmount', title: i18n("device.maxAmount"), minWidth: 165},
                     {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
@@ -234,16 +254,18 @@
             table.on('tool(deviceTable)', function (obj) {
                 var data = obj.data,
                     layEvent = obj.event;
-                /*if (layEvent === 'detail') {
-                    febs.modal.view('设备信息', 'system/device/detail/' + data.devicename, {
-                        area: $(window).width() <= 750 ? '95%' : '660px'
-                    });
-                }
+                /*
                 if (layEvent === 'del') {
                     febs.modal.confirm('删除设备', '确定删除该设备？', function () {
                         deletedevices(data.deviceId);
                     });
                 }*/
+
+                if (layEvent === 'detail') {
+                    febs.modal.view('设备信息', 'system/device/detail/' + data.acnum, {
+                        area: $(window).width() <= 750 ? '95%' : '660px'
+                    });
+                }
                 if (layEvent === 'edit') {
                     febs.modal.open(i18n("device.editDevice"), 'device/update/' + data.deviceId, {
                         area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
@@ -255,6 +277,33 @@
                         btn2: function () {
                             layer.closeAll();
                         }
+                    });
+                }
+
+                if (layEvent === 'openSSH') {
+                    febs.get(ctx + 'device/openSshPortocol/' + data.acnum, null, function (r) {
+                        var content =  r.data == true? "打开ssh指令已发送" : "机器没连接";
+                        febs.alert.success(data.acnum + content)
+                        if(r.data == true){
+                            febs.alert.success(data.acnum + content)
+                        }else{
+                            febs.alert.warn(data.acnum + content)
+                        }
+                    });
+                }
+                if (layEvent === 'closeSSH') {
+                    febs.get(ctx + 'device/closeSshPortocol/' + data.acnum, null, function (r) {
+                        var content =  r.data == true? "关闭ssh指令已发送" : "机器没连接";
+                        if(r.data == true){
+                            febs.alert.success(data.acnum + content)
+                        }else{
+                            febs.alert.warn(data.acnum + content)
+                        }
+                    });
+                }
+                if (layEvent === 'removeConnect') {
+                    febs.get(ctx + 'device/removeChannelFromNetty/' + data.acnum, null, function (r) {
+                        febs.alert.success(data.acnum + "断开和服务器的socket连接")
                     });
                 }
             });

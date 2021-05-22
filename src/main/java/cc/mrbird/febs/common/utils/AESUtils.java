@@ -1,5 +1,7 @@
 package cc.mrbird.febs.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
+@Slf4j
 public class AESUtils {
 
     private static final String KEY_ALGORITHM = "AES";
@@ -36,7 +39,8 @@ public class AESUtils {
 
             return org.apache.commons.codec.binary.Base64.encodeBase64String(result);//通过Base64转码返回
         } catch (Exception ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
+            log.error("AES 加密操作 失败：" + ex.getMessage());
         }
 
         return null;
@@ -83,7 +87,10 @@ public class AESUtils {
 
             return new SecretKeySpec(Arrays.copyOf(key.getBytes("utf-8"), 16), KEY_ALGORITHM);// 转换为AES专用密钥
         } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
+            log.error("生成加密秘钥 失败：" + ex.getMessage());
+        } catch (Exception e){
+            log.error("生成加密秘钥 失败：" + e.getMessage());
         }
 
         return null;

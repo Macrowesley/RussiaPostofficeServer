@@ -36,7 +36,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * 服务器发送打开机器ssh指令
      * @param acnum
      */
-    public void openSshProtocol(String acnum) {
+    public boolean openSshProtocol(String acnum) {
         try {
             //执行指令
             /*try {
@@ -74,8 +74,10 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             //发送数据
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC1));
             log.info("服务器发送打开机器ssh指令");
+            return true;
         } catch (Exception e) {
             log.error("服务器发送打开机器ssh指令失败，原因如下：" + e.getMessage());
+            return false;
         }
     }
 
@@ -83,7 +85,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * 服务器发送关闭机器ssh指令
      * @param acnum
      */
-    public void closeSshProtocol(String acnum) {
+    public boolean closeSshProtocol(String acnum) {
         try {
 
             ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(acnum);
@@ -108,9 +110,10 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC2));
             log.info("服务器发送关闭机器ssh指令");
 
-
+            return true;
         } catch (Exception e) {
             log.error("服务器发送关闭机器ssh指令失败，原因如下：" + e.getMessage());
+            return false;
         } finally {
             //执行关闭指令
             /*try {

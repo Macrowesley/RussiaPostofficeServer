@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.CheckIsExistDTO;
@@ -19,6 +20,7 @@ import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +42,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("device")
 public class DeviceController extends BaseController {
+    @Autowired
+    ServiceToMachineProtocol serviceToMachineProtocol;
 
     private final IDeviceService deviceService;
 
@@ -122,10 +126,28 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success().data(res);
     }
 
-    @ControllerEndpoint(operation = "从Netty中移除指定的表头号连接", exceptionMessage = "{device.operation.checkAcnumError}")
-    @PostMapping("removeChannelFromNetty")
+    //https://auto.uprins.com/p/device/openSshPortocol/{acnum}
+    @ControllerEndpoint(operation = "打开机器的ssh服务", exceptionMessage = "{device.operation.checkAcnumError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
-    public FebsResponse removeChannelFromNetty(String acnum) {
+    @GetMapping("openSshPortocol/{acnum}")
+    public FebsResponse openSshPortocol(@PathVariable String acnum) {
+        boolean res = serviceToMachineProtocol.openSshProtocol(acnum);
+        return new FebsResponse().success().data(res);
+    }
+
+    //https://auto.uprins.com/p/device/closeSshPortocol/{acnum}
+    @ControllerEndpoint(operation = "关闭机器的ssh服务", exceptionMessage = "{device.operation.checkAcnumError}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    @GetMapping("closeSshPortocol/{acnum}")
+    public FebsResponse closeSshPortocol(@PathVariable String acnum) {
+        boolean res = serviceToMachineProtocol.closeSshProtocol(acnum);
+        return new FebsResponse().success().data(res);
+    }
+
+    @ControllerEndpoint(operation = "从Netty中移除指定的表头号连接", exceptionMessage = "{device.operation.checkAcnumError}")
+    @GetMapping("removeChannelFromNetty/{acnum}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    public FebsResponse removeChannelFromNetty(@PathVariable String acnum) {
         ChannelMapperUtils.deleteChannelByKey(acnum);
         return new FebsResponse().success().data("ok");
     }

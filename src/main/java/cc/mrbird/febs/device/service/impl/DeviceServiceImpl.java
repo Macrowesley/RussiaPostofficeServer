@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -74,6 +75,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         User curUser = FebsUtil.getCurrentUser();
         String roleId = curUser.getRoleId();
 
+        IPage<Device> deviceIPage = null;
         if (roleId.equals(RoleType.systemManager)) {
             if (StringUtils.isNotBlank(device.getAcnum())) {
                 queryWrapper.eq(Device::getAcnum, device.getAcnum());
@@ -89,10 +91,16 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 queryWrapper.eq(Device::getCurFmStatus, device.getCurFmStatus());
             }
 
-            return this.page(page, queryWrapper);
+            deviceIPage =  this.page(page, queryWrapper);
         } else {
-            return this.baseMapper.selectListByUserId(page, curUser.getUserId(), device);
+            deviceIPage =  this.baseMapper.selectListByUserId(page, curUser.getUserId(), device);
         }
+
+        deviceIPage.getRecords().stream().forEach( item ->{
+            item.setIsOnline(ChannelMapperUtils.containsKey(item.getAcnum()) ? 1 : 0);
+        });
+
+        return deviceIPage;
     }
 
     @Override

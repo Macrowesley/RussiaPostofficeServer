@@ -60,20 +60,7 @@ public class TestController {
         return "关闭ssh";
     }
 
-    //https://auto.uprins.com/p/test/openSshPortocol
-    @GetMapping("/openSshPortocol")
-    public String openSshPortocol() {
 
-        serviceToMachineProtocol.openSshProtocol("CPU123");
-        return "打开ssh";
-    }
-
-    //https://auto.uprins.com/p/test/closeSshPortocol
-    @GetMapping("/closeSshPortocol")
-    public String closeSshPortocol() {
-        serviceToMachineProtocol.closeSshProtocol("CPU123");
-        return "关闭ssh";
-    }
 
     /**
      * 跳转rsa页面

@@ -60,6 +60,8 @@ public class ChannelMapperUtils {
             channelCount.decrementAndGet();
             channelMap.remove(acnum);
             log.info("删除机器{}长连接，现在有{}个连接",acnum,getChannleSize());
+        }else{
+            log.info("不存在，所以删除机器{}长连接失败", acnum);
         }
     }
 

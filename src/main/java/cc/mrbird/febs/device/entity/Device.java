@@ -98,6 +98,8 @@ public class Device implements Serializable {
     @TableField("created_time")
     private Date createdTime;
 
+    @TableField(exist=false)
+    private int isOnline;
 
     /**
      * 【待定】机器当前状态
