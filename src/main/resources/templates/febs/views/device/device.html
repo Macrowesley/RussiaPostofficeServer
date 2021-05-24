@@ -13,12 +13,12 @@
                                             <input type="text" name="acnum" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
-                                    <div class="layui-inline">
+                                    <!--<div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{device.nickname}"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="nickname" autocomplete="off" class="layui-input">
                                         </div>
-                                    </div>
+                                    </div>-->
                                     <!--<div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">创建时间</label>
                                         <div class="layui-input-inline">
@@ -26,7 +26,7 @@
                                                    class="layui-input">
                                         </div>
                                     </div>-->
-                                    <div class="layui-inline">
+                                    <!--<div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{device.status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="deviceStatus">
@@ -35,7 +35,7 @@
                                                 <option value="1" th:text="#{device.normal}"></option>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
                             <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
@@ -236,7 +236,7 @@
                     {type: 'checkbox'},
                     {field: 'acnum', title: i18n("acnum"), minWidth: 100},
                     {field: 'nickname', title: i18n("device.nickname"), minWidth: 100},
-                    {title: i18n("isOnline"), templet: '#device-isOnline'},
+                    {title: i18n("device.isOnline"), templet: '#device-isOnline'},
                     {field: 'warnAmount', title: i18n("device.warnAmount")},
                     {field: 'maxAmount', title: i18n("device.maxAmount"), minWidth: 165},
                     {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
@@ -262,7 +262,7 @@
                 }*/
 
                 if (layEvent === 'detail') {
-                    febs.modal.view('设备信息', 'system/device/detail/' + data.acnum, {
+                    febs.modal.view('设备信息', 'device/detail/' + data.deviceId, {
                         area: $(window).width() <= 750 ? '95%' : '660px'
                     });
                 }
@@ -334,8 +334,8 @@
                 // createTimeFrom: createTimeFrom,
                 // createTimeTo: createTimeTo,
                 acnum: $searchForm.find('input[name="acnum"]').val().trim(),
-                nickname: $searchForm.find('input[name="nickname"]').val().trim(),
-                curFmStatus: $searchForm.find("select[name='deviceStatus']").val(),
+                // nickname: $searchForm.find('input[name="nickname"]').val().trim(),
+                // curFmStatus: $searchForm.find("select[name='deviceStatus']").val(),
                 invalidate_ie_cache: new Date()
             };
         }

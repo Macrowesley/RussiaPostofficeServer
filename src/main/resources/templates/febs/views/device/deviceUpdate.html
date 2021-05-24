@@ -64,13 +64,13 @@
                        class="layui-input rigth-view">
             </div>
         </div>
-        <div class="layui-form-item">
+        <!--<div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.status.colon}"></label>
             <div class="layui-input-block">
                 <input type="radio" name="deviceStatus" value="1" th:title="#{device.normal}">
                 <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
             </div>
-        </div>
+        </div>-->
         <div class="layui-form-item" th:if="${userDevice} != null">
             <label class="layui-form-label  left-label" th:text="#{device.bindTo}"></label>
             <div class="layui-input-block">

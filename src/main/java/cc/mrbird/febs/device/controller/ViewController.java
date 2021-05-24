@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.RoleType;
+import cc.mrbird.febs.common.netty.NettyServerHandler;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.impl.DeviceServiceImpl;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotNull;
 public class ViewController {
     @Autowired
     DeviceServiceImpl deviceService;
+
 
     @GetMapping("device")
     @RequiresPermissions("device:view")
@@ -60,6 +62,15 @@ public class ViewController {
             model.addAttribute("userDevice", userDeviceVO);
         }
         return FebsUtil.view("device/deviceUpdate");
+    }
+
+    @GetMapping("detail/{deviceId}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
+    public String detail(@PathVariable Long deviceId, Model model) {
+        log.info("设备详情");
+        Device device = deviceService.findDeviceById(deviceId);
+        model.addAttribute("device",device);
+        return FebsUtil.view("device/deviceDetail");
     }
 
 }

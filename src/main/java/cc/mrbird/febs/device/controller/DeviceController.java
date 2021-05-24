@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.netty.NettyServerHandler;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
 import cc.mrbird.febs.device.dto.AddDeviceDTO;
@@ -46,6 +47,10 @@ public class DeviceController extends BaseController {
     ServiceToMachineProtocol serviceToMachineProtocol;
 
     private final IDeviceService deviceService;
+
+
+    @Autowired
+    NettyServerHandler nettyServerHandler;
 
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("list")
@@ -148,7 +153,7 @@ public class DeviceController extends BaseController {
     @GetMapping("removeChannelFromNetty/{acnum}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse removeChannelFromNetty(@PathVariable String acnum) {
-        ChannelMapperUtils.deleteChannelByKey(acnum);
+        nettyServerHandler.removeCache(ChannelMapperUtils.getChannelByAcnum(acnum));
         return new FebsResponse().success().data("ok");
     }
 }

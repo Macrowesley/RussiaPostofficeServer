@@ -1,0 +1,70 @@
+<style>
+    #febs-device-detail #user-img, #febs-device-detail .user-info {
+        display: inline-block;
+        float: left;
+        margin-left: 15px;
+    }
+
+    #febs-device-detail #user-img img {
+        width: 7rem;
+        margin: 10px 10px 0 20px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    #febs-device-detail #user-info-wrapper {
+        margin: 0 0 1rem 0;
+        display: inline-block;
+    }
+
+    #febs-device-detail .user-info div {
+        margin: 10px 15px;
+        max-width: 19rem;
+    }
+
+    #febs-device-detail #options-wrapper a {
+        padding: 4px 6px;
+        color: rgba(0, 0, 0, 0.65);
+        border: 1px solid #d9d9d9;
+        border-radius: 2px;
+    }
+
+    #febs-device-detail #options-wrapper a:hover {
+        color: #40a9ff;
+        border-color: #40a9ff;
+    }
+
+</style>
+<div class="layui-fluid" id="febs-device-detail" th:lay-title="#{device.detail}">
+    <div id="user-info-wrapper">
+
+        <div class="user-info">
+            <div><!--<span class="layui-icon layui-icon-user"></span>--> <span th:text="#{acnum.colon}"></span>
+                [[${device.acnum}]]
+            </div>
+            <div><!--<span class="layui-icon layui-icon-user"></span>--> <span th:text="#{device.warnAmount.colon}"></span>
+                [[${device.warnAmount}]]
+            </div>
+            <div><!--<span class="layui-icon layui-icon-trophy"></span>--> <span th:text="#{device.maxAmount.colon}"></span>
+                [[${device.maxAmount}]]
+            </div>
+            <div><!--<span class="layui-icon layui-icon-home"></span>--> <span th:text="#{device.validDays.colon}"></span>
+                [[${device.validDays}]]
+
+            </div>
+            <div><!--<span class="layui-icon layui-icon-skin"></span>--> <span th:text="#{device.frankMachineId.colon}"></span>
+                [[${device.frankMachineId}]]
+            </div>
+            <!--   </div>
+               <div class="user-info">-->
+            <div><!--<span class="layui-icon layui-icon-phone"></span>--> <span th:text="#{device.postOffice.colon}"></span>
+                [[${device.postOffice}]]
+            </div>
+            <div><!--<span class="layui-icon layui-icon-mail"></span> --><span th:text="#{device.taxVersion.colon}"></span>
+                [[${device.taxVersion}]]
+            </div>
+
+        </div>
+
+    </div>
+</div>

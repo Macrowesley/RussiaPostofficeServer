@@ -81,7 +81,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      * 删除缓存
      * @param ctx
      */
-    private void removeCache(ChannelHandlerContext ctx) {
+    public void removeCache(ChannelHandlerContext ctx) {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
 
         String clientIp = insocket.getAddress().getHostAddress();

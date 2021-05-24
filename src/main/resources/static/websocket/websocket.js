@@ -20,7 +20,7 @@ function openSocket(userId, websocketServiceName) {
                 var self = this;
                 this.serverTimeoutObj = setInterval(function () {
                     if (socket.readyState == 1) {
-                        console.log("连接状态，发送消息保持连接");
+                        // console.log("连接状态，发送消息保持连接");
                         socket.send("ping");
                         heartCheck.reset().start();    // 如果获取到消息，说明连接是正常的，重置心跳检测
                     } else {
