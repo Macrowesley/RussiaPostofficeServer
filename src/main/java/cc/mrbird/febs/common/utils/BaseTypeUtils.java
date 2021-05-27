@@ -28,7 +28,12 @@ public class BaseTypeUtils {
      * @return 字符串按相应字符编码编码后的字节数组。
      */
     public static byte[] stringToByte(String s, Charset charset) {
-        return s.getBytes(charset);
+        try {
+            return s.getBytes(charset);
+        } catch (Exception e) {
+            System.out.println("stringToByte error :" + e.getMessage());
+            return new byte[]{0x00,0x00};
+        }
     }
 
     /**

@@ -192,6 +192,7 @@ public class ProtocolService {
 
             try {
                 //判断是否通过验证
+                //todo 临时测试
                 if (isNeedLogin){
                     //检查改连接是否保存在缓存中
                     boolean isLogin = ChannelMapperUtils.containsValue(ctx);

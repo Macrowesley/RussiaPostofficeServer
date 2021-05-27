@@ -77,6 +77,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
             if (redisService.hasKey(key)){
+                //todo 临时测试
                 return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
             }else{
                 log.info("channelId={}的操作记录放入redis", key);
@@ -89,6 +90,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
+            log.info("acnum = {}", acnum);
 
             //版本号
             version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);

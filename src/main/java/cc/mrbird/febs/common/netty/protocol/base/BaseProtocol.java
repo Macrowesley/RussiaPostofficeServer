@@ -131,7 +131,8 @@ public class BaseProtocol {
 
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
-
+        //todo 测试
+//        tempKey = "2dc1f4d99e7fcadc";
         //解密后内容
         return AESUtils.decrypt(enctryptContent, tempKey);
     }

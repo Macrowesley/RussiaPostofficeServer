@@ -29,7 +29,7 @@ public class HeartPortocol extends MachineToServiceProtocol {
 
     /**
      * 解析并返回结果流
-     *
+     * 测试使用：AA080001010101010106D0
      * @param bytes
      */
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
