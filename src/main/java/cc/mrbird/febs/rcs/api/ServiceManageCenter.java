@@ -317,7 +317,7 @@ public class ServiceManageCenter {
     public Contract foreseens(ForeseenFMDTO foreseenFMDTO) {
         String operationName = "foreseens";
         String frankMachineId = foreseenFMDTO.getFrankMachineId();
-        log.info("开始 {}, frankMachineId={}", operationName, frankMachineId);
+        log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         //判断机器状态是否正常
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
@@ -363,11 +363,13 @@ public class ServiceManageCenter {
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "foreseensResponse.isOK() false ");
             }
         }
+        ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) foreseensResponse.getObject();
+        log.info("foreseens 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
 
         //正常接收俄罗斯返回，更新数据库
         printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess);
 
-        log.info("结束 {}, frankMachineId={}", operationName, frankMachineId);
+        log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
     }
@@ -380,7 +382,7 @@ public class ServiceManageCenter {
         String operationName = "transactions";
         String frankMachineId = transactionFMDTO.getFrankMachineId();
         String foreseenId = transactionFMDTO.getForeseenId();
-        log.info("开始 {}, frankMachineId={}", operationName, frankMachineId);
+        log.info("transactions 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         /**
          判断订单状态是否符合条件：
@@ -442,10 +444,11 @@ public class ServiceManageCenter {
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "transactionsResponse.isOK() false ");
             }
         }
-
+        ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
+        log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
         Contract curContract = printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobEndSuccess);
 
-        log.info("结束 {}, frankMachineId={} curContract = {}", operationName, frankMachineId, curContract.toString());
+        log.info("transactions结束 {}, frankMachineId={} curContract = {}", operationName, frankMachineId, curContract.toString());
         return curContract;
     }
 
