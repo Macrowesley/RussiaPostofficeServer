@@ -17,7 +17,7 @@ public class DoubleKit {
     public static boolean isV1BiggerThanV2(double v1, double v2){
         BigDecimal b1 = new BigDecimal(Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        log.info("aaa "+b1.toString());
+//        log.info("aaa "+b1.toString());
         return b1.compareTo(b2) > 0;
     }
 

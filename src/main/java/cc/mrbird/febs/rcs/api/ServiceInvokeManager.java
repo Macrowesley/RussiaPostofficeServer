@@ -162,9 +162,9 @@ public class ServiceInvokeManager {
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (foreseenDTO.getContractId().equals(testContractId)){
+       /* if (foreseenDTO.getContractId().equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
-        }
+        }*/
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }

@@ -130,6 +130,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
         } catch (FmException e) {
+            e.printStackTrace();
             log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
             if (-1 != e.getCode()) {
                 return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
@@ -137,6 +138,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                 return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
