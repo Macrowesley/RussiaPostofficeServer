@@ -476,7 +476,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         switch (curFlowDetail) {
             case AuthEndSuccess:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
-                device.setCurFmStatus(FMStatusEnum.AUTHORIZED.getCode());
+                device.setCurFmStatus(FMStatusEnum.ENABLED.getCode());
                 break;
             case AuthEndFail:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
@@ -486,7 +486,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 break;
         }
 
-        device.setFutureFmStatus(FMStatusEnum.AUTHORIZED.getCode());
+        device.setFutureFmStatus(FMStatusEnum.ENABLED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
         device.setUpdatedTime(new Date());
         this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
@@ -509,7 +509,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         switch (curFlowDetail) {
             case UnauthEndSuccess:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
-                device.setCurFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
+                device.setCurFmStatus(FMStatusEnum.UNAUTHORIZED.getCode());
                 break;
             case UnAuthEndFail:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
@@ -519,7 +519,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 break;
         }
 
-        device.setFutureFmStatus(FMStatusEnum.AUTH_CANCELED.getCode());
+        device.setFutureFmStatus(FMStatusEnum.UNAUTHORIZED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
         device.setUpdatedTime(new Date());
         this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));

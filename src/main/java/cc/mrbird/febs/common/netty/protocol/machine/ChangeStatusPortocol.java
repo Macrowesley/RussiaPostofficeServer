@@ -15,8 +15,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-
 @Slf4j
 @Component
 public class ChangeStatusPortocol extends MachineToServiceProtocol {
@@ -158,10 +156,10 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     case ADD_MACHINE_INFO:
                         operationRes = serviceManageCenter.addMachineInfo(acnum, deviceDto);
                         break;
-                    case AUTHORIZED:
+                    case ENABLED:
                         operationRes = serviceManageCenter.auth(deviceDto);
                         break;
-                    case AUTH_CANCELED:
+                    case UNAUTHORIZED:
                         if(isLost == 1){
                             operationRes = serviceManageCenter.lost(deviceDto);
                         }else{

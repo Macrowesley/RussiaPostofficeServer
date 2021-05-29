@@ -3,20 +3,11 @@ package cc.mrbird.febs.rcs.common.enums;
 
 public enum FMStatusEnum {
     ADD_MACHINE_INFO(0,"ADD","机器出厂的时候添加信息到服务器数据库 数据库有了基本的机器信息，加上这个信息就完整了 这是自己定义的状态，不需要发给俄罗斯"),
-    UNKNOWN(1,"UNKNOWN", "未知"),
-    REGISTERED(2,"REGISTERED","注册"),
-    AUTHORIZED(3,"AUTHORIZED","授权"),
-    OPERATING(4,"OPERATING","操作的"),
-    PENDING_WITHDRAWN(5,"PENDING_WITHDRAWN","待提款"),
-    TEMPORARILY_WITHDRAWN(6,"TEMPORARILY_WITHDRAWN","暂时撤回"),
-    PERMANENTLY_WITHDRAWN(7,"PERMANENTLY_WITHDRAWN","永久提款"),
-    IN_TRANSFER(8,"IN_TRANSFER","转让中"),
-    MISSING(9,"MISSING","丢失的"),
-    SCRAPPED(10,"SCRAPPED","报废"),
-    MAINTENENCE(11,"MAINTENENCE","维护"),
-    BLOCKED(12,"BLOCKED","已封锁"),
-    AUTH_CANCELED(13,"AUTH_CANCELED","取消授权"),
-    DEMO(14,"DEMO","演示");
+    ENABLED(1,"ENABLED","授权"),
+    DEMO(2,"DEMO","演示"),
+    BLOCKED(3,"BLOCKED","已封锁"),
+    UNAUTHORIZED(4,"UNAUTHORIZED","取消授权"),
+    LOST(5,"UNAUTHORIZED","取消授权");
 
     private final int code;
     private final String status;

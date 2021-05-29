@@ -63,7 +63,7 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setStatus(FMStatusEnum.AUTHORIZED);
+        bean.setStatus(FMStatusEnum.ENABLED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);
@@ -84,7 +84,7 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setStatus(FMStatusEnum.AUTH_CANCELED);
+        bean.setStatus(FMStatusEnum.UNAUTHORIZED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);
@@ -105,7 +105,7 @@ public class MangerTestController {
 
         DeviceDTO bean = new DeviceDTO();
         bean.setId("1");
-        bean.setStatus(FMStatusEnum.AUTH_CANCELED);
+        bean.setStatus(FMStatusEnum.UNAUTHORIZED);
         bean.setPostOffice("3");
         bean.setTaxVersion("4");
         bean.setEventEnum(EventEnum.STATUS);

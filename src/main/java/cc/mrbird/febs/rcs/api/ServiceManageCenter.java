@@ -134,9 +134,9 @@ public class ServiceManageCenter {
             return true;
         }
 
-        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTHORIZED) {
+        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.ENABLED) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",
-                    dbFutureStatus, FMStatusEnum.AUTHORIZED);
+                    dbFutureStatus, FMStatusEnum.ENABLED);
             return false;
         }
 
@@ -227,8 +227,8 @@ public class ServiceManageCenter {
             return true;
         }
 
-        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.AUTH_CANCELED) {
-            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.AUTH_CANCELED);
+        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.UNAUTHORIZED) {
+            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.UNAUTHORIZED);
             return false;
         }
 
@@ -323,7 +323,7 @@ public class ServiceManageCenter {
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
         Integer dbCurFmStatus = dbDevice.getCurFmStatus();
         FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus < FMStatusEnum.ADD_MACHINE_INFO.getCode() || dbCurFmStatus >= FMStatusEnum.IN_TRANSFER.getCode()) {
+        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
             throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
         }
 
