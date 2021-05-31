@@ -113,17 +113,6 @@ public class ServiceApi {
     }
 
     /**
-     * 接收邮局信息
-     * @param postOfficeDTO
-     * @return
-     */
-    @PutMapping("/postOffices")
-    public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
-        postOfficeService.savePostOfficeDTO(postOfficeDTO);
-        return new ApiResponse(200, "ok");
-    }
-
-    /**
      * 将数据（更新）邮局到FM
      * @param taxVersionDTO
      * @return
@@ -146,6 +135,17 @@ public class ServiceApi {
 
         //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
 //        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
+        return new ApiResponse(200, "ok");
+    }
+
+    /**
+     * 接收邮局信息
+     * @param postOfficeDTO
+     * @return
+     */
+    @PutMapping("/postOffices")
+    public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
+        postOfficeService.savePostOfficeDTO(postOfficeDTO);
         return new ApiResponse(200, "ok");
     }
 

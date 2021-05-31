@@ -7,9 +7,11 @@ import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.entity.PostOffice;
+import cc.mrbird.febs.rcs.entity.PostOfficeContract;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
 import cc.mrbird.febs.rcs.service.IContractService;
 import cc.mrbird.febs.rcs.service.ICustomerService;
+import cc.mrbird.febs.rcs.service.IPostOfficeContractService;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,6 +43,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private final ICustomerService customerService;
     private final IPostOfficeService postOfficeService;
     private final ContractMapper contractMapper;
+    private final IPostOfficeContractService postOfficeContractService;
 
     @Override
     public IPage<Contract> findContracts(QueryRequest request, Contract contract) {
@@ -101,11 +104,15 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         customer.setUpdatedTime(new Date());
         customerService.saveOrUpdate(customer);
 
-        PostOfficeDTO[] postOfficeArr = contractDTO.getPostOffice();
-        for (PostOfficeDTO postOfficeDTO : postOfficeArr){
-            postOfficeService.savePostOfficeDTO(postOfficeDTO);
+        List<PostOfficeContract> postOfficeContractList = new ArrayList<>();
+        for (PostOfficeDTO postOfficeDTO : contractDTO.getPostOffice()){
+//            postOfficeService.savePostOfficeDTO(postOfficeDTO);
+            PostOfficeContract postOfficeContract = new PostOfficeContract();
+            postOfficeContract.setContractId(contract.getId());
+            postOfficeContract.setPostOfficeId(postOfficeDTO.getIndex());
+            postOfficeContractList.add(postOfficeContract);
         }
-        //todo 要不要保留邮局和合同的关系
+        postOfficeContractService.saveBatch(postOfficeContractList);
         log.info("接收服务器传递过来的合同数据 结束");
     }
 
