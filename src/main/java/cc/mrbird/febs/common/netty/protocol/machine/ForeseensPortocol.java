@@ -156,7 +156,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
          unsigned char tail;					 //0xD0
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getCode() + version + foreseenId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + foreseenId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

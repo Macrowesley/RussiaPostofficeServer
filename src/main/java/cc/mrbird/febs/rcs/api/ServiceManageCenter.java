@@ -251,47 +251,6 @@ public class ServiceManageCenter {
         return true;
     }
 
-    /**
-     * 收到费率表事件
-     * 机器更新了taxVersion后，调用这个协议，触发该方法
-     *
-     * @param deviceDTO
-     */
-    public boolean rateTableUpdateEvent(DeviceDTO deviceDTO) {
-        String operationName = "rateTableUpdateEvent";
-        String frankMachineId = deviceDTO.getId();
-
-        //访问俄罗斯服务器，改变状态
-        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
-
-        //todo 这里是否要调用俄罗斯的rateTables接口
-
-        if (!changeTaxVersionResponse.isOK()) {
-            if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
-                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
-            } else {
-                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
-            }
-            return false;
-        }
-
-        Tax tax = taxService.getLastestTax();
-
-        String fmTaxVersion = deviceDTO.getTaxVersion();
-        String dbTaxVersion = tax.getVersion();
-
-        if (!fmTaxVersion.equals(dbTaxVersion)) {
-            log.error("发送版本和最新的版本信息不一致，无法更新，fmTaxVersion={}, dbTaxVersion={} ",fmTaxVersion, dbTaxVersion);
-            return false;
-        }
-
-        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
-        deviceService.updateDeviceTaxVersionStatus(deviceDTO);
-
-        return true;
-    }
 
     /**
      * 【机器请求lost协议】调用本方法
@@ -310,6 +269,64 @@ public class ServiceManageCenter {
         return true;
     }
 
+
+    /**
+     * 收到费率表事件
+     * 机器更新了taxVersion后，调用这个协议，触发该方法
+     *
+     * @param deviceDTO
+     */
+    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
+        String operationName = "rateTableUpdateEvent";
+        String frankMachineId = deviceDTO.getId();
+
+        //访问俄罗斯服务器，改变状态
+//        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
+
+        /*
+            {
+              "taxVersion": "RP.202001-1",
+              "status": true,
+              "rcsVersions": [
+                "A0042015A",
+                "B0042015A",
+                "C0042015A",
+                "D0042015A",
+                "E0042015A"
+              ]
+            }
+         */
+        RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
+        rateTableFeedbackDTO.setTaxVersion(deviceDTO.getTaxVersion());
+        rateTableFeedbackDTO.setStatus(true);
+        rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
+        ApiResponse changeTaxVersionResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
+
+        if (!changeTaxVersionResponse.isOK()) {
+            if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "rateTableUpdateEvent.isOK() false ");
+            } else {
+                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "rateTableUpdateEvent.isOK() false ");
+            }
+        }
+
+        Tax tax = taxService.getLastestTax();
+
+        String fmTaxVersion = deviceDTO.getTaxVersion();
+        String dbTaxVersion = tax.getVersion();
+
+        if (!fmTaxVersion.equals(dbTaxVersion)) {
+            throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
+        }
+
+        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
+        deviceService.updateDeviceTaxVersionStatus(deviceDTO);
+    }
+
     /**
      * 【机器请求foreseens协议】调用本方法
      * 请求打印任务
@@ -325,6 +342,15 @@ public class ServiceManageCenter {
         FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
         if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
             throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
+        }
+
+        Tax tax = taxService.getLastestTax();
+        String fmTaxVersion = foreseenFMDTO.getTaxVersion();
+        String dbTaxVersion = tax.getVersion();
+
+        if (!fmTaxVersion.equals(dbTaxVersion)) {
+            log.error("发送版本和最新的版本信息不一致，无法更新，fmTaxVersion={}, dbTaxVersion={} ",fmTaxVersion, dbTaxVersion);
+            throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
         }
 
         log.info("foreseenFMDTO.getContractId() = {}", foreseenFMDTO.getContractId());

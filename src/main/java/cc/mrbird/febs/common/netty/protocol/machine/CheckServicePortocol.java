@@ -155,7 +155,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
          unsigned char tail;					 //0xD0
          }__attribute__((packed))CheckServiceResult, *CheckServiceResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getCode() +
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() +
                 version + String.format("%08d",curStatus) + (isPrintEnd==true?1:0)
                 + JSON.toJSONString(foreseenFMDTO);
         String tempKey = tempKeyUtils.getTempKey(ctx);

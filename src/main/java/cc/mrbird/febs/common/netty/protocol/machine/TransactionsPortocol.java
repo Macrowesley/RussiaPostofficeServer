@@ -140,7 +140,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
          unsigned char tail;					 //0xD0
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getCode() + version + transactionId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + transactionId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("transaction 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

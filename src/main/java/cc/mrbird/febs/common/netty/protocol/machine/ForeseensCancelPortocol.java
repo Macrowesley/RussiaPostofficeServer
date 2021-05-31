@@ -113,7 +113,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
          unsigned char tail;					 //0xD0
          }__attribute__((packed))CancelJobResult, *CancelJobResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getCode() + version + cancelJobFMDTO.getForeseenId() + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + cancelJobFMDTO.getForeseenId() + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("CancelJob 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

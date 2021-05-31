@@ -12,6 +12,4 @@ public class StatusFMDTO {
     int status;
     //1 状态改变操作  2 税率表更新操作
     int event;
-    //不是lost请求 1是lost请求
-    int isLost;
 }

@@ -10,6 +10,7 @@ public enum FMResultEnum {
     VisitRussiaTimedOut(6,"访问俄罗斯超时"),
     RussiaServerRefused(7,"俄罗斯服务器拒绝"),
     MoneyTooBig(8,"订单金额超过了合同金额"),
+    TaxVersionNeedUpdate(10,"税率版本需要更新，机器需要更新税率表，然后通知服务器"),
 
     //transaction的异常
     TransactionError(9,"TransactionError异常，需要继续执行transaction"),
@@ -26,6 +27,10 @@ public enum FMResultEnum {
 
     public int getCode() {
         return code;
+    }
+
+    public String getSuccessCode() {
+        return String.format("%02d", code);
     }
 
     public String getMsg() {

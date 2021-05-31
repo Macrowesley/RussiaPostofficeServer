@@ -7,6 +7,7 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.omg.IOP.Codec;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -65,8 +66,8 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char head;				 	 //
-         unsigned char content[?];				 //加密内容:   result(1,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
-                                                             result(不为1,操作失败 FMResultEnum为准
+         unsigned char content[?];				 //加密内容:   result(2位 01,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
+                                                             result(2位 不为01,操作失败 FMResultEnum为准
                                                                          0 其他异常导致的失败
                                                                          2 请求太频繁，1分钟内请勿重复请求
                                                                          3 TransactionError异常，需要继续执行transaction
@@ -80,13 +81,13 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
         redisService.del(ctx.channel().id().toString());
 
         //返回内容的原始数据
-        String responseData = resCode + version;
+        String responseData = String.format("%02d", resCode) + version;
 
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("操作名："+operationName+"：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        log.error("操作出错了  操作名："+operationName+"：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 
@@ -99,8 +100,8 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
      * @throws Exception
      */
     public byte[] getOverTimeResult(String version, ChannelHandlerContext ctx, String key, int resCode) throws Exception {
-        log.info("操作{} 在指定时间内多次请求返回结果", key);
-        String responseData = resCode + version ;
+        log.error("操作{} 在指定时间内多次请求返回结果", key);
+        String responseData = String.format("%02d", resCode) + version ;
         //返回内容的加密数据
         //获取临时密钥
         String tempKey = tempKeyUtils.getTempKey(ctx);
