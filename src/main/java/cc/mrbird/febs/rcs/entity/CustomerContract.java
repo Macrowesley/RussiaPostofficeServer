@@ -18,6 +18,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 public class CustomerContract {
 
     /**
+     *
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
      * 合同id
      */
     @TableField("contract_id")
@@ -29,10 +35,5 @@ public class CustomerContract {
     @TableField("customer_id")
     private String customerId;
 
-    /**
-     * 
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
 
 }

@@ -13,12 +13,10 @@ import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.CustomerContract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Tax;
-import cc.mrbird.febs.rcs.service.IContractService;
-import cc.mrbird.febs.rcs.service.IPrintJobService;
-import cc.mrbird.febs.rcs.service.IPublicKeyService;
-import cc.mrbird.febs.rcs.service.ITaxService;
+import cc.mrbird.febs.rcs.service.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +58,9 @@ public class ServiceManageCenter {
 
     @Autowired
     ITaxService taxService;
+
+    @Autowired
+    ICustomerContractService customerContract;
 
     /**
      * 机器状态改变事件
@@ -332,6 +333,7 @@ public class ServiceManageCenter {
      * 请求打印任务
      */
     public Contract foreseens(ForeseenFMDTO foreseenFMDTO) {
+
         String operationName = "foreseens";
         String frankMachineId = foreseenFMDTO.getFrankMachineId();
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
@@ -374,6 +376,10 @@ public class ServiceManageCenter {
         ForeseenDTO foreseenDTO = new ForeseenDTO();
         BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
         foreseenDTO.setTotalAmmount(fmMailVal);
+
+        //处理UserId
+        String userId = customerContract.getUserIdByContractId(foreseenDTO.getContractId());
+        foreseenDTO.setUserId(userId);
 
         ApiResponse foreseensResponse = serviceInvokeManager.foreseens(foreseenDTO);
         if (!foreseensResponse.isOK()) {
@@ -454,6 +460,10 @@ public class ServiceManageCenter {
         transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));
         transactionDTO.setAmount(fmMailVal);
         transactionDTO.setCreditVal(creditVal);
+
+        //处理UserId
+        String userId = customerContract.getUserIdByContractId(transactionDTO.getContractId());
+        transactionDTO.setUserId(userId);
 
         ApiResponse transactionsResponse = serviceInvokeManager.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
