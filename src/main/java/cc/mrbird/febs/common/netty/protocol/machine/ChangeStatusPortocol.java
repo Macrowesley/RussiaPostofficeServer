@@ -123,6 +123,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                         case STATUS:
                             switch (status) {
                                 case ADD_MACHINE_INFO:
+                                    //可能要废弃了，机器信息是直接在公司就录了的
                                     serviceManageCenter.addMachineInfo(acnum, deviceDto);
                                     break;
                                 case ENABLED:

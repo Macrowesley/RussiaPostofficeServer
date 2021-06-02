@@ -64,31 +64,49 @@ public class ServiceManageCenter {
     /**
      * 机器状态改变事件
      * 【FM状态改变协议】
+     *  只有在俄罗斯要改变机器状态，通知了服务器，服务器通知机器后，机器状态改变，通知服务器，才用这个方法
      *
      * @param deviceDTO
      */
-    public boolean changeStatusEvent(DeviceDTO deviceDTO) {
+    public void changeStatusEvent(DeviceDTO deviceDTO) {
 
         //判断再次访问这个接口的时候，需要的验证
         /**
-         * 正常情况下，访问这个接口，机器的flow为 0
-         * 当完成这个闭环的时候，flow为1了，当机器再次访问这个接口的时候
-         * 如果flow为0 继续往后走
-         * 如果flow为1，不继续了
+         * 正常情况下，访问这个接口，机器的flow为未闭环
+         * 所以
+         * 如果flow为未闭环 继续往后走
+         * 如果flow为闭环了，不继续了
          */
+        String frankMachineId = deviceDTO.getId();
+        String operationName = "changeStatusEvent";
 
         Device dbDevice = deviceService.getDeviceByFrankMachineId(deviceDTO.getId());
+        int dbCurStatus = dbDevice.getCurFmStatus();
+        int dbFurStatus = dbDevice.getFutureFmStatus();
+
         if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()) {
-            throw new FmException("机器的状态已经修改结束了，请勿操作");
+            throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
         }
 
         //访问俄罗斯服务器，改变状态
         ApiResponse apiResponse = serviceInvokeManager.frankMachines(deviceDTO);
 
+        if (!apiResponse.isOK()) {
+            if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnowError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "changeStatusEvent.isOK() false ");
+            } else {
+                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeError4xxError);
+                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "changeStatusEvent.isOK() false ");
+            }
+        }
         //更新数据库
-        deviceService.changeStatusEnd(deviceDTO, apiResponse.isOK());
-
-        return apiResponse.isOK();
+        deviceService.changeStatusEnd(deviceDTO, FlowDetailEnum.StatusChangeEndSuccess);
+        log.info("{} 操作成功",operationName);
     }
 
     /**
@@ -97,6 +115,7 @@ public class ServiceManageCenter {
      * @return
      * @throws Exception
      */
+    @Deprecated
     public boolean addMachineInfo(String acnum, DeviceDTO deviceDTO) throws Exception {
         Device dbDevice = deviceService.findDeviceByAcnum(acnum);
         if (dbDevice == null){
@@ -111,7 +130,7 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public boolean auth(DeviceDTO deviceDTO) throws Exception {
+    public void auth(DeviceDTO deviceDTO) throws Exception {
         String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
         log.info("服务器收到了设备{}发送的auth协议", frankMachineId);
@@ -130,14 +149,13 @@ public class ServiceManageCenter {
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
         if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess) {
-            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
-            return true;
+            log.info("auth 已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
+            throw new FmException(FMResultEnum.DonotAgain.getCode(), "auth.isOK() false ");
         }
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.ENABLED) {
-            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}",
-                    dbFutureStatus, FMStatusEnum.ENABLED);
-            return false;
+            log.error("auth 未闭环，但是要改的状态不是 FMStatusEnum.ENABLED dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.ENABLED);
+            throw new FmException(FMResultEnum.StatusTypeError.getCode(), "auth.isOK() false ");
         }
 
 
@@ -166,20 +184,20 @@ public class ServiceManageCenter {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError1);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                 }
-                return false;
             }
         }
-        //如果授权成功，更新公钥，发送给俄罗斯
 
+        //如果授权成功，更新公钥，发送给俄罗斯
         PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
-        //todo 什么条件才能调用这个方法
-        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError2 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthError2 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
             ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
 
             if (!publickeyResponse.isOK()) {
@@ -187,19 +205,19 @@ public class ServiceManageCenter {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError2);
                     log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
+                    throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
                     log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                    throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                 }
-                return false;
             }
-
 
             deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndSuccess);
             log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
         }
-        return true;
+        log.info("{} 操作成功",operationName);
     }
 
 
@@ -208,7 +226,7 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public boolean unauth(DeviceDTO deviceDTO) {
+    public void unauth(DeviceDTO deviceDTO) {
         String operationName = "unauth";
         String frankMachineId = deviceDTO.getId();
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
@@ -224,12 +242,12 @@ public class ServiceManageCenter {
 
         if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
             log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
-            return true;
+            throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
         }
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.UNAUTHORIZED) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.UNAUTHORIZED);
-            return false;
+            throw new FmException(FMResultEnum.StatusTypeError.getCode(),"未闭环，但是要改的状态不对");
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthError) {
@@ -239,16 +257,17 @@ public class ServiceManageCenter {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthError);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "unauth.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthEndFail);
                     log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "unauth.isOK() false ");
                 }
-                return false;
             }
             deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnauthEndSuccess);
+            log.info("{} 操作成功",operationName);
         }
-        return true;
     }
 
 
@@ -257,16 +276,48 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public boolean lost(DeviceDTO deviceDTO) {
+    public void lost(DeviceDTO deviceDTO) {
+        String operationName = "lost";
+        String frankMachineId = deviceDTO.getId();
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
 
-        //todo 收到了FM消息
+        FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
+        //当前的进度
+        FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbDevice.getFlowDetail());
+        FMStatusEnum dbCurFmStatus = FMStatusEnum.getByCode(dbDevice.getCurFmStatus());
+        FMStatusEnum dbFutureStatus = FMStatusEnum.getByCode(dbDevice.getFutureFmStatus());
 
-        ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);
-        //todo 收到了俄罗斯消息
+        //是否是第一次请求授权
+        boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
-        //更新数据库
+        if (dbCurFmStatus == FMStatusEnum.LOST) {
+            log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
+            throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
+        }
 
-        return true;
+        if (!isFirstAuth && dbFutureStatus != FMStatusEnum.LOST) {
+            log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.LOST);
+            throw new FmException(FMResultEnum.StatusTypeError.getCode(),"未闭环，但是要改的状态不对");
+        }
+
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostError || curFlowDetail == FlowDetailEnum.LostEndFail) {
+            ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);
+            if (!unauthResponse.isOK()) {
+                if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+                    //未接收到俄罗斯返回,返回失败信息给机器，保存进度
+                    deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostError);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "lost.isOK() false ");
+                } else {
+                    //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                    deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostEndFail);
+                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "lost.isOK() false ");
+                }
+            }
+            deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostEndSuccess);
+            log.info("{} 操作成功",operationName);
+        }
     }
 
 
@@ -325,6 +376,7 @@ public class ServiceManageCenter {
 
         //如果发过来的版本和数据库中最新版本信息一致，则更新状态
         deviceService.updateDeviceTaxVersionStatus(deviceDTO);
+        log.info("{} 操作成功",operationName);
     }
 
     /**

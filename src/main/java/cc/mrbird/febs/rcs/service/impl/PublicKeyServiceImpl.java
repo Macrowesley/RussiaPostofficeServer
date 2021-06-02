@@ -80,7 +80,7 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             PublicKey dbPublicKey = this.getById(frankMachineId);
             int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
 
-            //过期天数
+            //更新publickey
             int expire = 7;
             PublicKey publicKey = new PublicKey();
             publicKey.setFrankMachineId(frankMachineId);
@@ -91,7 +91,7 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setCreatedTime(new Date());
             this.save(publicKey);
 
-
+            //返回给俄罗斯
             PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
             publicKeyDTO.setKey(publicKey.getPublicKey());
             publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));

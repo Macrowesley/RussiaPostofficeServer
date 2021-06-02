@@ -7,16 +7,23 @@ import cc.mrbird.febs.rcs.common.exception.FmException;
  */
 public enum FlowDetailEnum {
     DEFAULT(0, "最初始状态"),
+    StatusChangeEndSuccess(11,"闭环：状态修改成功"),
+    StatusChangeEndFailUnKnowError(13,"闭环：返回4XX或者5XX错误"),
+    StatusChangeError4xxError(12,"未闭环：未成功发送给俄罗斯"),
+
     AuthEndSuccess(21, "闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，收到俄罗斯返回"),
     AuthEndFail(22, "闭环：服务器收到，发给俄罗斯，收到返回，但返回状态码不是200"),
     AuthError1(23, "未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
     AuthError2(24, "未闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，未收到俄罗斯返回"),
+
     UnauthEndSuccess(31,"闭环：服务器收到，发给俄罗斯，俄罗斯返回OK"),
     UnAuthEndFail(32,"闭环：服务器收到，发给俄罗斯，俄罗斯返回 error "),
     UnAuthError(32,"未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
+
     LostEndSuccess(41,""),
     LostEndFail(42,""),
     LostError(43,"错误1"),
+
     TaxError1(51,""),
 
     //结束的各种状态

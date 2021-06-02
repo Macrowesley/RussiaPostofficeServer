@@ -385,7 +385,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
 
             if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
-                throw new RcsApiException("上次修改没有完成，请稍等");
+                throw new RcsApiException("上次状态修改没有完成，请稍等");
             }
 
             Device device = new Device();
@@ -400,7 +400,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
             this.update(device, wrapper);
 
-            //保存状态
+            //保存状态改变记录
             FmStatusLog fmStatusLog = new FmStatusLog();
             BeanUtils.copyProperties(device, fmStatusLog);
             fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
@@ -419,7 +419,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      * @param flowRes
      */
     @Override
-    public void changeStatusEnd(DeviceDTO deviceDTO, boolean isSuccess) {
+    public void changeStatusEnd(DeviceDTO deviceDTO, FlowDetailEnum curFlowDetail) {
         /*DeviceDTO device = new DeviceDTO();
         device.setId(frankMachineId);
         device.setStatus(status);
@@ -427,28 +427,25 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         device.setTaxVersion(taxVersion);
         device.setEventEnum(event);*/
 
-        Device dbDevice = getDeviceByFrankMachineId(deviceDTO.getId());
-
-        //判断状态是否正常
-        if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()) {
-            throw new RcsApiException("状态已经修改完了，请勿重复操作");
-        }
-
-        int dbCurStatus = dbDevice.getCurFmStatus();
-        int dbFurStatus = dbDevice.getFutureFmStatus();
-
         //fm想要改变的状态
         int fmChangeStatus = deviceDTO.getStatus().getCode();
-        if (fmChangeStatus == dbFurStatus) {
-            throw new RcsApiException("状态不匹配：机器要改的状态为：" + fmChangeStatus + " 数据库中状态需要改成：" + dbFurStatus);
-        }
 
         Device device = new Device();
-        if (isSuccess) {
-            device.setCurFmStatus(fmChangeStatus);
+        switch (curFlowDetail) {
+            case StatusChangeEndSuccess:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                device.setCurFmStatus(fmChangeStatus);
+                break;
+            case StatusChangeEndFailUnKnowError:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                break;
+            case StatusChangeError4xxError:
+                device.setFlow(FlowEnum.FlowIng.getCode());
+                break;
         }
-        device.setFlow(FlowEnum.FlowEnd.getCode());
-        device.setFlowDetail(FlowEnum.FlowEnd.getCode());
+
+        device.setFutureFmStatus(fmChangeStatus);
+        device.setFlowDetail(curFlowDetail.getCode());
         device.setUpdatedTime(new Date());
         device.setFrankMachineId(deviceDTO.getId());
 
@@ -457,7 +454,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
         this.update(device, wrapper);
 
-        //保存状态
+        //保存状态记录
         FmStatusLog fmStatusLog = new FmStatusLog();
         BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
@@ -508,7 +505,6 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void changeUnauthStatus(Device device, String frankMachineId, FlowDetailEnum curFlowDetail) {
-//        Device device = new Device();
         device.setFrankMachineId(frankMachineId);
 
         switch (curFlowDetail) {
@@ -534,6 +530,38 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         BeanUtils.copyProperties(device, fmStatusLog);
         fmStatusLog.setChangeFrom(ChangeFromEnum.Machine.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.UnAuth.getCode());
+        fmStatusLog.setUpdatedTime(new Date());
+        statusLogService.saveOrUpdate(fmStatusLog);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeLostStatus(Device device, String frankMachineId, FlowDetailEnum curFlowDetail) {
+        device.setFrankMachineId(frankMachineId);
+
+        switch (curFlowDetail) {
+            case LostEndSuccess:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                device.setCurFmStatus(FMStatusEnum.LOST.getCode());
+                break;
+            case LostEndFail:
+                device.setFlow(FlowEnum.FlowEnd.getCode());
+                break;
+            case LostError:
+                device.setFlow(FlowEnum.FlowIng.getCode());
+                break;
+        }
+
+        device.setFutureFmStatus(FMStatusEnum.LOST.getCode());
+        device.setFlowDetail(curFlowDetail.getCode());
+        device.setUpdatedTime(new Date());
+        this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
+
+        //保存状态
+        FmStatusLog fmStatusLog = new FmStatusLog();
+        BeanUtils.copyProperties(device, fmStatusLog);
+        fmStatusLog.setChangeFrom(ChangeFromEnum.Machine.getCode());
+        fmStatusLog.setInterfaceName(InterfaceNameEnum.Lost.getCode());
         fmStatusLog.setUpdatedTime(new Date());
         statusLogService.saveOrUpdate(fmStatusLog);
     }

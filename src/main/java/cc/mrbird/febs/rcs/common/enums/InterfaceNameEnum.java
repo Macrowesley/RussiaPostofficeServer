@@ -3,7 +3,8 @@ package cc.mrbird.febs.rcs.common.enums;
 public enum InterfaceNameEnum {
     Auth(1,"auth"),
     UnAuth(2,"UnAuth"),
-    CHANGE_STATUS(3,"change status"),
+    Lost(3,"UnAuth"),
+    CHANGE_STATUS(4,"change status"),
     TEST(0,"auth"),
     ;
     int code;
