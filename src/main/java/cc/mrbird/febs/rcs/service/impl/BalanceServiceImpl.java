@@ -1,7 +1,8 @@
 package cc.mrbird.febs.rcs.service.impl;
-import java.util.Date;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.ServiceBalanceDTO;
 import cc.mrbird.febs.rcs.entity.Balance;
 import cc.mrbird.febs.rcs.entity.Contract;
@@ -10,17 +11,18 @@ import cc.mrbird.febs.rcs.service.IBalanceService;
 import cc.mrbird.febs.rcs.service.IContractService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,34 +76,25 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
 	}
 
     @Override
-    @Transactional(rollbackFor = ApiException.class)
+    @Transactional(rollbackFor = RcsApiException.class)
     public void saveBalance(String contractId, ServiceBalanceDTO serviceBalanceDTO) {
-        Balance balance = new Balance();
-        BeanUtils.copyProperties(serviceBalanceDTO,balance);
-        balance.setFromType(1);
-        balance.setCreatedTime(new Date());
-        balance.setUpdatedTime(new Date());
+        try {
+            Balance balance = new Balance();
+            BeanUtils.copyProperties(serviceBalanceDTO,balance);
+            balance.setFromType(2);
+            balance.setCreatedTime(new Date());
+            balance.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getTimestamp()));
 
-        /**
-         * 当前可用资金（包括持有）
-         */
-        @NonNull
-        Double current;
-
-        /**
-         * 当前余额（仅事实）
-         */
-        @NonNull
-        Double consolidate;
-
-
-        this.save(balance);
-        //更新contract的金额
-        Contract contract = contractService.getByConractId(contractId);
-        contract.setCurrent(serviceBalanceDTO.getCurrent());
-        contract.setConsolidate(serviceBalanceDTO.getConsolidate());
-        contract.setUpdatedTime(new Date());
-        boolean res = contractService.saveOrUpdate(contract);
-        log.info("保存balance结束，更新contract金额结果：{}", res);
+            this.save(balance);
+            //更新contract的金额
+            Contract contract = contractService.getByConractId(contractId);
+            contract.setCurrent(serviceBalanceDTO.getCurrent());
+            contract.setConsolidate(serviceBalanceDTO.getConsolidate());
+            contract.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getTimestamp()));
+            boolean res = contractService.saveOrUpdate(contract);
+            log.info("保存balance结束，更新contract金额结果：{}", res);
+        } catch (Exception e) {
+            throw new RcsApiException(e.getMessage());
+        }
     }
 }

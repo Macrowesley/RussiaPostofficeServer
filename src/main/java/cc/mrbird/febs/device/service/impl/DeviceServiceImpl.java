@@ -37,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -380,31 +381,35 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
-        Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
+        try {
+            Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
 
-        if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
-            throw new RcsApiException("上次修改没有完成，请稍等");
+            if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
+                throw new RcsApiException("上次修改没有完成，请稍等");
+            }
+
+            Device device = new Device();
+            device.setFrankMachineId(frankMachineId);
+            device.setFutureFmStatus(changeStatusRequestDTO.getStatus().getCode());
+            device.setPostOffice(changeStatusRequestDTO.getPostOffice());
+            //开始修改的话，把流程状态改成进行中
+            device.setFlow(FlowEnum.FlowIng.getCode());
+            device.setUpdatedTime(new Date());
+
+            LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
+            this.update(device, wrapper);
+
+            //保存状态
+            FmStatusLog fmStatusLog = new FmStatusLog();
+            BeanUtils.copyProperties(device, fmStatusLog);
+            fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
+            fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
+            fmStatusLog.setUpdatedTime(new Date());
+            statusLogService.saveOrUpdate(fmStatusLog);
+        } catch (Exception e) {
+            throw new RcsApiException(e.getMessage());
         }
-
-        Device device = new Device();
-        device.setFrankMachineId(frankMachineId);
-        device.setFutureFmStatus(changeStatusRequestDTO.getStatus().getCode());
-        device.setPostOffice(changeStatusRequestDTO.getPostOffice());
-        //开始修改的话，把流程状态改成进行中
-        device.setFlow(FlowEnum.FlowIng.getCode());
-        device.setUpdatedTime(new Date());
-
-        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
-        this.update(device, wrapper);
-
-        //保存状态
-        FmStatusLog fmStatusLog = new FmStatusLog();
-        BeanUtils.copyProperties(device, fmStatusLog);
-        fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
-        fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
-        fmStatusLog.setUpdatedTime(new Date());
-        statusLogService.saveOrUpdate(fmStatusLog);
     }
 
     /**

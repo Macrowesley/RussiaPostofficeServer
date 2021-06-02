@@ -65,5 +65,7 @@ public class PostalProductDTO {
     @Min(1) @Max(2)
     Integer directctg;
 
-    TaxRateDTO[] taxes;
+    //待定
+//    TaxRateDTO[] tariff;
+    TariffDTO tariff;
 }

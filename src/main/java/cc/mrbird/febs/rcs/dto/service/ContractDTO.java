@@ -17,5 +17,5 @@ public class ContractDTO {
 
     CustomerDTO customer;
 
-    PostOfficeDTO[] postOffice;
+    PostOfficeDTO[] postOffices;
 }

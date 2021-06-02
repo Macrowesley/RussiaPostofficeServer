@@ -62,4 +62,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    @Override
+    public String getUserIdByContractId(String contractId) {
+        LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Customer::getContractId,contractId);
+        return this.baseMapper.selectOne(wrapper).getId();
+    }
 }

@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
@@ -72,29 +73,34 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
 
 
     @Override
+    @Transactional(rollbackFor = RcsApiException.class)
     public PublicKeyDTO saveOrUpdatePublicKey(String frankMachineId) {
-        log.info("更新服务器public 开始");
-        PublicKey dbPublicKey = this.getById(frankMachineId);
-        int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
+        try {
+            log.info("更新服务器public 开始");
+            PublicKey dbPublicKey = this.getById(frankMachineId);
+            int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
 
-        //过期天数
-        int expire = 7;
-        PublicKey publicKey = new PublicKey();
-        publicKey.setFrankMachineId(frankMachineId);
-        publicKey.setPublicKey(PublicKeyKit.getPublicKey());
-        publicKey.setRevision(revision);
-        publicKey.setAlg("");
-        publicKey.setExpireTime(DateKit.offsetDayDate(expire));
-        publicKey.setCreatedTime(new Date());
-        this.save(publicKey);
+            //过期天数
+            int expire = 7;
+            PublicKey publicKey = new PublicKey();
+            publicKey.setFrankMachineId(frankMachineId);
+            publicKey.setPublicKey(PublicKeyKit.getPublicKey());
+            publicKey.setRevision(revision);
+            publicKey.setAlg("");
+            publicKey.setExpireTime(DateKit.offsetDayDate(expire));
+            publicKey.setCreatedTime(new Date());
+            this.save(publicKey);
 
 
-        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-        publicKeyDTO.setKey(publicKey.getPublicKey());
-        publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));
-        publicKeyDTO.setRevision(revision);
-        publicKeyDTO.setAlg(publicKey.getAlg());
-        log.info("更新服务器public 结束");
-        return publicKeyDTO;
+            PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
+            publicKeyDTO.setKey(publicKey.getPublicKey());
+            publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));
+            publicKeyDTO.setRevision(revision);
+            publicKeyDTO.setAlg(publicKey.getAlg());
+            log.info("更新服务器public 结束");
+            return publicKeyDTO;
+        } catch (Exception e) {
+            throw new RcsApiException(e.getMessage());
+        }
     }
 }

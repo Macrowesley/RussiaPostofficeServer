@@ -1,12 +1,12 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.dto.service.CustomerDTO;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Customer;
-import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
 import cc.mrbird.febs.rcs.service.IContractService;
@@ -15,12 +15,12 @@ import cc.mrbird.febs.rcs.service.IPostOfficeContractService;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,39 +81,51 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 	}
 
     @Override
-    @Transactional(rollbackFor = ApiException.class)
+    @Transactional(rollbackFor = RcsApiException.class)
     public void saveContractDto(ContractDTO contractDTO) {
-        log.info("接收服务器传递过来的合同数据 开始");
+        try {
+            log.info("接收服务器传递过来的合同数据 开始");
 
-        Contract contract = new Contract();
-        BeanUtils.copyProperties(contractDTO,contract);
-        contract.setCreatedTime(new Date());
-        if (checkIsExist(contractDTO.getId())) {
+            //保存合同信息
+            Contract contract = new Contract();
+            BeanUtils.copyProperties(contractDTO,contract);
+            contract.setId(contractDTO.getId());
+            contract.setEnable(contractDTO.isEnable() ? 1 : 0);
+            contract.setCurrent(0D);
+            contract.setConsolidate(0D);
+            contract.setCreatedTime(new Date());
             contract.setUpdatedTime(new Date());
-        }
-        this.saveOrUpdate(contract);
+            if (checkIsExist(contractDTO.getId())) {
+                contract.setUpdatedTime(new Date());
+            }
+            this.save(contract);
 
-        CustomerDTO customerDTO = contractDTO.getCustomer();
-        Customer customer = new Customer();
-        customer.setId(customerDTO.getId());
-        customer.setContractId(contract.getId());
-        customer.setInnRu(customerDTO.getInn_ru());
-        customer.setKppRu(customerDTO.getKpp_ru());
-        customer.setName(customerDTO.getName());
-        customer.setCreatedTime(new Date());
-        customer.setUpdatedTime(new Date());
-        customerService.saveOrUpdate(customer);
+            //保存客户信息
+            CustomerDTO customerDTO = contractDTO.getCustomer();
+            Customer customer = new Customer();
+            customer.setId(customerDTO.getId());
+            customer.setContractId(contract.getId());
+            customer.setInnRu(customerDTO.getInn_ru());
+            customer.setKppRu(customerDTO.getKpp_ru());
+            customer.setName(customerDTO.getName());
+            customer.setCreatedTime(new Date());
+            customer.setUpdatedTime(new Date());
+            customerService.save(customer);
 
-        List<PostOfficeContract> postOfficeContractList = new ArrayList<>();
-        for (PostOfficeDTO postOfficeDTO : contractDTO.getPostOffice()){
-//            postOfficeService.savePostOfficeDTO(postOfficeDTO);
-            PostOfficeContract postOfficeContract = new PostOfficeContract();
-            postOfficeContract.setContractId(contract.getId());
-            postOfficeContract.setPostOfficeId(postOfficeDTO.getIndex());
-            postOfficeContractList.add(postOfficeContract);
+            //保存合同和邮局关系
+            List<PostOfficeContract> postOfficeContractList = new ArrayList<>();
+            for (PostOfficeDTO postOfficeDTO : contractDTO.getPostOffices()){
+    //            postOfficeService.savePostOfficeDTO(postOfficeDTO);
+                PostOfficeContract postOfficeContract = new PostOfficeContract();
+                postOfficeContract.setContractId(contract.getId());
+                postOfficeContract.setPostOfficeId(postOfficeDTO.getIndex());
+                postOfficeContractList.add(postOfficeContract);
+            }
+            postOfficeContractService.saveBatch(postOfficeContractList);
+            log.info("接收服务器传递过来的合同数据 结束");
+        } catch (Exception e) {
+            throw new RcsApiException(e.getMessage());
         }
-        postOfficeContractService.saveBatch(postOfficeContractList);
-        log.info("接收服务器传递过来的合同数据 结束");
     }
 
     @Override

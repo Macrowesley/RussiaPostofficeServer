@@ -13,7 +13,6 @@ import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.Contract;
-import cc.mrbird.febs.rcs.entity.CustomerContract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.*;
@@ -60,7 +59,7 @@ public class ServiceManageCenter {
     ITaxService taxService;
 
     @Autowired
-    ICustomerContractService customerContract;
+    ICustomerService customerService;
 
     /**
      * 机器状态改变事件
@@ -378,7 +377,7 @@ public class ServiceManageCenter {
         foreseenDTO.setTotalAmmount(fmMailVal);
 
         //处理UserId
-        String userId = customerContract.getUserIdByContractId(foreseenDTO.getContractId());
+        String userId = getUserIdByContractId(foreseenDTO.getContractId());
         foreseenDTO.setUserId(userId);
 
         ApiResponse foreseensResponse = serviceInvokeManager.foreseens(foreseenDTO);
@@ -404,6 +403,15 @@ public class ServiceManageCenter {
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
+    }
+
+    /**
+     * 获取客户id
+     * @param contractId
+     * @return
+     */
+    private String getUserIdByContractId(String contractId) {
+        return customerService.getUserIdByContractId(contractId);
     }
 
     /**
@@ -462,7 +470,7 @@ public class ServiceManageCenter {
         transactionDTO.setCreditVal(creditVal);
 
         //处理UserId
-        String userId = customerContract.getUserIdByContractId(transactionDTO.getContractId());
+        String userId = getUserIdByContractId(transactionDTO.getContractId());
         transactionDTO.setUserId(userId);
 
         ApiResponse transactionsResponse = serviceInvokeManager.transactions(transactionDTO);

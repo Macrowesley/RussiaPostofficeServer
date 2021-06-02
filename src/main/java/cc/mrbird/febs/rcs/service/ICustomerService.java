@@ -52,4 +52,6 @@ public interface ICustomerService extends IService<Customer> {
      * @param customer customer
      */
     void deleteCustomer(Customer customer);
+
+    String getUserIdByContractId(String contractId);
 }

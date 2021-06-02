@@ -100,13 +100,25 @@ public class DateKit {
      * 2020-04-09T23:00:00.000+08:00 TO 2020-04-09 23:00:00
      * @throws ParseException
      */
-    public static String dealDateFormat(String oldDateStr) throws ParseException {
+    public static String dealDateFormatToStr(String oldDateStr) throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
         Date  date = df.parse(oldDateStr);
         SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
         Date date1 =  df1.parse(date.toString());
         DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return df2.format(date1);
+    }
+
+    /**
+     * 解析指定格式日期，转date
+     * @param oldDateStr
+     * @return
+     * @throws ParseException
+     */
+    public static Date dealDateFormatToDate(String oldDateStr) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
+        Date  date = df.parse(oldDateStr);
+        return date;
     }
 
     /**
@@ -121,6 +133,10 @@ public class DateKit {
         return df.format(date1);
     }
 
+    /**
+     * 创建俄罗斯时间
+     * @return
+     */
     public static String createRussiatime(){
         try {
             return dealDateFormatReverse(formatDateTime(new Date()));
@@ -129,9 +145,32 @@ public class DateKit {
         }
     }
 
+    /**
+     * 解析俄罗斯时间
+     * @param date
+     * @return
+     */
+    public static Date parseRussiatime(String date){
+        try {
+            return dealDateFormatToDate(date);
+        } catch (ParseException e) {
+            log.info(e.getMessage());
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
-        log.info("时间: " + formatDateTime(new Date()));
-        log.info(offsetMinuteToDate(120));
-        log.info(offsetMinuteToDateTime(120));
+//        log.info("时间: " + formatDateTime(new Date()));
+//        log.info(offsetMinuteToDate(120));
+//        log.info(offsetMinuteToDateTime(120));
+//        log.info(getNowDateToFileName());
+        String russiatime = createRussiatime();
+        log.info(russiatime);
+        log.info(parseRussiatime(russiatime).toString());
+
+    }
+
+    public static String getNowDateToFileName() {
+        return DateUtil.format(new Date(),"YYYY_MM_dd_HH_mm_ss");
     }
 }

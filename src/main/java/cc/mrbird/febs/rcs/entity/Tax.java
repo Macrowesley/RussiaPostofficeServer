@@ -45,6 +45,8 @@ public class Tax {
     @TableField("version")
     private String version;
 
+    @TableField("save_path")
+    private String savePath;
 
     /**
      * 【待定】

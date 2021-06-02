@@ -24,11 +24,6 @@ public class PostOffice {
     @TableField("city")
     private String city;
 
-    /**
-     * 合同id
-     */
-    @TableField("contract_id")
-    private String contractId;
 
     /**
      * 创建时间

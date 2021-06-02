@@ -1,39 +1,35 @@
 package cc.mrbird.febs.rcs.entity;
 
 
-import lombok.Data;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
- * 用户-合同关系表 Entity
+ * 税率细节表 Entity
  *
  * @author mrbird
- * @date 2021-04-17 14:46:14
+ * @date 2021-04-17 14:45:55
  */
 @Data
-@TableName("rcs_customer_contract")
-public class CustomerContract {
+@TableName("rcs_tariff")
+public class Tariff {
 
     /**
-     *
+     * 
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 合同id
+     *
      */
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("postal_product_id")
+    private String postalProductId;
 
-    /**
-     * 客户id
-     */
-    @TableField("customer_id")
-    private String customerId;
+    String type;
 
 
 }

@@ -9,6 +9,7 @@ import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.manager.RateTableFeedbackDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.service.*;
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
 
 /**
  * 被俄罗斯调用的接口
@@ -121,17 +123,6 @@ public class ServiceApi {
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
         //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
-
-        //todo 什么时候通知俄罗斯税率结果
-       /*RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
-        rateTableFeedbackDTO.setTaxVersion(taxVersionDTO.getVersion());
-        rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(null);
-        serviceInvokeManager.rateTables(rateTableFeedbackDTO);*/
-
-        //redis保存版本内容  https://www.sojson.com/可以恢复
-        redisService.set(taxVersionDTO.getVersion(),JSON.toJSONString(taxVersionDTO));
-        log.info("redis保存对象");
 
         //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
 //        serviceToMachineProtocol.updateTaxes(taxVersionDTO);

@@ -1,14 +1,14 @@
 package cc.mrbird.febs.rcs.service.impl;
-import java.util.Date;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.mapper.PostOfficeMapper;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
+import cn.hutool.core.bean.BeanException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -68,16 +69,19 @@ public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOff
 	}
 
     @Override
-    @Transactional(rollbackFor = ApiException.class)
+    @Transactional(rollbackFor = RcsApiException.class)
     public void savePostOfficeDTO(PostOfficeDTO postOfficeDTO) {
-        PostOffice postOffice = new PostOffice();
-        BeanUtils.copyProperties(postOfficeDTO, postOffice);
+        try {
+            PostOffice postOffice = new PostOffice();
+            BeanUtils.copyProperties(postOfficeDTO, postOffice);
 
-        postOffice.setCreatedTime(new Date());
-        postOffice.setId(postOfficeDTO.getIndex());
-        postOffice.setUpdatedTime(new Date());
+            postOffice.setCreatedTime(new Date());
+            postOffice.setId(postOfficeDTO.getIndex());
+            postOffice.setUpdatedTime(new Date());
 
-        this.saveOrUpdate(postOffice);
-
+            this.saveOrUpdate(postOffice);
+        } catch (Exception e) {
+            throw new RcsApiException(e.getMessage());
+        }
     }
 }
