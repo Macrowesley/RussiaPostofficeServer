@@ -2,8 +2,8 @@ package cc.mrbird.febs.rcs.common.enums;
 
 
 public enum FlowEnum {
-    FlowIng(1,"未闭环"),
-    FlowEnd(0,"闭环结束");
+    FlowIng(0,"未闭环"),
+    FlowEnd(1,"闭环结束");
     int code;
     String msg;
 

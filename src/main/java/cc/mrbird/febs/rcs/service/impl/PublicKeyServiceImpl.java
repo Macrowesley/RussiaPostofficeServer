@@ -3,7 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.common.kit.PublicKeyKit;
+import cc.mrbird.febs.rcs.common.kit.PublicKeyGenerate;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.mapper.PublicKeyMapper;
@@ -80,11 +80,13 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             PublicKey dbPublicKey = this.getById(frankMachineId);
             int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
 
+            PublicKeyGenerate publicKeyGenerate = new PublicKeyGenerate();
             //更新publickey
-            int expire = 7;
+            int expire = 365;
             PublicKey publicKey = new PublicKey();
             publicKey.setFrankMachineId(frankMachineId);
-            publicKey.setPublicKey(PublicKeyKit.getPublicKey());
+            publicKey.setPublicKey(publicKeyGenerate.getPublicKey());
+            publicKey.setPrivateKey(publicKeyGenerate.getPrivateKey());
             publicKey.setRevision(revision);
             publicKey.setAlg("");
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));
@@ -93,11 +95,11 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
 
             //返回给俄罗斯
             PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-            publicKeyDTO.setKey(publicKey.getPublicKey());
+            publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKey.getPublicKey() + " -----END PUBLIC KEY-----");
             publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));
             publicKeyDTO.setRevision(revision);
             publicKeyDTO.setAlg(publicKey.getAlg());
-            log.info("更新服务器public 结束");
+            log.info("更新服务器public 数据库 结束");
             return publicKeyDTO;
         } catch (Exception e) {
             throw new RcsApiException(e.getMessage());

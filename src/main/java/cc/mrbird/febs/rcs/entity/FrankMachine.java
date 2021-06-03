@@ -14,6 +14,7 @@ import java.util.Date;
  * @author mrbird
  * @date 2021-04-17 14:45:05
  */
+@Deprecated
 @Data
 @TableName("rcs_frank_machine")
 public class FrankMachine {
@@ -61,7 +62,7 @@ public class FrankMachine {
     private String errorMessage;
 
     /**
-     * 流程 0 未闭环   1 闭环(成功后闭环) -1 闭环(失败后闭环)
+     * 流程
      */
     @TableField("flow")
     private Integer flow;

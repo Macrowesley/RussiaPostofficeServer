@@ -44,6 +44,22 @@ public class PublicKey {
     private String publicKey;
 
     /**
+     * 私钥
+     */
+    @TableField("private_key")
+    private String privateKey;
+
+    /**
+     * 整个流程状态
+     */
+    @TableField("flow")
+    private Integer flow;
+
+    @TableField("flow_detail")
+    private Integer flowDetail;
+
+
+    /**
      * 公钥的版本（序列号）
      */
     @TableField("revision")

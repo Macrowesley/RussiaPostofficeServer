@@ -62,6 +62,7 @@ public class ServiceInvokeManager {
 
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);*/
 
+        //测试代码
         frankMachineId = "FM100001";
 //        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";

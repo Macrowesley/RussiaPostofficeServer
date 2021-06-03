@@ -45,8 +45,7 @@ public class PrintJob {
 
 
     /**
-     * 整个流程状态 FlowIng(1,"未闭环"),
-     *     FlowEnd(0,"闭环结束");
+     * 整个流程状态
      */
     @TableField("flow")
     private Integer flow;
