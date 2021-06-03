@@ -385,8 +385,6 @@ public class RSAUtils {
     /**
      * 公钥 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWlALa1Kem5BwEDTGPV7T++lp1IlJBuVQlc4fLzgOXpPUMdty6sfaRymdJAyL7exRUo6VFkc5NWdFw/OPiL1GHDVhF2NXAZrNAJUN9/tnn30rQC/e+xVMMYwelMRPLp+HPx/yI1gx9Wcj0iHMXfpks6ymynQL5GWc9A1jJgAvYJwIDAQAB
      */
-
-
     public static void main(String[] args) throws  Exception{
         long t1 = System.currentTimeMillis();
         //生成密钥对(公钥和私钥)
@@ -399,7 +397,7 @@ public class RSAUtils {
         log.info("公钥长度{}，公钥内容 = {}", publicKey.length(), publicKey);
         log.info("私钥长度{}，私钥内容 = {}", privateKey.length(), privateKey);
 
-        String content = "11sdfasdfasdfasdsfasdfasdfasdfsadfwefewfwefsfewfsdf1";
+        /*String content = "11sdfasdfasdfasdsfasdfasdfasdfsadfwefewfwefsfewfsdf1";
 //        content = "123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz";
         System.out.println("最开始内容长度："+ content.length() + " 内容：" + content);
         //公钥加密后内容
@@ -412,7 +410,7 @@ public class RSAUtils {
         String decryptContent = decryptDataOnJava(encryptedContent, privateKey);
         System.out.println("解密耗时：" + (System.currentTimeMillis() - t2));
         System.out.println("私钥解密后内容: " + decryptContent);
-        System.out.println("解密后和最开始内容是否一致：" + content.equals(decryptContent));
+        System.out.println("解密后和最开始内容是否一致：" + content.equals(decryptContent));*/
         System.out.println("总耗时：" + (System.currentTimeMillis() - t1));
     }
 }

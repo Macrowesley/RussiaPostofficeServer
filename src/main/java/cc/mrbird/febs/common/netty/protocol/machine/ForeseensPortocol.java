@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseensResultDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -13,7 +14,9 @@ import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.service.IContractAddressService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
     @Autowired
     IPrintJobService printJobService;
+
+    @Autowired
+    IContractAddressService contractAddressService;
 
     /**
      * 获取协议类型
@@ -151,12 +157,21 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char head;				 	 //0xB5
-         unsigned char content;				     //加密内容: result(1 成功) + version + foreseenId（36）+ consolidate(8 分为单位) + current(8 分为单位)
+         unsigned char content;				     //加密内容: result(长度为2 1 成功) + version(6) + ForeseensResultDTO 的json
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + foreseenId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
+
+        ForeseensResultDTO foreseensResultDTO = new ForeseensResultDTO();
+        foreseensResultDTO.setContractId(contract.getId());
+        foreseensResultDTO.setForeseenId(foreseenId);
+        foreseensResultDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(contract.getConsolidate())));
+        foreseensResultDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(contract.getCurrent())));
+
+        foreseensResultDTO.setAddressList(contractAddressService.selectArrayByConractId(contract.getId()));
+
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + JSON.toJSONString(foreseensResultDTO);
         String tempKey = tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

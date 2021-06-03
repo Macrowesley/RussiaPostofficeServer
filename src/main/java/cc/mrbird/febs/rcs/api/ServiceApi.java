@@ -75,7 +75,10 @@ public class ServiceApi {
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
 
+
         if (regenerate) {
+            //todo 如果打印任务没有结束，拒绝
+
             //生成publickey，更新数据库
             PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
@@ -103,6 +106,8 @@ public class ServiceApi {
     public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
+
+        //todo 如果打印任务没有结束，拒绝
 
         //保存要更改的状态
         deviceService.changeStatusBegin(frankMachineId, changeStatusRequestDTO);

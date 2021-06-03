@@ -116,13 +116,12 @@ public class ServiceManageCenter {
      * @throws Exception
      */
     @Deprecated
-    public boolean addMachineInfo(String acnum, DeviceDTO deviceDTO) throws Exception {
+    public void addMachineInfo(String acnum, DeviceDTO deviceDTO) throws Exception {
         Device dbDevice = deviceService.findDeviceByAcnum(acnum);
         if (dbDevice == null){
-            return false;
+            throw new FmException(FMResultEnum.DeviceNotFind.getCode(), "auth.isOK() false ");
         }
         deviceService.addMachineInfo(dbDevice, deviceDTO);
-        return true;
     }
 
     /**

@@ -13,11 +13,11 @@ public enum FMResultEnum {
     TaxVersionNeedUpdate(9,"税率版本需要更新，机器需要更新税率表，然后通知服务器"),
     DonotAgain(10,"已闭环，请勿操作"),
     StatusTypeError(11,"未闭环，但是要改的状态不对"),
-
-    //changeStatus异常,
+    PrivateKeyNeedUpdate(12,"服务器更新了私钥，机器需要需要更新"),
+    DeviceNotFind(13,"表头号不存在"),
 
     //transaction的异常
-    TransactionError(20,"TransactionError异常，需要继续执行transaction"),
+    TransactionError(31,"TransactionError异常，需要继续执行transaction"),
 
     DefaultError(0,"其他异常导致的失败");
 

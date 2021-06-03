@@ -89,7 +89,7 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setAlg("");
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));
             publicKey.setCreatedTime(new Date());
-            this.save(publicKey);
+            this.saveOrUpdate(publicKey);
 
             //返回给俄罗斯
             PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
