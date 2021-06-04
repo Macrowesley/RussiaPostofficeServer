@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-//todo 待定，不一定需要
+/**
+ * 机器收到了秘钥，告知服务器，服务器把最新秘钥通知俄罗斯，俄罗斯得到最新秘钥后，数据库更新
+ */
 @Slf4j
 @Component
 public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
@@ -118,9 +120,9 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         //返回给俄罗斯
                         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
                         publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + dbPubliceKey.getPublicKey() + " -----END PUBLIC KEY-----");
-                        publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
                         publicKeyDTO.setRevision(dbPubliceKey.getRevision());
                         publicKeyDTO.setAlg(dbPubliceKey.getAlg());
+                        publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
 
                         ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
 
