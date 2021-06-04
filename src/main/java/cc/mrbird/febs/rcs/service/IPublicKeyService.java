@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -53,5 +54,11 @@ public interface IPublicKeyService extends IService<PublicKey> {
      */
     void deletePublicKey(PublicKey publicKey);
 
-    PublicKeyDTO saveOrUpdatePublicKey(String frankMachineId);
+    PublicKey saveOrUpdatePublicKey(String frankMachineId);
+
+    PublicKey findByFrankMachineId(String frankMachineId);
+
+    boolean checkFmIsUpdate(String frankMachineId);
+
+    void changeFlowInfo(PublicKey dbPubliceKey, FlowDetailEnum curFlowDetail);
 }

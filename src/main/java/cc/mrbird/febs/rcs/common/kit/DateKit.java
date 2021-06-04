@@ -145,6 +145,14 @@ public class DateKit {
         }
     }
 
+    public static String createRussiatime(Date date){
+        try {
+            return dealDateFormatReverse(formatDateTime(date));
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
     /**
      * 解析俄罗斯时间
      * @param date

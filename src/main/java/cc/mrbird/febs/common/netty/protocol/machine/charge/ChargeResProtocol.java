@@ -31,8 +31,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
     //注资金额长度
     private static final int REQ_AMOUNT_LEN = 8;
 
-    //返回数据长度
-    private static final int RES_DATA_LEN = 1;
+
 
     @Autowired
     IOrderService orderService;

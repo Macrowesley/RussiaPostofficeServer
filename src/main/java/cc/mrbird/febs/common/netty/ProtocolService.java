@@ -9,10 +9,11 @@ import cc.mrbird.febs.common.netty.protocol.machine.TransactionsPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.publickey.QueryPrivateKeylPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.result.BalanceResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.result.CloseSSHResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.result.OpenSSHResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.UpdateTaxesResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.publickey.UpdatePrivateKeyResultPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.MachineLoginPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
@@ -25,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * 协议处理
@@ -63,7 +62,10 @@ public class ProtocolService {
     BalanceResultPortocol balanceResultPortocol;
 
     @Autowired
-    UpdateTaxesResultPortocol updateTaxesResultPortocol;
+    UpdatePrivateKeyResultPortocol updatePrivateKeyResultPortocol;
+
+    @Autowired
+    QueryPrivateKeylPortocol queryPrivateKeylPortocol;
 
     @Autowired
     ChangeStatusPortocol changeStatusPortocol;
@@ -171,8 +173,11 @@ public class ProtocolService {
                 case BalanceResultPortocol.PROTOCOL_TYPE:
                     baseProtocol = balanceResultPortocol;
                     break;
-                case UpdateTaxesResultPortocol.PROTOCOL_TYPE:
-                    baseProtocol = updateTaxesResultPortocol;
+                case UpdatePrivateKeyResultPortocol.PROTOCOL_TYPE:
+                    baseProtocol = updatePrivateKeyResultPortocol;
+                    break;
+                case QueryPrivateKeylPortocol.PROTOCOL_TYPE:
+                    baseProtocol = queryPrivateKeylPortocol;
                     break;
                 case ChangeStatusPortocol.PROTOCOL_TYPE:
                     baseProtocol = changeStatusPortocol;

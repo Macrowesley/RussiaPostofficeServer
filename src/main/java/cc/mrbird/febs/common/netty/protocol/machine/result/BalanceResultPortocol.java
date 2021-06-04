@@ -16,8 +16,7 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
 
     private static final int REQ_UPDATE_TAXES_RES_LEN = 1;
 
-    //返回数据长度
-    private static final int RES_DATA_LEN = 1;
+
 
     /**
      * 获取协议类型

@@ -92,4 +92,7 @@ public interface IPrintJobService extends IService<PrintJob> {
 
 
     Foreseen getForeseenById(String foreseenId);
+
+
+    boolean checkPrintJobFinish(String frankMachineId);
 }

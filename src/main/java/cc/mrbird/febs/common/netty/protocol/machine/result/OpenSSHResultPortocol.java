@@ -17,8 +17,7 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
     //SSH结果长度
     private static final int REQ_SSH_RES_LEN = 1;
 
-    //返回数据长度
-    private static final int RES_DATA_LEN = 1;
+
 
     /**
      * 获取协议类型

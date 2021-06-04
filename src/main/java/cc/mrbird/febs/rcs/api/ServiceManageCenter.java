@@ -14,6 +14,7 @@ import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.NoArgsConstructor;
@@ -191,31 +192,13 @@ public class ServiceManageCenter {
                     throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                 }
             }
-        }
-
-        //如果授权成功，更新公钥，发送给俄罗斯
-        PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-
-        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthError2 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
-            ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
-
-            if (!publickeyResponse.isOK()) {
-                if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
-                    //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError2);
-                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
-                    throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
-                } else {
-                    //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
-                    log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
-                    throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
-                }
-            }
-
             deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndSuccess);
-            log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
         }
+
+        //如果授权成功，数据库保存秘钥，然后通知机器
+        PublicKey publicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
+        serviceToMachineProtocol.sentPrivateKey(frankMachineId, publicKey);
+
         log.info("{} 操作成功",operationName);
     }
 
@@ -396,6 +379,7 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
         }
 
+        //判断机器税率表是否更新
         Tax tax = taxService.getLastestTax();
         String fmTaxVersion = foreseenFMDTO.getTaxVersion();
         String dbTaxVersion = tax.getVersion();
@@ -405,11 +389,18 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
         }
 
+        //判断publickey是否更新
+        if (!publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId())){
+            log.error("机器{}私钥没有更新 ", frankMachineId);
+            throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "私钥没有更新");
+        }
+
         log.info("foreseenFMDTO.getContractId() = {}", foreseenFMDTO.getContractId());
         Contract dbContract = contractService.getByConractId(foreseenFMDTO.getContractId());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
         Integer dbEnable = dbContract.getEnable();
+
         //判断合同状态是否可用
         if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
             throw new FmException("foreseens 订单状态不可用，当前订单的状态为：" + dbEnable);

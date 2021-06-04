@@ -60,9 +60,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     public List<PrintJob> findPrintJobs(PrintJob printJob) {
-	    LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
-		return this.baseMapper.selectList(queryWrapper);
+        LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
+        // TODO 设置查询条件
+        return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -81,9 +81,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Transactional(rollbackFor = Exception.class)
     public void deletePrintJob(PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
-	    this.remove(wrapper);
-	}
+        // TODO 设置删除条件
+        this.remove(wrapper);
+    }
 
     /**
      * 通过frankMachineId找到没有闭环的打印任务
@@ -95,7 +95,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public PrintJob getUnFinishJobByFmId(String frankMachineId) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
-        wrapper.eq(PrintJob::getFlow,FlowEnum.FlowIng.getCode());
+        wrapper.eq(PrintJob::getFlow, FlowEnum.FlowIng.getCode());
         return this.getOne(wrapper);
     }
 
@@ -123,7 +123,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeForeseensStatus(ForeseenDTO foreseenDTO,  FlowDetailEnum curFlowDetail) {
+    public void changeForeseensStatus(ForeseenDTO foreseenDTO, FlowDetailEnum curFlowDetail) {
         /**
          创建job
          创建foreseens和ForeseenProduct
@@ -132,10 +132,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         boolean isForeseensSuccess = curFlowDetail == FlowDetailEnum.JobingForeseensSuccess;
         //创建job
         PrintJob printJob = new PrintJob();
-        if (isForeseensSuccess){
+        if (isForeseensSuccess) {
             log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess");
             printJob.setFlow(FlowEnum.FlowIng.getCode());
-        }else{
+        } else {
             log.info("curFlowDetail == FlowEnum.FlowEnd.getCode");
             printJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
@@ -151,10 +151,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         this.createPrintJob(printJob);
 
 
-
         //2. 创建foreseens和ForeseenProduct
         Foreseen foreseen = new Foreseen();
-        BeanUtils.copyProperties(foreseenDTO,foreseen);
+        BeanUtils.copyProperties(foreseenDTO, foreseen);
         foreseen.setForeseenStatus(FlowEnum.FlowEnd.getCode());
         foreseen.setForeseenStatus(1);
         foreseen.setUpdatedTime(new Date());
@@ -162,9 +161,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         foreseenService.createForeseen(foreseen);
 
         List<ForeseenProduct> foreseenProductList = new ArrayList<>();
-        for (ForeseenProductDTO productDto: foreseenDTO.getProducts()){
+        for (ForeseenProductDTO productDto : foreseenDTO.getProducts()) {
             ForeseenProduct foreseenProduct = new ForeseenProduct();
-            BeanUtils.copyProperties(productDto,  foreseenProduct);
+            BeanUtils.copyProperties(productDto, foreseenProduct);
             foreseenProduct.setForeseenId(foreseen.getId());
             foreseenProduct.setCreatedTime(new Date());
             foreseenProductList.add(foreseenProduct);
@@ -198,9 +197,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //更新PrintJob
         if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnowError) {
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
-        }else if(curFlowDetail == FlowDetailEnum.JobEndFailForeseensCancel4xxError){
+        } else if (curFlowDetail == FlowDetailEnum.JobEndFailForeseensCancel4xxError) {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
-        }else{
+        } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
 
             //todo 修改合同的申请金额管理
@@ -230,16 +229,16 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract , TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
+    public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         //更新PrintJob
-        if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
+        if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow) {
             //todo 碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
             dbPrintJob.setUpdatedTime(new Date());
             this.updatePrintJob(dbPrintJob);
             return dbContract;
-        }else{
+        } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
             dbPrintJob.setUpdatedTime(new Date());
             dbPrintJob.setTransactionId(transactionDTO.getId());
@@ -249,7 +248,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //添加 transaction
         Transaction transaction = new Transaction();
-        BeanUtils.copyProperties(transactionDTO,transaction);
+        BeanUtils.copyProperties(transactionDTO, transaction);
         transaction.setTransactionStatus(FlowEnum.FlowEnd.getCode());
         transaction.setUpdatedTime(new Date());
         transaction.setCreatedTime(new Date());
@@ -258,7 +257,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //添加frank
         List<Frank> frankList = new ArrayList<>();
-        for (FrankDTO frankDTO: transactionDTO.getFranks()) {
+        for (FrankDTO frankDTO : transactionDTO.getFranks()) {
             Frank frank = new Frank();
             frank.setDmMessage(frankDTO.getDmMessage());
             frank.setId(AESUtils.createUUID());
@@ -297,6 +296,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     public Foreseen getForeseenById(String foreseenId) {
-       return foreseenService.getById(foreseenId);
+        return foreseenService.getById(foreseenId);
+    }
+
+
+    @Override
+    public boolean checkPrintJobFinish(String frankMachineId) {
+        LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
+        wrapper.eq(PrintJob::getFlow, FlowEnum.FlowIng.getCode());
+        Integer unFinishCount = this.baseMapper.selectCount(wrapper);
+
+        return unFinishCount == 0 ? true : false;
     }
 }

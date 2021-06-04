@@ -34,8 +34,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-    //返回数据长度
-    private static final int RES_DATA_LEN = 1;
+
 
     private static final String OPERATION_NAME = "ForeseensPortocol";
 

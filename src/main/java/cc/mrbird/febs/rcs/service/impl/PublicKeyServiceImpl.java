@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyGenerate;
@@ -74,15 +76,22 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
 
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public PublicKeyDTO saveOrUpdatePublicKey(String frankMachineId) {
+    public PublicKey saveOrUpdatePublicKey(String frankMachineId) {
+        PublicKey dbPublicKey = findByFrankMachineId(frankMachineId);
+        //如果数据库没有这个机器的publickey，那就更新
+        //如果数据库有，但是这个publickey是也已经闭环了，也更新
+        //否则，返回正在处理的秘钥
+        if (dbPublicKey != null && dbPublicKey.getFlow() == FlowEnum.FlowIng.getCode()){
+            return dbPublicKey;
+        }
+
         try {
             log.info("更新服务器public 开始");
-            PublicKey dbPublicKey = this.getById(frankMachineId);
             int revision = dbPublicKey == null ? 1 : dbPublicKey.getRevision() + 1;
 
             PublicKeyGenerate publicKeyGenerate = new PublicKeyGenerate();
             //更新publickey
-            int expire = 365;
+            int expire = 365*3;
             PublicKey publicKey = new PublicKey();
             publicKey.setFrankMachineId(frankMachineId);
             publicKey.setPublicKey(publicKeyGenerate.getPublicKey());
@@ -90,19 +99,45 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setRevision(revision);
             publicKey.setAlg("");
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));
+            publicKey.setFlow(FlowEnum.FlowIng.getCode());
+            publicKey.setFlowDetail(FlowDetailEnum.PublicKeyBegin.getCode());
             publicKey.setCreatedTime(new Date());
             this.saveOrUpdate(publicKey);
 
-            //返回给俄罗斯
-            PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-            publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKey.getPublicKey() + " -----END PUBLIC KEY-----");
-            publicKeyDTO.setExpireDate(DateKit.offsetDayDateStr(expire));
-            publicKeyDTO.setRevision(revision);
-            publicKeyDTO.setAlg(publicKey.getAlg());
-            log.info("更新服务器public 数据库 结束");
-            return publicKeyDTO;
+            return publicKey;
         } catch (Exception e) {
             throw new RcsApiException(e.getMessage());
         }
+    }
+
+    @Override
+    public PublicKey findByFrankMachineId(String frankMachineId) {
+        LambdaQueryWrapper<PublicKey> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PublicKey::getFrankMachineId, frankMachineId);
+        return this.baseMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public boolean checkFmIsUpdate(String frankMachineId) {
+        LambdaQueryWrapper<PublicKey> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PublicKey::getFrankMachineId, frankMachineId);
+        wrapper.select(PublicKey::getFlow);
+        return this.baseMapper.selectOne(wrapper).getFlow() == FlowEnum.FlowEnd.getCode();
+    }
+
+    @Override
+    @Transactional(rollbackFor = RcsApiException.class)
+    public void changeFlowInfo(PublicKey dbPubliceKey, FlowDetailEnum curFlowDetail) {
+        switch (curFlowDetail){
+            case PublicKeyEndSuccess:
+                dbPubliceKey.setFlow(FlowEnum.FlowEnd.getCode());
+                break;
+            case PublicKeyErrorFail4xxError:
+                break;
+            case PublicKeyErrorFailUnKnow:
+                break;
+        }
+        dbPubliceKey.setFlowDetail(curFlowDetail.getCode());
+        this.saveOrUpdate(dbPubliceKey);
     }
 }

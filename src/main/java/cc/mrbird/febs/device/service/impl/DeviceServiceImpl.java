@@ -626,6 +626,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         Device device = new Device();
         device.setTaxIsUpdate(TaxUpdateEnum.NOT_UPDATE.getCode());
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        //查找所有机器
         wrapper.gt(Device::getTaxIsUpdate, -1);
         this.update(device, wrapper);
     }

@@ -4,23 +4,23 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
-import cc.mrbird.febs.rcs.dto.manager.RateTableFeedbackDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
+import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
-import cn.hutool.core.io.FileUtil;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.UnsupportedEncodingException;
 
 /**
  * 被俄罗斯调用的接口
@@ -61,10 +61,9 @@ public class ServiceApi {
     @Autowired
     RedisService redisService;
 
-
     @Autowired
-    @Qualifier(FebsConstant.ASYNC_POOL)
-    ThreadPoolTaskExecutor poolTaskExecutor;
+    IPrintJobService printJobService;
+
 
     /**
      * 公钥请求
@@ -77,20 +76,17 @@ public class ServiceApi {
 
 
         if (regenerate) {
-            //todo 如果打印任务没有结束，拒绝
+            //如果打印任务没有结束，拒绝
+            if(printJobService.checkPrintJobFinish(frankMachineId)){
+                throw new RcsApiException("print job is not finish, please wait");
+            }
 
             //生成publickey，更新数据库
-            PublicKeyDTO publicKeyDTO = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
+            PublicKey dbPublicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
-            //异步：线程中调用俄罗斯的publickey接口，把public传递过去
-            log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的publickey发送给了俄罗斯");
-            poolTaskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    ApiResponse response = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
-                    log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的publickey发送给了俄罗斯，得到俄罗斯返回的结果：{}", response.toString());
-                }
-            });
+            //异步：发送privateKey给机器
+            log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的privateKey给机器");
+            serviceToMachineProtocol.sentPrivateKey(frankMachineId, dbPublicKey);
         }
 
         return new ApiResponse(200, "ok");
@@ -107,7 +103,10 @@ public class ServiceApi {
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
-        //todo 如果打印任务没有结束，拒绝
+        //如果打印任务没有结束，拒绝
+        if(printJobService.checkPrintJobFinish(frankMachineId)){
+            throw new RcsApiException("print job is not finish, please wait");
+        }
 
         //保存要更改的状态
         deviceService.changeStatusBegin(frankMachineId, changeStatusRequestDTO);

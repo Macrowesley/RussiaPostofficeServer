@@ -8,11 +8,13 @@ import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
+import cc.mrbird.febs.rcs.entity.PublicKey;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -177,49 +179,51 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         }
     }
 
-
-    //发送给机器后，不需要机器的返回
-    public void changeStatusEnd(DeviceDTO deviceDTO, boolean isOk) {
-
+    /**
+     * 发送privateKey给机器
+     */
+    @Async(FebsConstant.ASYNC_POOL)
+    public void sentPrivateKey(String frankMachineId, PublicKey dbPublicKey){
         try {
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(deviceDTO.getId()));
+            if (dbPublicKey.getFlow() == FlowEnum.FlowIng.getCode()){
+                log.info("privateKey正在处理中，请等待");
+                return;
+            }
+
+            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(frankMachineId));
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
-            /**
-
-             typedef  struct{
-             unsigned char length;				    //一个字节
-             unsigned char head;				 	 //0xC4
-             unsigned char content[?];              //加密后内容 版本内容(3) + frankMachineId() + 状态（1）+ 结果(1)
-             unsigned char check;				    //校验位
-             unsigned char tail;					 //0xD0
-             }__attribute__((packed))statusEnd, *statusEnd;
-             **/
             //准备数据
-           /* String version = FebsConstant.Version1;
-            int status = changeStatusRequestDTO.getStatus().getType();
-            String postOffice = changeStatusRequestDTO.getPostOffice();
-            //todo 转json
-            String content = version + frankMachineId + status + postOffice;
-            String entryctContent = AESUtils.encrypt(content, tempKey);
+            String version = FebsConstant.FmVersion1;
 
-            //发送数据
+            /**
+             typedef  struct{
+                 unsigned char length[2];			 //2个字节
+                 unsigned char head;				 	 //0xC6
+                 unsigned char version[3];			 //版本内容(3)
+                 unsigned char content[?];            //加密后内容  privateKey 的加密内容
+                 unsigned char check;				 //校验位
+                 unsigned char tail;					 //0xD0
+             }__attribute__((packed))privateKey, *privateKey;
+             */
+            String content = dbPublicKey.getPrivateKey();
+            String entryctContent = AESUtils.encrypt(content, tempKey);
             wrieteToCustomer(
                     ctx,
-                    getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8),
-                            (byte) 0xC4));*/
-        }catch (Exception e){
-            log.error("服务器改变机器状态" + e.getMessage());
-            //待处理
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xC6));
+            log.info("服务器发送privateKey给机器 content={},加密后entryctContent={}", content, entryctContent);
+        } catch (Exception e) {
             throw new FmException(e.getMessage());
         }
     }
 
-    private String getAcnumByFMId(String frankMachineId) {
-        return deviceService.getAcnumByFMId(frankMachineId);
-    }
-
+     /*
+     ***********************************************************
+     不确定方法
+     ************************************************************
+     */
     /**
      * 同步tax信息
      * todo 所有FM都需要同步tax信息吗？
@@ -259,6 +263,15 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
         //todo 需要同步账户余额
 
+    }
+
+    /*
+     ***********************************************************
+     私有方法
+     ************************************************************
+     */
+    private String getAcnumByFMId(String frankMachineId) {
+        return deviceService.getAcnumByFMId(frankMachineId);
     }
 
 }
