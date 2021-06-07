@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
@@ -111,6 +112,14 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
 
+        } catch (FmException e) {
+            e.printStackTrace();
+            log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
+            if (-1 != e.getCode()) {
+                return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
+            } else {
+                return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
+            }
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);

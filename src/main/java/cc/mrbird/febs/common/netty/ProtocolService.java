@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * 协议处理
  */
@@ -79,6 +81,7 @@ public class ProtocolService {
 
     @Autowired
     MachineLoginPortocol machineLoginPortocol;*/
+
 
     @Autowired
     @Qualifier(value = FebsConstant.NETTY_ASYNC_POOL)
@@ -193,7 +196,7 @@ public class ProtocolService {
             case ForeseensPortocol.PROTOCOL_TYPE:
                 baseProtocol = new ForeseensPortocol();
                 //todo 临时测试
-//                isNeedLogin = false;
+                isNeedLogin = false;
                 break;
             case ForeseensCancelPortocol.PROTOCOL_TYPE:
                 baseProtocol = new ForeseensCancelPortocol();
@@ -221,12 +224,10 @@ public class ProtocolService {
             }
             if (isNeedAsync){
                 MachineToServiceProtocol asyncProtocol = baseProtocol;
-                log.info("ProtocolService baseProtocol = " + baseProtocol.toString());
                 threadPoolTaskExecutor.submit(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            log.info("ProtocolService asyncProtocol = " + asyncProtocol.toString());
                             wrieteToCustomer(ctx, asyncProtocol.parseContentAndRspone(data, ctx));
                         } catch (Exception e) {
                             log.error("返回结果出错：" + e.getMessage());

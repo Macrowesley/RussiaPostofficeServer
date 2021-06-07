@@ -4,7 +4,6 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
-import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -13,6 +12,7 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
@@ -180,6 +180,15 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
+            }
+
+        } catch (FmException e) {
+            e.printStackTrace();
+            log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
+            if (-1 != e.getCode()) {
+                return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
+            } else {
+                return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
             }
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());

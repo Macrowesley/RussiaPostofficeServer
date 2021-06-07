@@ -107,7 +107,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
             if (foreseensPortocol.redisService.hasKey(key)){
                 //todo 临时测试
-                return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
+//                return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
             }else{
                 log.info("channelId={}的操作记录放入redis", key);
                 foreseensPortocol.redisService.set(key,"wait", WAIT_TIME);
@@ -203,6 +203,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
     @Override
     protected void finalize() throws Throwable {
+        log.info("ForeseensPortocol 调用了 finalize");
         super.finalize();
     }
 }
