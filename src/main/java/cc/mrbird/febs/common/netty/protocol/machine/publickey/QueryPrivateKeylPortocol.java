@@ -1,26 +1,25 @@
 package cc.mrbird.febs.common.netty.protocol.machine.publickey;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
-import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
+@NoArgsConstructor
 @Component
 public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
-    @Autowired
-    RedisService redisService;
 
     @Autowired
     IPublicKeyService publicKeyService;
@@ -31,6 +30,18 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
     private static final int REQ_ACNUM_LEN = 6;
 
     private static final String OPERATION_NAME = "QueryPrivateKeylPortocol";
+
+    public static QueryPrivateKeylPortocol queryPrivateKeylPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.queryPrivateKeylPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return queryPrivateKeylPortocol;
+    }
 
     /**
      * 获取协议类型
@@ -67,11 +78,11 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
          */
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (redisService.hasKey(key)) {
+            if (queryPrivateKeylPortocol.redisService.hasKey(key)) {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                redisService.set(key, "wait", WAIT_TIME);
+                queryPrivateKeylPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
             log.info("机器开始 ForeseensCancel");
 
@@ -112,11 +123,11 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
              unsigned char tail;					     //0xD0
          }__attribute__((packed))privateKeyRes, *privateKeyRes;
          */
-        PublicKey dbPublicKey = publicKeyService.findByFrankMachineId(frankMachineId);
+        PublicKey dbPublicKey = queryPrivateKeylPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
         String privateKey = dbPublicKey.getPrivateKey();
 
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + privateKey;
-        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String tempKey = queryPrivateKeylPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("CancelJob 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

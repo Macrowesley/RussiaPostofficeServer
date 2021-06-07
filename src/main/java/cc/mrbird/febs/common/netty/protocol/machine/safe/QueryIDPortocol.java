@@ -1,20 +1,24 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 
 /**
  * 请求唯一ID
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class QueryIDPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA3;
@@ -27,6 +31,18 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
 
     @Autowired
     IDeviceService deviceService;
+
+    public static QueryIDPortocol queryIDPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.queryIDPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return queryIDPortocol;
+    }
 
     @Override
     public byte getProtocolType() {
@@ -49,7 +65,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
                     String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
 
                     //根据acnum获取密钥
-                    Device device = deviceService.findDeviceByAcnum(acnum);
+                    Device device = queryIDPortocol.deviceService.findDeviceByAcnum(acnum);
                     if (device == null) {
                         throw new Exception("获取唯一id：设备" + acnum + "不存在");
                     }
@@ -100,4 +116,6 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
          * }__attribute__((packed))T_IdAck, *PT_IdAck;
          */
     }
+
+
 }

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -7,16 +8,19 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 
 /**
  * 请求临时密钥
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class QueryTemKeyPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA4;
@@ -31,8 +35,19 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
     IDeviceService deviceService;
 
     @Autowired
-    public TempTimeUtils tempTimeUtils;
+    TempTimeUtils tempTimeUtils;
 
+    public static QueryTemKeyPortocol queryTemKeyPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.queryTemKeyPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return queryTemKeyPortocol;
+    }
 
     @Override
     public byte getProtocolType() {
@@ -55,7 +70,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
 
                 //创建8位临时密钥
                 //根据acnum获取密钥
-                Device device = deviceService.findDeviceByAcnum(acnum);
+                Device device = queryTemKeyPortocol.deviceService.findDeviceByAcnum(acnum);
                 if (device == null) {
                     throw new Exception("获取临时密钥：设备" + acnum + "不存在");
                 }
@@ -69,9 +84,9 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
 
 
                 //保存临时密钥
-                tempKeyUtils.addTempKey(ctx, tempKey);
+                queryTemKeyPortocol.tempKeyUtils.addTempKey(ctx, tempKey);
                 //保存临时时间戳
-                tempTimeUtils.addTempTime(ctx, timestamp);
+                queryTemKeyPortocol.tempTimeUtils.addTempTime(ctx, timestamp);
 
                 byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];

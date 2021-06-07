@@ -1,12 +1,17 @@
 package cc.mrbird.febs.common.netty.protocol.machine.result;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
+@NoArgsConstructor
 @Component
 public class OpenSSHResultPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xB1;
@@ -17,7 +22,17 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
     //SSH结果长度
     private static final int REQ_SSH_RES_LEN = 1;
 
+    public static OpenSSHResultPortocol openSSHResultPortocol;
 
+    @PostConstruct
+    public void init(){
+        this.openSSHResultPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return openSSHResultPortocol;
+    }
 
     /**
      * 获取协议类型

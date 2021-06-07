@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.charge;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -7,14 +8,18 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.order.entity.OrderVo;
 import cc.mrbird.febs.order.service.IOrderService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 机器返回注资结果
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class ChargeResProtocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA2;
@@ -36,6 +41,18 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
 
     @Autowired
     IOrderService orderService;
+
+    public static ChargeResProtocol chargeResProtocol;
+
+    @PostConstruct
+    public void init(){
+        this.chargeResProtocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return chargeResProtocol;
+    }
 
     /**
      * 获取协议类型
@@ -72,7 +89,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
             int pos = TYPE_LEN;
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
-            if (!channelMapperManager.containsKeyAcnum(acnum)){
+            if (!chargeResProtocol.channelMapperManager.containsKeyAcnum(acnum)){
                 log.error("机器返回注资结果：请求不合法");
                 throw new Exception("请求不合法");
             }
@@ -82,7 +99,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(ctx);
+            String tempKey = chargeResProtocol.tempKeyUtils.getTempKey(ctx);
 
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
@@ -130,7 +147,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
                     boolean changeRes = false;
                     try {
                         log.info("机器{}返回注资结果： 更新订单状态 res = {}" ,acnum, chargeRes.equals("1"));
-                        orderService.updateMachineInjectionStatus(orderVo, chargeRes.equals("1"));
+                        chargeResProtocol.orderService.updateMachineInjectionStatus(orderVo, chargeRes.equals("1"));
                         changeRes = true;
                     } catch (Exception e) {
                         log.error(e.getMessage());

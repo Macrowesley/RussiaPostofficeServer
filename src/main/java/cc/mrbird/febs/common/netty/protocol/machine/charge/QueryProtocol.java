@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.charge;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -8,14 +9,18 @@ import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.order.service.IOrderService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 查询是否有数据包
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class QueryProtocol extends MachineToServiceProtocol {
     //表头号长度
@@ -39,6 +44,18 @@ public class QueryProtocol extends MachineToServiceProtocol {
 
     @Autowired
     ChannelMapperManager channelMapperManager;
+
+    public static QueryProtocol queryProtocol;
+
+    @PostConstruct
+    public void init(){
+        this.queryProtocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return queryProtocol;
+    }
 
     /**
      * 获取协议类型
@@ -82,7 +99,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
 
-            if (!channelMapperManager.containsKeyAcnum(acnum)){
+            if (!queryProtocol.channelMapperManager.containsKeyAcnum(acnum)){
                 log.error("机器返回注资结果：请求不合法");
                 throw new Exception("请求不合法");
             }
@@ -91,7 +108,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(ctx);
+            String tempKey = queryProtocol.tempKeyUtils.getTempKey(ctx);
 /*
             log.info("tempKey = " + tempKey + " acnumId = " + (acnum + getCID(ctx)));
             log.info("enctryptContent = " + enctryptContent);
@@ -117,7 +134,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
 
                     log.info("查询是否有数据包：解析加密内容，version={}, acnum={}", versionContent, acnum);
 
-                    Order order = orderService.machineRequestData(acnum);
+                    Order order = queryProtocol.orderService.machineRequestData(acnum);
 
                     //是否有结果
                     String res = "0";

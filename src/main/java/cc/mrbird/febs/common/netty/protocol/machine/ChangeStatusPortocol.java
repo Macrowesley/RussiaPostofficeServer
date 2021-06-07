@@ -1,22 +1,28 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
-import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
+@NoArgsConstructor
 @Component
 public class ChangeStatusPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xB4;
@@ -24,9 +30,19 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-
-
     private static final String OPERATION_NAME = "ChangeStatusPortocol";
+
+    public static ChangeStatusPortocol changeStatusPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.changeStatusPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return changeStatusPortocol;
+    }
 
     /**
      * 获取协议类型
@@ -111,11 +127,11 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
                     //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
                     String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-                    if (redisService.hasKey(key)) {
+                    if (changeStatusPortocol.redisService.hasKey(key)) {
                         return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
                     } else {
                         log.info("channelId={}的操作记录放入redis", key);
-                        redisService.set(key, "wait", WAIT_TIME);
+                        changeStatusPortocol.redisService.set(key, "wait", WAIT_TIME);
                     }
 
                     switch (event) {
@@ -123,23 +139,23 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                             switch (status) {
                                 case ADD_MACHINE_INFO:
                                     //可能要废弃了，机器信息是直接在公司就录了的
-                                    serviceManageCenter.addMachineInfo(acnum, deviceDto);
+                                    changeStatusPortocol.serviceManageCenter.addMachineInfo(acnum, deviceDto);
                                     break;
                                 case ENABLED:
-                                    serviceManageCenter.auth(deviceDto);
+                                    changeStatusPortocol.serviceManageCenter.auth(deviceDto);
                                     break;
                                 case UNAUTHORIZED:
-                                    serviceManageCenter.unauth(deviceDto);
+                                    changeStatusPortocol.serviceManageCenter.unauth(deviceDto);
                                     break;
                                 case LOST:
-                                    serviceManageCenter.lost(deviceDto);
+                                    changeStatusPortocol.serviceManageCenter.lost(deviceDto);
                                 default:
-                                    serviceManageCenter.changeStatusEvent(deviceDto);
+                                    changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto);
                                     break;
                             }
                             break;
                         case RATE_TABLE_UPDATE:
-                            serviceManageCenter.rateTableUpdateEvent(deviceDto);
+                            changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
                             break;
                         default:
                             //处理异常
@@ -168,13 +184,13 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
     private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, int statusType, int eventType) throws Exception {
         //删除redis缓存
-        redisService.del(ctx.channel().id().toString());
+        changeStatusPortocol.redisService.del(ctx.channel().id().toString());
 
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.valueOf(eventType) + statusType;
 
         //返回内容的加密数据
         //获取临时密钥
-        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String tempKey = changeStatusPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("改变状态：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

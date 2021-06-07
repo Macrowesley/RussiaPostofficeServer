@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseensResultDTO;
@@ -18,12 +19,16 @@ import cc.mrbird.febs.rcs.service.IContractAddressService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 
 @Slf4j
+@NoArgsConstructor
 @Component
 public class ForeseensPortocol extends MachineToServiceProtocol {
     @Autowired
@@ -34,8 +39,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-
-
     private static final String OPERATION_NAME = "ForeseensPortocol";
 
     @Autowired
@@ -43,6 +46,18 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
     @Autowired
     IContractAddressService contractAddressService;
+
+    public static ForeseensPortocol foreseensPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.foreseensPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return foreseensPortocol;
+    }
 
     /**
      * 获取协议类型
@@ -79,14 +94,23 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
             log.info("机器开始 Foreseens");
 
+
+            //测试代码
+            /*Thread.sleep(10000);
+            log.info("foreseensPortocol = " + foreseensPortocol.toString());
+            log.info("foreseensPortocol this = " + this.toString());
+            foreseensPortocol.tempKeyUtils.addTempKey(ctx,"hhhh");
+            getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.NotFinish.getCode());*/
+
+
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (redisService.hasKey(key)){
+            if (foreseensPortocol.redisService.hasKey(key)){
                 //todo 临时测试
                 return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
             }else{
                 log.info("channelId={}的操作记录放入redis", key);
-                redisService.set(key,"wait", WAIT_TIME);
+                foreseensPortocol.redisService.set(key,"wait", WAIT_TIME);
             }
 
 
@@ -100,14 +124,14 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             //版本号
             version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
             pos += VERSION_LEN;
-
+//            log.info(version);
             switch (version) {
                 case FebsConstant.FmVersion1:
                     ForeseenFMDTO foreseenFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
                     log.info("解析得到的对象：foreseenFMDTO={}", foreseenFMDTO.toString());
 
                     //判断上一次打印是否闭环
-                    PrintJob dbPrintJob = printJobService.getUnFinishJobByFmId(foreseenFMDTO.getFrankMachineId());
+                    PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFMDTO.getFrankMachineId());
                     if (dbPrintJob != null) {
                         /**
                          * 特殊的情况：上次订单过程中，访问俄罗斯transaction接口时，没有访问成功，导致没有闭环，解决方案如下：
@@ -128,7 +152,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                     String foreseenId = AESUtils.createUUID();
                     foreseenFMDTO.setId(foreseenId);
                     //数据库的合同信息
-                    Contract dbContract = serviceManageCenter.foreseens(foreseenFMDTO);
+                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFMDTO);
 
                     return getSuccessResult(version,ctx,foreseenId,dbContract);
                 default:
@@ -168,12 +192,17 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         foreseensResultDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(contract.getConsolidate())));
         foreseensResultDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(contract.getCurrent())));
 
-        foreseensResultDTO.setAddressList(contractAddressService.selectArrayByConractId(contract.getId()));
+        foreseensResultDTO.setAddressList(foreseensPortocol.contractAddressService.selectArrayByConractId(contract.getId()));
 
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + JSON.toJSONString(foreseensResultDTO);
-        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String tempKey = foreseensPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
     }
 }

@@ -171,12 +171,4 @@ public class ChannelMapperManager {
             log.info("连接通道数量: " + All_CHANNEL_MAP.size() + " 有效连接数量：" + getChannleSize() );
         }
     }
-
-    public TempKeyUtils getTempKeyUtils() {
-        return tempKeyUtils;
-    }
-
-    public TempTimeUtils getTempTimeUtils() {
-        return tempTimeUtils;
-    }
 }

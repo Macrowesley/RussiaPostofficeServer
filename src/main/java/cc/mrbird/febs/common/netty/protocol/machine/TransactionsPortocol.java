@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
@@ -12,16 +13,18 @@ import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 
 @Slf4j
+@NoArgsConstructor
 @Component
 public class TransactionsPortocol extends MachineToServiceProtocol {
-    @Autowired
-    RedisService redisService;
 
     public static final byte PROTOCOL_TYPE = (byte) 0xB6;
 
@@ -31,6 +34,18 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
 
     private static final String OPERATION_NAME = "TransactionsPortocol";
+
+    public static TransactionsPortocol transactionsPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.transactionsPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return transactionsPortocol;
+    }
 
     /**
      * 获取协议类型
@@ -69,11 +84,11 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (redisService.hasKey(key)) {
+            if (transactionsPortocol.redisService.hasKey(key)) {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                redisService.set(key, "wait", WAIT_TIME);
+                transactionsPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
 
             int pos = TYPE_LEN;
@@ -103,10 +118,10 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
                         cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
                         cancelJobFMDTO.setContractId(transactionFMDTO.getContractId());
-                        dbContract = serviceManageCenter.cancelJob(cancelJobFMDTO);
+                        dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
                     } else {
                         //处理transaction
-                        dbContract = serviceManageCenter.transactions(transactionFMDTO);
+                        dbContract = transactionsPortocol.serviceManageCenter.transactions(transactionFMDTO);
                     }
                     return getSuccessResult(version, ctx, transactionId, dbContract);
                 default:
@@ -140,7 +155,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
          */
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + transactionId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
-        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String tempKey = transactionsPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("transaction 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

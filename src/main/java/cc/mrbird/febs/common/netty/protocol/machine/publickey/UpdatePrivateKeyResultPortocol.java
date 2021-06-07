@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine.publickey;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -16,19 +17,20 @@ import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 机器收到了秘钥，告知服务器，服务器把最新秘钥通知俄罗斯，俄罗斯得到最新秘钥后，数据库更新
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
-    @Autowired
-    RedisService redisService;
-
     @Autowired
     ServiceInvokeManager serviceInvokeManager;
 
@@ -41,6 +43,18 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
     private static final int REQ_ACNUM_LEN = 6;
 
     private static final String OPERATION_NAME = "UpdatePrivateKeyResultPortocol";
+
+    public static UpdatePrivateKeyResultPortocol updatePrivateKeyResultPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.updatePrivateKeyResultPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return updatePrivateKeyResultPortocol;
+    }
 
     /**
      * 获取协议类型
@@ -76,11 +90,11 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
          */
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (redisService.hasKey(key)) {
+            if (updatePrivateKeyResultPortocol.redisService.hasKey(key)) {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                redisService.set(key, "wait", WAIT_TIME);
+                updatePrivateKeyResultPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
             log.info("机器开始 ForeseensCancel");
 
@@ -114,7 +128,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.PrivateKeyNeedUpdate.getCode());
                     }
                     //如果机器privateKey更新成功，而且publickey没有闭环，那就通知俄罗斯更新，俄罗斯更新成功后，更新数据库状态
-                    PublicKey dbPubliceKey = publicKeyService.findByFrankMachineId(frankMachineId);
+                    PublicKey dbPubliceKey = updatePrivateKeyResultPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
 
                     if (dbPubliceKey.getFlow() != FlowEnum.FlowEnd.getCode()) {
                         //返回给俄罗斯
@@ -124,22 +138,22 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         publicKeyDTO.setAlg(dbPubliceKey.getAlg());
                         publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
 
-                        ApiResponse publickeyResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
+                        ApiResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
 
                         if (!publickeyResponse.isOK()) {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                                publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFailUnKnow);
+                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFailUnKnow);
                                 log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
                                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                             } else {
                                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                                publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFail4xxError);
+                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFail4xxError);
                                 log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
                                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                             }
                         }
-                        publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyEndSuccess);
+                        updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyEndSuccess);
                         log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
                     }else{
                         log.error("publickey 已经闭环了，无序操作");

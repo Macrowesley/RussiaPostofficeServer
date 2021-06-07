@@ -1,8 +1,10 @@
 package cc.mrbird.febs.common.netty.protocol.machine;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -22,6 +24,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 
 @Slf4j
 @Component
@@ -29,7 +33,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
     @Autowired
     RedisService redisService;
 
-    public static final byte PROTOCOL_TYPE = (byte) 0xB5;
+    public static final byte PROTOCOL_TYPE = (byte) 0xB3;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
@@ -47,6 +51,18 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @Autowired
     IPublicKeyService publicKeyService;
+
+    public static CheckServicePortocol checkServicePortocol;
+
+    @PostConstruct
+    public void init(){
+        this.checkServicePortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return checkServicePortocol;
+    }
 
 
     /**
@@ -78,7 +94,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
             typedef  struct{
                 unsigned char head;				    //0xAA
                 unsigned char length[2];			//
-                unsigned char type;					//0xB8
+                unsigned char type;					//0xB3
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
                 unsigned char content[?];			//加密后内容: FrankMachineId(36)
@@ -115,7 +131,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     /**
                      typedef  struct{
                      unsigned char length[2];				 //2个字节
-                     unsigned char head;				 	 //0xB8
+                     unsigned char head;				 	 //0xB3
                      unsigned char content;				     //加密内容: result(1 成功) + version + statuscode(1) + 订单是否结束（1 结束 0 未结束）+ 私钥是否更新（0未更新 1更新） + 税率是否更新（0未更新 1更新了） + ForeseenFMDTO 的Json
                      unsigned char check;				     //校验位
                      unsigned char tail;					 //0xD0
@@ -123,27 +139,27 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                      */
 
                     //请求服务器返回最新状态
-                    Device dbDevice = deviceService.findDeviceByAcnum(acnum);
+                    Device dbDevice = checkServicePortocol.deviceService.findDeviceByAcnum(acnum);
                     int curStatus = dbDevice.getCurFmStatus();
 
                     //校验机器tax是否更新
                     int isFmTaxUpdate = dbDevice.getTaxIsUpdate();
 
                     //校验机器私钥是否更新
-                    int isFmPrivateUpdate = publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 1 : 0;
+                    int isFmPrivateUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 1 : 0;
 
                     //获取上次打印任务信息
                     String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     String frankMachineId = decryptContent.trim();
 
                     //数据库的合同信息
-                    PrintJob dbPrintJob = printJobService.getLastestJobByFmId(frankMachineId);
+                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
                     boolean isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
                     if (!isPrintEnd) {
                         //没有闭环，返回foreseen信息  问问小刘 需不需要细节？ 需不需要transaction信息
                         String foreseenId = dbPrintJob.getForeseenId();
-                        Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
+                        Foreseen dbForeseen = checkServicePortocol.printJobService.getForeseenById(foreseenId);
 
                         BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
                         foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
@@ -158,7 +174,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                                     + String.valueOf(isFmPrivateUpdate)
                                     + String.valueOf(isFmTaxUpdate)
                                     + JSON.toJSONString(foreseenFMDTO);
-                    String tempKey = tempKeyUtils.getTempKey(ctx);
+                    String tempKey = checkServicePortocol.tempKeyUtils.getTempKey(ctx);
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

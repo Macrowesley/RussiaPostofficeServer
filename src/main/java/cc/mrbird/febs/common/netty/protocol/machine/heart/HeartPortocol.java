@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.heart;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -51,4 +52,8 @@ public class HeartPortocol extends MachineToServiceProtocol {
         return getWriteContent(data);
     }
 
+    @Override
+    public BaseProtocol getOperator() {
+        return this;
+    }
 }

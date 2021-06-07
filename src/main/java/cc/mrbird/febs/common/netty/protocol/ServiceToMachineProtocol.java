@@ -36,6 +36,11 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public ServiceToMachineProtocol() {
     }
 
+    @Override
+    public BaseProtocol getOperator() {
+        return null;
+    }
+
     /**
      * 服务器发送打开机器ssh指令
      * @param acnum

@@ -1,12 +1,17 @@
 package cc.mrbird.febs.common.netty.protocol.machine.result;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
+@NoArgsConstructor
 @Component
 public class BalanceResultPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xC5;
@@ -17,6 +22,17 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
     private static final int REQ_UPDATE_TAXES_RES_LEN = 1;
 
 
+    public static BalanceResultPortocol balanceResultPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.balanceResultPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return balanceResultPortocol;
+    }
 
     /**
      * 获取协议类型

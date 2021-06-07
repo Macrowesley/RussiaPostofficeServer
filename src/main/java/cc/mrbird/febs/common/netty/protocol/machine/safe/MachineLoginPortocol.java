@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
+import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
@@ -7,15 +8,19 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 机器登录校验协议
  * 验证成功，加入缓存
  */
 @Slf4j
+@NoArgsConstructor
 @Component
 public class MachineLoginPortocol extends MachineToServiceProtocol {
     public static final byte PROTOCOL_TYPE = (byte) 0xA5;
@@ -30,7 +35,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
     IDeviceService deviceService;
 
     @Autowired
-    public TempTimeUtils tempTimeUtils;
+    TempTimeUtils tempTimeUtils;
 
     @Autowired
     ChannelMapperManager channelMapperManager;
@@ -38,6 +43,18 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
     @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
+    }
+
+    public static MachineLoginPortocol machineLoginPortocol;
+
+    @PostConstruct
+    public void init(){
+        this.machineLoginPortocol = this;
+    }
+
+    @Override
+    public BaseProtocol getOperator() {
+        return machineLoginPortocol;
     }
 
     @Override
@@ -73,7 +90,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(ctx);
+            String tempKey = machineLoginPortocol.tempKeyUtils.getTempKey(ctx);
             log.info("enctryptContent = {} tempKey = {}", enctryptContent, tempKey);
 
             //解密后内容
@@ -90,16 +107,16 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
                     //验证时间是否正常
                     byte[] res = new byte[]{0x00};
-                    if(tempTimeUtils.isValidTime(ctx, Long.valueOf(timestamp))){
+                    if(machineLoginPortocol.tempTimeUtils.isValidTime(ctx, Long.valueOf(timestamp))){
                         res[0] = 0x01;
 
                         //保存到缓存
-                        if (!channelMapperManager.containsKeyAcnum(acnum)) {
-                            channelMapperManager.addChannel(acnum, ctx);
+                        if (!machineLoginPortocol.channelMapperManager.containsKeyAcnum(acnum)) {
+                            machineLoginPortocol.channelMapperManager.addChannel(acnum, ctx);
                         }else{
                             res[0] = 0x00;
                             log.info("有问题：服务器中保存的表头号为"+acnum + " ChannelMapperUtils.getChannelByAcnum(acnum) = "
-                                    + channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
+                                    + machineLoginPortocol.channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
                         }
 
                     }

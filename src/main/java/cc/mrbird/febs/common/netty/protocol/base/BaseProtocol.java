@@ -2,19 +2,23 @@ package cc.mrbird.febs.common.netty.protocol.base;
 
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
 
 @Slf4j
-public class BaseProtocol {
+@NoArgsConstructor
+public abstract class BaseProtocol {
 
     //请求长度：记录整条数据长度数值的长度
     public static final int REQUEST_LENGTH_LEN = 2;
@@ -38,8 +42,20 @@ public class BaseProtocol {
     @Autowired
     public TempKeyUtils tempKeyUtils;
 
+    @Autowired
+    public RedisService redisService;
+
+    @Autowired
+    public ServiceManageCenter serviceManageCenter;
+
     /**
-     * 获取返回的协议内容长度
+     * 获取实际操作的类
+     * @return
+     */
+    public abstract BaseProtocol getOperator();
+
+    /**
+     * 获取返回的协议内容长度 获取操作人员
      * isContainFirstLen : 总长度是否包含第一个4字节的长度
      *
      * @return
@@ -127,9 +143,9 @@ public class BaseProtocol {
      */
     public String getDecryptContent(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN) throws Exception {
         String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
-
+        log.info("baseProtocol = " + getOperator().toString());
         //获取临时密钥
-        String tempKey = tempKeyUtils.getTempKey(ctx);
+        String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
         //todo 测试
 //        tempKey = "2dc1f4d99e7fcadc";
         //解密后内容
