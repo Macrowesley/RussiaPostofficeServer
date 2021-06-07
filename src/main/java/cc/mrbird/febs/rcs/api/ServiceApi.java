@@ -1,21 +1,17 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
-import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
-import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +68,7 @@ public class ServiceApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
     public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
 
 
@@ -99,6 +96,7 @@ public class ServiceApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_changeStatus")
     public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
         log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
@@ -124,6 +122,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/taxes")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
         //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
@@ -139,6 +138,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/postOffices")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
     public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
         return new ApiResponse(200, "ok");
@@ -150,6 +150,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/contracts")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
     public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
         contractService.saveContractDto(contractDTO);
         return new ApiResponse(200, "ok");
@@ -162,6 +163,7 @@ public class ServiceApi {
      * @return
      */
     @PutMapping("/contracts/{contractId}/balance")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
     public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
         balanceService.saveBalance(contractId, serviceBalanceDTO);
         return new ApiResponse(200, "ok");
