@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine.charge;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.order.entity.OrderVo;
@@ -31,7 +31,8 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
     //注资金额长度
     private static final int REQ_AMOUNT_LEN = 8;
 
-
+    @Autowired
+    ChannelMapperManager channelMapperManager;
 
     @Autowired
     IOrderService orderService;
@@ -71,7 +72,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
             int pos = TYPE_LEN;
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
-            if (!ChannelMapperUtils.containsKey(acnum)){
+            if (!channelMapperManager.containsKeyAcnum(acnum)){
                 log.error("机器返回注资结果：请求不合法");
                 throw new Exception("请求不合法");
             }

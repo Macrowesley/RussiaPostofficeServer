@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.common.utils.SpringContextUtil;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -9,10 +10,14 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.omg.IOP.Codec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * <b>长度 + 类型 + 数据 + 检验位 + 结尾</b>
  */
+@Component
 @Slf4j
 public abstract class MachineToServiceProtocol extends BaseProtocol {
     @Autowired

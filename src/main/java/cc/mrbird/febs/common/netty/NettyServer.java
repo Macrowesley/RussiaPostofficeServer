@@ -23,8 +23,8 @@ import java.net.InetSocketAddress;
 public class NettyServer {
     Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
-    @Autowired
-    NettyServerHandler nettyServerHandler;
+   /* @Autowired
+    NettyServerHandler nettyServerHandler;*/
 
     private Channel channel;
 
@@ -55,7 +55,8 @@ public class NettyServer {
                         // 解决粘包问题 通过解析不定长的协议
                         socketChannel.pipeline().addLast("decoder", new MyDecoder());
 
-                        socketChannel.pipeline().addLast(nettyServerHandler);
+//                        socketChannel.pipeline().addLast(nettyServerHandler);
+                        socketChannel.pipeline().addLast(new NettyServerHandler());
                     }
                 })
                 .localAddress(socketAddress)

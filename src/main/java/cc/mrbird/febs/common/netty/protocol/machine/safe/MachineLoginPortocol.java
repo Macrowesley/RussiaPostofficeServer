@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -10,7 +10,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.misc.Version;
 
 /**
  * 机器登录校验协议
@@ -32,6 +31,9 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
     @Autowired
     public TempTimeUtils tempTimeUtils;
+
+    @Autowired
+    ChannelMapperManager channelMapperManager;
 
     @Override
     public byte getProtocolType() {
@@ -92,12 +94,12 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                         res[0] = 0x01;
 
                         //保存到缓存
-                        if (!ChannelMapperUtils.containsKey(acnum)) {
-                            ChannelMapperUtils.addChannel(acnum, ctx);
+                        if (!channelMapperManager.containsKeyAcnum(acnum)) {
+                            channelMapperManager.addChannel(acnum, ctx);
                         }else{
                             res[0] = 0x00;
                             log.info("有问题：服务器中保存的表头号为"+acnum + " ChannelMapperUtils.getChannelByAcnum(acnum) = "
-                                    +ChannelMapperUtils.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
+                                    + channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
                         }
 
                     }

@@ -5,7 +5,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +60,9 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     private final IUserService userService;
     private final IUserRoleService userRoleService;
     private final IFmStatusLogService statusLogService;
+
+    @Autowired
+    ChannelMapperManager channelMapperManager;
 
     @Override
     public IPage<Device> findDevices(QueryRequest request, Device device) {
@@ -98,7 +101,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         }
 
         deviceIPage.getRecords().stream().forEach( item ->{
-            item.setIsOnline(ChannelMapperUtils.containsKey(item.getAcnum()) ? 1 : 0);
+            item.setIsOnline(channelMapperManager.containsKeyAcnum(item.getAcnum()) ? 1 : 0);
         });
 
         return deviceIPage;

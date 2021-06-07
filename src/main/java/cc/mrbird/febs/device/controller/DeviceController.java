@@ -10,7 +10,7 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.netty.NettyServerHandler;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.device.dto.AddDeviceDTO;
 import cc.mrbird.febs.device.dto.CheckIsExistDTO;
 import cc.mrbird.febs.device.dto.SendDeviceDTO;
@@ -48,6 +48,8 @@ public class DeviceController extends BaseController {
 
     private final IDeviceService deviceService;
 
+    @Autowired
+    ChannelMapperManager channelMapperManager;
 
     @Autowired
     NettyServerHandler nettyServerHandler;
@@ -153,7 +155,7 @@ public class DeviceController extends BaseController {
     @GetMapping("removeChannelFromNetty/{acnum}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse removeChannelFromNetty(@PathVariable String acnum) {
-        nettyServerHandler.removeCache(ChannelMapperUtils.getChannelByAcnum(acnum));
+        channelMapperManager.removeCache(acnum);
         return new FebsResponse().success().data("ok");
     }
 }

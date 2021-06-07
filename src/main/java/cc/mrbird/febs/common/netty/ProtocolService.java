@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.netty;
 
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.machine.ChangeStatusPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.ForeseensCancelPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.ForeseensPortocol;
@@ -33,9 +33,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProtocolService {
-
     @Autowired
-    NettyServerHandler nettyServerHandler;
+    ChannelMapperManager channelMapperManager;
 
     @Autowired
     HeartPortocol heartPortocol;
@@ -85,8 +84,6 @@ public class ProtocolService {
     //出问题了返回该结果
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
 
-    @Autowired
-    private ApplicationContext applicationContext;
 
 //    @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
@@ -197,14 +194,15 @@ public class ProtocolService {
 
             try {
                 //判断是否通过验证
-                //todo 临时测试
+
                 if (isNeedLogin){
                     //检查改连接是否保存在缓存中
-                    boolean isLogin = ChannelMapperUtils.containsValue(ctx);
+                    boolean isLogin = channelMapperManager.containsValue(ctx);
                     if (!isLogin){
                         //如果没有登录 删除ctx
                         log.error("ctx = {} 没有通过验证，无法使用，踢掉  当前协议{}", ctx ,  BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));
-                        nettyServerHandler.channelInactive(ctx);
+                        channelMapperManager.removeCache(ctx);
+                        ctx.disconnect().sync();
                         return getErrorRes(protocolType);
                     }
                 }

@@ -3,14 +3,13 @@ package cc.mrbird.febs.common.netty.protocol;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
-import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperUtils;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
@@ -31,6 +30,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     @Autowired
     IDeviceService deviceService;
 
+    @Autowired
+    ChannelMapperManager channelMapperManager;
+
     public ServiceToMachineProtocol() {
     }
 
@@ -50,7 +52,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             }*/
 
 
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(acnum);
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(acnum);
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -90,7 +92,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public boolean closeSshProtocol(String acnum) {
         try {
 
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(acnum);
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(acnum);
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -139,7 +141,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     public void changeStatus(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) {
 
         try {
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(frankMachineId));
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFMId(frankMachineId));
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -190,7 +192,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                 return;
             }
 
-            ChannelHandlerContext ctx = ChannelMapperUtils.getChannelByAcnum(getAcnumByFMId(frankMachineId));
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFMId(frankMachineId));
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
