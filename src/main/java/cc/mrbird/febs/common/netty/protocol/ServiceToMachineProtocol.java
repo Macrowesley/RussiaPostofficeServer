@@ -209,12 +209,12 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                  unsigned char length[2];			 //2个字节
                  unsigned char head;				 	 //0xC6
                  unsigned char version[3];			 //版本内容(3)
-                 unsigned char content[?];            //加密后内容  privateKey 的加密内容
+                 unsigned char content[?];            //加密后内容   Key revision(5位，不够用0填充) +  privateKey 的加密内容
                  unsigned char check;				 //校验位
                  unsigned char tail;					 //0xD0
              }__attribute__((packed))privateKey, *privateKey;
              */
-            String content = dbPublicKey.getPrivateKey();
+            String content = String.format("%05d",dbPublicKey.getRevision()) +  dbPublicKey.getPrivateKey();
             String entryctContent = AESUtils.encrypt(content, tempKey);
             wrieteToCustomer(
                     ctx,

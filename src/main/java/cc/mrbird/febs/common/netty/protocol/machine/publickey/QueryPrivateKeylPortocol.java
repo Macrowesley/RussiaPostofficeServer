@@ -117,16 +117,15 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
          typedef  struct{
              unsigned char length[2];				     //2个字节
              unsigned char head;				 	     //0xB8
-             unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + privateKey的加密内容
+             unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(5位，不够用0填充) + privateKey的加密内容
              result(长度为2 不为1,操作失败具体原因看 FMResultEnum) + 版本内容(3)
              unsigned char check;				     //校验位
              unsigned char tail;					     //0xD0
          }__attribute__((packed))privateKeyRes, *privateKeyRes;
          */
         PublicKey dbPublicKey = queryPrivateKeylPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
-        String privateKey = dbPublicKey.getPrivateKey();
 
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + privateKey;
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%05d",dbPublicKey.getRevision())  + dbPublicKey.getPrivateKey();
         String tempKey = queryPrivateKeylPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("CancelJob 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

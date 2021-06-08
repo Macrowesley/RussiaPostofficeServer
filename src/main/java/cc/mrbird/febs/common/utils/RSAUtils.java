@@ -36,6 +36,10 @@ import javax.crypto.Cipher;
  * 字符串格式的密钥在未在特殊说明情况下都为BASE64编码格式<br/>
  * 由于非对称加密速度极其缓慢，一般文件不使用它来加密而是使用对称加密，<br/>
  * 非对称加密算法可以用来对对称加密的密钥加密，这样保证密钥的安全也就保证了数据的安全
+ *
+ *   RSA签名算法：MD2withRSA、MD5withRSA、SHA1withRSA，为jdk实现
+ *   1.秘钥长度为64的倍数，在512~65536之间，默认长度1024，签名长度和秘钥长度相同
+ *   签名算法：SHA256withRSA，为BC实现，秘钥默认长度为2048
  * </p>
  *
  */
@@ -51,36 +55,45 @@ public class RSAUtils {
     
     /**
      * 签名算法
+     *  RSA签名算法：MD2withRSA、MD5withRSA、SHA1withRSA，为jdk实现
+     *  1.秘钥长度为64的倍数，在512~65536之间，默认长度1024，签名长度和秘钥长度相同
+     *  签名算法：SHA256withRSA，为BC实现，秘钥默认长度为2048
      */
+//    public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
     public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
 
     /**
      * 获取公钥的key
      */
-    private static final String PUBLIC_KEY = "RSAGDPT2020PublicKey";
+//    private static final String PUBLIC_KEY = "RSAGDPT2020PublicKey";
+    private static final String PUBLIC_KEY = "RSAGDPT2021PublicKey";
 
     /**
      * 获取私钥的key
      */
-    private static final String PRIVATE_KEY = "RSAGDPT2020PrivateKey";
+//    private static final String PRIVATE_KEY = "RSAGDPT2020PrivateKey";
+    private static final String PRIVATE_KEY = "RSAGDPT2021PrivateKey";
 
     
     /**
      * RSA最大加密明文大小
      */
-    private static final int MAX_ENCRYPT_BLOCK = 117;
+//    private static final int MAX_ENCRYPT_BLOCK = 117;
+    private static final int MAX_ENCRYPT_BLOCK = 51;
 
     
     /**
      * RSA最大解密密文大小
      */
-    private static final int MAX_DECRYPT_BLOCK = 128;
+//    private static final int MAX_DECRYPT_BLOCK = 128;
+    private static final int MAX_DECRYPT_BLOCK = 64;
 
     
     /**
      * RSA 位数 如果采用2048 上面最大加密和最大解密则须填写:  245 256
      */
-    private static final int INITIALIZE_LENGTH = 1024;
+//    private static final int INITIALIZE_LENGTH = 1024;
+    private static final int INITIALIZE_LENGTH = 512;
 
     
     /**
@@ -372,7 +385,6 @@ public class RSAUtils {
     public static String decryptDataOnJava(String data, String PRIVATEKEY) {
         String temp = "";
         try {
-            log.info("解密的内容：{}",data);
             byte[] rs = Base64.decodeBase64(data);
             temp = new String(RSAUtils.decryptByPrivateKey(rs, PRIVATEKEY),"UTF-8");
 
@@ -397,7 +409,8 @@ public class RSAUtils {
         log.info("公钥长度{}，公钥内容 = {}", publicKey.length(), publicKey);
         log.info("私钥长度{}，私钥内容 = {}", privateKey.length(), privateKey);
 
-        /*String content = "11sdfasdfasdfasdsfasdfasdfasdfsadfwefewfwefsfewfsdf1";
+        String content = "11sdfasdfasdfasdsfasdfasdfasdfsadfwefewfwefsfewfsdf1";
+        content = "abcADFJIASDFJIASDFIJIADJFIASDJFIASDJFIAJI";
 //        content = "123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz123456789abcdefghijklmnopqrstuvwxyz";
         System.out.println("最开始内容长度："+ content.length() + " 内容：" + content);
         //公钥加密后内容
@@ -406,11 +419,18 @@ public class RSAUtils {
 
         //私钥解密后内容
         long t2 = System.currentTimeMillis();
-        encryptedContent = "RwxIFbxnwnCANurVQgHHO2TN48S6hp2VCj402NMUM81jLaolVeVFdkBBnedZruBrO/1LQTxVU7Kg58FoOTRgFCae1pZ4RRMM3S9zMqOCwzXhMOMhua9OlAKNaHFewPlfOJVh2wdlOzAdwfPNaPrwJYf/6ygdUjbSHnzi5LnodKg=";
+//        encryptedContent = "RwxIFbxnwnCANurVQgHHO2TN48S6hp2VCj402NMUM81jLaolVeVFdkBBnedZruBrO/1LQTxVU7Kg58FoOTRgFCae1pZ4RRMM3S9zMqOCwzXhMOMhua9OlAKNaHFewPlfOJVh2wdlOzAdwfPNaPrwJYf/6ygdUjbSHnzi5LnodKg=";
         String decryptContent = decryptDataOnJava(encryptedContent, privateKey);
         System.out.println("解密耗时：" + (System.currentTimeMillis() - t2));
         System.out.println("私钥解密后内容: " + decryptContent);
-        System.out.println("解密后和最开始内容是否一致：" + content.equals(decryptContent));*/
+        System.out.println("解密后和最开始内容是否一致：" + content.equals(decryptContent));
         System.out.println("总耗时：" + (System.currentTimeMillis() - t1));
+
+        long t3 = System.currentTimeMillis();
+        String sign = sign(content.getBytes("utf-8"), privateKey);
+        boolean isOk = verify(content.getBytes("utf-8"), publicKey, sign);
+        System.out.println("签名长度："  + sign.length() +"  签名内容：" + sign);
+        System.out.println("签名是否OK： " + isOk);
+        System.out.println("签名 验证 耗时：" + (System.currentTimeMillis() - t1));
     }
 }
