@@ -26,7 +26,14 @@ public class EcDsaCode {
     //    private static final int KEY_SIZE = 256;
 //    private static final String SIGNATURE_ALGORITHM = "SHA512withECDSA";
     private static final int KEY_SIZE = 112;
-    private static final String SIGNATURE_ALGORITHM = "SHA512withECDSA";
+    /*
+    | TEE_ALG_ECDSA_P192*                 | TEE_ALG_ECDSA_SHA1                  |
+    | TEE_ALG_ECDSA_P224*                 | TEE_ALG_ECDSA_SHA224                |
+    | TEE_ALG_ECDSA_P256*                 | TEE_ALG_ECDSA_SHA256                |
+    | TEE_ALG_ECDSA_P384*                 | TEE_ALG_ECDSA_SHA384                |
+    | TEE_ALG_ECDSA_P521*                 | TEE_ALG_ECDSA_SHA512                |
+     */
+    private static final String SIGNATURE_ALGORITHM = "SHA1withECDSA";
     private static final String CHARSET_NAME = "UTF-8";
 
     public static void main(String[] args) throws Exception {
