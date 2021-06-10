@@ -29,7 +29,7 @@ public class Contract {
 
 
     /**
-     * 数量
+     * 合同号的数字，废弃
      */
     @TableField("num")
     private String num;

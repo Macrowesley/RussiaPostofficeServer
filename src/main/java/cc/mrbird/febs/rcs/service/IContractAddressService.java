@@ -57,5 +57,7 @@ public interface IContractAddressService extends IService<ContractAddress> {
 
     AddressDTO[] selectArrayByConractId(String contractId);
 
+    String selectStrListByConractId(String contractId);
+
     void saveAddressList(List<String> addressList, String contractId);
 }

@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.vo.ContractVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -58,4 +59,11 @@ public interface IContractService extends IService<Contract> {
     boolean checkIsExist(String contractId);
 
     Contract getByConractId(String contractId);
+
+    /**
+     * 获取详情界面显示的结构体
+     * @param contractId
+     * @return
+     */
+    ContractVO getVoByConractId(String contractId);
 }

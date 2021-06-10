@@ -37,11 +37,6 @@ public class ContractController extends BaseController {
 
     private final IContractService contractService;
 
-    @GetMapping(FebsConstant.VIEW_PREFIX + "contract")
-    public String contractIndex(){
-        return FebsUtil.view("contract/contract");
-    }
-
     @GetMapping("contract")
     @ResponseBody
     @RequiresPermissions("contract:list")

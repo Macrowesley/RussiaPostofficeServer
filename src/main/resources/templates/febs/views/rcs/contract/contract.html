@@ -1,1 +1,297 @@
-我是合同列表
+<div class="layui-fluid layui-anim febs-anim" id="febs-contract" th:lay-title="#{contract.manage}">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="contract-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label" th:text="#{contract.id}"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="id" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <!--<div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{contract.nickname}"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="nickname" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>-->
+                                    <!--<div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">创建时间</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="createdTime" id="contract-createTime"
+                                                   class="layui-input">
+                                        </div>
+                                    </div>-->
+                                    <!--<div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{contract.status}"></label>
+                                        <div class="layui-input-inline">
+                                            <select name="contractStatus">
+                                                <option value=""></option>
+                                                <option value="0" th:text="#{contract.freeze}"></option>
+                                                <option value="1" th:text="#{contract.normal}"></option>
+                                            </select>
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="febs-hide" id="refreshQuery"></div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action"
+                                     id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+
+                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="contract:update,contract:export">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="contractTable" lay-data="{id: 'contractTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="contract-status">
+    {{#
+    var status = {
+    0: {title: i18n("contract.enableNo"), color: 'red'},
+    1: {title: i18n("contract.enableOk"), color: 'green'},
+    }[d.enable];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+
+
+<script type="text/html" id="contract-option">
+    <span shiro:lacksPermission="contract:update">
+        <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
+    </span>
+    <a lay-event="detail"><i class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
+    <a lay-event="edit" shiro:hasPermission="contract:update"><i class="layui-icon febs-edit-area febs-blue">&#xe642;</i></a>
+
+    <!--  <a lay-event="del" shiro:hasPermission="contract:delete"><i
+            class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
+        var $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            treeSelect = layui.treeSelect,
+            dropdown = layui.dropdown,
+            $view = $('#febs-contract'),
+            $query = $view.find('#query'),
+            $refreshQuery = $view.find('#refreshQuery'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createdTime', type: null},
+            tableIns,
+            createTimeFrom,
+            createTimeTo;
+
+        form.render();
+
+        initSearchView();
+        initTable();
+        initTableTool();
+
+
+        /**
+         * 查询表单数据
+         */
+        function queryTable(isFirstQuery){
+            var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            if (isFirstQuery == 1){
+                tableIns.reload({where: params, page: {curr: 1}});
+            }else{
+                var pageNum = $view.find(".layui-laypage-em").next().html();
+                tableIns.reload({where: params, page: {curr: pageNum}});
+            }
+        }
+
+        /**
+         * 初始化搜索栏
+         */
+        function initSearchView(){
+
+            //搜索点击事件
+            $query.on('click', function () {
+                /*var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                tableIns.reload({where: params, page: {curr: 1}});*/
+                queryTable(1);
+            });
+
+            //修改参数后，返回主页，刷新，回到指定页面
+            $refreshQuery.on('click', function () {
+                queryTable(0);
+            })
+
+            //刷新点击事件
+            $reset.on('click', function () {
+                $searchForm[0].reset();
+                sortObject.type = 'null';
+                createTimeTo = null;
+                createTimeFrom = null;
+                tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
+            });
+
+            //更多——弹出窗
+            dropdown.render({
+                elem: $view.find('.action-more'),
+                click: function (name, elem, event) {
+                    var checkStatus = table.checkStatus('contractTable');
+                    /*if (name === 'add') {
+                        febs.modal.open(i18n("contract.addcontract"), 'contract/add', {
+                            btn: [i18n("submit"), i18n("reset")],
+                            area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
+                            offset: '30px',
+                            yes: function (index, layero) {
+                                $('#contract-add').find('#submit').trigger('click');
+                            },
+                            btn2: function () {
+                                $('#contract-add').find('#reset').trigger('click');
+                                return false;
+                            }
+                        });
+                    }*/
+                    /*if (name === 'delete') {
+                        if (!checkStatus.data.length) {
+                            febs.alert.warn('请选择需要删除的设备');
+                        } else {
+                            febs.modal.confirm('删除设备', '确定删除该设备？', function () {
+                                var contractIds = [];
+                                layui.each(checkStatus.data, function (key, item) {
+                                    contractIds.push(item.contractId)
+                                });
+                                deletecontracts(contractIds.join(','));
+                            });
+                        }
+                    }*/
+
+                    if (name === 'export') {
+                        var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                        params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                        params.pageNum = $view.find(".layui-laypage-em").next().html();
+                        /*console.log(params)
+                        return;*/
+                        febs.download(ctx + 'contract/excel', params, i18n("contract.list")+'.xlsx');
+                    }
+                },
+                options: [/*{
+                    name: 'add',
+                    title: i18n("contract.addcontract"),
+                    perms: 'contract:add'
+                },*/ /*{
+                    name: 'delete',
+                    title: '删除设备',
+                    perms: 'contract:delete'
+                },*/ /*{
+                    name: 'export',
+                    title: i18n("exportExcel"),
+                    perms: 'contract:export'
+                }*/]
+            });
+        }
+
+        /**
+         *初始化表格
+         */
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'contractTable',
+                url: ctx + 'contract/list',
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id', title: i18n("contract.id"), minWidth: 300},
+                    {field: 'current', title: i18n("contract.current")},
+                    {field: 'consolidate', title: i18n("contract.consolidate")},
+                    {title: i18n("contract.enable"), templet: '#contract-status'},
+                    {field: 'createdTime', title: i18n("createdTime"), minWidth: 180, sort: false},
+                    {field: 'updatedTime', title: i18n("updatedTime"), minWidth: 180, sort: false},
+                    {title: i18n("operation"), toolbar: '#contract-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        /**
+         * 初始化表格每行的工具栏
+         */
+        function initTableTool(){
+            table.on('tool(contractTable)', function (obj) {
+                var data = obj.data,
+                    layEvent = obj.event;
+                /*
+                if (layEvent === 'del') {
+                    febs.modal.confirm('删除设备', '确定删除该设备？', function () {
+                        deletecontracts(data.contractId);
+                    });
+                }*/
+
+                if (layEvent === 'detail') {
+                    febs.modal.view('详情', 'rcs/contract/detail/' + data.id, {
+                        area: $(window).width() <= 750 ? '95%' : '660px'
+                    });
+                }
+                if (layEvent === 'edit') {
+                    febs.modal.open(i18n("contract.edit"), 'rcs/contract/update/' + data.id, {
+                        area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
+                        offset: '30px',
+                        btn: [i18n("submit"), i18n("cancel")],
+                        yes: function (index, layero) {
+                            $('#contract-update').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+            });
+
+            table.on('sort(contractTable)', function (obj) {
+                sortObject = obj;
+                tableIns.reload({
+                    initSort: obj,
+                    where: $.extend(getQueryParams(), {
+                        field: obj.field,
+                        order: obj.type
+                    })
+                });
+            });
+        }
+
+
+        /**
+         * 获取查询信息
+         */
+        function getQueryParams() {
+            /*var createTime = $searchForm.find('input[name="createdTime"]').val();
+            if (createTime) {
+                createTimeFrom = createTime.split(' - ')[0];
+                createTimeTo = createTime.split(' - ')[1];
+            }*/
+            return {
+                // createTimeFrom: createTimeFrom,
+                // createTimeTo: createTimeTo,
+                id: $searchForm.find('input[name="id"]').val().trim(),
+                // nickname: $searchForm.find('input[name="nickname"]').val().trim(),
+                // curFmStatus: $searchForm.find("select[name='contractStatus']").val(),
+                invalidate_ie_cache: new Date()
+            };
+        }
+
+    })
+</script>

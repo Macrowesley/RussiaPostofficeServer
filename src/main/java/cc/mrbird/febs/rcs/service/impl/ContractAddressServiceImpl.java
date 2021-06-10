@@ -83,6 +83,15 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
         }).collect(Collectors.toList()).stream().toArray(AddressDTO[]::new);
     }
 
+    @Override
+    public String selectStrListByConractId(String contractId) {
+        StringBuilder stringBuilder = new StringBuilder();
+        selectListByConractId(contractId).stream().forEach(contractAddress -> {
+            stringBuilder.append(contractAddress.getAddress() + ", ");
+        });
+        return stringBuilder.subSequence(0,stringBuilder.length()-2).toString();
+    }
+
     /**
      * 批量添加地址
      * @param addressList

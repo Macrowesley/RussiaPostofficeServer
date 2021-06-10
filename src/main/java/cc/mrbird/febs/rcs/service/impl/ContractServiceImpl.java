@@ -9,18 +9,17 @@ import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
-import cc.mrbird.febs.rcs.service.IContractService;
-import cc.mrbird.febs.rcs.service.ICustomerService;
-import cc.mrbird.febs.rcs.service.IPostOfficeContractService;
-import cc.mrbird.febs.rcs.service.IPostOfficeService;
+import cc.mrbird.febs.rcs.service.*;
+import cc.mrbird.febs.rcs.vo.ContractVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,11 +43,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private final IPostOfficeService postOfficeService;
     private final ContractMapper contractMapper;
     private final IPostOfficeContractService postOfficeContractService;
+    private final IContractAddressService contractAddressService;
 
     @Override
     public IPage<Contract> findContracts(QueryRequest request, Contract contract) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
+        if(contract == null){
+            contract = new Contract();
+        }
+        if (StringUtils.isNotBlank(contract.getId())){
+            queryWrapper.eq(Contract::getId,contract.getId());
+        }
+
         Page<Contract> page = new Page<>(request.getPageNum(), request.getPageSize());
         return this.page(page, queryWrapper);
     }
@@ -139,5 +145,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     public Contract getByConractId(String contractId) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
         return getOne(queryWrapper.eq(Contract::getId, contractId));
+    }
+
+    @Override
+    public ContractVO getVoByConractId(String contractId) {
+        Contract contract = getByConractId(contractId);
+        String addressContent = contractAddressService.selectStrListByConractId(contractId);
+
+        ContractVO contractVO = new ContractVO();
+        BeanUtils.copyProperties(contract, contractVO);
+        contractVO.setAddressContent(addressContent);
+        return contractVO;
     }
 }
