@@ -601,6 +601,19 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return device.getAcnum();
     }
 
+    /**
+     * 通过frankMachineId判断是否存在
+     *
+     * @param frankMachineId
+     * @return
+     */
+    @Override
+    public boolean checkByFmId(String frankMachineId) {
+        LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Device::getFrankMachineId, frankMachineId);
+        return this.baseMapper.selectCount(wrapper) > 0;
+    }
+
     //todo 需要加缓存
     @Override
     @Transactional(rollbackFor = RcsApiException.class)

@@ -431,6 +431,7 @@ public class ServiceManageCenter {
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "foreseensResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
+                //todo 考虑返回的balance怎么用
                 log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseens4xxError);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "foreseensResponse.isOK() false ");
@@ -445,15 +446,6 @@ public class ServiceManageCenter {
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
-    }
-
-    /**
-     * 获取客户id
-     * @param contractId
-     * @return
-     */
-    private String getUserIdByContractId(String contractId) {
-        return customerService.getUserIdByContractId(contractId);
     }
 
     /**
@@ -594,5 +586,14 @@ public class ServiceManageCenter {
 
         log.info("结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
+    }
+
+    /**
+     * 获取客户id
+     * @param contractId
+     * @return
+     */
+    private String getUserIdByContractId(String contractId) {
+        return customerService.getUserIdByContractId(contractId);
     }
 }

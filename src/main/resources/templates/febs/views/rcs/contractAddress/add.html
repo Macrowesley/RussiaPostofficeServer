@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>邮寄地址管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{febs/css/febs.css}" media="all">
+    <link rel="stylesheet" th:href="@{febs/css/login.css}" media="all">
+    <link rel="icon" th:href="@{febs/images/favicon.ico}" type="image/x-icon"/>
+</head>
+<body>
+
+<div class="febs-container layui-anim febs-anim layui-col-xs12 layui-col-lg4 layui-col-lg-offset4" lay-title="邮寄地址管理">
+    <div class="layui-card ">
+        <div class="layui-card-header" style="line-height:120px;height: 120px;margin:auto;text-align: center;    font-size: 27px;"><b>邮寄地址管理</b></div>
+        <div class="layui-card-body">
+            <form class="layui-form" action="" lay-filter="febs-form-elements">
+                <div class="layui-row layui-col-space10 layui-form-item">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label layui-icon">合同ID：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="contractId" lay-verify="required" placeholder=""
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label layui-icon">机器idID：</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="FMid" lay-verify="required" placeholder=""
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label layui-icon">邮寄地址：</label>
+                        <div class="layui-input-block">
+                                        <textarea name="addressList" placeholder="每个地址用;分隔开"
+                                                  class="layui-textarea "></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="febs-form-elements">立即提交
+                            </button>
+                            <button type="reset" class="layui-btn layui-btn-primary layui-icon">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{i18n/jquery-3.5.1.min.js}"></script>
+<script th:src="@{i18n/jquery.i18n.properties-min-1.0.9.js}"></script>
+<script th:src="@{layui/layui.js}"></script>
+<script th:inline="javascript">
+    var ctx = [[@{/}]];
+    //获取默认语言
+    var LANG_COUNTRY = [[${#locale.language+'_'+#locale.country}]];
+    layui.extend({
+        validate: './febs/lay/modules/validate'
+    }).use(['form', 'layer', 'validate'], function (form, layer) {
+        var $ = layui.jquery,
+            validate = layui.validate,
+            $view = $('#febs-login'),
+            type = 'login',
+            $loginDiv = $view.find('#login-div'),
+            $registDiv = $view.find('#regist-div');
+
+        var element = layui.element;
+
+        form.render(null, 'febs-form-elements');
+
+        form.on('submit(febs-form-elements)', function (data) {
+            var loading = $(this).find('.layui-icon');
+            if (loading.is(":visible")) return;
+            loading.show();
+            $.post(ctx + 'address/add', data.field, function (r) {
+                if (r.code === 200) {
+                    layer.msg("操作成功")
+                } else {
+                    layer.msg(r.message);
+                    loading.hide();
+                    initCode();
+                }
+            });
+            return false;
+        });
+
+
+    });
+
+    //项目国际化配置
+    initLaunage();
+
+    //初始化语言配置
+    function initLaunage() {
+        //初始化i18n插件
+        $.i18n.properties({
+            path: ctx + 'i18n/',//这里表示访问路径
+            name: 'message',//文件名开头
+            language: LANG_COUNTRY,//文件名语言 例如en_US
+            mode: 'both'//默认值
+        });
+    }
+
+    //初始化i18n函数
+    function i18n(msgKey) {
+        try {
+            return $.i18n.prop(msgKey);
+        } catch (e) {
+            return msgKey;
+        }
+    }
+</script>
+</body>
+</html>

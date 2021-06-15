@@ -138,10 +138,11 @@ public class IdUtil {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         long time1 = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100; i++) {
+            Thread.sleep(1000);
             System.out.println(IdUtil.cureateId());
         }
         System.out.println("耗时：" + (System.currentTimeMillis() - time1));

@@ -48,6 +48,8 @@ public class EcDsaCode {
         String sign = Base64.encodeBase64String(signBytes);
         String publicKeyStr = Hex.encodeHexString(publicKey.getEncoded());
         String privateKeyStr = Hex.encodeHexString(privateKey.getEncoded());
+
+        log.info("content = " + content);
         log.info("publicKey length  = " + publicKeyStr.length() + "  publicKey = " + publicKeyStr);
         log.info("privateKey length  = " + privateKeyStr.length() + "  privateKey = " + privateKeyStr);
         log.info("sign length  = " + sign.length() + "  sign = " + sign);

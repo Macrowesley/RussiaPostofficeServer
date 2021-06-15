@@ -155,6 +155,13 @@ public interface IDeviceService extends IService<Device> {
      */
     String getAcnumByFMId(String frankMachineId);
 
+    /**
+     * 通过frankMachineId判断是否存在
+     * @param frankMachineId
+     * @return
+     */
+    boolean checkByFmId(String frankMachineId);
+
     Device getDeviceByFrankMachineId(String frankMachineId);
 
     FlowDetailEnum getFlowDetail(String frankMachineId);
@@ -169,4 +176,6 @@ public interface IDeviceService extends IService<Device> {
      * @param device
      */
     void updateDeviceTaxVersionStatus(DeviceDTO deviceDTO);
+
+
 }
