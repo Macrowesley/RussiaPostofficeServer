@@ -6,13 +6,13 @@ import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.mapper.PostOfficeMapper;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
-import cn.hutool.core.bean.BeanException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,8 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOffice> implements IPostOfficeService {
 
-    private final PostOfficeMapper postOfficeMapper;
+    @Autowired
+    PostOfficeMapper postOfficeMapper;
 
     @Override
     public IPage<PostOffice> findPostOffices(QueryRequest request, PostOffice postOffice) {

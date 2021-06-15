@@ -46,7 +46,8 @@ public class DeviceController extends BaseController {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
-    private final IDeviceService deviceService;
+    @Autowired
+    IDeviceService deviceService;
 
     @Autowired
     ChannelMapperManager channelMapperManager;

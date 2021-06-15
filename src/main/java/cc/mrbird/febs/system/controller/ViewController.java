@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.session.ExpiredSessionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,10 +41,14 @@ import java.util.Locale;
 @ApiIgnore
 public class ViewController extends BaseController {
 
-    private final IUserService userService;
-    private final ShiroHelper shiroHelper;
-    private final IUserDataPermissionService userDataPermissionService;
-    private final INoticeService noticeService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    ShiroHelper shiroHelper;
+    @Autowired
+    IUserDataPermissionService userDataPermissionService;
+    @Autowired
+    INoticeService noticeService;
 
     @Value("${websocket.service}")
     String websocketServiceName;

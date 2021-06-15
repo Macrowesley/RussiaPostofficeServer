@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +34,12 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
-    private final IRoleMenuService roleMenuService;
-    private final ShiroRealm shiroRealm;
-    private final IUserService userService;
+    @Autowired
+    IRoleMenuService roleMenuService;
+    @Autowired
+    ShiroRealm shiroRealm;
+    @Autowired
+    IUserService userService;
 
     @Override
     public List<Menu> findUserPermissions(String username) {

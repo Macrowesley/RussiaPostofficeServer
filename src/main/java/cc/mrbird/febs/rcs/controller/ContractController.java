@@ -2,16 +2,15 @@ package cc.mrbird.febs.rcs.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.service.IContractService;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ContractController extends BaseController {
 
-    private final IContractService contractService;
+    @Autowired
+    IContractService contractService;
 
     @GetMapping("contract")
     @ResponseBody

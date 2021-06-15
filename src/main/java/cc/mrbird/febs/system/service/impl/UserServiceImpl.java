@@ -10,7 +10,6 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.common.utils.SortUtil;
-import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserDataPermission;
 import cc.mrbird.febs.system.entity.UserRole;
@@ -28,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +40,12 @@ import java.util.*;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
-    private final IUserRoleService userRoleService;
-    private final IUserDataPermissionService userDataPermissionService;
-    private final ShiroRealm shiroRealm;
+    @Autowired
+    IUserRoleService userRoleService;
+    @Autowired
+    IUserDataPermissionService userDataPermissionService;
+    @Autowired
+    ShiroRealm shiroRealm;
 
     @Override
     public User findByName(String username) {

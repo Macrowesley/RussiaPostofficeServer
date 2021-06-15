@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,12 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IRoleService {
 
-    private final IRoleMenuService roleMenuService;
-    private final IUserRoleService userRoleService;
-    private final ShiroRealm shiroRealm;
+    @Autowired
+    IRoleMenuService roleMenuService;
+    @Autowired
+    IUserRoleService userRoleService;
+    @Autowired
+    ShiroRealm shiroRealm;
 
     @Override
     public List<Role> findUserRole(String username) {

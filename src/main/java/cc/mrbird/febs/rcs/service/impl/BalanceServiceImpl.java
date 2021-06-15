@@ -13,11 +13,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,10 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> implements IBalanceService {
 
-    private final BalanceMapper balanceMapper;
-    private final IContractService contractService;
+    @Autowired
+    BalanceMapper balanceMapper;
+    @Autowired
+    IContractService contractService;
 
     @Override
     public IPage<Balance> findBalances(QueryRequest request, Balance balance) {

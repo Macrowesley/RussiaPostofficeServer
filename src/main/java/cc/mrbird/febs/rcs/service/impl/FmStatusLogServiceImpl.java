@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class FmStatusLogServiceImpl extends ServiceImpl<FmStatusLogMapper, FmStatusLog> implements IFmStatusLogService {
 
-    private final FmStatusLogMapper fmStatusLogMapper;
+    @Autowired
+    FmStatusLogMapper fmStatusLogMapper;
 
     @Override
     public IPage<FmStatusLog> findFmStatusLogs(QueryRequest request, FmStatusLog fmStatusLog) {

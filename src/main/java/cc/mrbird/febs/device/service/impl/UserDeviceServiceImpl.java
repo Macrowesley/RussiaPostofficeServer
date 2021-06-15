@@ -1,20 +1,18 @@
 package cc.mrbird.febs.device.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.entity.UserDevice;
 import cc.mrbird.febs.device.mapper.UserDeviceMapper;
 import cc.mrbird.febs.device.service.IUserDeviceService;
-import cc.mrbird.febs.system.entity.User;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
-import lombok.RequiredArgsConstructor;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,7 +27,8 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class UserDeviceServiceImpl extends ServiceImpl<UserDeviceMapper, UserDevice> implements IUserDeviceService {
 
-    private final UserDeviceMapper userDeviceMapper;
+    @Autowired
+    UserDeviceMapper userDeviceMapper;
 
     @Override
     public IPage<UserDevice> findUserDevices(QueryRequest request, UserDevice userDevice) {

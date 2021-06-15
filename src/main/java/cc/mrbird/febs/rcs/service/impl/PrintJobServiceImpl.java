@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +43,20 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> implements IPrintJobService {
 
-    private final PrintJobMapper printJobMapper;
-    private final IForeseenService foreseenService;
-    private final IForeseenProductService foreseenProductService;
-    private final ITransactionService transactionService;
-    private final IFrankService frankService;
-    private final IDeviceService deviceService;
-    private final IContractService contractService;
+    @Autowired
+    PrintJobMapper printJobMapper;
+    @Autowired
+    IForeseenService foreseenService;
+    @Autowired
+    IForeseenProductService foreseenProductService;
+    @Autowired
+    ITransactionService transactionService;
+    @Autowired
+    IFrankService frankService;
+    @Autowired
+    IDeviceService deviceService;
+    @Autowired
+    IContractService contractService;
 
     @Override
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {

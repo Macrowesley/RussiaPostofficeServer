@@ -2,8 +2,6 @@ package cc.mrbird.febs.system.controller;
 
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.annotation.Limit;
-import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.DeptTree;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -15,6 +13,7 @@ import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -31,7 +30,8 @@ import java.util.List;
 @ApiIgnore
 public class DeptController {
 
-    private final IDeptService deptService;
+    @Autowired
+    IDeptService deptService;
 
     @GetMapping("select/tree")
     @ControllerEndpoint(exceptionMessage = "{dept.listFail}")

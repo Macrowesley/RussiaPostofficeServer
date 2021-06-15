@@ -12,6 +12,7 @@ import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ForeseenProductController extends BaseController {
 
-    private final IForeseenProductService foreseenProductService;
+    @Autowired
+    IForeseenProductService foreseenProductService;
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "foreseenProduct")
     public String foreseenProductIndex(){

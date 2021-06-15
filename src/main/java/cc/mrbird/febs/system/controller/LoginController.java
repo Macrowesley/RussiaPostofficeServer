@@ -14,6 +14,7 @@ import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,9 +36,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoginController extends BaseController {
 
-    private final IUserService userService;
-    private final ValidateCodeService validateCodeService;
-    private final ILoginLogService loginLogService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    ValidateCodeService validateCodeService;
+    @Autowired
+    ILoginLogService loginLogService;
 
     @PostMapping("login")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_login")

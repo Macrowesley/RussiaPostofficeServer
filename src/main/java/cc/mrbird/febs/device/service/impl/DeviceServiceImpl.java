@@ -56,10 +56,14 @@ import java.util.stream.Collectors;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> implements IDeviceService {
 
-    private final IUserDeviceService userDeviceService;
-    private final IUserService userService;
-    private final IUserRoleService userRoleService;
-    private final IFmStatusLogService statusLogService;
+    @Autowired
+    IUserDeviceService userDeviceService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    IUserRoleService userRoleService;
+    @Autowired
+    IFmStatusLogService statusLogService;
 
     @Autowired
     ChannelMapperManager channelMapperManager;

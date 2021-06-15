@@ -49,10 +49,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxService {
-    private final IPostalProductService postalProductService;
-    private final ITaxRateService taxRateService;
-    private final TaxMapper taxMapper;
-    private final IDeviceService deviceService;
+    @Autowired
+    IPostalProductService postalProductService;
+    @Autowired
+    ITaxRateService taxRateService;
+    @Autowired
+    TaxMapper taxMapper;
+    @Autowired
+    IDeviceService deviceService;
 
     @Autowired
     RedisService redisService;

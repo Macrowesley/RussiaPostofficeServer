@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ import java.util.List;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class PostOfficeContractServiceImpl extends ServiceImpl<PostOfficeContractMapper, PostOfficeContract> implements IPostOfficeContractService {
 
-    private final PostOfficeContractMapper postOfficeContractMapper;
+    @Autowired
+    PostOfficeContractMapper postOfficeContractMapper;
 
     @Override
     public IPage<PostOfficeContract> findPostOfficeContracts(QueryRequest request, PostOfficeContract postOfficeContract) {

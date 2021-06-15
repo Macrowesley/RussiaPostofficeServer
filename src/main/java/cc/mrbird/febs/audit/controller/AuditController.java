@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,8 @@ import java.util.Map;
 @RequestMapping("audit")
 public class AuditController extends BaseController {
 
-    private final IAuditService auditService;
+    @Autowired
+    IAuditService auditService;
 
     @GetMapping("list")
     @RequiresPermissions("audit:list")

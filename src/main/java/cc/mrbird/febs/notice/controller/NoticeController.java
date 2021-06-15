@@ -1,29 +1,21 @@
 package cc.mrbird.febs.notice.controller;
 
-import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
-import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.websocket.WebSocketServer;
 import cc.mrbird.febs.notice.entity.Notice;
 import cc.mrbird.febs.notice.service.INoticeService;
-import com.wuwenze.poi.ExcelKit;
-import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.stereotype.Controller;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +28,8 @@ import java.util.Map;
 @RequestMapping("notice")
 public class NoticeController extends BaseController {
 
-    private final INoticeService noticeService;
+    @Autowired
+    INoticeService noticeService;
 
     @GetMapping("list")
     @ResponseBody

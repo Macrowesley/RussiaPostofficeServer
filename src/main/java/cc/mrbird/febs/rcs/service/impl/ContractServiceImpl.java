@@ -39,11 +39,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> implements IContractService {
-    private final ICustomerService customerService;
-    private final IPostOfficeService postOfficeService;
-    private final ContractMapper contractMapper;
-    private final IPostOfficeContractService postOfficeContractService;
-    private final IContractAddressService contractAddressService;
+    @Autowired
+    ICustomerService customerService;
+
+    @Autowired
+    IPostOfficeService postOfficeService;
+
+    @Autowired
+    ContractMapper contractMapper;
+
+    @Autowired
+    IPostOfficeContractService postOfficeContractService;
+
+    @Autowired
+    IContractAddressService contractAddressService;
 
     @Override
     public IPage<Contract> findContracts(QueryRequest request, Contract contract) {
