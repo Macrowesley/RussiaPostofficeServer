@@ -46,7 +46,9 @@
                         <div class="layui-input-block">
                             <button class="layui-btn" lay-submit lay-filter="febs-form-elements">立即提交
                             </button>
+<!--
                             <button type="reset" class="layui-btn layui-btn-primary layui-icon">重置</button>
+-->
                         </div>
                     </div>
                 </div>
@@ -88,7 +90,7 @@
                 } else {
                     layer.msg(r.message);
                     loading.hide();
-                    initCode();
+                    // initCode();
                 }
             });
             return false;
