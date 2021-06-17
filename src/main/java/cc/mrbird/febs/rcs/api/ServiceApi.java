@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
@@ -70,7 +71,7 @@ public class ServiceApi {
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
     public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
-
+        log.info("【俄罗斯调用服务器api 开始 publicKey】");
 
         if (regenerate) {
             //如果打印任务没有结束，拒绝
@@ -78,14 +79,20 @@ public class ServiceApi {
                 throw new RcsApiException("print job is not finish, please wait");
             }
 
+
+
             //生成publickey，更新数据库
             PublicKey dbPublicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
 
+            if (dbPublicKey.getFlow() == FlowEnum.FlowIng.getCode()){
+                log.info("privateKey正在处理中，请等待");
+                throw new RcsApiException("update public key is not finish, please wait");
+            }
             //异步：发送privateKey给机器
             log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的privateKey给机器");
             serviceToMachineProtocol.sentPrivateKey(frankMachineId, dbPublicKey);
         }
-
+        log.info("【俄罗斯调用服务器api 结束 publicKey】");
         return new ApiResponse(200, "ok");
     }
 
@@ -99,7 +106,8 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_changeStatus")
     public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
                                     @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
-        log.info("更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
+        log.info("【俄罗斯调用服务器api 开始 changeStatus】");
+        log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
         //如果打印任务没有结束，拒绝
         if(printJobService.checkPrintJobFinish(frankMachineId)){
@@ -113,6 +121,7 @@ public class ServiceApi {
         serviceToMachineProtocol.changeStatus(frankMachineId, changeStatusRequestDTO);
 
         //执行到这就返回给俄罗斯
+        log.info("【俄罗斯调用服务器api 结束 changeStatus】");
         return new ApiResponse(200, "ok");
     }
 
@@ -124,11 +133,13 @@ public class ServiceApi {
     @PutMapping("/taxes")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
+        log.info("【俄罗斯调用服务器api 开始 taxes】");
         //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
 
         //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
 //        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
+        log.info("【俄罗斯调用服务器api 结束 taxes】");
         return new ApiResponse(200, "ok");
     }
 
@@ -140,7 +151,9 @@ public class ServiceApi {
     @PutMapping("/postOffices")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
     public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
+        log.info("【俄罗斯调用服务器api 开始 postOffices】");
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
+        log.info("【俄罗斯调用服务器api 结束 postOffices】");
         return new ApiResponse(200, "ok");
     }
 
@@ -152,7 +165,9 @@ public class ServiceApi {
     @PutMapping("/contracts")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
     public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
+        log.info("【俄罗斯调用服务器api 开始 contracts】");
         contractService.saveContractDto(contractDTO);
+        log.info("【俄罗斯调用服务器api 结束 contracts】");
         return new ApiResponse(200, "ok");
     }
 
@@ -165,7 +180,9 @@ public class ServiceApi {
     @PutMapping("/contracts/{contractId}/balance")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
     public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
+        log.info("【俄罗斯调用服务器api 开始 balance】");
         balanceService.saveBalance(contractId, serviceBalanceDTO);
+        log.info("【俄罗斯调用服务器api 结束 balance】");
         return new ApiResponse(200, "ok");
     }
 

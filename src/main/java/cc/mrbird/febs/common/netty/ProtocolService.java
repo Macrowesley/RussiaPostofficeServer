@@ -223,12 +223,15 @@ public class ProtocolService {
                 }
             }
             if (isNeedAsync){
+
                 MachineToServiceProtocol asyncProtocol = baseProtocol;
                 threadPoolTaskExecutor.submit(new Runnable() {
                     @Override
                     public void run() {
                         try {
+                            log.info("【处理协议 开始】");
                             wrieteToCustomer(ctx, asyncProtocol.parseContentAndRspone(data, ctx));
+                            log.info("【处理协议 结束】");
                         } catch (Exception e) {
                             log.error("返回结果出错：" + e.getMessage());
                         }

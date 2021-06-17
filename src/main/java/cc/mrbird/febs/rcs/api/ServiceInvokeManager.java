@@ -56,15 +56,19 @@ public class ServiceInvokeManager {
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
     public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
-        /*String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
+        String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);*/
+        /*if (frankMachineId.equals("FM100001")){
+            return new ApiResponse(ResultEnum.SUCCESS.getCode(), "ok");
+        }*/
+
+        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
 
         //测试代码
-        frankMachineId = "FM100001";
-//        frankMachineId = "NE100700";
+   /*     frankMachineId = "FM100001";
+        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
@@ -73,21 +77,22 @@ public class ServiceInvokeManager {
         deviceTest.setId(frankMachineId);
 
 
-        /*deviceTest.setId(frankMachineId);
+        *//*deviceTest.setId(frankMachineId);
         deviceTest.setPostOffice("131000");
         deviceTest.setDateTime(DateKit.createRussiatime());
         deviceTest.setStatus("ENABLED");
-        deviceTest.setTaxVersion("1.0");*/
+        deviceTest.setTaxVersion("1.0");*//*
 
-        deviceTest.setPostOffice("394040");
+//        deviceTest.setPostOffice("394040");
+        deviceTest.setPostOffice("994700");
         deviceTest.setDateTime(DateKit.createRussiatime());
         deviceTest.setStatus("ENABLED");
-        deviceTest.setTaxVersion("1.0");
+//        deviceTest.setTaxVersion("1.0");
+        deviceTest.setTaxVersion("2.3.3");
 
         log.info(JSON.toJSONString(deviceTest));
 
-        return doExchange(url, deviceTest, HttpMethod.POST, String.class, map);
-
+        return doExchange(url, deviceTest, HttpMethod.POST, String.class, map);*/
     }
 
     /**

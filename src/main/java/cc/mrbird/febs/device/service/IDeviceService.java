@@ -137,7 +137,7 @@ public interface IDeviceService extends IService<Device> {
      * @param deviceDTO
      * @param flowRes
      */
-    void changeStatusEnd(DeviceDTO deviceDTO, FlowDetailEnum curFlowDetail);
+    void changeStatusEnd(DeviceDTO deviceDTO, FlowDetailEnum curFlowDetail, boolean isMachineActive);
 
     /**
      * 改变device flow 状态

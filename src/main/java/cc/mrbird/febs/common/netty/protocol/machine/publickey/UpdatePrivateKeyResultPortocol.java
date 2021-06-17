@@ -113,7 +113,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     String dectryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN).trim();
                     String fmRes = dectryptContent.substring(0, 1);
                     String frankMachineId = dectryptContent.substring(1, dectryptContent.length());
-
+                    log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + fmRes);
                     /**
                      typedef  struct{
                      unsigned char length[2];				 //2个字节

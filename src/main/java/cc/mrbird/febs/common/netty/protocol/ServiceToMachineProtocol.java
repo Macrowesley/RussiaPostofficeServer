@@ -192,11 +192,6 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     @Async(FebsConstant.ASYNC_POOL)
     public void sentPrivateKey(String frankMachineId, PublicKey dbPublicKey){
         try {
-            if (dbPublicKey.getFlow() == FlowEnum.FlowIng.getCode()){
-                log.info("privateKey正在处理中，请等待");
-                return;
-            }
-
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFMId(frankMachineId));
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
@@ -209,18 +204,18 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                  unsigned char length[2];			 //2个字节
                  unsigned char head;				 	 //0xC6
                  unsigned char version[3];			 //版本内容(3)
-                 unsigned char content[?];            //加密后内容   Key revision(5位，不够用0填充) +  privateKey 的加密内容
+                 unsigned char content[?];            //加密后内容   Key revision(4位，不够用0填充) +  privateKey 的加密内容
                  unsigned char check;				 //校验位
                  unsigned char tail;					 //0xD0
              }__attribute__((packed))privateKey, *privateKey;
              */
-            String content = String.format("%05d",dbPublicKey.getRevision()) +  dbPublicKey.getPrivateKey();
+            String content = String.format("%04d",dbPublicKey.getRevision()) +  dbPublicKey.getPrivateKey();
             String entryctContent = AESUtils.encrypt(content, tempKey);
+            log.info("服务器发送privateKey给机器 content={},加密后entryctContent={}", content, entryctContent);
             wrieteToCustomer(
                     ctx,
                     getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
                             (byte) 0xC6));
-            log.info("服务器发送privateKey给机器 content={},加密后entryctContent={}", content, entryctContent);
         } catch (Exception e) {
             throw new FmException(e.getMessage());
         }

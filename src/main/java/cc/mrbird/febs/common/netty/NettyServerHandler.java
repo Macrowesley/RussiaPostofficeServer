@@ -49,7 +49,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        log.info("NettyServerHandler 对象是：" + this);
+        log.info("channelActive NettyServerHandler 对象是：" + this);
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
 
         String clientIp = insocket.getAddress().getHostAddress();
@@ -86,6 +86,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, SocketData msg) throws Exception {
+        /*if (msg.getContent().length > 10) {
+            log.info("channelRead0 NettyServerHandler 对象是：" + this);
+        }*/
         nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
     }
 

@@ -19,6 +19,9 @@ public enum FMResultEnum {
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
 
+    //privateKey异常
+    PrivateKeyNotExist(41,"privatekey不存在"),
+
     DefaultError(0,"其他异常导致的失败");
 
     int code;

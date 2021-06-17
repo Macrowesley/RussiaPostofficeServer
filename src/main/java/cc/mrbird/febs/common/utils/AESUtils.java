@@ -168,7 +168,15 @@ public class AESUtils {
 //          test4();
 //        test5();
 //        test6();
-        test7();
+//        test7();
+        test8();
+    }
+
+    private static void test8() throws Exception {
+        String oldStr = "";
+        String entryContent = "AUPbY+5msM3/n2mRdoAVHg==";
+        String tempKey = "ZmrFj2m7xjBMGzMY";
+        decrypt(entryContent, tempKey);
     }
 
     private static void test7() {

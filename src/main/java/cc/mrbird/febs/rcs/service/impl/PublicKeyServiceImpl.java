@@ -104,7 +104,7 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setFlowDetail(FlowDetailEnum.PublicKeyBegin.getCode());
             publicKey.setCreatedTime(new Date());
             this.saveOrUpdate(publicKey);
-
+            log.info("更新服务器public 成功");
             return publicKey;
         } catch (Exception e) {
             throw new RcsApiException(e.getMessage());

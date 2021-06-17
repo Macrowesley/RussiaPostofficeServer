@@ -91,7 +91,9 @@ public class MyDecoder extends ByteToMessageDecoder {
                 log.error("长度 = " + length + " 从第4个字节开始 data = "  + BaseTypeUtils.bytesToHexString(data));
                 return;
             }
-//            log.info("验证成功 data = "  + BaseTypeUtils.bytesToHexString(data));
+            /*if (data.length > 10) {
+                log.info("验证成功 data = " + BaseTypeUtils.bytesToHexString(data));
+            }*/
             SocketData socketData = new SocketData();
             socketData.setContent(data);
             list.add(socketData);

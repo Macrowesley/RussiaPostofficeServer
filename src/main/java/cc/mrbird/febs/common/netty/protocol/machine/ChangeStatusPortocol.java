@@ -113,6 +113,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     String postOffice = statusFMDTO.getPostOffice();
                     String taxVersion = statusFMDTO.getTaxVersion();
                     int eventType = statusFMDTO.getEvent();
+                    //是否是机器主动改变状态
+                    boolean isMachineActive = statusFMDTO.getIsAuto() == 1;
 
                     FMStatusEnum status = FMStatusEnum.getByCode(statusType);
                     EventEnum event = EventEnum.getByCode(eventType);
@@ -136,23 +138,28 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
                     switch (event) {
                         case STATUS:
-                            switch (status) {
-                                case ADD_MACHINE_INFO:
-                                    //可能要废弃了，机器信息是直接在公司就录了的
-                                    changeStatusPortocol.serviceManageCenter.addMachineInfo(acnum, deviceDto);
-                                    break;
-                                case ENABLED:
-                                    changeStatusPortocol.serviceManageCenter.auth(deviceDto);
-                                    break;
-                                case UNAUTHORIZED:
-                                    changeStatusPortocol.serviceManageCenter.unauth(deviceDto);
-                                    break;
-                                case LOST:
-                                    changeStatusPortocol.serviceManageCenter.lost(deviceDto);
-                                default:
-                                    changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto);
-                                    break;
+                            if (isMachineActive){
+                                switch (status) {
+                                    case ADD_MACHINE_INFO:
+                                        //可能要废弃了，机器信息是直接在公司就录了的
+                                        changeStatusPortocol.serviceManageCenter.addMachineInfo(acnum, deviceDto);
+                                        break;
+                                    case ENABLED:
+                                        changeStatusPortocol.serviceManageCenter.auth(deviceDto);
+                                        break;
+                                    case UNAUTHORIZED:
+                                        changeStatusPortocol.serviceManageCenter.unauth(deviceDto);
+                                        break;
+                                    case LOST:
+                                        changeStatusPortocol.serviceManageCenter.lost(deviceDto);
+                                    default:
+                                        changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
+                                        break;
+                                }
+                            }else{
+                                changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
                             }
+
                             break;
                         case RATE_TABLE_UPDATE:
                             changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
@@ -162,7 +169,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                             log.error("event 不匹配，无法响应");
                             throw new FmException("状态不匹配，无法响应");
                     }
-                    log.info("机器改变状态，通知服务器，服务器通知俄罗斯，整个过程耗时：{}", (System.currentTimeMillis() - t1));
+                    log.info("ChangeStatusPortocol 整个过程耗时：{}", (System.currentTimeMillis() - t1));
                     return getSuccessResult(version, ctx, statusType, eventType);
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());

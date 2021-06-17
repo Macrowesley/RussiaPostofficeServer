@@ -426,7 +426,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      * @param flowRes
      */
     @Override
-    public void changeStatusEnd(DeviceDTO deviceDTO, FlowDetailEnum curFlowDetail) {
+    public void changeStatusEnd(DeviceDTO deviceDTO, FlowDetailEnum curFlowDetail, boolean isMachineActive) {
         /*DeviceDTO device = new DeviceDTO();
         device.setId(frankMachineId);
         device.setStatus(status);
@@ -447,7 +447,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
             case StatusChangeError4xxError:
-                device.setFlow(FlowEnum.FlowIng.getCode());
+                device.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
         }
 
@@ -464,7 +464,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         //保存状态记录
         FmStatusLog fmStatusLog = new FmStatusLog();
         BeanUtils.copyProperties(device, fmStatusLog);
-        fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
+        fmStatusLog.setChangeFrom(isMachineActive? ChangeFromEnum.Machine.getCode() : ChangeFromEnum.Russia.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
         fmStatusLog.setUpdatedTime(new Date());
         statusLogService.saveOrUpdate(fmStatusLog);

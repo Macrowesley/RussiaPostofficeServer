@@ -16,7 +16,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
 
 
     //预计一次操作的最长等待时间
-    public static final long WAIT_TIME = 60L;
+    public static final long WAIT_TIME = 5L;
 
     /**
      * 获取协议类型

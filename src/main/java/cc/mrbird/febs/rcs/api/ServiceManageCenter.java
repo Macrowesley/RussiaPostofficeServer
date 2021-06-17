@@ -69,7 +69,7 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public void changeStatusEvent(DeviceDTO deviceDTO) {
+    public void changeStatusEvent(DeviceDTO deviceDTO, boolean isMachineActive) {
 
         //判断再次访问这个接口的时候，需要的验证
         /**
@@ -85,9 +85,11 @@ public class ServiceManageCenter {
         int dbCurStatus = dbDevice.getCurFmStatus();
         int dbFurStatus = dbDevice.getFutureFmStatus();
 
+/*
         if (dbDevice.getFlow() != FlowEnum.FlowIng.getCode()) {
             throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
         }
+*/
 
         //访问俄罗斯服务器，改变状态
         ApiResponse apiResponse = serviceInvokeManager.frankMachines(deviceDTO);
@@ -95,18 +97,18 @@ public class ServiceManageCenter {
         if (!apiResponse.isOK()) {
             if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnowError);
+                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnowError, isMachineActive);
                 log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "changeStatusEvent.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeError4xxError);
+                deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeError4xxError, isMachineActive);
                 log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "changeStatusEvent.isOK() false ");
             }
         }
         //更新数据库
-        deviceService.changeStatusEnd(deviceDTO, FlowDetailEnum.StatusChangeEndSuccess);
+        deviceService.changeStatusEnd(deviceDTO, FlowDetailEnum.StatusChangeEndSuccess, isMachineActive);
         log.info("{} 操作成功",operationName);
     }
 
@@ -116,7 +118,7 @@ public class ServiceManageCenter {
      * @return
      * @throws Exception
      */
-    @Deprecated
+//    @Deprecated
     public void addMachineInfo(String acnum, DeviceDTO deviceDTO) throws Exception {
         Device dbDevice = deviceService.findDeviceByAcnum(acnum);
         if (dbDevice == null){
@@ -175,7 +177,6 @@ public class ServiceManageCenter {
 
         //访问俄罗斯服务器，请求授权
 
-        //todo 什么条件才能调用这个方法
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
             ApiResponse authResponse = serviceInvokeManager.auth(frankMachineId, deviceDTO);
 
@@ -192,6 +193,7 @@ public class ServiceManageCenter {
                     throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                 }
             }
+            log.info("设备{}开始更新auth状态为{}",frankMachineId,FlowDetailEnum.AuthEndSuccess.getCode());
             deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndSuccess);
         }
 

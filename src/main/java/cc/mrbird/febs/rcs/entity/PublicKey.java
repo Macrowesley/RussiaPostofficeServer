@@ -34,7 +34,7 @@ public class PublicKey {
     /**
      * 机器id
      */
-    @TableField("frank_machine_id")
+    @TableId("frank_machine_id")
     private String frankMachineId;
 
     /**

@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import io.netty.channel.ChannelHandlerContext;
@@ -84,7 +85,7 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
                 log.info("channelId={}的操作记录放入redis", key);
                 queryPrivateKeylPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
-            log.info("机器开始 ForeseensCancel");
+            log.info("机器开始 QueryPrivateKeylPortocol");
 
             int pos = TYPE_LEN;
 
@@ -103,12 +104,19 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
-
+        } catch (FmException e) {
+            e.printStackTrace();
+            log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
+            if (-1 != e.getCode()) {
+                return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
+            } else {
+                return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
+            }
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 ForeseensCancelPortocol");
+            log.info("机器结束 QueryPrivateKeylPortocol");
         }
     }
 
@@ -117,18 +125,21 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
          typedef  struct{
              unsigned char length[2];				     //2个字节
              unsigned char head;				 	     //0xB8
-             unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(5位，不够用0填充) + privateKey的加密内容
+             unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(4位，不够用0填充) + privateKey的加密内容
              result(长度为2 不为1,操作失败具体原因看 FMResultEnum) + 版本内容(3)
              unsigned char check;				     //校验位
              unsigned char tail;					     //0xD0
          }__attribute__((packed))privateKeyRes, *privateKeyRes;
          */
         PublicKey dbPublicKey = queryPrivateKeylPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
+        if (dbPublicKey == null){
+            throw new FmException(FMResultEnum.PrivateKeyNotExist.getCode(), "frankMachineId=" + frankMachineId + "的dbPublicKey不存在");
+        }
 
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%05d",dbPublicKey.getRevision())  + dbPublicKey.getPrivateKey();
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%04d",dbPublicKey.getRevision())  + dbPublicKey.getPrivateKey();
         String tempKey = queryPrivateKeylPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("CancelJob 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        log.info("QueryPrivateKey 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 }
