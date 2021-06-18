@@ -175,7 +175,7 @@ public interface IDeviceService extends IService<Device> {
      * 更新device的taxIsUpdate信息和其他信息
      * @param device
      */
-    void updateDeviceTaxVersionStatus(DeviceDTO deviceDTO);
+    void updateDeviceTaxVersionStatus(Device device);
 
 
 }

@@ -159,16 +159,14 @@ public class Device implements Serializable {
     private String postOffice;
 
     /**
-     * tax版本 device当前的版本 不一定是最新的版本
+     * tax版本 device内部保存的版本 却不一定是最新的版本
      */
     @TableField("tax_version")
     private String taxVersion;
 
     /**
      * todo 可以考虑加上：是否更新版本，解决版本更新问题
-     * tax是否更新
-     * 默认为1 最新状态
-     * 0 没有更新到最新状态
+     * tax是否更新 默认为1 最新状态  0 没有更新到最新状态
      */
     @TableField("tax_is_update")
     private Integer taxIsUpdate;

@@ -58,6 +58,11 @@ public interface IPublicKeyService extends IService<PublicKey> {
 
     PublicKey findByFrankMachineId(String frankMachineId);
 
+    /**
+     * 判断publickey是否闭环
+     * @param frankMachineId
+     * @return
+     */
     boolean checkFmIsUpdate(String frankMachineId);
 
     void changeFlowInfo(PublicKey dbPubliceKey, FlowDetailEnum curFlowDetail);

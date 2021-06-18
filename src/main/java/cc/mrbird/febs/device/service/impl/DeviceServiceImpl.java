@@ -658,11 +658,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void updateDeviceTaxVersionStatus(DeviceDTO deviceDTO) {
-        Device device = new Device();
-        device.setFrankMachineId(deviceDTO.getId());
-        device.setPostOffice(deviceDTO.getPostOffice());
-        device.setTaxVersion(deviceDTO.getTaxVersion());
+    public void updateDeviceTaxVersionStatus(Device device) {
+
 
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());

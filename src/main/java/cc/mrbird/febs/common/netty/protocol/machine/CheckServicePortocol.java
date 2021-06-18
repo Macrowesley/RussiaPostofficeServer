@@ -3,6 +3,7 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -10,13 +11,17 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
+import cc.mrbird.febs.rcs.service.ITaxService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +56,12 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @Autowired
     IPublicKeyService publicKeyService;
+
+    @Autowired
+    ServiceManageCenter serviceManageCenter;
+
+    @Autowired
+    ITaxService taxService;
 
     public static CheckServicePortocol checkServicePortocol;
 
@@ -97,7 +108,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                 unsigned char type;					//0xB3
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
-                unsigned char content[?];			//加密后内容: FrankMachineId(36)
+                unsigned char content[?];			//加密后内容: CheckServiceDTO 对象的json
                 unsigned char check;				//校验位
                 unsigned char tail;					//0xD0
             }__attribute__((packed))CheckService, *CheckService;
@@ -132,28 +143,49 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                      typedef  struct{
                      unsigned char length[2];				 //2个字节
                      unsigned char head;				 	 //0xB3
-                     unsigned char content;				     //加密内容: result(1 成功) + version + statuscode(1) + 订单是否结束（1 结束 0 未结束）+ 私钥是否更新（0未更新 1更新） + 税率是否更新（0未更新 1更新了） + ForeseenFMDTO 的Json
+                     unsigned char content;				     //加密内容: result(长度为2 1 成功) + version + 机器状态code(1) + 订单是否结束（1 结束 0 未结束）+ 机器的私钥是否需要更新（0 不需要更新 1需要更新） + 机器的税率是否需要更新（0不需要 1需要更新） + ForeseenFMDTO 的Json
                      unsigned char check;				     //校验位
                      unsigned char tail;					 //0xD0
                      }__attribute__((packed))CheckServiceResult, *CheckServiceResult;
                      */
 
+                    //获取上次打印任务信息
+//                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
+                    CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
+                    String frankMachineId = checkServiceDTO.getFrankMachineId().trim();
+                    String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
+
                     //请求服务器返回最新状态
                     Device dbDevice = checkServicePortocol.deviceService.findDeviceByAcnum(acnum);
                     int curStatus = dbDevice.getCurFmStatus();
 
-                    //校验机器tax是否更新
-                    int isFmTaxUpdate = dbDevice.getTaxIsUpdate();
+                    /**
+                     * 校验机器tax是否需要更新
+                     */
+                    //机器的税率是否需要更新（0不需要 1需要更新）
+                    int isFmTaxNeedUpdate = 0;
+                    Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
+                    if (fmTaxVersion.equals(lastestTax.getVersion())){
+                        //机器已经更新了tax,需要处理下数据库的状态了
+                        //tax是否更新 默认为1 最新状态  0 没有更新到最新状态
+                        Integer deviceTaxIsUpdate = dbDevice.getTaxIsUpdate();
+                        if (deviceTaxIsUpdate == TaxUpdateEnum.NOT_UPDATE.getCode()){
+                            //机器已经更新了tax，但是数据库的device没有更新状态，更新数据库机器状态
+                            checkServicePortocol.serviceManageCenter.rateTableUpdateEvent(dbDevice);
+                        }else{
+                            //机器更新了tax,数据库也更新了device的tax信息，不处理
+                        }
+                    }else{
+                        //机器没有更新tax，需要更新
+                        isFmTaxNeedUpdate = 1;
+                    }
 
-                    //校验机器私钥是否更新
-                    int isFmPrivateUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 1 : 0;
-
-                    //获取上次打印任务信息
-                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
-                    String frankMachineId = decryptContent.trim();
+                    //校验数据库的私钥是否完成闭环 机器的私钥是否需要更新（0 不需要更新 1需要更新）
+                    int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
 
                     //数据库的合同信息
                     PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
+                    //订单是否结束（1 结束 0 未结束）
                     boolean isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
                     if (!isPrintEnd) {
@@ -171,8 +203,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                                     + version
                                     + String.valueOf(curStatus)
                                     + (isPrintEnd == true ? 1 : 0)
-                                    + String.valueOf(isFmPrivateUpdate)
-                                    + String.valueOf(isFmTaxUpdate)
+                                    + String.valueOf(isFmPrivateNeedUpdate)
+                                    + String.valueOf(isFmTaxNeedUpdate)
                                     + JSON.toJSONString(foreseenFMDTO);
                     String tempKey = checkServicePortocol.tempKeyUtils.getTempKey(ctx);
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);

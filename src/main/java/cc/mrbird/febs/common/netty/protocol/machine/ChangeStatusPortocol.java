@@ -162,6 +162,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
                             break;
                         case RATE_TABLE_UPDATE:
+                            //todo 这里应该是作废的，先留着看看
                             changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
                             break;
                         default:
