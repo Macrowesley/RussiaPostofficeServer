@@ -154,12 +154,16 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
      */
     @Override
     @Transactional(rollbackFor = FebsException.class)
-    public FebsResponse addAddressList(@Validated  ContractAddressDTO contractAddressDTO) {
+    public FebsResponse addAddressList(ContractAddressDTO contractAddressDTO) {
         try {
             String frankMachineId = contractAddressDTO.getFMid();
             String contractId = contractAddressDTO.getContractId();
             String addressListStr = contractAddressDTO.getAddressList().trim();
             String split = ";";
+
+            if (StringUtils.isEmpty(frankMachineId) || StringUtils.isEmpty(contractId) ||StringUtils.isEmpty(addressListStr) ){
+                throw new Exception("不能为空");
+            }
 
             //验证数据是否正常
             if (addressListStr.length() > 200 && !addressListStr.contains(split)){
