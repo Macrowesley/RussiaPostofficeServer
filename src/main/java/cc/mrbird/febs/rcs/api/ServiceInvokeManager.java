@@ -34,7 +34,7 @@ public class ServiceInvokeManager {
     //最新
 	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
-    private final String testContractId = "111-aaa-333-bbb-555-666";
+    private final String testContractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
 
     /**
      * 发送机器状况
@@ -168,9 +168,10 @@ public class ServiceInvokeManager {
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-       /* if (foreseenDTO.getContractId().equals(testContractId)){
-            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
-        }*/
+        if (foreseenDTO.getContractId().equals(testContractId)){
+            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,new ManagerBalanceDTO());
+        }
+
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -315,6 +316,7 @@ public class ServiceInvokeManager {
     }
 
     private <T> ApiResponse getApiResponse(Class<T> responseObjectClass, int statusCodeValue, Object object ) {
+        log.info("解析俄罗斯返回");
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(statusCodeValue);
         apiResponse.setObject(object);
@@ -342,13 +344,24 @@ public class ServiceInvokeManager {
             default:
                 return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
         }*/
-
-        if (statusCodeValue == ResultEnum.SUCCESS.getCode()){
-//            T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
+        log.info("manager返回{}结果", statusCodeValue);
+        if (statusCodeValue == ResultEnum.SUCCESS.getCode() || statusCodeValue == ResultEnum.SUCCESS_201.getCode()){
             T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
-            log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
+            log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
             apiResponse.setObject(bean);
             return apiResponse;
+
+//            T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
+            /*try {
+                T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
+                log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
+                apiResponse.setObject(bean);
+                return apiResponse;
+            } catch (Exception e) {
+                ApiResponse bean = JSONObject.parseObject(apiResponse.getObject().toString(), ApiResponse.class);
+                apiResponse.setObject(bean);
+                return apiResponse;
+            }*/
         } else if (statusCodeValue == ResultEnum.SUCCESS_204.getCode()){
             log.info("manager返回204结果 OK");
             apiResponse.setObject("OK");

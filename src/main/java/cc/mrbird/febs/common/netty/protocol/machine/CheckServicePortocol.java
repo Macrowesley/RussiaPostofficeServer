@@ -117,11 +117,11 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (redisService.hasKey(key)) {
+            if (checkServicePortocol.redisService.hasKey(key)) {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                redisService.set(key, "wait", WAIT_TIME);
+                checkServicePortocol.redisService.set(key, "wait", WAIT_TIME);
             }
 
 
@@ -184,17 +184,21 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
 
                     //数据库的合同信息
-                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
-                    //订单是否结束（1 结束 0 未结束）
-                    boolean isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
-                    if (!isPrintEnd) {
-                        //没有闭环，返回foreseen信息  问问小刘 需不需要细节？ 需不需要transaction信息
-                        String foreseenId = dbPrintJob.getForeseenId();
-                        Foreseen dbForeseen = checkServicePortocol.printJobService.getForeseenById(foreseenId);
+                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
+                    boolean isPrintEnd = true;
+                    if (dbPrintJob != null) {
+                        //订单是否结束（1 结束 0 未结束）
+                        isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
 
-                        BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
-                        foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+                        if (!isPrintEnd) {
+                            //没有闭环，返回foreseen信息  问问小刘 需不需要细节？ 需不需要transaction信息
+                            String foreseenId = dbPrintJob.getForeseenId();
+                            Foreseen dbForeseen = checkServicePortocol.printJobService.getForeseenById(foreseenId);
+
+                            BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
+                            foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+                        }
                     }
 
                     //拼接返回信息
@@ -223,10 +227,11 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                 return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
-            log.info("机器结束 Foreseens");
+            log.info("机器结束 CheckServicePortocol");
         }
 
     }

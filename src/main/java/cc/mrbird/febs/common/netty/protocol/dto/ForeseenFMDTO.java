@@ -15,5 +15,6 @@ public class ForeseenFMDTO {
     Integer totalCount;
     ForeseenProductDTO[] products;
     String taxVersion;
+    //金钱单位：分
     String totalAmmount;
 }

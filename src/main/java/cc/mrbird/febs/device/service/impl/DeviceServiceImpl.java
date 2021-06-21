@@ -33,6 +33,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -467,6 +468,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         fmStatusLog.setChangeFrom(isMachineActive? ChangeFromEnum.Machine.getCode() : ChangeFromEnum.Russia.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
         fmStatusLog.setUpdatedTime(new Date());
+        fmStatusLog.setCreatedTime(new Date());
         statusLogService.saveOrUpdate(fmStatusLog);
     }
 

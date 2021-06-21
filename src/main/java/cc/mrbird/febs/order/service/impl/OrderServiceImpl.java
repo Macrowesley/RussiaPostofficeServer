@@ -486,7 +486,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      */
     @Override
     public void selectAllExpireOrderAndUpdateAndNoticeUser() {
-        log.info("查询到所有过期的订单");
+//        log.info("查询到所有过期的订单");
         LambdaQueryWrapper<Order> queryWrapper = new LambdaQueryWrapper<>();
         //不过期  没有注销  没有闭环   到期时间大于现在时间
         queryWrapper.ne(Order::getOrderStatus, OrderStatusEnum.orderRepeal.getStatus());

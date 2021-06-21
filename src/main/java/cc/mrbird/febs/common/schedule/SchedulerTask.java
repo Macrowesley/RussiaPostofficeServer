@@ -27,7 +27,7 @@ public class SchedulerTask {
     @Scheduled(cron="0 0 0/1 * * ?")
     @Transactional(propagation = Propagation.SUPPORTS)
     private void checkOrderIsExpire(){
-        log.info("每隔一小时 —— 检查订单是否过期");
+//        log.info("每隔一小时 —— 检查订单是否过期");
         orderService.selectAllExpireOrderAndUpdateAndNoticeUser();
     }
 }

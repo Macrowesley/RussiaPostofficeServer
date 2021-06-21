@@ -41,8 +41,8 @@ public enum FlowDetailEnum {
 
     BalanceEndSuccess(73,""),
 
-    PublicKeyEndSuccess(82,"闭环：publickey流程结束"),
-    PublicKeyBegin(81,"未闭环：publickey创建/更新"),
+    PublicKeyEndSuccess(81,"闭环：publickey流程结束"),
+    PublicKeyBegin(82,"未闭环：publickey创建/更新"),
     PublicKeyErrorFail4xxError(83,"未闭环：publickey 请求返回4XX或者5XX错误"),
     PublicKeyErrorFailUnKnow(84,"未闭环：publickey请求，未成功发送给俄罗斯"),
 

@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -8,7 +9,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -61,7 +61,9 @@ public class NettyServer {
                 })
                 .localAddress(socketAddress)
                 //设置队列大小
-                .option(ChannelOption.SO_BACKLOG, 2048)
+                .option(ChannelOption.SO_BACKLOG, 2*1024)
+                //设置接受的缓存大小
+                .option(ChannelOption.SO_RCVBUF, 128*1024)
                 // 两小时内没有数据的通信时,TCP会自动发送一个活动探测数据报文
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 //socketchannel的设置,关闭延迟发送

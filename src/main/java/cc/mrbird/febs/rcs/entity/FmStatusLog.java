@@ -34,13 +34,13 @@ public class FmStatusLog {
      * 机器当前状态
      */
     @TableField("cur_fm_status")
-    private int curFmStatus;
+    private Integer curFmStatus;
 
     /**
      * 机器想要达到的状态
      */
     @TableField("future_fm_status")
-    private int futureFmStatus;
+    private Integer futureFmStatus;
 
     /**
      * 错误代码

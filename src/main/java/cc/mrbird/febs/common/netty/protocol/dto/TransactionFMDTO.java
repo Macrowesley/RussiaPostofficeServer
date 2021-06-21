@@ -17,7 +17,9 @@ public class TransactionFMDTO {
      */
     String costTime;
     String userId;
+    //金钱单位：分
     String creditVal;
+    //金钱单位：分
     String amount;
     int count;
     String graphId;
