@@ -32,8 +32,8 @@ public class RateTableFeedbackDTO {
     String[] rcsVersions;
 
     //todo 确定后，数据库添加这个字段
-    String internals;
+//    String internals;
 
     //todo 确定后，数据库添加这个字段
-    String version;
+//    String version;
 }

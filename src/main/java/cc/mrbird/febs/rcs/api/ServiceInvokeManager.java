@@ -60,34 +60,24 @@ public class ServiceInvokeManager {
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        /*if (frankMachineId.equals("FM100001")){
-            return new ApiResponse(ResultEnum.SUCCESS.getCode(), "ok");
-        }*/
+//        if (frankMachineId.equals("FM100001")){
+//            return new ApiResponse(ResultEnum.SUCCESS.getCode(), "ok");
+//        }
 
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
 
         //测试代码
-   /*     frankMachineId = "FM100001";
-        frankMachineId = "NE100700";
+        /*frankMachineId = "FM100002";
+//        frankMachineId = "NE100700";
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
         DeviceTest deviceTest = new DeviceTest();
         deviceTest.setId(frankMachineId);
-
-
-        *//*deviceTest.setId(frankMachineId);
-        deviceTest.setPostOffice("131000");
-        deviceTest.setDateTime(DateKit.createRussiatime());
-        deviceTest.setStatus("ENABLED");
-        deviceTest.setTaxVersion("1.0");*//*
-
-//        deviceTest.setPostOffice("394040");
         deviceTest.setPostOffice("994700");
         deviceTest.setDateTime(DateKit.createRussiatime());
         deviceTest.setStatus("ENABLED");
-//        deviceTest.setTaxVersion("1.0");
         deviceTest.setTaxVersion("2.3.3");
 
         log.info(JSON.toJSONString(deviceTest));
@@ -168,9 +158,9 @@ public class ServiceInvokeManager {
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (foreseenDTO.getContractId().equals(testContractId)){
+        /*if (foreseenDTO.getContractId().equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,new ManagerBalanceDTO());
-        }
+        }*/
 
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
@@ -186,9 +176,9 @@ public class ServiceInvokeManager {
      */
     public ApiResponse cancel(String foreseenId, String contractId, ForeseenCancel foreseenCancel) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (contractId.equals(testContractId)){
+        /*if (contractId.equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
-        }
+        }*/
 
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
 
@@ -204,9 +194,9 @@ public class ServiceInvokeManager {
      */
     public ApiResponse transactions(TransactionDTO transactionDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (transactionDTO.getContractId().equals(testContractId)){
+        /*if (transactionDTO.getContractId().equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
-        }
+        }*/
         String url = baseUrl + "/transactions";
         return doExchange(url, transactionDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -307,6 +297,8 @@ public class ServiceInvokeManager {
             }*/
 
         } catch (HttpClientErrorException e){
+//            e.printStackTrace();
+            log.info("HttpClientErrorException StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
             return getApiResponse(responseObjectClass, e.getRawStatusCode(), e.getResponseBodyAsString());
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -345,23 +337,26 @@ public class ServiceInvokeManager {
                 return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
         }*/
         log.info("manager返回{}结果", statusCodeValue);
-        if (statusCodeValue == ResultEnum.SUCCESS.getCode() || statusCodeValue == ResultEnum.SUCCESS_201.getCode()){
-            T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
-            log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
-            apiResponse.setObject(bean);
-            return apiResponse;
-
-//            T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
-            /*try {
+        if (statusCodeValue == ResultEnum.SUCCESS.getCode()) {
+            try {
                 T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
                 log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
                 apiResponse.setObject(bean);
                 return apiResponse;
             } catch (Exception e) {
-                ApiResponse bean = JSONObject.parseObject(apiResponse.getObject().toString(), ApiResponse.class);
-                apiResponse.setObject(bean);
+                log.info("解析200出错，设置返回OK，" + apiResponse.getObject().toString());
+                /*ApiResponse bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject().toString()), ApiResponse.class);
+                log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
+                apiResponse.setObject(bean);*/
+                apiResponse.setObject("ok");
                 return apiResponse;
-            }*/
+            }
+
+        } else if (statusCodeValue == ResultEnum.SUCCESS_201.getCode()){
+            T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
+            log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
+            apiResponse.setObject(bean);
+            return apiResponse;
         } else if (statusCodeValue == ResultEnum.SUCCESS_204.getCode()){
             log.info("manager返回204结果 OK");
             apiResponse.setObject("OK");
@@ -369,7 +364,11 @@ public class ServiceInvokeManager {
         }else if (statusCodeValue >= 400 && statusCodeValue < 500){
 //            OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
             OperationError operationError = JSONObject.parseObject(apiResponse.getObject().toString(), OperationError.class);
-            log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
+            if (operationError != null) {
+                log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
+            }else{
+                log.info("manager返回{}结果 operationError = null", statusCodeValue);
+            }
             apiResponse.setObject(operationError);
             return apiResponse;
         } else if(statusCodeValue == ResultEnum.INTERNAL_SERVICE_ERROR.getCode()){
