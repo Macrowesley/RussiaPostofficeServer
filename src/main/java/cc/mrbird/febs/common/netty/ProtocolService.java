@@ -150,6 +150,7 @@ public class ProtocolService {
         switch (protocolType) {
             case HeartPortocol.PROTOCOL_TYPE:
                 baseProtocol = heartPortocol;
+//                baseProtocol = new HeartPortocol();
                 isNeedLogin = false;
                 isNeedAsync = false;
                 break;
