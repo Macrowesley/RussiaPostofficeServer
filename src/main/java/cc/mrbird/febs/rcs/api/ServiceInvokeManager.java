@@ -2,9 +2,7 @@ package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
-import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.*;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -43,7 +42,7 @@ public class ServiceInvokeManager {
      */
     public ApiResponse frankMachines(DeviceDTO deviceDTO) {
         String url = baseUrl + "/frankMachines";
-        return doExchange(url, deviceDTO, HttpMethod.PUT, String.class,null);
+        return doExchange(url, deviceDTO, HttpMethod.PUT, DeviceDTO.class,null);
     }
 
 
@@ -143,7 +142,7 @@ public class ServiceInvokeManager {
      * @return
      * @PutMapping("/rateTables")
      */
-    @Async(value = FebsConstant.ASYNC_POOL)
+//    @Async(value = FebsConstant.ASYNC_POOL)
     public ApiResponse rateTables(RateTableFeedbackDTO rateTableFeedbackDTO) {
         String url = baseUrl + "/rateTables";
         return doExchange(url, rateTableFeedbackDTO, HttpMethod.PUT, String.class,null);
@@ -229,11 +228,11 @@ public class ServiceInvokeManager {
      */
     private HttpHeaders getHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        //todo 处理秘钥
-        httpHeaders.add("X-API-KEY", "-----BEGIN PUBLIC KEY-----\n" +
+        //没有头部信息，暂时忽略
+        /*httpHeaders.add("X-API-KEY", "-----BEGIN PUBLIC KEY-----\n" +
                 "      MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW\n" +
                 "      9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH\n" +
-                "      -----END PUBLIC KEY-----");
+                "      -----END PUBLIC KEY-----");*/
         return httpHeaders;
     }
 
@@ -251,143 +250,37 @@ public class ServiceInvokeManager {
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
         log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
-            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
-            /*ResponseEntity<ApiResponse> responseEntity;
+//            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
+            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);
+            ResponseEntity<T> responseEntity;
             if (uriVariables == null) {
-                responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class);
+                responseEntity = restTemplate.exchange(url, method, requestEntity, responseObjectClass);
             } else {
-                responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class, uriVariables);
-            }*/
-            ResponseEntity<String> responseEntity;
-            if (uriVariables == null) {
-                responseEntity = restTemplate.exchange(url, method, requestEntity, String.class);
-            } else {
-                responseEntity = restTemplate.exchange(url, method, requestEntity, String.class, uriVariables);
+                responseEntity = restTemplate.exchange(url, method, requestEntity, responseObjectClass, uriVariables);
             }
 
             log.info("responseEntity = " + responseEntity.toString());
             log.info("code={}, header={}, body={}", responseEntity.getStatusCodeValue(), responseEntity.getHeaders().toString(), responseEntity.getBody());
 
             int statusCodeValue = responseEntity.getStatusCodeValue();
-
-            return getApiResponse(responseObjectClass, statusCodeValue, responseEntity.getBody());
-
-            /*if (ResultEnum.SUCCESS.getCode() == statusCodeValue || ResultEnum.SUCCESS_204.getCode() == statusCodeValue) {
-                ApiResponse apiResponse = responseEntity.getBody();
-                log.info("manager返回的结果 ApiResponse = {}", apiResponse.toString());
-                switch (ResultEnum.getByCode(apiResponse.getCode())) {
-                    case SUCCESS:
-                        T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
-                        log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
-                        apiResponse.setObject(bean);
-                        return apiResponse;
-                    case SUCCESS_204:
-                        log.info("manager返回204结果 OK");
-                        apiResponse.setObject("OK");
-                        return apiResponse;
-                    case OPERATION_ERROR:
-                        OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
-                        log.info("manager返回的结果 operationError = {}", operationError.toString());
-                        apiResponse.setObject(operationError);
-                        return apiResponse;
-                    case INTERNAL_SERVICE_ERROR:
-                        ApiError apiError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), ApiError.class);
-                        log.info("manager返回的结果 apiError = {}", apiError.toString());
-                        apiResponse.setObject(apiError);
-                        return apiResponse;
-                    default:
-                        return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
-                }
-            } else {
-                log.info("网络问题，错误代码{} ", responseEntity.getStatusCodeValue());
-                return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值1");
-            }*/
-
+            if (responseEntity.getBody() == null){
+                return new ApiResponse(statusCodeValue,"ok");
+            }
+            return new ApiResponse(statusCodeValue,responseEntity.getBody());
         } catch (HttpClientErrorException e){
 //            e.printStackTrace();
             log.info("HttpClientErrorException StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
-            return getApiResponse(responseObjectClass, e.getRawStatusCode(), e.getResponseBodyAsString());
+            OperationError operationError = JSONObject.parseObject(e.getResponseBodyAsString(), OperationError.class);
+            return new ApiResponse(e.getRawStatusCode(), operationError);
+        } catch (HttpServerErrorException.InternalServerError e) {
+//            e.printStackTrace();
+            log.info("InternalServerError StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
+            ApiError apiError = JSONObject.parseObject(e.getResponseBodyAsString(), ApiError.class);
+            return new ApiResponse(e.getRawStatusCode(), apiError);
         } catch (Exception e) {
 //            e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Exception信息：" + e.getMessage());
             return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
         }
     }
-
-    private <T> ApiResponse getApiResponse(Class<T> responseObjectClass, int statusCodeValue, Object object ) {
-        log.info("解析俄罗斯返回");
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(statusCodeValue);
-        apiResponse.setObject(object);
-
-        /*switch (ResultEnum.getByCode(statusCodeValue)) {
-            case SUCCESS:
-                T bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), responseObjectClass);
-                log.info("manager返回200结果 {} = {}", bean.getClass().getTypeName(), bean.toString());
-                apiResponse.setObject(bean);
-                return apiResponse;
-            case SUCCESS_204:
-                log.info("manager返回204结果 OK");
-                apiResponse.setObject("OK");
-                return apiResponse;
-            case OPERATION_ERROR:
-                OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
-                log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
-                apiResponse.setObject(operationError);
-                return apiResponse;
-            case INTERNAL_SERVICE_ERROR:
-                ApiError apiError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), ApiError.class);
-                log.info("manager返回500结果 apiError = {}", apiError.toString());
-                apiResponse.setObject(apiError);
-                return apiResponse;
-            default:
-                return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
-        }*/
-        log.info("manager返回{}结果", statusCodeValue);
-        if (statusCodeValue == ResultEnum.SUCCESS.getCode()) {
-            try {
-                T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
-                log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
-                apiResponse.setObject(bean);
-                return apiResponse;
-            } catch (Exception e) {
-                log.info("解析200出错，设置返回OK，" + apiResponse.getObject().toString());
-                /*ApiResponse bean = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject().toString()), ApiResponse.class);
-                log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
-                apiResponse.setObject(bean);*/
-                apiResponse.setObject("ok");
-                return apiResponse;
-            }
-
-        } else if (statusCodeValue == ResultEnum.SUCCESS_201.getCode()){
-            T bean = JSONObject.parseObject(apiResponse.getObject().toString(), responseObjectClass);
-            log.info("manager返回{}结果 {} = {}", statusCodeValue, bean.getClass().getTypeName(), bean.toString());
-            apiResponse.setObject(bean);
-            return apiResponse;
-        } else if (statusCodeValue == ResultEnum.SUCCESS_204.getCode()){
-            log.info("manager返回204结果 OK");
-            apiResponse.setObject("OK");
-            return apiResponse;
-        }else if (statusCodeValue >= 400 && statusCodeValue < 500){
-//            OperationError operationError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), OperationError.class);
-            OperationError operationError = JSONObject.parseObject(apiResponse.getObject().toString(), OperationError.class);
-            if (operationError != null) {
-                log.info("manager返回{}结果 operationError = {}", statusCodeValue, operationError.toString());
-            }else{
-                log.info("manager返回{}结果 operationError = null", statusCodeValue);
-            }
-            apiResponse.setObject(operationError);
-            return apiResponse;
-        } else if(statusCodeValue == ResultEnum.INTERNAL_SERVICE_ERROR.getCode()){
-//            ApiError apiError = JSONObject.parseObject(JSONObject.toJSONString(apiResponse.getObject()), ApiError.class);
-            ApiError apiError = JSONObject.parseObject(apiResponse.getObject().toString(), ApiError.class);
-            log.info("manager返回500结果 apiError = {}", apiError.toString());
-            apiResponse.setObject(apiError);
-            return apiResponse;
-        }else{
-            return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "状态码不对");
-        }
-    }
-
-
 }

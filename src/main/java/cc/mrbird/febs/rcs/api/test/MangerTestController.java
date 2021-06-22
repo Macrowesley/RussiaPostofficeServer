@@ -27,7 +27,8 @@ public class MangerTestController {
     ServiceInvokeManager serviceInvokeManager;
 
     String frankMachineId = "FM100002";
-    String contractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
+//    String contractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
+    String contractId = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     int contractNumber = 0;
     String userId = "11a8005e-6d6a-499d-9fca-82aa69103f90";
     String taxVersion = "2.3.3";
@@ -177,8 +178,11 @@ public class MangerTestController {
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
         log.info("rateTableFeedbackDTO = {}", JSON.toJSONString(rateTableFeedbackDTO));
         ApiResponse apiResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
+
         if (apiResponse != null) {
             log.info("测试结束：object = " + apiResponse.getObject().toString());
+        }else{
+            log.info("apiResponse is null ");
         }
     }
 
@@ -211,7 +215,7 @@ public class MangerTestController {
         foreseenDTO.setId(foreseenId);
         foreseenDTO.setPostOffice(postOffice);
         foreseenDTO.setUserId(userId);
-        foreseenDTO.setContractId("190eac0d-844c-11e5-90db-2c59e5453bd0");
+        foreseenDTO.setContractId(contractId);
         foreseenDTO.setContractNum(contractNumber);
         foreseenDTO.setTotalCount(count1 + count2);
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
