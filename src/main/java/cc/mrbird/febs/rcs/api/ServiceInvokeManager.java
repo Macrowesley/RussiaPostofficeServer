@@ -252,12 +252,19 @@ public class ServiceInvokeManager {
         log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
-            ResponseEntity<ApiResponse> responseEntity;
+            /*ResponseEntity<ApiResponse> responseEntity;
             if (uriVariables == null) {
                 responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class);
             } else {
                 responseEntity = restTemplate.exchange(url, method, requestEntity, ApiResponse.class, uriVariables);
+            }*/
+            ResponseEntity<String> responseEntity;
+            if (uriVariables == null) {
+                responseEntity = restTemplate.exchange(url, method, requestEntity, String.class);
+            } else {
+                responseEntity = restTemplate.exchange(url, method, requestEntity, String.class, uriVariables);
             }
+
             log.info("responseEntity = " + responseEntity.toString());
             log.info("code={}, header={}, body={}", responseEntity.getStatusCodeValue(), responseEntity.getHeaders().toString(), responseEntity.getBody());
 

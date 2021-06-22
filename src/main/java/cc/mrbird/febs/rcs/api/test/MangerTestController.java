@@ -9,6 +9,7 @@ import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyGenerate;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -163,6 +164,7 @@ public class MangerTestController {
     }
 
     /**
+     * http://auto.uprins.com/p/test/managerTest/rateTables
      * http://localhost/p/test/managerTest/rateTables
      */
     @GetMapping("rateTables")
@@ -173,7 +175,7 @@ public class MangerTestController {
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
-        log.info("rateTableFeedbackDTO = {}", rateTableFeedbackDTO.toString());
+        log.info("rateTableFeedbackDTO = {}", JSON.toJSONString(rateTableFeedbackDTO));
         ApiResponse apiResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
         if (apiResponse != null) {
             log.info("测试结束：object = " + apiResponse.getObject().toString());
@@ -181,6 +183,7 @@ public class MangerTestController {
     }
 
     /**
+     * http://auto.uprins.com/p/test/managerTest/foreseens
      * http://localhost/p/test/managerTest/foreseens
      */
     @GetMapping("foreseens")
@@ -208,7 +211,7 @@ public class MangerTestController {
         foreseenDTO.setId(foreseenId);
         foreseenDTO.setPostOffice(postOffice);
         foreseenDTO.setUserId(userId);
-        foreseenDTO.setContractId(contractId);
+        foreseenDTO.setContractId("190eac0d-844c-11e5-90db-2c59e5453bd0");
         foreseenDTO.setContractNum(contractNumber);
         foreseenDTO.setTotalCount(count1 + count2);
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
@@ -217,7 +220,7 @@ public class MangerTestController {
         foreseenDTO.setTotalAmmount(amount1 + amount2);
 
         log.info("foreseenId = {}", foreseenId);
-        log.info("foreseen = {}", foreseenDTO.toString());
+        log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
 
         ApiResponse apiResponse = serviceInvokeManager.foreseens(foreseenDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
