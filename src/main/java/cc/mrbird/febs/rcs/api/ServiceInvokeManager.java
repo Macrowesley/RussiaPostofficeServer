@@ -229,10 +229,7 @@ public class ServiceInvokeManager {
     private HttpHeaders getHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         //没有头部信息，暂时忽略
-        /*httpHeaders.add("X-API-KEY", "-----BEGIN PUBLIC KEY-----\n" +
-                "      MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW\n" +
-                "      9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH\n" +
-                "      -----END PUBLIC KEY-----");*/
+        httpHeaders.add("X-API-KEY", "apiKeyStab");
         return httpHeaders;
     }
 
@@ -250,8 +247,8 @@ public class ServiceInvokeManager {
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
         log.info("给manager服务器发送消息：{}", requestBody.toString());
         try {
-//            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
-            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);
+            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
+//            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);
             ResponseEntity<T> responseEntity;
             if (uriVariables == null) {
                 responseEntity = restTemplate.exchange(url, method, requestEntity, responseObjectClass);

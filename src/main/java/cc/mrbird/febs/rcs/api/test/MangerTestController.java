@@ -173,7 +173,7 @@ public class MangerTestController {
         log.info("开始测试 rateTables");
 
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
-        taxVersion = "9.9.9";
+        taxVersion = "2.3.3";
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
@@ -252,10 +252,10 @@ public class MangerTestController {
     public void transactions(){
         log.info("开始测试 transactions");
         FrankDTO frank = new FrankDTO();
-        frank.setDmMessage("ok 1");
+        frank.setDmMessage("message");
 
         FrankDTO frank2 = new FrankDTO();
-        frank2.setDmMessage("ok 2");
+        frank2.setDmMessage("message");
 
         String transactionId = AESUtils.createUUID();
 
