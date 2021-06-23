@@ -144,17 +144,17 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                                 updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFailUnKnow);
-                                log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
+                                log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
                                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                             } else {
                                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                                 updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFail4xxError);
-                                log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                                log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
                                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                             }
                         }
                         updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyEndSuccess);
-                        log.info("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
+                        log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
                     }else{
                         log.error("publickey 已经闭环了，无序操作");
                         throw new FmException(FMResultEnum.DonotAgain.getCode(), "publickey 已经闭环了，无序操作 ");

@@ -34,7 +34,6 @@ public class ServiceInvokeManager {
 	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
     private final String testContractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
-
     /**
      * 发送机器状况
      *
@@ -93,7 +92,7 @@ public class ServiceInvokeManager {
      * @PostMapping("/frankMachines/{frankMachineId}/unauth")
      */
     public ApiResponse unauth(String frankMachineId, DeviceDTO deviceDTO) {
-        String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
+        String url = baseUrl + "/frankMachines/{frankMachineId}/unauth";
 
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
@@ -245,7 +244,7 @@ public class ServiceInvokeManager {
      * @return
      */
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
-        log.info("给manager服务器发送消息：{}", requestBody.toString());
+        log.info("给manager服务器发送消息：url = {}, 内容={}", url, requestBody.toString());
         try {
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
 //            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);

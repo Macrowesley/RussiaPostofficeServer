@@ -98,12 +98,12 @@ public class ServiceManageCenter {
             if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnowError, isMachineActive);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "changeStatusEvent.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                 deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeError4xxError, isMachineActive);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "changeStatusEvent.isOK() false ");
             }
         }
@@ -135,7 +135,7 @@ public class ServiceManageCenter {
     public void auth(DeviceDTO deviceDTO) throws Exception {
         String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
-        log.info("服务器收到了设备{}发送的auth协议", frankMachineId);
+        log.error("服务器收到了设备{}发送的auth协议", frankMachineId);
         Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
 
         FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
@@ -184,12 +184,12 @@ public class ServiceManageCenter {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError1);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndFail);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                 }
             }
@@ -240,12 +240,12 @@ public class ServiceManageCenter {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthError);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "unauth.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthEndFail);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "unauth.isOK() false ");
                 }
             }
@@ -290,12 +290,12 @@ public class ServiceManageCenter {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                     deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostError);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "lost.isOK() false ");
                 } else {
                     //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                     deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostEndFail);
-                    log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                    log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "lost.isOK() false ");
                 }
             }
@@ -338,11 +338,11 @@ public class ServiceManageCenter {
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "rateTableUpdateEvent.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "rateTableUpdateEvent.isOK() false ");
             }
         }
@@ -397,11 +397,11 @@ public class ServiceManageCenter {
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "rateTableUpdateEvent.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "rateTableUpdateEvent.isOK() false ");
             }
         }
@@ -462,15 +462,15 @@ public class ServiceManageCenter {
 
         //判断合同金额是否够用
         //todo 用哪个判断：dbCurrent 还是 dbConsolidate  申请的时候，用哪个来管钱？
-        double fmMailVal = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmMailVal) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmMailVal) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
-            throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmMailVal为" + fmMailVal + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
+        double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
+            throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
         //fm信息转ForeseenDTO
         ForeseenDTO foreseenDTO = new ForeseenDTO();
         BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
-        foreseenDTO.setTotalAmmount(fmMailVal);
+        foreseenDTO.setTotalAmmount(fmTotalAmount);
 
         //处理UserId
         String userId = getUserIdByContractId(foreseenDTO.getContractId());
@@ -480,14 +480,14 @@ public class ServiceManageCenter {
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
-                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseensUnKnowError);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseensUnKnowError, null);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "foreseensResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                 //todo 考虑返回的balance怎么用
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
-                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseens4xxError);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseens4xxError, null);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "foreseensResponse.isOK() false ");
             }
         }
@@ -495,8 +495,10 @@ public class ServiceManageCenter {
         log.info("foreseens 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
 
         //正常接收俄罗斯返回，更新数据库
-        printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess);
-
+        if (!foreseenDTO.getContractId().equals(balanceDTO.getContractId())) {
+            throw new FmException(FMResultEnum.contractIdAbnormal.getCode(), "contractId应该是" + foreseenDTO.getContractId() + "，但是俄罗斯返回的是：" + balanceDTO.getContractId());
+        }
+        printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess,balanceDTO);
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
@@ -536,14 +538,14 @@ public class ServiceManageCenter {
         }
 
         //判断合同金额是否够用
-        double fmMailVal = MoneyUtils.changeF2Y(transactionFMDTO.getAmount());
-        double creditVal = MoneyUtils.changeF2Y(transactionFMDTO.getCreditVal());
+        double fmAmount = MoneyUtils.changeF2Y(transactionFMDTO.getAmount());
+        double fmCreditVal = MoneyUtils.changeF2Y(transactionFMDTO.getCreditVal());
 
         //todo 用哪个判断：dbCurrent 还是 dbConsolidate
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmMailVal)) {
-            throw new FmException(FMResultEnum.MoneyTooBig.getCode(),  "transactions 订单金额 fmMailVal为" + fmMailVal + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmAmount)) {
+            throw new FmException(FMResultEnum.MoneyTooBig.getCode(),  "transactions 订单金额 fmAmount为" + fmAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
         //数据转换
@@ -554,8 +556,8 @@ public class ServiceManageCenter {
 
         transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
         transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));
-        transactionDTO.setAmount(fmMailVal);
-        transactionDTO.setCreditVal(creditVal);
+        transactionDTO.setAmount(fmAmount);
+        transactionDTO.setCreditVal(fmCreditVal);
 
         //处理UserId
         String userId = getUserIdByContractId(transactionDTO.getContractId());
@@ -566,19 +568,24 @@ public class ServiceManageCenter {
             if (transactionsResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 //todo 要考虑到这种情况，机器打印结束后，俄罗斯有问题，机器再次发送的情况
-                printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobErrorTransactionUnKnow);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobErrorTransactionUnKnow,null);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "transactionsResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                printJobService.changeTransactionStatus(dbPrintJob,  dbContract, transactionDTO, FlowDetailEnum.JobEndFailTransaction4xxError);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                printJobService.changeTransactionStatus(dbPrintJob,  dbContract, transactionDTO, FlowDetailEnum.JobEndFailTransaction4xxError, null);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "transactionsResponse.isOK() false ");
             }
         }
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
         log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
-        Contract curContract = printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobEndSuccess);
+        //正常接收俄罗斯返回，更新数据库
+        if (!transactionDTO.getContractId().equals(balanceDTO.getContractId())) {
+            throw new FmException(FMResultEnum.contractIdAbnormal.getCode(), "contractId应该是" + transactionDTO.getContractId() + "，但是俄罗斯返回的是：" + balanceDTO.getContractId());
+        }
+
+        Contract curContract = printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobEndSuccess, balanceDTO);
 
         log.info("transactions结束 {}, frankMachineId={} curContract = {}", operationName, frankMachineId, curContract.toString());
         return curContract;
@@ -627,12 +634,12 @@ public class ServiceManageCenter {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobErrorForeseensCancelUnKnowError);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(),"cancelResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                 printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobEndFailForeseensCancel4xxError);
-                log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
+                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(),"cancelResponse.isOK() false ");
             }
         }

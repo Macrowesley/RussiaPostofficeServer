@@ -8,10 +8,7 @@ import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
-import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
-import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
@@ -131,7 +128,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeForeseensStatus(ForeseenDTO foreseenDTO, FlowDetailEnum curFlowDetail) {
+    public void changeForeseensStatus(ForeseenDTO foreseenDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         /**
          创建job
          创建foreseens和ForeseenProduct
@@ -181,15 +178,21 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //todo 修改合同的申请金额管理
         /**
-         * 申请foreseen通过了，那就需要更新合同金额
+         * 申请foreseen通过了，那就需要更新合同金额 current做减法
          * 然后取消foreseen后，也需要把那笔金额给退回去
          * transaction以实际消耗金额为主，申请金额也要改成这个
          */
         if (isForeseensSuccess) {
-            Contract dbContract = contractService.getByConractId(foreseenDTO.getContractId());
+            /*Contract dbContract = contractService.getByConractId(foreseenDTO.getContractId());
             Double consolidate = dbContract.getConsolidate();
             double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getTotalAmmount());
             dbContract.setConsolidate(newConsolidate);
+            contractService.saveOrUpdate(dbContract);*/
+
+            Contract dbContract = new Contract();
+            dbContract.setId(balanceDTO.getContractId());
+            dbContract.setCurrent(balanceDTO.getCurrent());
+            dbContract.setConsolidate(balanceDTO.getConsolidate());
             contractService.saveOrUpdate(dbContract);
         }
     }
@@ -237,7 +240,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail) {
+    public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         //更新PrintJob
         if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow) {
@@ -279,7 +282,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //如果一切OK，更新contract的实际消耗金额 todo 确定金额是哪个减哪个
         //todo 修改合同的申请金额管理 实际申请金额 和实际使用金额一致，然后更新申请金额
         if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
-            Double dbCurrent = dbContract.getCurrent();
+            /*Double dbCurrent = dbContract.getCurrent();
             Double dbConsolidate = dbContract.getConsolidate();
 
             //金额： 合同余额减去transaction的金额
@@ -295,6 +298,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             dbContract.setCurrent(newCurrent);
             dbContract.setConsolidate(newConsolidate);
+            contractService.saveOrUpdate(dbContract);*/
+
+            dbContract.setId(balanceDTO.getContractId());
+            dbContract.setCurrent(balanceDTO.getCurrent());
+            dbContract.setConsolidate(balanceDTO.getConsolidate());
+
             contractService.saveOrUpdate(dbContract);
         }
 

@@ -15,6 +15,7 @@ public enum FMResultEnum {
     StatusTypeError(11,"未闭环，但是要改的状态不对"),
     PrivateKeyNeedUpdate(12,"服务器更新了私钥，机器需要需要更新"),
     DeviceNotFind(13,"表头号不存在"),
+    contractIdAbnormal(14,"俄罗斯返回的contractId异常"),
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
