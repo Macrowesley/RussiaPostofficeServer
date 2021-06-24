@@ -146,6 +146,7 @@ public class MangerTestController {
 
     /**
      * 机器状况
+     * http://auto.uprins.com/p/test/managerTest/publicKey
      * http://localhost/p/test/managerTest/publicKey
      */
     @GetMapping("publicKey")

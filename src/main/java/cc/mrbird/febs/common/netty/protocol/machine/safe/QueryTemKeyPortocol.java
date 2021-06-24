@@ -1,12 +1,15 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
+import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,9 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
     @Autowired
     TempTimeUtils tempTimeUtils;
 
+    @Autowired
+    ChannelMapperManager channelMapperManager;
+
     public static QueryTemKeyPortocol queryTemKeyPortocol;
 
     @PostConstruct
@@ -54,25 +60,31 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    String OPERATION_NAME = "QueryTemKeyPortocol";
+
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         log.info("【协议】获取临时密钥  开始");
         int pos = TYPE_LEN;
 
         //解析版本号
-        String versionContent = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+        String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
         pos += VERSION_LEN;
-        int version = Integer.valueOf(versionContent);
         switch (version) {
-            case 1:
+            case FebsConstant.FmVersion1:
                 //解析表头号
                 String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
 
+                //判断机器是否登录成功
+                if (queryTemKeyPortocol.channelMapperManager.containsKeyAcnum(acnum)) {
+                    return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.MachineLogined.getCode());
+                }
                 //创建8位临时密钥
                 //根据acnum获取密钥
                 Device device = queryTemKeyPortocol.deviceService.findDeviceByAcnum(acnum);
                 if (device == null) {
-                    throw new Exception("获取临时密钥：设备" + acnum + "不存在");
+                    log.error("获取临时密钥：设备" + acnum + "不存在");
+                    return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
                 }
                 String uuid = device.getSecretKey();
                 String tempKey = AESUtils.createKey(16);
@@ -91,7 +103,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
 
-                versionBytes = BaseTypeUtils.stringToByte(versionContent, VERSION_LEN, BaseTypeUtils.UTF8);
+                versionBytes = BaseTypeUtils.stringToByte(version, VERSION_LEN, BaseTypeUtils.UTF8);
                 encryptBytes = BaseTypeUtils.stringToByte(entryptContent, RES_ENCRYPT_LEN, BaseTypeUtils.UTF8);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);

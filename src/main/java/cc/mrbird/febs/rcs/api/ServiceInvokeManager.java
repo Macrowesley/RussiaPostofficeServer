@@ -131,7 +131,7 @@ public class ServiceInvokeManager {
 
         Map<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
-        return doExchange(url, publicKeyDTO, HttpMethod.POST, String.class, map);
+        return doExchange(url, publicKeyDTO, HttpMethod.PUT, String.class, map);
     }
 
     /**

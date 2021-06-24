@@ -16,6 +16,7 @@ public enum FMResultEnum {
     PrivateKeyNeedUpdate(12,"服务器更新了私钥，机器需要需要更新"),
     DeviceNotFind(13,"表头号不存在"),
     contractIdAbnormal(14,"俄罗斯返回的contractId异常"),
+    MachineLogined(15,"机器已经登录了"),
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
