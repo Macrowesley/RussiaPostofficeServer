@@ -253,10 +253,10 @@ public class MangerTestController {
     public void transactions(){
         log.info("开始测试 transactions");
         FrankDTO frank = new FrankDTO();
-        frank.setDmMessage("message");
+        frank.setDmMessage("!45!01NE6434238001504211007130111638000026003100002200130941");
 
-        FrankDTO frank2 = new FrankDTO();
-        frank2.setDmMessage("message");
+       /* FrankDTO frank2 = new FrankDTO();
+        frank2.setDmMessage("message");*/
 
         String transactionId = AESUtils.createUUID();
 
@@ -275,7 +275,8 @@ public class MangerTestController {
         transactionDTO.setCount(count1 + count2);
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion(taxVersion);
-        transactionDTO.setFranks(new FrankDTO[]{frank , frank2});
+//        transactionDTO.setFranks(new FrankDTO[]{frank , frank2});
+        transactionDTO.setFranks(new FrankDTO[]{frank});
         log.info("transaction = {}", JSON.toJSONString(transactionDTO));
 
         ApiResponse apiResponse = serviceInvokeManager.transactions(transactionDTO);

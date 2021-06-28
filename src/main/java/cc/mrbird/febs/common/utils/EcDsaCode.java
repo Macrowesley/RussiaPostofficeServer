@@ -37,6 +37,10 @@ public class EcDsaCode {
     private static final String CHARSET_NAME = "UTF-8";
 
     public static void main(String[] args) throws Exception {
+        test1();
+    }
+
+    private static void test1() throws Exception {
         KeyPair keyPair = initKey();
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
@@ -48,6 +52,8 @@ public class EcDsaCode {
         String sign = Base64.encodeBase64String(signBytes);
         String publicKeyStr = Hex.encodeHexString(publicKey.getEncoded());
         String privateKeyStr = Hex.encodeHexString(privateKey.getEncoded());
+        log.info("publicKey.getFormat()={}, publicKey.getAlgorithm()={}", publicKey.getFormat(), publicKey.getAlgorithm());
+        log.info("privateKey.getFormat()={}, privateKey.getAlgorithm()={}", privateKey.getFormat(), privateKey.getAlgorithm());
 
         log.info("content = " + content);
         log.info("publicKey length  = " + publicKeyStr.length() + "  publicKey = " + publicKeyStr);
