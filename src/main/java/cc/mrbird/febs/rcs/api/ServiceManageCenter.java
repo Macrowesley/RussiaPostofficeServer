@@ -199,7 +199,7 @@ public class ServiceManageCenter {
 
         //如果授权成功，数据库保存秘钥，然后通知机器
         PublicKey publicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-        serviceToMachineProtocol.sentPrivateKey(frankMachineId, publicKey);
+        serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, publicKey);
 
         log.info("{} 操作成功",operationName);
     }

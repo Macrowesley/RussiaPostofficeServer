@@ -95,8 +95,11 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             int expire = 365*3;
             PublicKey publicKey = new PublicKey();
             publicKey.setFrankMachineId(frankMachineId);
-            publicKey.setPublicKey(publicKeyGenerate.getPublicKey());
-            publicKey.setPrivateKey(publicKeyGenerate.getPrivateKey());
+            //todo 服务器和机器的ECDSA算法不一致，暂时以机器的私钥公钥为准
+            /*publicKey.setPublicKey(publicKeyGenerate.getPublicKey());
+            publicKey.setPrivateKey(publicKeyGenerate.getPrivateKey());*/
+            publicKey.setPublicKey("");
+            publicKey.setPrivateKey("");
             publicKey.setRevision(revision);
             publicKey.setAlg("");
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));

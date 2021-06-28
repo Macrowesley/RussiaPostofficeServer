@@ -69,4 +69,13 @@ public class PublicKey {
     private String alg;
 
 
+    /**
+     * 获取返回给机器的publickey信息
+     * @return
+     */
+    public String getSuccessMsg() {
+//        return String.format("%04d",this.getRevision())  + this.getPrivateKey();
+        //todo 服务器和机器的ECDSA算法不一致，暂时以机器的私钥公钥为准
+        return String.format("%04d",this.getRevision());
+    }
 }

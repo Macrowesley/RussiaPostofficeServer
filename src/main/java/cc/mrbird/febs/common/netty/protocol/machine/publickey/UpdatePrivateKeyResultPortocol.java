@@ -3,7 +3,8 @@ package cc.mrbird.febs.common.netty.protocol.machine.publickey;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.common.netty.protocol.dto.PublicKeyFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.api.ServiceInvokeManager;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
@@ -96,7 +97,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                 log.info("channelId={}的操作记录放入redis", key);
                 updatePrivateKeyResultPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
-            log.info("机器开始 ForeseensCancel");
+            log.info("机器开始 {}",OPERATION_NAME);
 
             int pos = TYPE_LEN;
 
@@ -110,9 +111,13 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
 
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    String dectryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN).trim();
+                    /*String dectryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN).trim();
                     String fmRes = dectryptContent.substring(0, 1);
-                    String frankMachineId = dectryptContent.substring(1, dectryptContent.length());
+                    String frankMachineId = dectryptContent.substring(1, dectryptContent.length());*/
+
+                    PublicKeyFMDTO publicKeyFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, PublicKeyFMDTO.class);
+                    String fmRes = publicKeyFMDTO.getResult();
+                    String frankMachineId = publicKeyFMDTO.getFrankMachineId();
                     log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + fmRes);
                     /**
                      typedef  struct{
@@ -133,7 +138,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     if (dbPubliceKey.getFlow() != FlowEnum.FlowEnd.getCode()) {
                         //返回给俄罗斯
                         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-                        publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + dbPubliceKey.getPublicKey() + " -----END PUBLIC KEY-----");
+                        publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKeyFMDTO.getPublicKey() + " -----END PUBLIC KEY-----");
                         publicKeyDTO.setRevision(dbPubliceKey.getRevision());
                         publicKeyDTO.setAlg(dbPubliceKey.getAlg());
                         publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
@@ -144,17 +149,30 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                                 updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFailUnKnow);
-                                log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId);
+                                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId, OPERATION_NAME);
                                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                             } else {
                                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                                 updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFail4xxError);
-                                log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId);
+                                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, OPERATION_NAME);
                                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                             }
                         }
+                        dbPubliceKey.setPrivateKey(publicKeyFMDTO.getPrivateKey());
+                        dbPubliceKey.setPublicKey(publicKeyFMDTO.getPublicKey());
                         updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyEndSuccess);
-                        log.error("服务器收到了设备{}发送的auth协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId);
+                        log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId, OPERATION_NAME);
+
+                        /**
+                         * typedef  struct{
+                         *     unsigned char length[2];				 //2个字节
+                         *     unsigned char head;				 	     //0xB9
+                         *     unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version
+                         *     unsigned char check;				     //校验位
+                         *     unsigned char tail;					     //0xD0
+                         * }__attribute__((packed))privateKeyRes, *privateKeyRes;
+                         */
+                        return getWriteContent(BaseTypeUtils.stringToByte(FMResultEnum.SUCCESS.getSuccessCode() + version, BaseTypeUtils.UTF8));
                     }else{
                         log.error("publickey 已经闭环了，无序操作");
                         throw new FmException(FMResultEnum.DonotAgain.getCode(), "publickey 已经闭环了，无序操作 ");

@@ -136,7 +136,7 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
             throw new FmException(FMResultEnum.PrivateKeyNotExist.getCode(), "frankMachineId=" + frankMachineId + "的dbPublicKey不存在");
         }
 
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%04d",dbPublicKey.getRevision())  + dbPublicKey.getPrivateKey();
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + dbPublicKey.getSuccessMsg();
         String tempKey = queryPrivateKeylPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("QueryPrivateKey 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
