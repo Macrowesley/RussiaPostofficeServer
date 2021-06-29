@@ -67,6 +67,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             unsigned char head;                 //0xAA
             unsigned char length;               //
             unsigned char type;                 //0xA5
+            * unsigned int  operateID[2];
             unsigned char acnum[6];             //机器的表头号
             unsigned char version[3];           //版本内容(3)
             unsigned char content[?];           //加密内容：时间戳(13)
@@ -75,7 +76,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
         }__attribute__((packed))machineInfo,*machineInfo;
          */
         try {
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
             log.info("【协议】机器登录校验协议 开始");
 //            log.info("【协议】机器登录校验协议：  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));
             //解析表头号
@@ -87,7 +88,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             pos += VERSION_LEN;
 
             //加密内容
-            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - OPERATEID_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
             String tempKey = machineLoginPortocol.tempKeyUtils.getTempKey(ctx);
@@ -125,7 +126,8 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                     //返回结果
                     /*typedef  struct{
                         unsigned char length[2];			 //2个字节
-                        unsigned char head;				 	 //0xA5
+                        unsigned char type;				 	 //0xA5
+                        unsigned int  operateID[2];
                         unsigned char res;                   //01 正常  00 失败 失败的话，只能重新执行请求密钥，再发送机器信息
                         unsigned char check;				 //校验位
                         unsigned char tail;					 //0xD0

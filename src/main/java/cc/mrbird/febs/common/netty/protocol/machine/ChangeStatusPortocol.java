@@ -77,6 +77,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];				//
             unsigned char type;					//0xB4
+            unsigned int  operateID[2];
             unsigned char acnum[6];             //机器表头号
             unsigned char version[3];             //版本号
             unsigned char content[?];			//加密后内容: StatusDTO对象的json
@@ -88,7 +89,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         String version = null;
         String res;
         try {
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
 
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);

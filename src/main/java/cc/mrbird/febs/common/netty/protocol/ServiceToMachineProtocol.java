@@ -65,7 +65,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             /**
              *     typedef  struct{
              *         unsigned char length[2];				 //2个字节
-             *         unsigned char head;				 	 //0xC1
+             *         unsigned char type;				 	 //0xC1
+             *         unsigned int  operateID[2];
              *         unsigned char content[?];             //加密后内容 版本内容(3) + 域名(17) + 域名端口(4) + ssh端口(2) + 密码(11)
              *         unsigned char check;				     //校验位
              *         unsigned char tail;					 //0xD0
@@ -105,7 +106,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             /**
              *     typedef  struct{
              *         unsigned char length[2];				 //2个字节
-             *         unsigned char head;				 	 //0xC2
+             *         unsigned char type;				 	 //0xC2
+             *         unsigned int  operateID[2];
              *         unsigned char content[?];             //加密后内容 版本内容(3)
              *         unsigned char check;				     //校验位
              *         unsigned char tail;					 //0xD0
@@ -153,7 +155,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             /**
              typedef  struct{
                  unsigned char length[2];				 //2个字节
-                 unsigned char head;				 //0xC3
+                 unsigned char type;				 //0xC3
+                 unsigned int  operateID[2];
                  unsigned char version[3];			 //版本内容(3)
                  unsigned char content[?];           //加密后内容   StatusDTO的json 包含了：frankMachineId  + status+ postOffice
                  unsigned char check;				 //校验位
@@ -202,7 +205,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             /**
              typedef  struct{
                  unsigned char length[2];			 //2个字节
-                 unsigned char head;				 	 //0xC6
+                 unsigned char type;				 	 //0xC6
+                 unsigned int  operateID[2];
                  unsigned char version[3];			 //版本内容(3)
                  unsigned char content[?];            //加密后内容   Key revision(4位，不够用0填充) + (暂时废弃 privateKey 的加密内容）
                  unsigned char check;				 //校验位
@@ -238,7 +242,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
          同步tax信息(待定，可能是文件)
          typedef  struct{
              unsigned char length[2];				 //2个字节
-             unsigned char head;				 	 //0xC5
+             unsigned char type;				 	 //0xC5
+             unsigned int  operateID[2];
              unsigned char content[?];            //加密后内容 版本内容(3) + taxId(自己数据库中的 )  + ？？
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
@@ -256,7 +261,8 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         /**
          typedef  struct{
              unsigned char length[2];				 //2个字节
-             unsigned char head;				 	 //0xC6
+             unsigned char type;				 	 //0xC6
+             unsigned int  operateID[2];
              unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractId(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0

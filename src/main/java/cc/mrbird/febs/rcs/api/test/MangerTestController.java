@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -45,6 +46,13 @@ public class MangerTestController {
     int count2 = 20;
     double weight2 = 10;
     double amount2 = count2 * weight2;
+
+//    double totalAmount = amount1 + amount2;
+//    double CreditVal = totalAmount;
+//    int totalCount = count1 + count2;
+
+    double totalAmount = amount1;
+    int totalCount = count1;
 
     /**
      * 机器状况
@@ -206,11 +214,11 @@ public class MangerTestController {
         foreseenProduct.setAmount(amount1);
 
 
-        ForeseenProductDTO foreseenProduct2 = new ForeseenProductDTO();
+        /*ForeseenProductDTO foreseenProduct2 = new ForeseenProductDTO();
         foreseenProduct2.setProductCode(productCode2);
         foreseenProduct2.setCount(count2);
         foreseenProduct2.setWeight(weight2);
-        foreseenProduct2.setAmount(amount2);
+        foreseenProduct2.setAmount(amount2);*/
 
 
         ForeseenDTO foreseenDTO = new ForeseenDTO();
@@ -219,11 +227,12 @@ public class MangerTestController {
         foreseenDTO.setUserId(userId);
         foreseenDTO.setContractId(contractId);
         foreseenDTO.setContractNum(contractNumber);
-        foreseenDTO.setTotalCount(count1 + count2);
-        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
+        foreseenDTO.setTotalCount(totalCount);
+//        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
+        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct});
         foreseenDTO.setFrankMachineId(frankMachineId);
         foreseenDTO.setTaxVersion(taxVersion);
-        foreseenDTO.setTotalAmmount(amount1 + amount2);
+        foreseenDTO.setTotalAmmount(totalAmount);
 
         log.info("foreseenId = {}", foreseenId);
         log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
@@ -252,6 +261,33 @@ public class MangerTestController {
     @GetMapping("transactions")
     public void transactions(){
         log.info("开始测试 transactions");
+
+        String Prefix_4 = "!45!";
+        String VersionOfCode_2 = "01";
+        //生产厂家代码
+        String ManufacturerCode_2 = "NE";
+        String CountryCode_3 = "643";
+        //受理邮局的唯一ID (邮政编码)
+        String postCode_6 = postOffice;
+        //邮寄的日期 241120 Format  (DDMMYY)
+        String postDate_6 = new SimpleDateFormat("ddMMYY").format(new Date());
+        log.info("postDate_6={}",postDate_6);
+        //FM的SMPC注册号 200498
+        String RegistrationNumber_6 = frankMachineId.substring(2);
+        //邮资盖印前的注册“总数”值 13452039
+        String totalCount_8 = String.format("%08d", count1);
+        //金额 0002300
+        String amount_7 = String.format("%07d", (int)amount1*100);
+        //产品代码 2100
+        String productType_4 = productCode1;
+        //产品重量 实际重量 0020
+        String productWeight_4 = String.valueOf((int)weight1*100);
+        //客户的唯一Id(代码) 00150568
+        String CustomerId_8 = "";
+
+        String dmMessage = Prefix_4 + VersionOfCode_2 + ManufacturerCode_2 + CountryCode_3 + postCode_6 + postDate_6 + RegistrationNumber_6 + totalCount_8 + amount_7 + productType_4 + productWeight_4 + CustomerId_8;
+        log.info("dmMessage={}",dmMessage);
+
         FrankDTO frank = new FrankDTO();
         frank.setDmMessage("!45!01NE6434238001504211007130111638000026003100002200130941");
 
@@ -270,13 +306,16 @@ public class MangerTestController {
         transactionDTO.setStartDateTime(DateKit.createRussiatime(new Date()));
         transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
         transactionDTO.setUserId(userId);
-        transactionDTO.setCreditVal(amount1 + amount2);
+        /*transactionDTO.setCreditVal(amount1 + amount2);
         transactionDTO.setAmount(amount1 + amount2);
-        transactionDTO.setCount(count1 + count2);
+        transactionDTO.setCount(count1 + count2);*/
+        transactionDTO.setCreditVal(totalAmount);
+        transactionDTO.setAmount(totalAmount);
+        transactionDTO.setCount(totalCount);
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion(taxVersion);
 //        transactionDTO.setFranks(new FrankDTO[]{frank , frank2});
-        transactionDTO.setFranks(new FrankDTO[]{frank});
+//        transactionDTO.setFranks(new FrankDTO[]{frank});
         log.info("transaction = {}", JSON.toJSONString(transactionDTO));
 
         ApiResponse apiResponse = serviceInvokeManager.transactions(transactionDTO);

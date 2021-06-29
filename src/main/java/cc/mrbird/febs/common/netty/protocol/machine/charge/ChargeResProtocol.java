@@ -81,12 +81,13 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
                 unsigned char head;				    //0xAA
                 unsigned char length[2];				//
                 unsigned char type;					//0xA2
+                unsigned int  operateID[2];
                 unsigned char acnum[6];             //机器表头号
                 unsigned char content[?];           //加密后内容 版本内容(3) + 注资结果（1）+ 机器订单ID（8）+ 注资金额（8）
                 unsigned char check;				//校验位
                 unsigned char tail;					//0xD0
             }__attribute__((packed))Result,*Result;*/
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             if (!chargeResProtocol.channelMapperManager.containsKeyAcnum(acnum)){
@@ -96,7 +97,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
             pos += REQ_ACNUM_LEN;
 
             //加密内容
-            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - OPERATEID_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
             String tempKey = chargeResProtocol.tempKeyUtils.getTempKey(ctx);
@@ -106,6 +107,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
 
             String versionContent = dectryptContent.substring(0, VERSION_LEN);
             pos = VERSION_LEN;
+
 
             log.info("【协议】机器返回注资结果： 解析加密内容，version={}, acnum={}", versionContent, acnum);
 
@@ -139,7 +141,8 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
                     /*
                     typedef  struct{
                         unsigned char length[2];				 //2个字节
-                        unsigned char head;				 	 //0xA2
+                        unsigned char type;				 	 //0xA2
+                        unsigned int  operateID[2];
                         unsigned char content[?];            //加密后内容 版本内容(3) + 检验结果（1）+ 机器订单ID（8）+ 注资金额（8）
                         unsigned char check;				 //校验位
                         unsigned char tail;					 //0xD0

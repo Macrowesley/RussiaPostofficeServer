@@ -106,6 +106,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                 unsigned char head;				    //0xAA
                 unsigned char length[2];			//
                 unsigned char type;					//0xB3
+                unsigned int  operateID[2];
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
                 unsigned char content[?];			//加密后内容: CheckServiceDTO 对象的json
@@ -125,7 +126,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
             }
 
 
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
 
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
@@ -142,7 +143,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     /**
                      typedef  struct{
                      unsigned char length[2];				 //2个字节
-                     unsigned char head;				 	 //0xB3
+                     unsigned char type;				 	 //0xB3
+                     unsigned int  operateID[2];
                      unsigned char content;				     //加密内容: result(长度为2 1 成功) + version + 机器状态code(1) + 订单是否结束（1 结束 0 未结束）+ 机器的私钥是否需要更新（0 不需要更新 1需要更新） + 机器的税率是否需要更新（0不需要 1需要更新） + ForeseenFMDTO 的Json
                      unsigned char check;				     //校验位
                      unsigned char tail;					 //0xD0
@@ -181,7 +183,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     }
 
                     //校验数据库的私钥是否完成闭环 机器的私钥是否需要更新（0 不需要更新 1需要更新）
-                    int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
+                    int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService. checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
 
                     //数据库的合同信息
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();

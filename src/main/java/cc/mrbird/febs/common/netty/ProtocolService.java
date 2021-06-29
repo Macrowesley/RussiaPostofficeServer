@@ -142,7 +142,8 @@ public class ProtocolService {
         }
         //解析类型
         byte protocolType = MachineToServiceProtocol.parseType(data);
-
+        //解析操作id字节数组
+        byte[] operateIdArr = new byte[]{data[1],data[2]};
         MachineToServiceProtocol baseProtocol = null;
 
         boolean isNeedLogin = true;
@@ -206,12 +207,11 @@ public class ProtocolService {
                 baseProtocol = new TransactionsPortocol();
                 break;
             default:
-                wrieteToCustomer(ctx, getErrorRes(protocolType));
+                wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
         }
 
         try {
             //判断是否通过验证
-
             if (isNeedLogin) {
                 //检查改连接是否保存在缓存中
                 boolean isLogin = channelMapperManager.containsValue(ctx);
@@ -220,7 +220,7 @@ public class ProtocolService {
                     log.error("ctx = {} 没有通过验证，无法使用，踢掉  当前协议{}", ctx, BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));
                     channelMapperManager.removeCache(ctx);
                     ctx.disconnect().sync();
-                    wrieteToCustomer(ctx, getErrorRes(protocolType));
+                    wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
                 }
             }
             if (isNeedAsync){
@@ -231,6 +231,7 @@ public class ProtocolService {
                     public void run() {
                         try {
                             log.info("【处理协议 开始】");
+                            asyncProtocol.setOperateIdArr(operateIdArr);
                             wrieteToCustomer(ctx, asyncProtocol.parseContentAndRspone(data, ctx));
                             log.info("【处理协议 结束】");
                         } catch (Exception e) {
@@ -239,13 +240,14 @@ public class ProtocolService {
                     }
                 });
             }else{
+                baseProtocol.setOperateIdArr(operateIdArr);
                 wrieteToCustomer(ctx, baseProtocol.parseContentAndRspone(data, ctx));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             log.error("返回结果出错：" + e.getMessage());
-            wrieteToCustomer(ctx, getErrorRes(protocolType));
+            wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
         }
 
     }
@@ -256,7 +258,7 @@ public class ProtocolService {
      * @param protocolType
      * @return
      */
-    private byte[] getErrorRes(byte protocolType) {
-        return new byte[]{(byte) 0x03, 0x00, protocolType, (byte) 0x00, (byte) 0xD0};
+    private byte[] getErrorRes(byte protocolType, byte[] operateIdArr) {
+        return new byte[]{(byte) 0x03, 0x00, protocolType, operateIdArr[0],operateIdArr[1], (byte) 0x00, (byte) 0xD0};
     }
 }

@@ -52,7 +52,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         try {
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
             log.info("【协议】获取唯一id：  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));
             //解析版本号
             String versionContent = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
@@ -97,6 +97,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
          *     unsigned char head;                 //0xAA
          *     unsigned char length;               //
          *     unsigned char type;                 //0xA3
+         *     unsigned int  operateID[2];
          *     unsigned char version[3];           //版本内容 001
          *     unsigned char acnum[6];             //机器的表头号
          *     unsigned char check;                //校验位
@@ -108,7 +109,8 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
          *
          * typedef  struct{
          *     unsigned char length;				//一个字节
-         * 	unsigned char head;				 	//0xA3
+         * 	unsigned char type;				 	//0xA3
+         * unsigned int  operateID[2];
          * 	unsigned char version[3];           //版本内容 001
          *     unsigned char id[16];				//唯一id内容（如果都为0，则这个表头号还没注册到系统中）
          * 	unsigned char check;				//校验位

@@ -3,9 +3,12 @@ package cc.mrbird.febs.common.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import sun.nio.cs.ext.GB18030;
+import sun.nio.cs.ext.GBK;
 import sun.security.ec.ECPrivateKeyImpl;
 import sun.security.ec.ECPublicKeyImpl;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
@@ -16,6 +19,7 @@ import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Slf4j
 /**
@@ -45,7 +49,7 @@ public class EcDsaCode {
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
 
-        String content = "abcdefghikjabcdefghikjabcdefghikjabcdefghikjabcdefghikjabcdefghikjabcdefghikj";
+        String content = "!45!01NE64360309424112020049813452039000230021000020001505680002";
         byte[] contentBytes = content.getBytes(CHARSET_NAME);
         byte[] signBytes = sign(contentBytes, privateKey);
         boolean verifyRes = verify(contentBytes, publicKey, signBytes);
@@ -54,6 +58,15 @@ public class EcDsaCode {
         String privateKeyStr = Hex.encodeHexString(privateKey.getEncoded());
         log.info("publicKey.getFormat()={}, publicKey.getAlgorithm()={}", publicKey.getFormat(), publicKey.getAlgorithm());
         log.info("privateKey.getFormat()={}, privateKey.getAlgorithm()={}", privateKey.getFormat(), privateKey.getAlgorithm());
+        //ASCII+、GB2312、GBK、GB18030、unicode、UTF-8
+        Stream.of("UTF-8","GBK","ISO8859-1","ASCII","GB2312","GB18030","unicode").forEach(charsetName -> {
+            try {
+                log.info("签名：" + charsetName + " 内容" + new String(signBytes, charsetName));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        });
+
 
         log.info("content = " + content);
         log.info("publicKey length  = " + publicKeyStr.length() + "  publicKey = " + publicKeyStr);

@@ -32,7 +32,7 @@ public class HeartPortocol extends MachineToServiceProtocol {
      * @param bytes
      */
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
-        int pos = TYPE_LEN;
+        int pos = getBeginPos();
 
         //解析表头号
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);

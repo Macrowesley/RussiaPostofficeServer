@@ -26,6 +26,9 @@ public abstract class BaseProtocol {
     //响应长度：记录整条数据长度数值的长度
     public static final int RESPONSE_LENGTH_LEN = 2;
 
+    //操作id 长度
+    public static final int OPERATEID_LEN = 2;
+
     //协议的数据类型长度
     public static final int TYPE_LEN = 1;
     //校验位长度
@@ -48,12 +51,17 @@ public abstract class BaseProtocol {
     @Autowired
     public ServiceManageCenter serviceManageCenter;
 
+    public byte[] operateIdArr;
+
     /**
      * 获取实际操作的类
      * @return
      */
     public abstract BaseProtocol getOperator();
 
+    public int getBeginPos(){
+        return TYPE_LEN + OPERATEID_LEN;
+    }
     /**
      * 获取返回的协议内容长度 获取操作人员
      * isContainFirstLen : 总长度是否包含第一个4字节的长度
@@ -62,9 +70,9 @@ public abstract class BaseProtocol {
      */
     public int getResponseProtocolLen(byte[] data) {
         if (isContainFirstLen) {
-            return RESPONSE_LENGTH_LEN + TYPE_LEN + data.length + CHECK_LEN + END_LEN;
+            return RESPONSE_LENGTH_LEN + TYPE_LEN + OPERATEID_LEN + data.length + CHECK_LEN + END_LEN;
         } else {
-            return TYPE_LEN + data.length + CHECK_LEN + END_LEN;
+            return TYPE_LEN + OPERATEID_LEN + data.length + CHECK_LEN + END_LEN;
         }
     }
 
@@ -91,6 +99,7 @@ public abstract class BaseProtocol {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLen);
         baos.write(length, 0, RESPONSE_LENGTH_LEN);
         baos.write(typeData, 0, TYPE_LEN);
+        baos.write(getOperateIdArr(), 0, OPERATEID_LEN);
         baos.write(data, 0, data.length);
         baos.write(checkSume, 0, CHECK_LEN);
         baos.write(end, 0, END_LEN);
@@ -108,8 +117,7 @@ public abstract class BaseProtocol {
      * @return
      */
     public static byte parseType(byte[] data) {
-        byte t = data[0];
-        return t;
+        return data[0];
     }
 
     /**
@@ -142,7 +150,7 @@ public abstract class BaseProtocol {
      * @throws Exception
      */
     public String getDecryptContent(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN) throws Exception {
-        String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+        String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - OPERATEID_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 //        log.info("baseProtocol = " + getOperator().toString());
         //获取临时密钥
         String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
@@ -168,6 +176,17 @@ public abstract class BaseProtocol {
         log.info("解析得到的内容：decryptContent={}",decryptContent);
         T bean = JSON.parseObject(decryptContent, clazz);
         return bean;
+    }
+
+    public byte[] getOperateIdArr() {
+        if (operateIdArr == null){
+            return new byte[]{0x00,0x00};
+        }
+        return operateIdArr;
+    }
+
+    public void setOperateIdArr(byte[] operateIdArr) {
+        this.operateIdArr = operateIdArr;
     }
 
     public static void main(String[] args) throws Exception {

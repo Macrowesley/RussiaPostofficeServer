@@ -85,6 +85,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];				//
             unsigned char type;					//0xA1
+            unsigned int  operateID[2];
             unsigned char acnum[6];             //机器表头号
             unsigned char content[?];           //加密后内容: 版本内容（长度3）
             unsigned char check;				//校验位
@@ -94,7 +95,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
         /*Thread.sleep(15000);
         log.info("停15s");*/
         try {
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
@@ -105,7 +106,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             }
 
             //加密内容
-            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
+            String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - OPERATEID_LEN - REQ_ACNUM_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
 
             //获取临时密钥
             String tempKey = queryProtocol.tempKeyUtils.getTempKey(ctx);
@@ -126,7 +127,8 @@ public class QueryProtocol extends MachineToServiceProtocol {
                 case 1:
                 /*typedef  struct{
                     unsigned char length[2];				 //2个字节
-                    unsigned char head;				 	 //0xA1
+                    unsigned char type;				 	 //0xA1
+                    unsigned int  operateID[2];
                     unsigned char content[?];            //加密后内容 版本内容（3）+ 结果（1） + 机器订单ID（8）+ 注资金额（8）
                     unsigned char check;				 //校验位
                     unsigned char tail;					 //0xD0

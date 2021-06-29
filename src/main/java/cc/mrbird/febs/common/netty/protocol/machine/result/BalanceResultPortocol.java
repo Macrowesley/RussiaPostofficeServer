@@ -57,13 +57,14 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];				//
             unsigned char type;					//0xC4
+            unsigned int  operateID[2];
             unsigned char acnum[?];             //frankMachineId
             unsigned char result;				//加密内容：balanceId() + result(1)
             unsigned char check;				//校验位
             unsigned char tail;					//0xD0
         }__attribute__((packed))updateTaxesRes, *updateTaxesRes;
          */
-        int pos = TYPE_LEN;
+        int pos = getBeginPos();
 
         //表头号
         String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);

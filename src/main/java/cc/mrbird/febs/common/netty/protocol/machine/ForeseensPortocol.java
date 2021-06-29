@@ -84,6 +84,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];			//
             unsigned char type;					//0xB5
+            unsigned int  operateID[2];
             unsigned char acnum[6];             //机器表头号
             unsigned char version[3];           //版本号
             unsigned char content[?];			//加密后内容: ForeseenFMDTO的json
@@ -114,7 +115,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             }
 
 
-            int pos = TYPE_LEN;
+            int pos = getBeginPos();
 
             //表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
@@ -179,7 +180,8 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         /**
          typedef  struct{
          unsigned char length;				     //一个字节
-         unsigned char head;				 	 //0xB5
+         unsigned char type;				 	 //0xB5
+         unsigned int  operateID[2];
          unsigned char content;				     //加密内容: result(长度为2 1 成功) + version(6) + ForeseensResultDTO 的json
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0

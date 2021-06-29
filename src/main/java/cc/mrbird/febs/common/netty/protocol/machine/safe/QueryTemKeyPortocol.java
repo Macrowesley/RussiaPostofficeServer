@@ -65,7 +65,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         log.info("【协议】获取临时密钥  开始");
-        int pos = TYPE_LEN;
+        int pos = getBeginPos();
 
         //解析版本号
         String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
@@ -120,6 +120,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
             unsigned char head;                 //0xAA
             unsigned char length;               //
             unsigned char type;                 //0xA4
+            unsigned int  operateID[2];
             unsigned char version[3];           //版本内容 001
             unsigned char acnum[6];             //机器的表头号
             unsigned char check;                //校验位
