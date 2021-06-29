@@ -75,7 +75,7 @@ public class ServiceApi {
 
         if (regenerate) {
             //如果打印任务没有结束，拒绝
-            if(printJobService.checkPrintJobFinish(frankMachineId)){
+            if(!printJobService.checkPrintJobFinish(frankMachineId)){
                 throw new RcsApiException("print job is not finish, please wait");
             }
 
@@ -110,7 +110,7 @@ public class ServiceApi {
         log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
         //如果打印任务没有结束，拒绝
-        if(printJobService.checkPrintJobFinish(frankMachineId)){
+        if(!printJobService.checkPrintJobFinish(frankMachineId)){
             throw new RcsApiException("print job is not finish, please wait");
         }
 

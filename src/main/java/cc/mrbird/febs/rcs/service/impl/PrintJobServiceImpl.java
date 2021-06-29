@@ -317,6 +317,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     }
 
 
+    /**
+     * 返回true，表示这个机器的所有打印任务都完成了
+     * @param frankMachineId
+     * @return
+     */
     @Override
     public boolean checkPrintJobFinish(String frankMachineId) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
@@ -324,6 +329,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         wrapper.eq(PrintJob::getFlow, FlowEnum.FlowIng.getCode());
         Integer unFinishCount = this.baseMapper.selectCount(wrapper);
 
-        return unFinishCount == 0 ? true : false;
+        return unFinishCount == 0;
     }
 }

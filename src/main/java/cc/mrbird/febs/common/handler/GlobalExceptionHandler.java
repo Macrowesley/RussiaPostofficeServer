@@ -93,8 +93,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = RcsManagerBalanceException.class)
     public ApiResponse handleRcsManagerBalanceException(RcsManagerBalanceException e) {
         log.error("RCS 金额异常 {} , balance = {}", e.getMessage(), e.getManagerBalanceDTO().toString());
-        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),
-                new OperationError(HttpStatus.BAD_REQUEST.value(),e.getMessage(),e.getManagerBalanceDTO()));
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                new OperationError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage(),e.getManagerBalanceDTO()));
     }
 
     /**
@@ -105,13 +105,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = RcsApiException.class)
     public ApiResponse handleRcsApiException(RcsApiException e) {
         log.error("RCS api 错误 {}", e.getMessage());
-        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(HttpStatus.BAD_REQUEST.value(),e.getMessage()));
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ApiResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("RCS handleHttpMessageNotReadableException 错误 {}", e.getMessage());
-        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(HttpStatus.BAD_REQUEST.value(),e.getMessage()));
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
     }
 
     /**
