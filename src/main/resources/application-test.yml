@@ -1,3 +1,8 @@
+server:
+  port: 89
+  servlet:
+    context-path: /p_test
+
 spring:
   datasource:
     dynamic:
@@ -15,20 +20,20 @@ spring:
       datasource:
         # 数据源-1，名称为 base
         base:
-          username: root
-          password: 123456
+          username: ENC(rWOZKomPOvVkZ9nLeT4F4Q==)
+          password: ENC(daDIKa26X0aJlNVXdSEhPNGvOsfE0yLR)
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://127.0.0.1:3306/gdpt_posmart_office?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+          url: jdbc:mysql://127.0.0.1:9688/gdpt_posmart_office_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   redis:
     # Redis数据库索引（默认为 0）
-    database: 0
+    database: 1
     # Redis服务器地址
     host: 127.0.0.1
     # Redis服务器连接端口
-    port: 6379
+    port: 6679
     # Redis 密码
-    password:
+    password: ENC(2+yYNfvQM5mX+cy5Tx8HCXjEuLT7zsYP)
     lettuce:
       pool:
         # 连接池中的最小空闲连接
@@ -42,9 +47,14 @@ spring:
     # 连接超时时间（毫秒）
     timeout: 5000
 
+mybatis-plus:
+  configuration:
+    cache-enabled: true
+
 websocket:
   service: websocket
 
 netty:
-  port: 12800
-  ip: localhost
+  port: 12801
+  #  ip: localhost
+  ip: 119.37.199.25
