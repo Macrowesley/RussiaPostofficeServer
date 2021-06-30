@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
@@ -76,14 +77,14 @@ public class ServiceApi {
         if (regenerate) {
             //如果打印任务没有结束，拒绝
             if(!printJobService.checkPrintJobFinish(frankMachineId)){
-                throw new RcsApiException("print job is not finish, please wait");
+                throw new RcsApiException(RcsApiErrorEnum.WaitPrintJobFinish);
             }
 
 
             PublicKey publicKey = publicKeyService.findByFrankMachineId(frankMachineId);
             if (publicKey !=null && publicKey.getFlow() == FlowEnum.FlowIng.getCode()){
                 log.info("privateKey正在处理中，请等待");
-                throw new RcsApiException("update public key is not finish, please wait");
+                throw new RcsApiException(RcsApiErrorEnum.WaitPublicKeyUpdateFinish);
             }
 
             //生成publickey，更新数据库
@@ -111,7 +112,7 @@ public class ServiceApi {
 
         //如果打印任务没有结束，拒绝
         if(!printJobService.checkPrintJobFinish(frankMachineId)){
-            throw new RcsApiException("print job is not finish, please wait");
+            throw new RcsApiException(RcsApiErrorEnum.WaitPrintJobFinish);
         }
 
         //保存要更改的状态

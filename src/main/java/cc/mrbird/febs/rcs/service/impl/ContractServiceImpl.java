@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.dto.service.CustomerDTO;
@@ -139,7 +140,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             postOfficeContractService.saveBatch(postOfficeContractList);
             log.info("接收服务器传递过来的合同数据 结束");
         } catch (Exception e) {
-            throw new RcsApiException(e.getMessage());
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.SaveContractDtoError);
         }
     }
 

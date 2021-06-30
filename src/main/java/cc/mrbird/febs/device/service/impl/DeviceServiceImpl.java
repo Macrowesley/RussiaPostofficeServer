@@ -33,7 +33,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -94,18 +93,18 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 queryWrapper.eq(Device::getNickname, device.getNickname());
             }
 
-            if (device.getCurFmStatus() == null){
+            if (device.getCurFmStatus() == null) {
                 queryWrapper.gt(Device::getCurFmStatus, -1);
-            }else{
+            } else {
                 queryWrapper.eq(Device::getCurFmStatus, device.getCurFmStatus());
             }
 
-            deviceIPage =  this.page(page, queryWrapper);
+            deviceIPage = this.page(page, queryWrapper);
         } else {
-            deviceIPage =  this.baseMapper.selectListByUserId(page, curUser.getUserId(), device);
+            deviceIPage = this.baseMapper.selectListByUserId(page, curUser.getUserId(), device);
         }
 
-        deviceIPage.getRecords().stream().forEach( item ->{
+        deviceIPage.getRecords().stream().forEach(item -> {
             item.setIsOnline(channelMapperManager.containsKeyAcnum(item.getAcnum()) ? 1 : 0);
         });
 
@@ -196,6 +195,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     /**
      * 批量添加设备
      * 添加设备的时候，绑定设备到机构管理员
+     *
      * @param device
      * @param acnumList
      */
@@ -389,13 +389,13 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
+
+        Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
+
+        if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
+            throw new RcsApiException(RcsApiErrorEnum.WaitStatusChangeFinish);
+        }
         try {
-            Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
-
-            if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
-                throw new RcsApiException("上次状态修改没有完成，请稍等");
-            }
-
             Device device = new Device();
             device.setFrankMachineId(frankMachineId);
             device.setFutureFmStatus(changeStatusRequestDTO.getStatus().getCode());
@@ -416,7 +416,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             fmStatusLog.setUpdatedTime(new Date());
             statusLogService.saveOrUpdate(fmStatusLog);
         } catch (Exception e) {
-            throw new RcsApiException(e.getMessage());
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.ChangeStatusError);
         }
     }
 
@@ -465,7 +466,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         //保存状态记录
         FmStatusLog fmStatusLog = new FmStatusLog();
         BeanUtils.copyProperties(device, fmStatusLog);
-        fmStatusLog.setChangeFrom(isMachineActive? ChangeFromEnum.Machine.getCode() : ChangeFromEnum.Russia.getCode());
+        fmStatusLog.setChangeFrom(isMachineActive ? ChangeFromEnum.Machine.getCode() : ChangeFromEnum.Russia.getCode());
         fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
         fmStatusLog.setUpdatedTime(new Date());
         fmStatusLog.setCreatedTime(new Date());
@@ -629,7 +630,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         Device device = this.getOne(wrapper);
 
         if (device == null) {
-            throw new RcsApiException("无法找到id为" + frankMachineId + "的frankMachine");
+            log.error("Unknown FM Id" + frankMachineId);
+            throw new RcsApiException(RcsApiErrorEnum.UnknownFMId);
         }
         return device;
     }
@@ -639,6 +641,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public FlowDetailEnum getFlowDetail(String frankMachineId) {
         return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail());
     }
+
     /**
      * 更新所有device的taxIsUpdate 全都改成0
      */

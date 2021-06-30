@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.ServiceBalanceDTO;
@@ -95,7 +96,8 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
         } catch (Exception e) {
-            throw new RcsApiException(e.getMessage());
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.SaveBalanceError);
         }
     }
 }

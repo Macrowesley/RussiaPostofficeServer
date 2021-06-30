@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyGenerate;
@@ -110,7 +111,8 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             log.info("更新服务器public 成功");
             return publicKey;
         } catch (Exception e) {
-            throw new RcsApiException(e.getMessage());
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.SavePublicKeyError);
         }
     }
 

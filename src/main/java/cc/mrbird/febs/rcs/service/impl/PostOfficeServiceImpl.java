@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
@@ -82,7 +83,8 @@ public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOff
 
             this.saveOrUpdate(postOffice);
         } catch (Exception e) {
-            throw new RcsApiException(e.getMessage());
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.SavePostOfficeDTOError);
         }
     }
 }
