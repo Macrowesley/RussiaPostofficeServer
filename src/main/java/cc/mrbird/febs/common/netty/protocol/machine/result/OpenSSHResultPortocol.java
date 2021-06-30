@@ -57,7 +57,7 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];				//
             unsigned char type;					//0xB1
-            unsigned int  operateID[2];
+            unsigned char  operateID[2];
             unsigned char acnum[6];             //机器表头号
             unsigned char result;				//0x00 失败  0x01 成功
             unsigned char check;				//校验位

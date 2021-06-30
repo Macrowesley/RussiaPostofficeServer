@@ -73,7 +73,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];			//
             unsigned char type;					//0xB7
-            unsigned int  operateID[2];
+            unsigned char  operateID[2];
             unsigned char acnum[6];             //机器表头号
             unsigned char version[3];           //版本号
             unsigned char content[?];			//加密后内容: CancelJobFMDTO
@@ -134,7 +134,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char type;				 	 //0xB7
-         unsigned int  operateID[2];
+         unsigned char  operateID[2];
          unsigned char content;				     //加密内容: result(1 成功) + version + foreseenId（36）+ consolidate(8 分为单位) + current(8 分为单位)
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0

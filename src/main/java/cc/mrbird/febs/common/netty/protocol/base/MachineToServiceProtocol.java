@@ -60,7 +60,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char type;				 	 //
-         unsigned int  operateID[2];
+         unsigned char  operateID[2];
          unsigned char content[?];				 //加密内容:   result(2位 01,操作成功，则后面再添加几个参数，可以作为验证) + 版本内容(3) + event(1) + status(1)
                                                              result(2位 不为01,操作失败 FMResultEnum为准
                                                                          0 其他异常导致的失败

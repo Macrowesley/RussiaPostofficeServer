@@ -57,7 +57,7 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
             unsigned char head;				    //0xAA
             unsigned char length[2];				//
             unsigned char type;					//0xC4
-            unsigned int  operateID[2];
+            unsigned char  operateID[2];
             unsigned char acnum[?];             //frankMachineId
             unsigned char result;				//加密内容：balanceId() + result(1)
             unsigned char check;				//校验位

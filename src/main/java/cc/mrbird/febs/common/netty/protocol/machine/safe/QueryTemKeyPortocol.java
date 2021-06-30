@@ -120,7 +120,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
             unsigned char head;                 //0xAA
             unsigned char length;               //
             unsigned char type;                 //0xA4
-            unsigned int  operateID[2];
+            unsigned char  operateID[2];
             unsigned char version[3];           //版本内容 001
             unsigned char acnum[6];             //机器的表头号
             unsigned char check;                //校验位

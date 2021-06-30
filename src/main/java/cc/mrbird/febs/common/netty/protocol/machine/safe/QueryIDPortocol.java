@@ -97,7 +97,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
          *     unsigned char head;                 //0xAA
          *     unsigned char length;               //
          *     unsigned char type;                 //0xA3
-         *     unsigned int  operateID[2];
+         *     unsigned char  operateID[2];
          *     unsigned char version[3];           //版本内容 001
          *     unsigned char acnum[6];             //机器的表头号
          *     unsigned char check;                //校验位
@@ -110,7 +110,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
          * typedef  struct{
          *     unsigned char length;				//一个字节
          * 	unsigned char type;				 	//0xA3
-         * unsigned int  operateID[2];
+         * unsigned char  operateID[2];
          * 	unsigned char version[3];           //版本内容 001
          *     unsigned char id[16];				//唯一id内容（如果都为0，则这个表头号还没注册到系统中）
          * 	unsigned char check;				//校验位

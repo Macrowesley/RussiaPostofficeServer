@@ -70,7 +70,7 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
                 unsigned char head;				    //0xAA
                 unsigned char length[2];				//
                 unsigned char type;					//0xB8
-                unsigned int  operateID[2];
+                unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
                 unsigned char content[?];			//加密后内容: frankMachineId
@@ -126,7 +126,7 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
          typedef  struct{
              unsigned char length[2];				     //2个字节
              unsigned char type;				 	     //0xB8
-             unsigned int  operateID[2];
+             unsigned char  operateID[2];
              unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(4位，不够用0填充) + privateKey的加密内容
              result(长度为2 不为1,操作失败具体原因看 FMResultEnum) + 版本内容(3)
              unsigned char check;				     //校验位

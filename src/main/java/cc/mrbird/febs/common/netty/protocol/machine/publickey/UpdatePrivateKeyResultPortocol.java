@@ -82,7 +82,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                 unsigned char head;				    //0xAA
                 unsigned char length[2];				//
                 unsigned char type;					//0xB9
-                unsigned int  operateID[2];
+                unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
                 unsigned char content[?];			//加密后内容: result(1成功 0 失败) + frankMachineId
@@ -124,7 +124,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                      typedef  struct{
                      unsigned char length[2];				 //2个字节
                      unsigned char type;				 	     //0xB9
-                     unsigned int  operateID[2];
+                     unsigned char  operateID[2];
                      unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version
                      unsigned char check;				     //校验位
                      unsigned char tail;					     //0xD0
@@ -169,7 +169,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                          * typedef  struct{
                          *     unsigned char length[2];				 //2个字节
                          *     unsigned char type;				 	     //0xB9
-                         *     unsigned int  operateID[2];
+                         *     unsigned char  operateID[2];
                          *     unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version
                          *     unsigned char check;				     //校验位
                          *     unsigned char tail;					     //0xD0
