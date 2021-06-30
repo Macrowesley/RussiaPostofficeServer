@@ -73,6 +73,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
     public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
         log.info("【俄罗斯调用服务器api 开始 publicKey】");
+        log.info("frankMachineId={},regenerate={}",frankMachineId,regenerate);
 
         if (regenerate) {
             //如果打印任务没有结束，拒绝
@@ -135,6 +136,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
+        log.info("taxVersionDTO={}",taxVersionDTO.toString());
         //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
 
@@ -153,6 +155,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
     public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
         log.info("【俄罗斯调用服务器api 开始 postOffices】");
+        log.info("postOfficeDTO={}",postOfficeDTO.toString());
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
         log.info("【俄罗斯调用服务器api 结束 postOffices】");
         return new ApiResponse(200, "ok");
@@ -167,6 +170,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
     public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
         log.info("【俄罗斯调用服务器api 开始 contracts】");
+        log.info("contractDTO={}",contractDTO.toString());
         contractService.saveContractDto(contractDTO);
         log.info("【俄罗斯调用服务器api 结束 contracts】");
         return new ApiResponse(200, "ok");
@@ -182,6 +186,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
     public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
         log.info("【俄罗斯调用服务器api 开始 balance】");
+        log.info("contractId={}, serviceBalanceDTO={}",contractId, serviceBalanceDTO.toString());
         balanceService.saveBalance(contractId, serviceBalanceDTO);
         log.info("【俄罗斯调用服务器api 结束 balance】");
         return new ApiResponse(200, "ok");
