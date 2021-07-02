@@ -11,7 +11,7 @@ public class TransactionFMDTO {
     String foreseenId;
     String postOffice;
     String frankMachineId;
-    String contractId;
+    String contractCode;
     /**
      * 花费时间，单位；分
      */

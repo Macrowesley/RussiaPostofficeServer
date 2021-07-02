@@ -5,7 +5,6 @@ import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
-import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -15,7 +14,6 @@ import cc.mrbird.febs.rcs.entity.Contract;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -118,7 +116,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                         cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
                         cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
-                        cancelJobFMDTO.setContractId(transactionFMDTO.getContractId());
+                        cancelJobFMDTO.setContractCode(transactionFMDTO.getContractCode());
                         dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
                     } else {
                         //处理transaction

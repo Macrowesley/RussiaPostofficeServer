@@ -47,14 +47,9 @@ public class Transaction {
     /**
      * 合同id
      */
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("contract_code")
+    private String contractCode;
 
-    /**
-     * 合同号
-     */
-    @TableField("contract_num")
-    private Integer contractNum;
 
     /**
      * 开始时间

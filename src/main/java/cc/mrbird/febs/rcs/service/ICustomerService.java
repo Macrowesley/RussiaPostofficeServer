@@ -53,5 +53,5 @@ public interface ICustomerService extends IService<Customer> {
      */
     void deleteCustomer(Customer customer);
 
-    String getUserIdByContractId(String contractId);
+    String getUserIdByContractCode(String contractCode);
 }

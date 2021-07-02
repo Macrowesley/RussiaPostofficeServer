@@ -33,8 +33,8 @@ public class Registers {
     /**
      * 合同id
      */
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("contract_code")
+    private String contractCode;
 
     /**
      * 合同号

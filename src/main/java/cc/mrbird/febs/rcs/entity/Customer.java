@@ -24,8 +24,8 @@ public class Customer {
     /**
      * 合同id
      */
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("contract_code")
+    private String contractCode;
 
     /**
      * 创建时间

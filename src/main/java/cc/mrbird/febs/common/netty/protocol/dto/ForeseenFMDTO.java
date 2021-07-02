@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 public class ForeseenFMDTO {
     String id;
-    String contractId;
+    String contractCode;
     String frankMachineId;
     String userId;
     String postOffice;

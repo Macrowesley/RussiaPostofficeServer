@@ -6,7 +6,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class ForeseensResultDTO {
-    String contractId;
+    String contractCode;
     String foreseenId;
     String consolidate;
     String current;

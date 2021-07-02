@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 调用俄罗斯服务器接口
+ * 调用俄罗斯服务器接口俄罗斯
  */
 @Slf4j
 @Component
-public class ServiceInvokeManager {
+public class ServiceInvokeRussia {
     @Autowired
     RestTemplate restTemplate;
 
@@ -33,7 +33,7 @@ public class ServiceInvokeManager {
     //最新
 	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
-    private final String testContractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
+    private final String testContractCode = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
     /**
      * 发送机器状况
      *
@@ -172,7 +172,7 @@ public class ServiceInvokeManager {
      * @return
      * @PostMapping("/foreseens/{foreseenId}/cancel")
      */
-    public ApiResponse cancel(String foreseenId, String contractId, ForeseenCancel foreseenCancel) {
+    public ApiResponse cancel(String foreseenId, String contractCode, ForeseenCancel foreseenCancel) {
         //todo 当看到特殊合同号，返回模拟结果
         /*if (contractId.equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");

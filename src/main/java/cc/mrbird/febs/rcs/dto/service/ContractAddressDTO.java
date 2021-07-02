@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @ToString
 public class ContractAddressDTO {
-    String contractId;
+    String contractCode;
     String FMid;
     String addressList;
 }

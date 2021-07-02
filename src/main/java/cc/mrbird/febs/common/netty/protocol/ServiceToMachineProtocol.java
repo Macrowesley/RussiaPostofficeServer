@@ -263,7 +263,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              unsigned char length[2];				 //2个字节
              unsigned char type;				 	 //0xC6
              unsigned char  operateID[2];
-             unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractId(?) + contractNum(?) + current(?) + consolidate(?)
+             unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractCode(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位
              unsigned char tail;					 //0xD0
          }__attribute__((packed))updateTaxes, *updateTaxes;

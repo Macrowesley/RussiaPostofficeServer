@@ -22,12 +22,9 @@ public class ForeseenDTO {
     String userId;
 
     /**
-     * format: uuid
+     * 8位数字
      */
-    String contractId;
-
-    @Deprecated
-    Integer contractNum;
+    String contractCode;
 
     @NotNull
     Integer totalCount;

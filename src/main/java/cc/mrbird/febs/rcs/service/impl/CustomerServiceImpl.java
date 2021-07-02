@@ -66,9 +66,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 	}
 
     @Override
-    public String getUserIdByContractId(String contractId) {
+    public String getUserIdByContractCode(String contractCode) {
         LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Customer::getContractId,contractId);
+        wrapper.eq(Customer::getContractCode, contractCode);
         return this.baseMapper.selectOne(wrapper).getId();
     }
 }

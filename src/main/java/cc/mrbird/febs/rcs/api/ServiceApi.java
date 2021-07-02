@@ -36,7 +36,7 @@ public class ServiceApi {
     ServiceToMachineProtocol serviceToMachineProtocol;
 
     @Autowired
-    ServiceInvokeManager serviceInvokeManager;
+    ServiceInvokeRussia serviceInvokeRussia;
 
     @Autowired
     IDeviceService deviceService;

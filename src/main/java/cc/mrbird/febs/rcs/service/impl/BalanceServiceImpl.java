@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ServiceBalanceDTO;
 import cc.mrbird.febs.rcs.entity.Balance;
 import cc.mrbird.febs.rcs.entity.Contract;
@@ -79,20 +80,45 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
 
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void saveBalance(String contractId, ServiceBalanceDTO serviceBalanceDTO) {
+    public void saveBalance(String contractCode, ServiceBalanceDTO serviceBalanceDTO) {
         try {
             Balance balance = new Balance();
             BeanUtils.copyProperties(serviceBalanceDTO,balance);
             balance.setFromType(2);
             balance.setCreatedTime(new Date());
-            balance.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getTimestamp()));
+            balance.setRussiaTime(DateKit.parseRussiatime(serviceBalanceDTO.getModified()));
 
             this.save(balance);
             //更新contract的金额
-            Contract contract = contractService.getByConractId(contractId);
+            Contract contract = new Contract();
+            contract.setId(contractCode);
             contract.setCurrent(serviceBalanceDTO.getCurrent());
             contract.setConsolidate(serviceBalanceDTO.getConsolidate());
-            contract.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getTimestamp()));
+            contract.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getModified()));
+            boolean res = contractService.saveOrUpdate(contract);
+            log.info("保存balance结束，更新contract金额结果：{}", res);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RcsApiException(RcsApiErrorEnum.SaveBalanceError);
+        }
+    }
+
+    @Override
+    public void saveReturnBalance(String contractCode, ManagerBalanceDTO managerBalanceDTO) {
+        try {
+            Balance balance = new Balance();
+            BeanUtils.copyProperties(managerBalanceDTO,balance);
+            balance.setFromType(1);
+            balance.setCreatedTime(new Date());
+            balance.setRussiaTime(DateKit.parseRussiatime(managerBalanceDTO.getTimestamp()));
+            this.save(balance);
+
+            //更新contract的金额
+            Contract contract = new Contract();
+            contract.setId(contractCode);
+            contract.setCurrent(managerBalanceDTO.getCurrent());
+            contract.setConsolidate(managerBalanceDTO.getConsolidate());
+            contract.setUpdatedTime(DateKit.parseRussiatime(managerBalanceDTO.getTimestamp()));
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
         } catch (Exception e) {

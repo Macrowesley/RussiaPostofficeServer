@@ -23,8 +23,8 @@ public class ContractAddress {
     /**
      * 合同id
      */
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("contract_code")
+    private String contractCode;
 
     @TableField("address")
     private String address;

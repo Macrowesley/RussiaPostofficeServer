@@ -34,16 +34,10 @@ public class Foreseen {
     String userId;
 
     /**
-     * 合同id
+     * 合同id 8位数字
      */
-    @TableField("contract_id")
-    private String contractId;
-
-    /**
-     * 合同号
-     */
-    @TableField("contract_num")
-    private Integer contractNum;
+    @TableField("contract_code")
+    private String contractCode;
 
 
     /**

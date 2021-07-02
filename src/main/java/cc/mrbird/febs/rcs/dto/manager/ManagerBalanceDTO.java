@@ -18,13 +18,8 @@ public class ManagerBalanceDTO {
      * format: uuid
      */
     @NotBlank
-    String contractId;
+    String contractCode;
 
-    /**
-     * 整数合同ID，保留用于兼容性
-     */
-    @Deprecated
-    Integer contractNum;
 
     /**
      * 当前可用资金（包括持有）
@@ -37,4 +32,6 @@ public class ManagerBalanceDTO {
      */
     @NonNull
     Double consolidate;
+
+    String timestamp;
 }

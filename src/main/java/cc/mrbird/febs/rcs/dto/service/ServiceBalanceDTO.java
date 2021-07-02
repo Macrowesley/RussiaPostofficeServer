@@ -14,13 +14,7 @@ public class ServiceBalanceDTO {
      * format: uuid
      */
     @NotBlank
-    String contractId;
-
-    /**
-     * 整数合同ID，保留用于兼容性
-     */
-    @Deprecated
-    Integer contractNum;
+    String contractCode;
 
     /**
      * 当前可用资金（包括持有）
@@ -43,5 +37,5 @@ public class ServiceBalanceDTO {
     /**
      * format: 'date-time'
      */
-    String timestamp;
+    String modified;
 }

@@ -56,14 +56,14 @@ public interface IContractService extends IService<Contract> {
 
     void saveContractDto(ContractDTO contractDTO);
 
-    boolean checkIsExist(String contractId);
+    boolean checkIsExist(String contractCode);
 
-    Contract getByConractId(String contractId);
+    Contract getByConractCode(String contractCode);
 
     /**
      * 获取详情界面显示的结构体
-     * @param contractId
+     * @param contractCode
      * @return
      */
-    ContractVO getVoByConractId(String contractId);
+    ContractVO getVoByConractCode(String contractCode);
 }

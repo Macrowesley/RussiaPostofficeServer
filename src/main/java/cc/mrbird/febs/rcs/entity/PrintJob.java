@@ -25,8 +25,8 @@ public class PrintJob {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("contract_id")
-    private String contractId;
+    @TableField("contract_code")
+    private String contractCode;
 
     @TableField("foreseen_id")
     private String foreseenId;

@@ -4,9 +4,8 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.PublicKeyFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.rcs.api.ServiceInvokeManager;
+import cc.mrbird.febs.rcs.api.ServiceInvokeRussia;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
@@ -33,7 +32,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
     @Autowired
-    ServiceInvokeManager serviceInvokeManager;
+    ServiceInvokeRussia serviceInvokeRussia;
 
     @Autowired
     IPublicKeyService publicKeyService;
@@ -142,10 +141,9 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
                         publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKeyFMDTO.getPublicKey() + " -----END PUBLIC KEY-----");
                         publicKeyDTO.setRevision(dbPubliceKey.getRevision());
-                        publicKeyDTO.setAlg(dbPubliceKey.getAlg());
                         publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
 
-                        ApiResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
+                        ApiResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
 
                         if (!publickeyResponse.isOK()) {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {

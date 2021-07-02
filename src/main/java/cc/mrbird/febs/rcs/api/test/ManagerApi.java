@@ -30,8 +30,7 @@ public class ManagerApi {
             case 400:
                 ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
                 managerBalanceDTO.setBalanceId("11");
-                managerBalanceDTO.setContractId("222");
-                managerBalanceDTO.setContractNum(333);
+                managerBalanceDTO.setContractCode("222");
                 managerBalanceDTO.setCurrent(444.0D);
                 managerBalanceDTO.setConsolidate(555.0D);
                 apiResponse =  new ApiResponse(400, new OperationError(400,"操作失误111", managerBalanceDTO));
@@ -133,8 +132,7 @@ public class ManagerApi {
         log.info("manager foreseen foreseen={}", foreseenDTO.toString());
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
-        managerBalanceDTO.setContractId("222");
-        managerBalanceDTO.setContractNum(333);
+        managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
         ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
@@ -157,8 +155,7 @@ public class ManagerApi {
 
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
-        managerBalanceDTO.setContractId("222");
-        managerBalanceDTO.setContractNum(333);
+        managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
         ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
@@ -174,8 +171,7 @@ public class ManagerApi {
 
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
-        managerBalanceDTO.setContractId("222");
-        managerBalanceDTO.setContractNum(333);
+        managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
         ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
@@ -190,8 +186,7 @@ public class ManagerApi {
         log.info("manager registers registers={}", registersDTO.toString());
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
-        managerBalanceDTO.setContractId("222");
-        managerBalanceDTO.setContractNum(333);
+        managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
         ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
@@ -207,8 +202,7 @@ public class ManagerApi {
 
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
-        managerBalanceDTO.setContractId("222");
-        managerBalanceDTO.setContractNum(333);
+        managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
         ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);

@@ -120,7 +120,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             CustomerDTO customerDTO = contractDTO.getCustomer();
             Customer customer = new Customer();
             customer.setId(customerDTO.getId());
-            customer.setContractId(contract.getId());
+            customer.setContractCode(contract.getId());
             customer.setInnRu(customerDTO.getInn_ru());
             customer.setKppRu(customerDTO.getKpp_ru());
             customer.setName(customerDTO.getName());
@@ -133,7 +133,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (PostOfficeDTO postOfficeDTO : contractDTO.getPostOffices()){
     //            postOfficeService.savePostOfficeDTO(postOfficeDTO);
                 PostOfficeContract postOfficeContract = new PostOfficeContract();
-                postOfficeContract.setContractId(contract.getId());
+                postOfficeContract.setContractCode(contract.getId());
                 postOfficeContract.setPostOfficeId(postOfficeDTO.getIndex());
                 postOfficeContractList.add(postOfficeContract);
             }
@@ -146,22 +146,22 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
     @Override
-    public boolean checkIsExist(String contractId) {
+    public boolean checkIsExist(String contractCode) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
 
-        return contractMapper.selectCount(queryWrapper.eq(Contract::getId, contractId)) != 0;
+        return contractMapper.selectCount(queryWrapper.eq(Contract::getId, contractCode)) != 0;
     }
 
     @Override
-    public Contract getByConractId(String contractId) {
+    public Contract getByConractCode(String contractCode) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
-        return getOne(queryWrapper.eq(Contract::getId, contractId));
+        return getOne(queryWrapper.eq(Contract::getId, contractCode));
     }
 
     @Override
-    public ContractVO getVoByConractId(String contractId) {
-        Contract contract = getByConractId(contractId);
-        String addressContent = contractAddressService.selectStrListByConractId(contractId);
+    public ContractVO getVoByConractCode(String contractCode) {
+        Contract contract = getByConractCode(contractCode);
+        String addressContent = contractAddressService.selectStrListByConractCode(contractCode);
 
         ContractVO contractVO = new ContractVO();
         BeanUtils.copyProperties(contract, contractVO);

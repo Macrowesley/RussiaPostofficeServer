@@ -54,6 +54,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     IDeviceService deviceService;
     @Autowired
     IContractService contractService;
+    @Autowired
+    IBalanceService balanceService;
 
     @Override
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
@@ -145,7 +147,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             printJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
 
-        printJob.setContractId(foreseenDTO.getContractId());
+        printJob.setContractCode(foreseenDTO.getContractCode());
         printJob.setForeseenId(foreseenDTO.getId());
         printJob.setTransactionId("");//暂无
         printJob.setUserId(foreseenDTO.getUserId());
@@ -188,12 +190,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getTotalAmmount());
             dbContract.setConsolidate(newConsolidate);
             contractService.saveOrUpdate(dbContract);*/
-
-            Contract dbContract = new Contract();
-            dbContract.setId(balanceDTO.getContractId());
+            /*Contract dbContract = new Contract();
+            dbContract.setId(balanceDTO.getContractCode());
             dbContract.setCurrent(balanceDTO.getCurrent());
             dbContract.setConsolidate(balanceDTO.getConsolidate());
-            contractService.saveOrUpdate(dbContract);
+            contractService.saveOrUpdate(dbContract);*/
+            balanceService.saveReturnBalance(foreseenDTO.getContractCode(), balanceDTO);
         }
     }
 
@@ -214,7 +216,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
 
             //todo 修改合同的申请金额管理
-            Contract dbContract = contractService.getByConractId(dbPrintJob.getContractId());
+            Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
             Double consolidate = dbContract.getConsolidate();
 
             //foreseen的金额
@@ -301,11 +303,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             dbContract.setConsolidate(newConsolidate);
             contractService.saveOrUpdate(dbContract);*/
 
-            dbContract.setId(balanceDTO.getContractId());
+            /*dbContract.setId(balanceDTO.getContractCode());
             dbContract.setCurrent(balanceDTO.getCurrent());
             dbContract.setConsolidate(balanceDTO.getConsolidate());
 
-            contractService.saveOrUpdate(dbContract);
+            contractService.saveOrUpdate(dbContract);*/
+            balanceService.saveReturnBalance(balanceDTO.getContractCode(), balanceDTO);
         }
 
         //返回最新的contract

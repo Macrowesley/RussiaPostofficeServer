@@ -15,7 +15,7 @@ public class StatisticsDTO {
      * format: 'uuid'
      * example: 163
      */
-    String contractId;
+    String contractCode;
 
     @Deprecated
     int contractNum;

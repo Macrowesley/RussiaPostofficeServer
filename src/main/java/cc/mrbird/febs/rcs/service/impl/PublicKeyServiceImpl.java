@@ -102,7 +102,6 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setPublicKey("");
             publicKey.setPrivateKey("");
             publicKey.setRevision(revision);
-            publicKey.setAlg("");
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));
             publicKey.setFlow(FlowEnum.FlowIng.getCode());
             publicKey.setFlowDetail(FlowDetailEnum.PublicKeyBegin.getCode());

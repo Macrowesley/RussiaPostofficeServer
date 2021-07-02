@@ -57,7 +57,7 @@ public class DeviceDTO {
      * example:
      * 'STATUS'
      */
-    EventEnum eventEnum;
+    EventEnum event;
 
     FMError error;
 }

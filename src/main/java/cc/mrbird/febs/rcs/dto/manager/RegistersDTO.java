@@ -15,7 +15,7 @@ public class RegistersDTO {
      * format: uuid
      * example: 163
      */
-    String contractId;
+    String contractCode;
 
     @Deprecated
     Integer contractNum;

@@ -27,18 +27,12 @@ public class Balance {
     /**
      * 合同id
      */
-    @TableField("contract_id")
-    private String contractId;
-
-    /**
-     * 合同号
-     */
-    @TableField("contract_num")
-    private Integer contractNum;
+    @TableField("contract_code")
+    private String contractCode;
 
 
     /**
-     * 【待定】当前可用资金
+     *
      */
     @TableField("contract_current")
     private Double current;
@@ -51,13 +45,13 @@ public class Balance {
 
 
     /**
-     * 【待定】
+     *
      */
     @TableField("operation_id")
     private String operationId;
 
     /**
-     * 1 从机器发往俄罗斯服务器的数据  2 从俄罗斯服务器返回的数据
+     * 1 服务器发送给俄罗斯，俄罗斯返回的信息  2 俄罗斯发给服务器的数据
      */
     @TableField("from_type")
     private Integer fromType;
@@ -70,9 +64,9 @@ public class Balance {
     private Date createdTime;
 
     /**
-     * 更新时间
+     * 俄罗斯发来的时间 timestamp 和 modified
      */
     @TableField("updated_time")
-    private Date updatedTime;
+    private Date russiaTime;
 
 }

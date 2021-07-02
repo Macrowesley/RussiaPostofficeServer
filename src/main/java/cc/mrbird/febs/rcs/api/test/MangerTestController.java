@@ -2,10 +2,9 @@ package cc.mrbird.febs.rcs.api.test;
 
 
 import cc.mrbird.febs.common.utils.AESUtils;
-import cc.mrbird.febs.rcs.api.ServiceInvokeManager;
+import cc.mrbird.febs.rcs.api.ServiceInvokeRussia;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
-import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.PublicKeyGenerate;
 import cc.mrbird.febs.rcs.dto.manager.*;
@@ -25,12 +24,10 @@ import java.util.Date;
 @RequestMapping("/test/managerTest")
 public class MangerTestController {
     @Autowired
-    ServiceInvokeManager serviceInvokeManager;
+    ServiceInvokeRussia serviceInvokeRussia;
 
     String frankMachineId = "FM100002";
-//    String contractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
-    String contractId = "190eac0d-844c-11e5-90db-2c59e5453bd0";
-    int contractNumber = 0;
+    String contractCode = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     String userId = "11a8005e-6d6a-499d-9fca-82aa69103f90";
     String taxVersion = "2.3.3";
     String postOffice = "994700";
@@ -66,11 +63,11 @@ public class MangerTestController {
         bean.setStatus(FMStatusEnum.ENABLED);
         bean.setPostOffice(postOffice);
         bean.setTaxVersion(taxVersion);
-        bean.setEventEnum(EventEnum.STATUS);
+        bean.setEvent(EventEnum.STATUS);
 
         log.info("frankMachines = {}", JSON.toJSONString(bean));
 
-        ApiResponse apiResponse = serviceInvokeManager.frankMachines(bean);
+        ApiResponse apiResponse = serviceInvokeRussia.frankMachines(bean);
         log.info("从manager服务器得到的数据{}", apiResponse.toString());
         /*switch (ResultEnum.getByCode(apiResponse.getCode())) {
             case SUCCESS:
@@ -107,7 +104,7 @@ public class MangerTestController {
 
         log.info("auth = {}", JSON.toJSONString(bean));
 
-        ApiResponse apiResponse = serviceInvokeManager.auth(frankMachineId, bean);
+        ApiResponse apiResponse = serviceInvokeRussia.auth(frankMachineId, bean);
         log.info("测试结束：object = " + apiResponse.getObject());
     }
 
@@ -124,10 +121,10 @@ public class MangerTestController {
         bean.setStatus(FMStatusEnum.UNAUTHORIZED);
         bean.setPostOffice(postOffice);
         bean.setTaxVersion(taxVersion);
-        bean.setEventEnum(EventEnum.STATUS);
+        bean.setEvent(EventEnum.STATUS);
 
         log.info("unauth = {}", JSON.toJSONString(bean));
-        ApiResponse  apiResponse = serviceInvokeManager.unauth(frankMachineId, bean);
+        ApiResponse  apiResponse = serviceInvokeRussia.unauth(frankMachineId, bean);
         log.info("测试结束：object = " + apiResponse.getObject());
     }
 
@@ -145,10 +142,10 @@ public class MangerTestController {
         bean.setStatus(FMStatusEnum.LOST);
         bean.setPostOffice(postOffice);
         bean.setTaxVersion(taxVersion);
-        bean.setEventEnum(EventEnum.STATUS);
+        bean.setEvent(EventEnum.STATUS);
 
         log.info("lost = {}", JSON.toJSONString(bean));
-        ApiResponse apiResponse = serviceInvokeManager.lost(frankMachineId, bean);
+        ApiResponse apiResponse = serviceInvokeRussia.lost(frankMachineId, bean);
         log.info("测试结束：object = " + apiResponse.getObject());
     }
 
@@ -169,7 +166,7 @@ public class MangerTestController {
         int expire = 365*3;
         publicKeyDTO.setExpireDate(DateKit.createRussiatime(DateKit.offsetDayDate(expire)));
         log.info("publicKeyDTO = {}", JSON.toJSONString(publicKeyDTO));
-        ApiResponse apiResponse = serviceInvokeManager.publicKey(frankMachineId, publicKeyDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 
@@ -186,8 +183,9 @@ public class MangerTestController {
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
+        rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         log.info("rateTableFeedbackDTO = {}", JSON.toJSONString(rateTableFeedbackDTO));
-        ApiResponse apiResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
         if (apiResponse != null) {
             log.info("测试结束：object = " + apiResponse.getObject().toString());
@@ -225,8 +223,7 @@ public class MangerTestController {
         foreseenDTO.setId(foreseenId);
         foreseenDTO.setPostOffice(postOffice);
         foreseenDTO.setUserId(userId);
-        foreseenDTO.setContractId(contractId);
-        foreseenDTO.setContractNum(contractNumber);
+        foreseenDTO.setContractCode(contractCode);
         foreseenDTO.setTotalCount(totalCount);
 //        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct});
@@ -237,7 +234,7 @@ public class MangerTestController {
         log.info("foreseenId = {}", foreseenId);
         log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
 
-        ApiResponse apiResponse = serviceInvokeManager.foreseens(foreseenDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.foreseens(foreseenDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 
@@ -250,7 +247,7 @@ public class MangerTestController {
 
         ForeseenCancel foreseenCancel = new ForeseenCancel("cancel job");
         log.info("foreseenCancel = {} foreseenId = {}", JSON.toJSONString(foreseenCancel), foreseenId);
-        ApiResponse apiResponse = serviceInvokeManager.cancel(foreseenId, contractId, foreseenCancel);
+        ApiResponse apiResponse = serviceInvokeRussia.cancel(foreseenId, contractCode, foreseenCancel);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
 
     }
@@ -301,8 +298,7 @@ public class MangerTestController {
         transactionDTO.setForeseenId(foreseenId);
         transactionDTO.setPostOffice(postOffice);
         transactionDTO.setFrankMachineId(frankMachineId);
-        transactionDTO.setContractId(contractId);
-        transactionDTO.setContractNum(contractNumber);
+        transactionDTO.setContractCode(contractCode);
         transactionDTO.setStartDateTime(DateKit.createRussiatime(new Date()));
         transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
         transactionDTO.setUserId(userId);
@@ -318,7 +314,7 @@ public class MangerTestController {
 //        transactionDTO.setFranks(new FrankDTO[]{frank});
         log.info("transaction = {}", JSON.toJSONString(transactionDTO));
 
-        ApiResponse apiResponse = serviceInvokeManager.transactions(transactionDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.transactions(transactionDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 
@@ -332,7 +328,7 @@ public class MangerTestController {
 
         RegistersDTO registersDTO = new RegistersDTO();
         registersDTO.setId("registers ID");
-        registersDTO.setContractId("");
+        registersDTO.setContractCode("");
         registersDTO.setContractNum(0);
         registersDTO.setPostofficeIndex("");
         registersDTO.setFrankMachineId("");
@@ -343,7 +339,7 @@ public class MangerTestController {
         registersDTO.setType("");
 
 
-        ApiResponse apiResponse = serviceInvokeManager.refills(registersDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.refills(registersDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 
@@ -378,7 +374,7 @@ public class MangerTestController {
 
         StatisticsDTO statisticsDTO = new StatisticsDTO();
         statisticsDTO.setId("statistics ID");
-        statisticsDTO.setContractId("");
+        statisticsDTO.setContractCode("");
         statisticsDTO.setContractNum(0);
         statisticsDTO.setPostOffice("");
         statisticsDTO.setFrankMachineId("");
@@ -391,7 +387,7 @@ public class MangerTestController {
         statisticsDTO.setFranks(new FrankDTO[]{frank,frank2});
 
 
-        ApiResponse apiResponse = serviceInvokeManager.stats(statisticsDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.stats(statisticsDTO);
         log.info("测试结束：object = " + apiResponse.getObject().toString());
     }
 

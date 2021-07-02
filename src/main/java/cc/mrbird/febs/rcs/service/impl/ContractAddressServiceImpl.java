@@ -4,15 +4,12 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.dto.AddressDTO;
-import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.dto.service.ContractAddressDTO;
 import cc.mrbird.febs.rcs.entity.ContractAddress;
 import cc.mrbird.febs.rcs.mapper.ContractAddressMapper;
 import cc.mrbird.febs.rcs.service.IContractAddressService;
 import cc.mrbird.febs.rcs.service.IContractService;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
@@ -90,36 +86,36 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteByContractId(String contractId) {
+    public void deleteByContractCode(String contractCode) {
         LambdaQueryWrapper<ContractAddress> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ContractAddress::getContractId, contractId);
+        wrapper.eq(ContractAddress::getContractCode, contractCode);
         this.remove(wrapper);
     }
 
 
     @Override
-    public List<ContractAddress> selectListByConractId(String contractId) {
+    public List<ContractAddress> selectListByConractCode(String contractCode) {
         LambdaQueryWrapper<ContractAddress> queryWrapper = new LambdaQueryWrapper<>();
-        return this.baseMapper.selectList(queryWrapper.eq(ContractAddress::getContractId, contractId));
+        return this.baseMapper.selectList(queryWrapper.eq(ContractAddress::getContractCode, contractCode));
     }
 
     @Override
-    public boolean checkIsExist(String contractId) {
+    public boolean checkIsExist(String contractCode) {
         LambdaQueryWrapper<ContractAddress> queryWrapper = new LambdaQueryWrapper<>();
-        return this.baseMapper.selectCount(queryWrapper.eq(ContractAddress::getContractId, contractId)) > 0;
+        return this.baseMapper.selectCount(queryWrapper.eq(ContractAddress::getContractCode, contractCode)) > 0;
     }
 
     @Override
-    public AddressDTO[] selectArrayByConractId(String contractId) {
-        return selectListByConractId(contractId).stream().map(contractAddress -> {
+    public AddressDTO[] selectArrayByConractCode(String contractCode) {
+        return selectListByConractCode(contractCode).stream().map(contractAddress -> {
             return new AddressDTO(contractAddress.getAddress());
         }).collect(Collectors.toList()).stream().toArray(AddressDTO[]::new);
     }
 
     @Override
-    public String selectStrListByConractId(String contractId) {
+    public String selectStrListByConractCode(String contractCode) {
         StringBuilder stringBuilder = new StringBuilder();
-        selectListByConractId(contractId).stream().forEach(contractAddress -> {
+        selectListByConractCode(contractCode).stream().forEach(contractAddress -> {
             stringBuilder.append(contractAddress.getAddress() + ", ");
         });
         return stringBuilder.subSequence(0,stringBuilder.length()-2).toString();
@@ -128,16 +124,16 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     /**
      * 批量添加地址
      * @param addressList
-     * @param contractId
+     * @param contractCode
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveAddressList(List<String> addressList, String contractId) {
+    public void saveAddressList(List<String> addressList, String contractCode) {
         List<ContractAddress> list = new ArrayList<>();
         addressList.forEach(item ->{
             if (item.length() > 10) {
                 ContractAddress bean = new ContractAddress();
-                bean.setContractId(contractId);
+                bean.setContractCode(contractCode);
                 bean.setAddress(item);
                 bean.setCreatedTime(new Date());
                 list.add(bean);
@@ -157,11 +153,11 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     public FebsResponse addAddressList(ContractAddressDTO contractAddressDTO) {
         try {
             String frankMachineId = contractAddressDTO.getFMid();
-            String contractId = contractAddressDTO.getContractId();
+            String contractCode = contractAddressDTO.getContractCode();
             String addressListStr = contractAddressDTO.getAddressList().trim();
             String split = ";";
 
-            if (StringUtils.isEmpty(frankMachineId) || StringUtils.isEmpty(contractId) ||StringUtils.isEmpty(addressListStr) ){
+            if (StringUtils.isEmpty(frankMachineId) || StringUtils.isEmpty(contractCode) ||StringUtils.isEmpty(addressListStr) ){
                 throw new Exception("不能为空");
             }
 
@@ -170,8 +166,8 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
                 throw new Exception("多个地址必须通过分隔符"+split+"分隔开");
             }
 
-            if (!contractService.checkIsExist(contractId)){
-                throw new Exception("contractId: "+frankMachineId+" 不存在");
+            if (!contractService.checkIsExist(contractCode)){
+                throw new Exception("ContractCode: "+contractCode+" 不存在");
             }
 
             if (!deviceService.checkByFmId(frankMachineId)){
@@ -179,14 +175,14 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
             }
 
             //删除旧数据
-            if (checkIsExist(contractId)){
-                deleteByContractId(contractId);
+            if (checkIsExist(contractCode)){
+                deleteByContractCode(contractCode);
             }
             //分隔数据
             List<String> addressList = Arrays.asList(addressListStr.split(split));
 
             //保存数据
-            saveAddressList(addressList,contractId);
+            saveAddressList(addressList,contractCode);
 
             return new FebsResponse().success();
         }catch (Exception e){

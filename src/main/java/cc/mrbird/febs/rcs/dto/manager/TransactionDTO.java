@@ -22,12 +22,10 @@ public class TransactionDTO {
     String frankMachineId;
 
     /**
-     * format: uuid
+     * 8位数字
      */
-    String contractId;
+    String contractCode;
 
-    @Deprecated
-    Integer contractNum;
 
     /**
      * format: 'date-time'

@@ -6,7 +6,6 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.EventEnum;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
@@ -16,7 +15,6 @@ import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -125,7 +123,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     deviceDto.setStatus(status);
                     deviceDto.setPostOffice(postOffice);
                     deviceDto.setTaxVersion(taxVersion);
-                    deviceDto.setEventEnum(event);
+                    deviceDto.setEvent(event);
                     deviceDto.setDateTime(DateKit.createRussiatime());
 
                     //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果

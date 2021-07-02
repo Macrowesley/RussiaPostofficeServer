@@ -39,7 +39,7 @@ public class ServiceManageCenter {
     int waitTime = 1;
 
     @Autowired
-    ServiceInvokeManager serviceInvokeManager;
+    ServiceInvokeRussia serviceInvokeRussia;
 
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
@@ -92,7 +92,7 @@ public class ServiceManageCenter {
 */
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse apiResponse = serviceInvokeManager.frankMachines(deviceDTO);
+        ApiResponse apiResponse = serviceInvokeRussia.frankMachines(deviceDTO);
 
         if (!apiResponse.isOK()) {
             if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -178,7 +178,7 @@ public class ServiceManageCenter {
         //访问俄罗斯服务器，请求授权
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
-            ApiResponse authResponse = serviceInvokeManager.auth(frankMachineId, deviceDTO);
+            ApiResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
 
             if (!authResponse.isOK()) {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -235,7 +235,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthError) {
-            ApiResponse unauthResponse = serviceInvokeManager.unauth(deviceDTO.getId(), deviceDTO);
+            ApiResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -285,7 +285,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostError || curFlowDetail == FlowDetailEnum.LostEndFail) {
-            ApiResponse unauthResponse = serviceInvokeManager.lost(deviceDTO.getId(), deviceDTO);
+            ApiResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -333,7 +333,8 @@ public class ServiceManageCenter {
         rateTableFeedbackDTO.setTaxVersion(dbDevice.getTaxVersion());
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
-        ApiResponse changeTaxVersionResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
+        rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
+        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -392,7 +393,8 @@ public class ServiceManageCenter {
         rateTableFeedbackDTO.setTaxVersion(deviceDTO.getTaxVersion());
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
-        ApiResponse changeTaxVersionResponse = serviceInvokeManager.rateTables(rateTableFeedbackDTO);
+        rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
+        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -449,8 +451,8 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "私钥没有更新");
         }
 
-        log.info("foreseenFMDTO.getContractId() = {}", foreseenFMDTO.getContractId());
-        Contract dbContract = contractService.getByConractId(foreseenFMDTO.getContractId());
+        log.info("foreseenFMDTO.getContractCode() = {}", foreseenFMDTO.getContractCode());
+        Contract dbContract = contractService.getByConractCode(foreseenFMDTO.getContractCode());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
         Integer dbEnable = dbContract.getEnable();
@@ -473,10 +475,10 @@ public class ServiceManageCenter {
         foreseenDTO.setTotalAmmount(fmTotalAmount);
 
         //处理UserId
-        String userId = getUserIdByContractId(foreseenDTO.getContractId());
+        String userId = getUserIdByContractCode(foreseenDTO.getContractCode());
         foreseenDTO.setUserId(userId);
 
-        ApiResponse foreseensResponse = serviceInvokeManager.foreseens(foreseenDTO);
+        ApiResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -495,8 +497,8 @@ public class ServiceManageCenter {
         log.info("foreseens 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
 
         //正常接收俄罗斯返回，更新数据库
-        if (!foreseenDTO.getContractId().equals(balanceDTO.getContractId())) {
-            throw new FmException(FMResultEnum.contractIdAbnormal.getCode(), "contractId应该是" + foreseenDTO.getContractId() + "，但是俄罗斯返回的是：" + balanceDTO.getContractId());
+        if (!foreseenDTO.getContractCode().equals(balanceDTO.getContractCode())) {
+            throw new FmException(FMResultEnum.contractCodeAbnormal.getCode(), "ContractCode应该是" + foreseenDTO.getContractCode() + "，但是俄罗斯返回的是：" + balanceDTO.getContractCode());
         }
         printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess,balanceDTO);
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
@@ -531,7 +533,7 @@ public class ServiceManageCenter {
         }
 
         //判断合同状态是否可用
-        Contract dbContract = contractService.getByConractId(transactionFMDTO.getContractId());
+        Contract dbContract = contractService.getByConractCode(transactionFMDTO.getContractCode());
         Integer dbEnable = dbContract.getEnable();
         if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
             throw new FmException("transactions 订单状态不可用，当前订单的状态为：" + dbEnable);
@@ -560,10 +562,10 @@ public class ServiceManageCenter {
         transactionDTO.setCreditVal(fmCreditVal);
 
         //处理UserId
-        String userId = getUserIdByContractId(transactionDTO.getContractId());
+        String userId = getUserIdByContractCode(transactionDTO.getContractCode());
         transactionDTO.setUserId(userId);
 
-        ApiResponse transactionsResponse = serviceInvokeManager.transactions(transactionDTO);
+        ApiResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
             if (transactionsResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -581,8 +583,8 @@ public class ServiceManageCenter {
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
         log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
         //正常接收俄罗斯返回，更新数据库
-        if (!transactionDTO.getContractId().equals(balanceDTO.getContractId())) {
-            throw new FmException(FMResultEnum.contractIdAbnormal.getCode(), "contractId应该是" + transactionDTO.getContractId() + "，但是俄罗斯返回的是：" + balanceDTO.getContractId());
+        if (!transactionDTO.getContractCode().equals(balanceDTO.getContractCode())) {
+            throw new FmException(FMResultEnum.contractCodeAbnormal.getCode(), "ContractCode应该是" + transactionDTO.getContractCode() + "，但是俄罗斯返回的是：" + balanceDTO.getContractCode());
         }
 
         Contract curContract = printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobEndSuccess, balanceDTO);
@@ -621,7 +623,7 @@ public class ServiceManageCenter {
         }
 
         //判断合同状态是否可用
-        Contract dbContract = contractService.getByConractId(dbPrintJob.getContractId());
+        Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
         Integer dbEnable = dbContract.getEnable();
         if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
             throw new FmException("订单状态不可用，当前订单的状态为：" + dbEnable);
@@ -629,7 +631,7 @@ public class ServiceManageCenter {
 
 
         //给俄罗斯发消息
-        ApiResponse cancelResponse = serviceInvokeManager.cancel(foreseenId,  cancelJobFMDTO.getContractId(), new ForeseenCancel(cancelMessage));
+        ApiResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
         if (!cancelResponse.isOK()) {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -651,10 +653,10 @@ public class ServiceManageCenter {
 
     /**
      * 获取客户id
-     * @param contractId
+     * @param contractCode
      * @return
      */
-    private String getUserIdByContractId(String contractId) {
-        return customerService.getUserIdByContractId(contractId);
+    private String getUserIdByContractCode(String contractCode) {
+        return customerService.getUserIdByContractCode(contractCode);
     }
 }

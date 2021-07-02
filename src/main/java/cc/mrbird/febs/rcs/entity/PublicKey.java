@@ -65,9 +65,6 @@ public class PublicKey {
     @TableField("revision")
     private Integer revision;
 
-    @TableField("alg")
-    private String alg;
-
 
     /**
      * 获取返回给机器的publickey信息

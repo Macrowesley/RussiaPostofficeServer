@@ -55,17 +55,17 @@ public interface IContractAddressService extends IService<ContractAddress> {
      */
     void deleteContractAddress(ContractAddress contractAddress);
 
-    void deleteByContractId(String contractId);
+    void deleteByContractCode(String contractCode);
 
-    List<ContractAddress> selectListByConractId(String contractId);
+    List<ContractAddress> selectListByConractCode(String contractCode);
 
-    boolean checkIsExist(String contractId);
+    boolean checkIsExist(String contractCode);
 
-    AddressDTO[] selectArrayByConractId(String contractId);
+    AddressDTO[] selectArrayByConractCode(String contractCode);
 
-    String selectStrListByConractId(String contractId);
+    String selectStrListByConractCode(String contractCode);
 
-    void saveAddressList(List<String> addressList, String contractId);
+    void saveAddressList(List<String> addressList, String contractCode);
 
     /**
      * 保存页面添加的地址列表
