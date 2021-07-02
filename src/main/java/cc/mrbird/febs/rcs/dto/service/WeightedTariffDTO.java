@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class WeigthDTO {
+public class WeightedTariffDTO {
     int from;
     int to;
     double value;

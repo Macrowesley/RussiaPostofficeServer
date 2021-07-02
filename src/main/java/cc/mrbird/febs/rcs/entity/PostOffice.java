@@ -38,22 +38,11 @@ public class PostOffice {
     private String id;
 
     /**
-     * 合法地址【待定:长度】
-     */
-    @TableField("legal_address")
-    private String legalAddress;
-
-    /**
      * 邮局名
      */
     @TableField("name")
     private String name;
 
-    /**
-     * 公司地址【待定:长度】
-     */
-    @TableField("office_address")
-    private String officeAddress;
 
     /**
      * 【待定】关税区
@@ -72,5 +61,9 @@ public class PostOffice {
      */
     @TableField("updated_time")
     private Date updatedTime;
+
+    @TableField("modified")
+    private Date modified;
+
 
 }

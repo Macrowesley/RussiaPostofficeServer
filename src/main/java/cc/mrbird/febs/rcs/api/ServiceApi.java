@@ -178,16 +178,16 @@ public class ServiceApi {
 
     /**
      * 合同余额的同步
-     * @param contractId
+     * @param code
      * @param serviceBalanceDTO
      * @return
      */
-    @PutMapping("/contracts/{contractId}/balance")
+    @PutMapping("/contracts/{code}/balance")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
-    public ApiResponse balance(@PathVariable @NotNull String contractId , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
+    public ApiResponse balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
         log.info("【俄罗斯调用服务器api 开始 balance】");
-        log.info("contractId={}, serviceBalanceDTO={}",contractId, serviceBalanceDTO.toString());
-        balanceService.saveBalance(contractId, serviceBalanceDTO);
+        log.info("code={}, serviceBalanceDTO={}",code, serviceBalanceDTO.toString());
+        balanceService.saveBalance(code, serviceBalanceDTO);
         log.info("【俄罗斯调用服务器api 结束 balance】");
         return new ApiResponse(200, "ok");
     }

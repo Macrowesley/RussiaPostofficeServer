@@ -6,8 +6,9 @@ import lombok.ToString;
 @Data
 @ToString
 public class TariffDTO {
+    //FIXED, WEIGHT
     String type;
-    WeigthDTO[] weigth;
-    IncrementDTO increment;
     Double fixedValue;
+    WeightedTariffDTO[] weigth;
+    WeightIncrementDTO increment;
 }

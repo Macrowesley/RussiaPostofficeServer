@@ -15,11 +15,9 @@ public class PostOfficeDTO {
 
     String city;
 
-    String legalAddress;
-
-    String officeAddress;
-
     int timeZone;
 
     int tariffZone;
+
+    String modified;
 }

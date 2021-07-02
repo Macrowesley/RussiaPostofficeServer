@@ -14,6 +14,7 @@ import java.util.Date;
  * @author mrbird
  * @date 2021-04-17 14:45:27
  */
+@Deprecated
 @Data
 @TableName("rcs_registers")
 public class Registers {

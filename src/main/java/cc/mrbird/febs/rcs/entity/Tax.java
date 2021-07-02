@@ -32,18 +32,14 @@ public class Tax {
     private String description;
 
 
-
-    /**
-     * 【待定：长度，含义，来源】
-     */
-    @TableField("rcsVersions")
-    private String rcsversions;
-
     /**
      * 版本信息
      */
     @TableField("version")
     private String version;
+
+    @TableField("source")
+    private String source;
 
     @TableField("save_path")
     private String savePath;
@@ -57,8 +53,8 @@ public class Tax {
     /**
      * 【待定】
      */
-    @TableField("change_date")
-    private Date changeDate;
+    @TableField("modified")
+    private Date modified;
 
     /**
      * 创建时间

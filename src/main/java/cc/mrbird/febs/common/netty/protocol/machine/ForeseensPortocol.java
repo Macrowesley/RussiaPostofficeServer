@@ -189,12 +189,12 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
          */
 
         ForeseensResultDTO foreseensResultDTO = new ForeseensResultDTO();
-        foreseensResultDTO.setContractCode(contract.getId());
+        foreseensResultDTO.setContractCode(contract.getCode());
         foreseensResultDTO.setForeseenId(foreseenId);
         foreseensResultDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(contract.getConsolidate())));
         foreseensResultDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(contract.getCurrent())));
 
-        foreseensResultDTO.setAddressList(foreseensPortocol.contractAddressService.selectArrayByConractCode(contract.getId()));
+        foreseensResultDTO.setAddressList(foreseensPortocol.contractAddressService.selectArrayByConractCode(contract.getCode()));
 
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + JSON.toJSONString(foreseensResultDTO);
         String tempKey = foreseensPortocol.tempKeyUtils.getTempKey(ctx);

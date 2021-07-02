@@ -17,74 +17,47 @@ import java.util.Date;
 @Data
 @TableName("rcs_postal_product")
 public class PostalProduct {
+    @TableId(value = "code")
+    String code;
 
-    /**
-     * 【待定】
-     */
-    @TableId(value = "id")
-    private String id;
+    @TableField(value = "name")
+    String name;
 
-    /**
-     * 【待定】
-     */
-    @TableField("name")
-    private String name;
+    @TableField(value = "mail_type")
+    Integer mailType;
 
-    /**
-     * 【待定】
-     */
-    @TableField("code")
-    private String code;
+    @TableField(value = "mail_ctg")
+    Integer mailCtg;
 
+    @TableField(value = "max_weight")
+    Integer maxWeight;
 
-    /**
-     * 转发区域； 1-内部，2-外部
-     */
-    @TableField("region_type")
-    private Integer regionType;
+    @TableField(value = "trans_type")
+    //SURFACE, AIR, ANY
+    String transType;
 
-    /**
-     * 关税区（值1-5）
-     */
-    @TableField("zone_code")
-    private Integer zoneCode;
+    @TableField(value = "region_type")
+    String regionType;
 
-    /**
-     * 偏远地区； 1-长达2000公里，2-超过2000公里
-     */
-    @TableField("distance_type")
-    private Integer distanceType;
+    @TableField(value = "region_zone")
+    Integer regionZone;
 
+    //AFTER_2000, UP_2000
+    @TableField(value = "distance_type")
+    String distanceType;
 
-    /**
-     * 邮政物品的最大重量
-     */
-    @TableField("max_weight")
-    private Integer maxWeight;
+    @TableField(value = "contract_name")
+    String contractName;
 
+    @TableField(value = "numdiff")
+    Integer numdiff;
 
-    /**
-     * 邮件类别的名称
-     #*简单-0
-     #*定制-1
-     #*申报价值-2
-     */
-    @TableField("mail_ctg")
-    private Integer mailCtg;
+    @TableField(value = "label_ru")
+    String labelRu;
 
+    @TableField(value = "is_postal_market_only")
+    String isPostalMarketOnly;
 
-    /**
-     * 邮件类型代码  2-字母  3-包裹邮寄
-     */
-    @TableField("mail_type")
-    private Integer mailType;
-
-
-    /**
-     * 运输方向  1-内部（RTM-2）;  2-外向国际（RTM-2）;
-     */
-    @TableField("directctg")
-    private Integer directctg;
 
     //和PostalProductDTO不同的参数
     /**
@@ -104,6 +77,9 @@ public class PostalProduct {
      */
     @TableField("updated_time")
     private Date updatedTime;
+
+    @TableField("modified")
+    private Date modified;
 
 
 

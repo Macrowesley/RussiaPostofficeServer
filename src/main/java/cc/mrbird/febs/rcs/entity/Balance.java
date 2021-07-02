@@ -66,7 +66,7 @@ public class Balance {
     /**
      * 俄罗斯发来的时间 timestamp 和 modified
      */
-    @TableField("updated_time")
+    @TableField("russia_time")
     private Date russiaTime;
 
 }

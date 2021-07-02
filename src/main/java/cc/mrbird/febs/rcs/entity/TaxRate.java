@@ -13,6 +13,7 @@ import lombok.Data;
  * @author mrbird
  * @date 2021-04-17 14:45:55
  */
+@Deprecated
 @Data
 @TableName("rcs_tax_rate")
 public class TaxRate {

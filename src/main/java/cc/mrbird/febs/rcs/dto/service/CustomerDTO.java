@@ -13,7 +13,13 @@ public class CustomerDTO {
 
     String name;
 
-    String inn_ru;
+    String innRu;
 
-    String kpp_ru;
+    String kppRu;
+
+    String legalAddress;
+
+    String officeAddress;
+
+    String modified;
 }

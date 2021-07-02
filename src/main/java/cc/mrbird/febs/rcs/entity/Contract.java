@@ -24,15 +24,15 @@ public class Contract {
     /**
      *
      */
-    @TableId(value = "id")
-    private String id;
+    @TableId(value = "code")
+    private String code;
 
 
     /**
      * 合同号的数字，废弃
      */
-    @TableField("num")
-    private String num;
+    @TableField("name")
+    private String name;
 
     /**
      * 【待定】0 不可用 1 可用
@@ -64,5 +64,8 @@ public class Contract {
      */
     @TableField("updated_time")
     private Date updatedTime;
+
+    @TableField("modified")
+    private Date modified;
 
 }

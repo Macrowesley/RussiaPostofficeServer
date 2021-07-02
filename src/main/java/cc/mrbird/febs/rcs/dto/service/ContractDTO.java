@@ -7,15 +7,17 @@ import lombok.ToString;
 @ToString
 public class ContractDTO {
     /**
-     * format: uuid
+     * 8位数字
      */
-    String id;
+    String code;
 
-    String num;
+    String name;
 
     boolean enable;
 
     CustomerDTO customer;
 
     PostOfficeDTO[] postOffices;
+
+    String modified;
 }

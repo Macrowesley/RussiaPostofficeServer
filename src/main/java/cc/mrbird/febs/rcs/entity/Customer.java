@@ -27,11 +27,6 @@ public class Customer {
     @TableField("contract_code")
     private String contractCode;
 
-    /**
-     * 创建时间
-     */
-    @TableField("created_time")
-    private Date createdTime;
 
 
 
@@ -53,10 +48,24 @@ public class Customer {
     @TableField("name")
     private String name;
 
+    @TableField("legal_address")
+    String legalAddress;
+
+    @TableField("office_address")
+    String officeAddress;
+
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
+
     /**
      * 更新时间
      */
     @TableField("updated_time")
     private Date updatedTime;
 
+    @TableField("modified")
+    private Date modified;
 }

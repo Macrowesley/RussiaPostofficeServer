@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.mapper.PostOfficeMapper;
@@ -79,6 +80,7 @@ public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOff
 
             postOffice.setCreatedTime(new Date());
             postOffice.setId(postOfficeDTO.getIndex());
+            postOffice.setModified(DateKit.parseRussiatime(postOfficeDTO.getModified()));
             postOffice.setUpdatedTime(new Date());
 
             this.saveOrUpdate(postOffice);

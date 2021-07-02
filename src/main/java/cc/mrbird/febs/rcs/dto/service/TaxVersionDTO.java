@@ -8,10 +8,11 @@ import lombok.ToString;
 public class TaxVersionDTO {
     String version;
 
-    /**
-     * format: 'date-time'
-     */
-    String createDate;
+    String description;
+
+    String source;
+
+    RateDetailDTO[] details;
 
     /**
      * format: 'date-time'
@@ -26,9 +27,12 @@ public class TaxVersionDTO {
     /**
      * format: 'date-time'
      */
-    String changeDate;
+    String modified;
 
-    String description;
+    /**
+     * format: 'date-time'
+     */
+//    String createDate;
 
-    PostalProductDTO[] products;
+
 }
