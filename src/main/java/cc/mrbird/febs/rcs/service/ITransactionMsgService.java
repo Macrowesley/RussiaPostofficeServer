@@ -21,7 +21,7 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param transactionMsg transactionMsg
      * @return IPage<TransactionMsg>
      */
-    IPage<TransactionMsg> findTransactions(QueryRequest request, TransactionMsg transactionMsg);
+    IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg);
 
     /**
      * 查询（所有）
@@ -29,26 +29,26 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param transactionMsg transactionMsg
      * @return List<TransactionMsg>
      */
-    List<TransactionMsg> findTransactions(TransactionMsg transactionMsg);
+    List<TransactionMsg> findTransactionMsgs(TransactionMsg transactionMsg);
 
     /**
      * 新增
      *
      * @param transactionMsg transactionMsg
      */
-    void createTransaction(TransactionMsg transactionMsg);
+    void createTransactionMsg(TransactionMsg transactionMsg);
 
     /**
      * 修改
      *
      * @param transactionMsg transactionMsg
      */
-    void updateTransaction(TransactionMsg transactionMsg);
+    void updateTransactionMsg(TransactionMsg transactionMsg);
 
     /**
      * 删除
      *
      * @param transactionMsg transactionMsg
      */
-    void deleteTransaction(TransactionMsg transactionMsg);
+    void deleteTransactionMsg(TransactionMsg transactionMsg);
 }

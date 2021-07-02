@@ -2,13 +2,15 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
-import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
+import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
+import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
@@ -48,8 +50,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     IForeseenProductService foreseenProductService;
     @Autowired
     ITransactionService transactionService;
-    @Autowired
-    IFrankService frankService;
     @Autowired
     IDeviceService deviceService;
     @Autowired
@@ -266,8 +266,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         transaction.setTransactionStatus(1);
         transactionService.createTransaction(transaction);
 
-        //添加frank
-        List<Frank> frankList = new ArrayList<>();
+        //废弃，不批量保存了
+        // 添加frank
+        /*List<Frank> frankList = new ArrayList<>();
         for (FrankDTO frankDTO : transactionDTO.getFranks()) {
             Frank frank = new Frank();
             frank.setDmMessage(frankDTO.getDmMessage());
@@ -277,7 +278,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             frank.setCreatedTime(new Date());
             frankList.add(frank);
         }
-        frankService.saveBatch(frankList);
+        transactionMsgService.saveBatch(frankList);*/
 
         //如果一切OK，更新contract的实际消耗金额 todo 确定金额是哪个减哪个
         //todo 修改合同的申请金额管理 实际申请金额 和实际使用金额一致，然后更新申请金额

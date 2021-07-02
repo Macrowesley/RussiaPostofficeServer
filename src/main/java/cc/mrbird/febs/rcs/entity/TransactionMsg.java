@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @TableName("rcs_transaction_msg")
 public class TransactionMsg {
@@ -24,4 +26,10 @@ public class TransactionMsg {
 
     @TableField("amount")
     private Double amount;
+
+    @TableField("dm_msg")
+    private String dmMsg;
+
+    @TableField("created_time")
+    private Date createdTime;
 }

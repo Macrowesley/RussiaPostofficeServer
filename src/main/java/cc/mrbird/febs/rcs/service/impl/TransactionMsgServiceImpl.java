@@ -1,9 +1,9 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.entity.Frank;
-import cc.mrbird.febs.rcs.mapper.FrankMapper;
-import cc.mrbird.febs.rcs.service.IFrankService;
+import cc.mrbird.febs.rcs.entity.TransactionMsg;
+import cc.mrbird.febs.rcs.mapper.TransactionMsgMapper;
+import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,50 +17,50 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 【待定】这个表的父表是哪个？Statistics还是Transaction Service实现
+ * 交易表 Service实现
  *
  * @author mrbird
- * @date 2021-04-17 14:45:32
+ * @date 2021-04-17 14:45:17
  */
 @Service
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public class FrankServiceImpl extends ServiceImpl<FrankMapper, Frank> implements IFrankService {
+public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper, TransactionMsg> implements ITransactionMsgService {
 
     @Autowired
-    FrankMapper frankMapper;
+    TransactionMsgMapper transactionMsgMapper;
 
     @Override
-    public IPage<Frank> findFranks(QueryRequest request, Frank frank) {
-        LambdaQueryWrapper<Frank> queryWrapper = new LambdaQueryWrapper<>();
+    public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
+        LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
-        Page<Frank> page = new Page<>(request.getPageNum(), request.getPageSize());
+        Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public List<Frank> findFranks(Frank frank) {
-	    LambdaQueryWrapper<Frank> queryWrapper = new LambdaQueryWrapper<>();
+    public List<TransactionMsg> findTransactionMsgs(TransactionMsg transactionMsg) {
+	    LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
 		// TODO 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createFrank(Frank frank) {
-        this.save(frank);
+    public void createTransactionMsg(TransactionMsg transactionMsg) {
+        this.save(transactionMsg);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateFrank(Frank frank) {
-        this.saveOrUpdate(frank);
+    public void updateTransactionMsg(TransactionMsg transactionMsg) {
+        this.saveOrUpdate(transactionMsg);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteFrank(Frank frank) {
-        LambdaQueryWrapper<Frank> wrapper = new LambdaQueryWrapper<>();
+    public void deleteTransactionMsg(TransactionMsg transactionMsg) {
+        LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
