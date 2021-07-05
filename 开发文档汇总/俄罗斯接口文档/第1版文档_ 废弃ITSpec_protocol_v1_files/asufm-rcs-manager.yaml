@@ -1,0 +1,387 @@
+openapi: 3.0.1
+info:
+  title: RCS manager API
+  description: публичное API сервиса взаимодействия c системами удаленного управления франкировальными машинами.
+  #公共API服务与远程控制机器系统交互。
+  version: 1.0.0
+servers:
+  - url: 'https://asufm.russianpost.ru/rcs-manager/v1frankMachines'
+paths:
+  /frankMachines:
+    put:
+      summary: текущее состояние франкировальной машины #弗兰基机器目前的状况
+      operationId: setStatus
+      tags:
+        - Frank Machine Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/publicKey:
+    put:
+      summary: Публикация публичного ключа франкмашины. #公布公钥
+      operationId: setPublicKey
+      description:
+        Публикация публичного ключа франкмашины. Вызывается системами удаленного управления франкировальными машинами по факту изменения публично ключа
+        # 公布法兰克福汽车的公共钥匙。由弗兰基机器的远程控制系统引起，因为公开钥匙的变化。
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины #机器标识符
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicKey'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/auth:
+    put:
+      operationId: authFm
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины #机器标识符
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/unauth:
+    put:
+      operationId: unauthFm
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины #机器标识符
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rateTables:
+    put:
+      summary: Результат выполнения загрузки таблици тарифов #汇率表加载结果
+      operationId: rateTableFeedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateTableFeedback'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /foreseens:
+    post:
+      operationId: foreseens
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Foreseen'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /foreseens/{foreseenId}/cancel:
+    post:
+      operationId: foreseensCancel
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForeseenCancel'
+      parameters:
+        - in: path
+          name: foreseenId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /transactions:
+    post:
+      operationId: transactions
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки
+    FrankMachine:
+      type: object
+      properties:
+        id:
+          type: string
+        timeStamp:
+          type: string
+          format: 'date-time'
+        status:
+          $ref: '#/components/schemas/FMStatus'
+        postOffice:
+          type: string
+        taxVersion:
+          type: string
+        event:
+          type: string
+          enum:
+            - STATUS
+            - RATE_TABLE_UPDATE
+        error:
+          $ref: '#/components/schemas/FMError'
+    FMStatus:
+      type: string
+      enum:
+        - UNKNOWN
+        - REGISTERED
+        - AUTHORIZED
+        - OPERATING
+        - PENDING_WITHDRAWN
+        - TEMPORARILY_WITHDRAWN
+        - PERMANENTLY_WITHDRAWN
+        - IN_TRANSFER
+        - MISSING
+        - SCRAPPED
+        - MAINTENENCE
+        - BLOCKED
+        - AUTH_CANCELED
+        - DEMO
+    FMError:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    PublicKey:
+      type: object
+      required:
+        - key
+        - revision
+        - expireDate
+      properties:
+        key:
+          type: string
+        revision:
+          type: string
+        expireDate:
+          type: string
+          format: 'date-time'
+
+    RateTableFeedback:
+      type: object
+      properties:
+        version:
+          type: string
+        status:
+          type: boolean
+        internals:
+          type: array
+          items:
+            type: string
+
+    Foreseen:
+      type: object
+      required:
+        - id
+        - postOffice
+        - userId
+        - contractId
+        - totalCount
+        - products
+      properties:
+        id:
+          type: string
+          format: uuid
+        postOffice:
+          type: string
+        userId:
+          type: string
+        contractId:
+          type: string
+        totalCount:
+          type: number
+          format: int32
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForeseenProduct'
+        frankMachineId:
+          type: string
+        taxVersion:
+          type: string
+        mailVal:
+          type: number
+          format: double
+
+    ForeseenCancel:
+      type: object
+      properties:
+        message:
+          type: string
+    ForeseenProduct:
+      type: object
+      required:
+        - productId
+        - count
+        - expectedWeight
+        - expectedValue
+      properties:
+        productId:
+          type: string
+        count:
+          type: number
+        expectedWeight:
+          type: number
+          format: double
+        expectedValue:
+          type: number
+          format: double
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        foreseenId:
+          type: string
+          format: uuid
+        postOffice:
+          type: string
+        frankMachineId:
+          type: string
+        contractId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: 'date-time'
+        stopTime:
+          type: string
+          format: 'date-time'
+        userId:
+          type: string
+        creditVal:
+          type: number
+          format: double
+        mailVal:
+          type: number
+          format: double
+        count:
+          type: number
+          format: int32
+        graphId:
+          type: string
+        taxVersion:
+          type: string
+        franks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Frank'
+    Frank:
+      type: object
+      properties:
+        dm_message:
+          type: string

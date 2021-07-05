@@ -1,0 +1,757 @@
+openapi: 3.0.1
+info:
+  title: RCS manager API
+  description: публичное API сервиса взаимодействия c системами удаленного управления франкировальными машинами.
+  # 公共API服务与远程控制弗兰基机器系统交互。
+  version: 0.6.8-SNAPSHOT
+servers:
+  - url: 'https://asufm.russianpost.ru/rcs-manager/v1'
+security:
+  - ApiKeyAuth: [] # Api密钥身份验证
+paths:
+  /frankMachines:
+    put:
+      summary: текущее состояние франкировальной машины # 机器目前的状况
+      operationId: frankMachineStatus
+      description:
+        Вызывается СДУ при любом изменении статуса ФМ, в том числе и при возникновениии ошибочной ситуации, в этом случае обавляется блок ошибки
+        # RCS(我们服务器)调用FM状态的任何更改，包括发生错误时的情况，在这种情况下，将添加错误块
+      tags:
+        - Frank Machine Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrankMachine'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/auth:
+    post:
+      summary: Запрос на авторизацию ФМ # FM授权请求
+      operationId: frankMachineAuth
+      description:
+        Вызывается СДУ при выполнении монтажных работ # 进行安装工作时由RCS调用
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:00.001+03:00"
+              postOffice: "131000"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/unauth:
+    post:
+      summary: Запрос на деавторизацию ФМ # 授权请求
+      operationId: frankMachineUnauth
+      description:
+        Вызывается СДУ при выполнении демонтажных работ # 进行拆卸工作时，由RCS调用
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:01.001+03:00"
+              status: "BLOCKED"
+              taxVersion: "A0042015A"
+              postOffice: "131000"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/lost:
+    post:
+      summary: Запрос на деавторизацию ФМ # 授权请求
+      operationId: frankMachineLost
+      description:
+        Вызывается СДУ при выполнении демонтажных работ # 进行拆卸工作时，由RCS调用
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:01.001+03:00"
+              status: "BLOCKED"
+              taxVersion: "A0042015A"
+              postOffice: "131000"
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/publicKey:
+    put:
+      summary: Отправка нового криптографического ключа. # 提交新的加密密钥
+      operationId: frankMachinePublicKey
+      description:
+        Вызывается СДУ по факту изменения публично ключа, либо, при зепосредственном запросе 
+        # RCS在更改公钥或直接请求时调用
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicKey'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rateTables:
+    put:
+      summary: Результат выполнения загрузки таблици тарифов # 资费表加载结果
+      operationId: rateTableFeedback
+      description: Вызывается СДУ по результату успешной обработки таблицы тарифов # RCS(我们服务器)在成功处理资费表时调用
+      tags:
+        - Taxes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateTableFeedback'
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /foreseens:
+    post:
+      summary: Запрос на петчать франков в соответствии с прогнозом # 要求根据预报生产法郎
+      operationId: foreseens
+      description: При успешном вызове денежные средства холдируются # 如果通话成功，则资金被保留
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Foreseen'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /foreseens/{foreseenId}/cancel:
+    post:
+      summary: Отмена прогноза # 取消预测
+      operationId: foreseensCancel
+      description: после успешного вызова, ранее захолдированные денежные средства, возвращаются #成功后，先前持有的资金将被返还
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForeseenCancel'
+      parameters:
+        - in: path
+          name: foreseenId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TBD Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /transactions: # 交易
+    post:
+      summary: Результат выполнения франкирования #盖章结果
+      operationId: transactions
+      description: по результатам выполнения, денежные средства списываются, данные напечатанных франков сохраняются
+       # 根据执行结果，将资金记入借方，并保存已打印法郎的数据
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /refills:
+    post:
+      operationId: refills
+      deprecated: true
+      description: Пополнение/возврат денежных средств конкретной франкировальной машины частного рынка
+      # 补充/退还专用市场专用邮资机的资金
+      tags:
+        - Private Market compatibility # 私人市场兼容性
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registers'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /franking/stats:
+    post:
+      operationId: frankingStats
+      deprecated: true
+      tags:
+        - Private Market compatibility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Statistics'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes: # 安全体系
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Error:
+      description: базовая ошибка # 基本错误
+      type: object
+      properties:
+        code:
+          type: integer
+          description: числовой идентификатор ошибки # 数字错误标识符
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки # 错误说明
+    OperationError:
+      description: Ошибка проведения операции, дополнительно возвращает баланс, если это возможно
+      # 操作错误，如果可能，还额外返回余额
+      type: object 
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки
+        balance:
+          $ref: '#/components/schemas/Balance'
+
+    FrankMachine:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор франкировальной машины # FM编号
+          example:
+            'FM100001'
+        dateTime:
+          type: string
+          format: 'date-time'
+          description: Время возникноверия события
+          example:
+            '2021-01-01T09:00:00.001+03:00'
+        status:
+          $ref: '#/components/schemas/FMStatus'
+        postOffice:
+          type: string
+          maxLength: 6
+          minLength: 6
+          example:
+            '131000'
+        taxVersion:
+          type: string
+          example:
+            'A0042015A'
+        event:
+          type: string
+          enum:
+            - STATUS
+            - RATE_TABLE_UPDATE
+          example:
+            'STATUS'
+        error:
+          $ref: '#/components/schemas/FMError'
+    FMStatus:
+      description: >
+    # 盖章机的可用状态
+        # -ENABLED-准备出发；
+        # -DEMO-准备在演示模式下工作；
+        # -BLOCKED-封锁；
+        # -UNAUTHORIZED-不在OPS（邮政服务对象）余额上；
+        # -LOST-停止使用；
+      type: string
+      enum:
+        - ENABLED
+        - DEMO
+        - BLOCKED
+        - UNAUTHORIZED
+        - LOST
+      example:
+        'ENABLED'
+    FMError:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Код ошибки # 错误代码
+          example:
+            '1000'
+        message:
+          type: string
+          description: Описание ошибки
+          example:
+            'Unknown Error'
+    PublicKey:
+      type: object
+      required:
+        - key
+        - revision
+        - expireDate
+      properties:
+        key:
+          type: string
+          description: public key in PEM format # PEM格式的公钥
+          example:
+              "-----BEGIN PUBLIC KEY-----
+               MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW
+               9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH
+               -----END PUBLIC KEY-----"
+        revision:
+          type: integer
+          description: версия (порядковый номер) публичного ключа #公钥的版本（序列号）
+          example:
+            113
+        expireDate:
+          type: string
+          description: время окончания действия # 到期时间
+          format: 'date-time'
+
+    RateTableFeedback:
+      type: object
+      description: результат загрузки таблицы тарифов в базу СДУ #将资费表加载到RCS数据库中的结果
+      properties:
+        taxVersion:
+          type: string
+          description: оригинальная (RP) версия тарифив #原始（RP）版本资费
+          example:
+            "RP.202001-1"
+        status:
+          type: boolean
+          description: успешность обработки таблицы тарифов # 成功处理关税表
+          example:
+            true
+        rcsVersions:
+          type: array
+          description: сопоставленне локальные (RCS) версии тарифов. # 映射的本地（RCS）资费版本。
+          items:
+            type: string
+          example:
+            - A0042015A
+            - B0042015A
+            - C0042015A
+            - D0042015A
+            - E0042015A
+
+    Balance:
+      type: object
+      description: Текущий баланс контрагента. # 客户的当前余额
+      required:
+        - contractId
+        - current
+        - consolidate
+      properties:
+        contractId:
+          description: Идентификатор контракта #合约编号
+          type: string
+          format: uuid
+        contractNum:
+          description: Целочисленный идентификатор контракта, оставлен для совместимости #整数合同ID，保留用于兼容性
+          type: integer
+          deprecated: true
+        current:
+          description: Текущие доступные средства (учитывая холдирование) #当前可用资金（包括持有）
+          type: number
+          format: double
+        consolidate:
+          description: Текущий баланс (только факт) # 当前余额（仅事实）
+          type: number
+          format: double
+
+    Foreseen:
+      type: object
+      required:
+        - id
+        - postOffice
+        - userId
+        - totalCount
+        - products
+      properties:
+        id:
+          type: string
+          format: uuid
+        postOffice:
+          type: string
+        userId:
+          type: string
+        contractId:
+          type: string
+          format: uuid
+        contractNum:
+          type: integer
+          deprecated: true
+        totalCount:
+          type: integer
+          format: int32
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForeseenProduct'
+        frankMachineId:
+          type: string
+        taxVersion:
+          type: string
+          example:
+            "A0042015A"
+        mailVal:
+          type: number
+          format: double
+    ForeseenCancel:
+      type: object
+      properties:
+        message:
+          type: string
+    ForeseenProduct:
+      type: object
+      required:
+        - productCode
+        - count
+        - weight
+        - amount
+      properties:
+        productCode:
+          type: string
+        count:
+          type: number
+        weight:
+          type: number
+          format: double
+        amount:
+          type: number
+          format: double
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        foreseenId:
+          type: string
+          format: uuid
+        postOffice:
+          type: string
+        frankMachineId:
+          type: string
+        contractId:
+          type: string
+          format: uuid
+        contractNum:
+          type: integer
+          deprecated: true
+        startDateTime:
+          type: string
+          format: 'date-time'
+        stopDateTime:
+          type: string
+          format: 'date-time'
+        userId:
+          type: string
+        creditVal:
+          type: number
+          format: double
+        amount:
+          type: number
+          format: double
+        count:
+          type: integer
+          format: int32
+        graphId:
+          type: string
+        taxVersion:
+          type: string
+          example:
+            "A0042015A"
+        franks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Frank'
+    Frank:
+      type: object
+      properties:
+        dm_message:
+          type: string
+
+    Registers:
+      type: object
+      properties:
+        id:
+          description: operation unique identifier
+          type: string
+          format: uuid
+        contractId:
+          type: string
+          format: uuid
+          example:
+            163
+        contractNum:
+          type: integer
+          deprecated: true
+        postofficeIndex:
+          type: string
+          example:
+            '131000'
+        frankMachineId:
+          type: string
+        timestamp:
+          type: string
+          format: 'date-time'
+        ascRegister:
+          type: number
+          format: double
+          example:
+            100.50
+        decRegister:
+          type: number
+          format: double
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum:
+            - REFILL
+            - REFUND
+    Statistics:
+      type: object
+      properties:
+        id:
+          type: string
+          format: 'uuid'
+        contractId:
+          type: string
+          format: uuid
+          example:
+            163
+        contractNum:
+          type: integer
+          deprecated: true
+        postOffice:
+          type: string
+        frankMachineId:
+          type: string
+        frankingPeriodStart:
+          type: string
+          format: 'date-time'
+        frankingPeriodEnd:
+          type: string
+          format: 'date-time'
+        totalAmount:
+          type: number
+        initialPieceCounter:
+          type: integer
+          format: int64
+        finalPieceCounter:
+          type: integer
+          format: int64
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionData'
+        franks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Frank'
+    TransactionData:
+      type: object
+      properties:
+        dateTime:
+          description: franking date
+          type: string
+          format: 'date-time'
+        productCode:
+          type: string
+        weight:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        amount:
+          description: totalValue; Value of Transaction in rubles
+          type: number
+          format: double
+        taxVersion:
+          type: string
+          example:
+            "A0042015A"

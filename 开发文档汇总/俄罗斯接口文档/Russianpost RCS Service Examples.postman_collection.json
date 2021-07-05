@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "7fae7321-9734-4b15-8e0e-943ab2b97c87",
+		"name": "Russianpost RCS Service Examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Send postoffice",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"index\": \"994700\",\r\n    \"name\": \"УФПС Абстрактной области\",\r\n    \"city\": \"Абстрактск\",\r\n    \"timeZone\": 0,\r\n    \"tariffZone\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{rcsServiceUrl}}/postOffices",
+					"host": [
+						"{{rcsServiceUrl}}"
+					],
+					"path": [
+						"postOffices"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Send postoffice",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"index\": \"994700\",\r\n    \"name\": \"УФПС Абстрактной области\",\r\n    \"city\": \"Абстрактск\",\r\n    \"timeZone\": 0,\r\n    \"tariffZone\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rcsServiceUrl}}/postOffices",
+							"host": [
+								"{{rcsServiceUrl}}"
+							],
+							"path": [
+								"postOffices"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "plain",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Taxes",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.3.3\",\r\n    \"createDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"applyDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"publishDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"changeDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"description\": \"string\",\r\n    \"products\": [\r\n        {\r\n            \"id\": \"2000\",\r\n            \"name\": \"Письмо простое\",\r\n            \"code\": \"2100\",\r\n            \"regionType\": 0,\r\n            \"zoneCode\": 0,\r\n            \"distanceType\": 2,\r\n            \"maxWeight\": 0,\r\n            \"mailCtg\": 3,\r\n            \"mailType\": 0,\r\n            \"directctg\": 0,\r\n            \"tariff\": {\r\n                \"type\": \"WEIGHT\",\r\n                \"weight\": [\r\n                    {\r\n                        \"from\": 0,\r\n                        \"to\": 20,\r\n                        \"value\": 312.50\r\n                    },\r\n                    {\r\n                        \"from\": 21,\r\n                        \"to\": 100,\r\n                        \"value\": 357\r\n                    },\r\n                    {\r\n                        \"from\": 101,\r\n                        \"to\": 250,\r\n                        \"value\": 472\r\n                    },\r\n                    {\r\n                        \"from\": 251,\r\n                        \"to\": 1000,\r\n                        \"value\": 1007\r\n                    },\r\n                    {\r\n                        \"from\": 501,\r\n                        \"to\": 100,\r\n                        \"value\": 357\r\n                    },\r\n                    {\r\n                        \"from\": 1001,\r\n                        \"to\": 2000,\r\n                        \"value\": 1467\r\n                    }\r\n                ],\r\n                \"increment\": {\r\n                    \"after\": 2000,\r\n                    \"every\": 1000,\r\n                    \"value\": 637.30\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"2909\",\r\n            \"name\": \"Письмо заказное\",\r\n            \"code\": \"2700\",\r\n            \"regionType\": 1,\r\n            \"zoneCode\": 0,\r\n            \"distanceType\": 2,\r\n            \"maxWeight\": 0,\r\n            \"mailCtg\": 3,\r\n            \"mailType\": 0,\r\n            \"directctg\": 0,\r\n            \"tariff\": {\r\n                \"type\": \"WEIGHT\",\r\n                \"fixedValue\": 20.0\r\n            }\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{rcsServiceUrl}}/taxes",
+					"host": [
+						"{{rcsServiceUrl}}"
+					],
+					"path": [
+						"taxes"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Taxes",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"version\": \"2.3.3\",\r\n    \"createDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"applyDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"publishDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"changeDate\": \"2021-05-31T15:06:13.599Z\",\r\n    \"description\": \"string\",\r\n    \"products\": [\r\n        {\r\n            \"id\": \"2000\",\r\n            \"name\": \"Письмо простое\",\r\n            \"code\": \"2100\",\r\n            \"regionType\": 0,\r\n            \"zoneCode\": 0,\r\n            \"distanceType\": 2,\r\n            \"maxWeight\": 0,\r\n            \"mailCtg\": 3,\r\n            \"mailType\": 0,\r\n            \"directctg\": 0,\r\n            \"tariff\": {\r\n                \"type\": \"WEIGHT\",\r\n                \"weight\": [\r\n                    {\r\n                        \"from\": 0,\r\n                        \"to\": 20,\r\n                        \"value\": 312.50\r\n                    },\r\n                    {\r\n                        \"from\": 21,\r\n                        \"to\": 100,\r\n                        \"value\": 357\r\n                    },\r\n                    {\r\n                        \"from\": 101,\r\n                        \"to\": 250,\r\n                        \"value\": 472\r\n                    },\r\n                    {\r\n                        \"from\": 251,\r\n                        \"to\": 1000,\r\n                        \"value\": 1007\r\n                    },\r\n                    {\r\n                        \"from\": 501,\r\n                        \"to\": 100,\r\n                        \"value\": 357\r\n                    },\r\n                    {\r\n                        \"from\": 1001,\r\n                        \"to\": 2000,\r\n                        \"value\": 1467\r\n                    }\r\n                ],\r\n                \"increment\": {\r\n                    \"after\": 2000,\r\n                    \"every\": 1000,\r\n                    \"value\": 637.30\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"id\": \"2909\",\r\n            \"name\": \"Письмо заказное\",\r\n            \"code\": \"2700\",\r\n            \"regionType\": 1,\r\n            \"zoneCode\": 0,\r\n            \"distanceType\": 2,\r\n            \"maxWeight\": 0,\r\n            \"mailCtg\": 3,\r\n            \"mailType\": 0,\r\n            \"directctg\": 0,\r\n            \"tariff\": {\r\n                \"type\": \"WEIGHT\",\r\n                \"fixedValue\": 20.0\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rcsServiceUrl}}/taxes",
+							"host": [
+								"{{rcsServiceUrl}}"
+							],
+							"path": [
+								"taxes"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "plain",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Contracts",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"3aaeb112-ccb8-4312-ad2a-d50f9c91485a\",\r\n    \"enable\": true,\r\n    \"customer\": {\r\n        \"id\": \"11a8005e-6d6a-499d-9fca-82aa69103f90\",\r\n        \"name\": \"Заказчик\",\r\n        \"inn_ru\": \"680320076000\",\r\n        \"kpp_ru\": \"346313002\",\r\n        \"legalAddress\": \"664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257\",\r\n        \"officeAddress\": \"664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257, оф. 802\"\r\n    },\r\n    \"postOffices\": [\r\n        {\r\n            \"index\": \"994700\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{rcsServiceUrl}}/contracts",
+					"host": [
+						"{{rcsServiceUrl}}"
+					],
+					"path": [
+						"contracts"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Contracts",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"3aaeb112-ccb8-4312-ad2a-d50f9c91485a\",\r\n    \"enable\": true,\r\n    \"customer\": {\r\n        \"id\": \"11a8005e-6d6a-499d-9fca-82aa69103f90\",\r\n        \"name\": \"Заказчик\",\r\n        \"inn_ru\": \"680320076000\",\r\n        \"kpp_ru\": \"346313002\",\r\n        \"legalAddress\": \"664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257\",\r\n        \"officeAddress\": \"664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257, оф. 802\"\r\n    },\r\n    \"postOffices\": [\r\n        {\r\n            \"index\": \"994700\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{rcsServiceUrl}}/contracts",
+							"host": [
+								"{{rcsServiceUrl}}"
+							],
+							"path": [
+								"contracts"
+							]
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "plain",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Balance",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"contractId\": \"3aaeb112-ccb8-4312-ad2a-d50f9c91485a\",\r\n  \"current\": 3000.23,\r\n  \"consolidate\": 3000.23,\r\n  \"operationId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"timestamp\": \"2021-05-31T15:13:51.744Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{rcsServiceUrl}}/contracts/{contractId}/balance",
+					"host": [
+						"{{rcsServiceUrl}}"
+					],
+					"path": [
+						"contracts",
+						"{contractId}",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

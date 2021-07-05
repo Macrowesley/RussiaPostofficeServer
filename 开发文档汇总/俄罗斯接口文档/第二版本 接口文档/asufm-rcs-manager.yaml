@@ -1,0 +1,785 @@
+# 特点：
+# 1.合同号改成了8位数字
+# 2.RateTableFeedback。Balance多了timestamp参数，contractId改成了contractCode
+# 3.比上次多了   /refills:  /franking/stats: 这2个接口，但是以前说这2个接口废弃了，还是废弃的，不管
+openapi: 3.0.1
+info:
+  title: RCS manager API
+  description: публичное API сервиса взаимодействия c системами удаленного управления франкировальными машинами.
+  version: 0.14.4
+servers:
+  - url: 'https://asufm.russianpost.ru/rcs-manager/v1'
+security:
+  - ApiKeyAuth: []
+paths:
+  /frankMachines:
+    put:
+      summary: текущее состояние франкировальной машины
+      operationId: frankMachineStatus
+      description:
+        Вызывается СДУ при любом изменении статуса ФМ, в том числе и при возникновениии ошибочной ситуации, в этом случае добавляется блок ошибки
+      tags:
+        - Frank Machine Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrankMachine'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/auth:
+    post:
+      summary: Запрос на авторизацию ФМ
+      operationId: frankMachineAuth
+      description:
+        Вызывается СДУ при выполнении монтажных работ
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:00.001+03:00"
+              postOffice: "131000"
+      responses:
+        204:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/unauth:
+    post:
+      summary: Запрос на деавторизацию ФМ
+      operationId: frankMachineUnauth
+      description:
+        Вызывается СДУ при выполнении демонтажных работ
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:01.001+03:00"
+              status: "BLOCKED"
+              taxVersion: "A0042015A"
+              postOffice: "131000"
+      responses:
+        204:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/lost:
+    post:
+      summary: Запрос на деавторизацию ФМ
+      operationId: frankMachineLost
+      description:
+        Вызывается СДУ при выполнении демонтажных работ
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrankMachine'
+            example:
+              id: "FM100001"
+              dateTime: "2021-01-01T09:00:01.001+03:00"
+              status: "BLOCKED"
+              taxVersion: "A0042015A"
+              postOffice: "131000"
+      responses:
+        204:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/publicKey:
+    put:
+      summary: Отправка нового криптографического ключа.
+      operationId: frankMachinePublicKey
+      description:
+        Вызывается СДУ по факту изменения публично ключа, либо, при зепосредственном запросе
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicKey'
+      responses:
+        204:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /rateTables:
+    put:
+      summary: Результат выполнения загрузки таблици тарифов
+      operationId: rateTableFeedback
+      description: Вызывается СДУ по результату успешной обработки таблицы тарифов
+      tags:
+        - Taxes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateTableFeedback'
+      responses:
+        204:
+          description: OK
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /foreseens:
+    post:
+      summary: Запрос на петчать франков в соответствии с прогнозом
+      operationId: foreseens
+      description: При успешном вызове денежные средства холдируются
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Foreseen'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /foreseens/{foreseenId}/cancel:
+    post:
+      summary: Отмена прогноза
+      operationId: foreseensCancel
+      description: после успешного вызова, ранее захолдированные денежные средства, возвращаются
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForeseenCancel'
+      parameters:
+        - in: path
+          name: foreseenId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TBD Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /transactions:
+    post:
+      summary: Результат выполнения франкирования
+      operationId: transactions
+      description: по результатам выполнения, денежные средства списываются, данные напечатанных франков сохраняются
+      tags:
+        - Franking Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /refills: 
+    post:
+      operationId: refills
+      deprecated: true
+      description: Пополнение/возврат денежных средств конкретной франкировальной машины частного рынка
+      tags:
+        - Private Market compatibility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registers'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /franking/stats:
+    post:
+      operationId: frankingStats
+      deprecated: true
+      tags:
+        - Private Market compatibility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Statistics'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        400:
+          description: TODO Бизнес-ошибки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationError'
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Error:
+      description: Базовая ошибка
+      type: object
+      properties:
+        code:
+          type: integer
+          description: числовой идентификатор ошибки
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки
+    OperationError:
+      description: Ошибка проведения операции, дополнительно возвращает баланс, если это возможно
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки
+        balance:
+          $ref: '#/components/schemas/Balance'
+
+    FrankMachine:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор франкировальной машины
+          example:
+            'FM100001'
+        dateTime:
+          type: string
+          format: 'date-time'
+          description: Время возникноверия события
+          example:
+            '2021-01-01T09:00:00.001+03:00'
+        status:
+          $ref: '#/components/schemas/FMStatus'
+        postOffice:
+          type: string
+          maxLength: 6
+          minLength: 6
+          example:
+            '131000'
+        taxVersion:
+          type: string
+          example:
+            'A0042015A'
+        event:
+          type: string
+          enum:
+            - STATUS
+            - RATE_TABLE_UPDATE
+          example:
+            'STATUS'
+        error:
+          $ref: '#/components/schemas/FMError'
+    FMStatus:
+      description: >
+        Доступные состояния франкировальной машины
+          - ENABLED - Готов к работе;
+          - DEMO - Готов к работе в Демо режиме;
+          - BLOCKED - Заблокировано;
+          - UNAUTHORIZED - не на балансе ОПС;
+          - LOST - выведен из эксплуатации;
+      type: string
+      enum:
+        - ENABLED
+        - DEMO
+        - BLOCKED
+        - UNAUTHORIZED
+        - LOST
+      example:
+        'ENABLED'
+    FMError:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+          example:
+            '1000'
+        message:
+          type: string
+          description: Описание ошибки
+          example:
+            'Unknown Error'
+    PublicKey:
+      type: object
+      required:
+        - key
+        - revision
+        - expireDate
+      properties:
+        key:
+          type: string
+          description: public key in PEM format
+          example:
+              "-----BEGIN PUBLIC KEY-----
+               MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAHxZMuhGUvOwc6GKT6Y9V6+uSQmiLW
+               9vCO4A1xy7qquqrNFmPlsQhPMZUZ62HBKDeH
+               -----END PUBLIC KEY-----"
+        revision:
+          type: integer
+          description: версия (порядковый номер) публичного ключа
+          example:
+            113
+        expireDate:
+          type: string
+          description: время окончания действия
+          format: 'date-time'
+
+    RateTableFeedback:
+      type: object
+      description: результат загрузки таблицы тарифов в базу СДУ
+      properties:
+        taxVersion:
+          type: string
+          description: оригинальная (RP) версия тарифив
+          example:
+            "RP.202001-1"
+        status:
+          type: boolean
+          description: успешность обработки таблицы тарифов
+          example:
+            true
+        rcsVersions:
+          type: array
+          description: сопоставленне локальные (СДУ) версии тарифов.
+          items:
+            type: string
+          example:
+            - A0042015A
+            - B0042015A
+            - C0042015A
+            - D0042015A
+            - E0042015A
+        timestamp:
+          description: Время события
+          type: string
+          format: 'date-time'
+          example:
+            '2021-01-01T09:00:00.001+03:00'
+
+
+    Balance:
+      type: object
+      description: Текущий баланс контрагента.
+      required:
+        - contractCode
+        - current
+        - consolidate
+      properties:
+        contractCode:
+          description: Идентификатор контракта
+          type: string
+          example: '00000113'
+        current:
+          description: Текущие доступные средства (учитывая холдирование)
+          type: number
+          format: double
+        consolidate:
+          description: Текущий баланс (только факт)
+          type: number
+          format: double
+        timestamp:
+          description: Время события, используется как версия данных.
+          type: string
+          format: 'date-time'
+          example:
+            '2021-01-01T09:00:00.001+03:00'
+
+    Foreseen:
+      type: object
+      required:
+        - id
+        - postOffice
+        - userId
+        - totalCount
+        - products
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: идентификатор прогноза
+        postOffice:
+          type: string
+          description: ОПС
+        userId:
+          type: string
+          description: идентификатор пользователя
+        contractCode:
+          type: string
+          description: идентификатор контракта
+          minLength: 8
+          maxLength: 8
+          example: '00000113'
+        totalCount:
+          type: integer
+          format: int32
+          description: общее количество по прогнозу
+        products:
+          type: array
+          description: детали по продуктам
+          items:
+            $ref: '#/components/schemas/ForeseenProduct'
+        frankMachineId:
+          type: string
+          description: идентификатор ФМ
+          example:
+            'FM100001'
+        taxVersion:
+          description: версия тарифов
+          type: string
+          example:
+            "A0042015A"
+        totalAmmount:
+          description: общая сумма по прогнозу
+          type: number
+          format: double
+    ForeseenCancel:
+      type: object
+      properties:
+        message:
+          type: string
+    ForeseenProduct:
+      type: object
+      required:
+        - productCode
+        - count
+        - weight
+        - amount
+      properties:
+        productCode:
+          type: string
+          description: код Почтового продукта
+        count:
+          type: number
+          description: количество
+        weight:
+          type: number
+          format: double
+          description: общий вес
+        amount:
+          type: number
+          format: double
+          description: общая сумма по продукту
+    Transaction:
+      type: object
+      description: Выполненное задание на франкирование
+      properties:
+        id:
+          description: Идентификатор транзакции
+          type: string
+          format: uuid
+        foreseenId:
+          description: Идентификатор прогноза
+          type: string
+          format: uuid
+        postOffice:
+          description: Индекс ОПС
+          type: string
+        frankMachineId:
+          description: Идентификатор франкировальной машины
+          type: string
+        contractCode:
+          description: Идентификатор контракта
+          type: string
+          minLength: 8
+          maxLength: 8
+          example: '00000113'
+        startDateTime:
+          description: время начала выполнения задания на франкирование
+          type: string
+          format: 'date-time'
+        stopDateTime:
+          description: время окончания выполнения задания на франкирования
+          type: string
+          format: 'date-time'
+        userId:
+          description: пользователь, из под которого было выполнено франкирование
+          type: string
+        creditVal:
+          description: остаток средств на счету (по версии ФМ)
+          type: number
+          format: double
+        amount:
+          description: Сумма транзакции
+          type: number
+          format: double
+        count:
+          description: Количество сделанных оттисков
+          type: integer
+          format: int32
+        graphId:
+          type: string
+        taxVersion:
+          description: Испоьзуемая версия тарифов
+          type: string
+          example:
+            "A0042015A"
+        franks:
+          description: Массив напечатанных в рамках задания франков (Datamatrix message)
+          type: array
+          items:
+            $ref: '#/components/schemas/Frank'
+    Frank:
+      type: object
+      properties:
+        dmMessage:
+          type: string
+
+    Registers:
+      type: object
+      properties:
+        id:
+          description: operation unique identifier
+          type: string
+          format: uuid
+        contractCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+          example: '00000113'
+        postofficeIndex:
+          type: string
+          example:
+            '131000'
+        frankMachineId:
+          type: string
+        timestamp:
+          type: string
+          format: 'date-time'
+        ascRegister:
+          type: number
+          format: double
+          example:
+            100.50
+        decRegister:
+          type: number
+          format: double
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum:
+            - REFILL
+            - REFUND
+    Statistics:
+      type: object
+      properties:
+        id:
+          type: string
+          format: 'uuid'
+        contractCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+          example: '00000113'
+        postOffice:
+          type: string
+        frankMachineId:
+          type: string
+        frankingPeriodStart:
+          type: string
+          format: 'date-time'
+        frankingPeriodEnd:
+          type: string
+          format: 'date-time'
+        totalAmount:
+          type: number
+        initialPieceCounter:
+          type: integer
+          format: int64
+        finalPieceCounter:
+          type: integer
+          format: int64
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionData'
+        franks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Frank'
+    TransactionData:
+      type: object
+      properties:
+        dateTime:
+          description: franking date
+          type: string
+          format: 'date-time'
+        productCode:
+          type: string
+        weight:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        amount:
+          description: totalValue; Value of Transaction in rubles
+          type: number
+          format: double
+        taxVersion:
+          type: string
+          example:
+            "A0042015A"

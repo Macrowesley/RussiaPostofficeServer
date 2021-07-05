@@ -1,0 +1,460 @@
+openapi: 3.0.1
+info:
+  title: RCS service API
+  description: должно быть реализовано на стороне удаленной системы управления
+  version: 0.6.8-SNAPSHOT
+servers:
+  - url: 'https://asufm.russianpost.ru/rcs-service.adoc/v1'
+paths:
+  /frankMachines/{frankMachineId}/publicKey:
+    post:
+      summary: запрос публичного ключа #公钥请求
+      operationId: publicKeyRequest
+      description: Запросить публичный ключ у франкировальеной машины. При необходимости (если параметр regenerate = true) перегенерировать. 
+      #从FM(франкировальеной машины)索取公钥。如有必要（如果参数regenerate = true）将重新生成。
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+        - in: query
+          name: regenerate
+          required: false
+          schema:
+            type: boolean
+          description: требование пересоздать приватный ключ #要求重新创建私钥
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/changeStatus:
+    post:
+      summary: Изменить статус FM (блокировка/разблокировка) #更改FM状态（锁定/解锁）
+      operationId: changeMachineStatus
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /postOffices:
+    put:
+      summary: Выгрузка данных (обновление) ОПС в FM #将数据（更新）邮局到FM
+      operationId: setPostOffice
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOffice'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /taxes:
+    put:
+      summary: Выгрузить тарифы в СДУ # 将资费上传到RCS
+      operationId: setTaxes
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxVersion'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /contracts:
+    put:
+      summary: Выгрузить данные по договорам #上传合同数据
+      operationId: setContract
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contracts/{contractId}/balance:
+    put:
+      summary: Синхронизация баланс договора #合同余额的同步
+      operationId: syncBalance
+      tags:
+        - ContractManagement
+      parameters:
+        - in: path
+          name: contractId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Balance'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          description: 错误代码
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: 错误说明
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/FMStatus'
+        postOffice:
+          type: string
+    FMStatus:
+      type: string
+      enum:
+        - BLOCKED
+        - ENABLED
+        - DEMO
+        - UNAUTHORIZED
+        - LOST
+    PostOffice:
+      type: object
+      properties:
+        index:
+          type: string
+          description: Индекс ОПС # 邮局索引（id）
+        name:
+          type: string
+          description: наименовение ПО #软件名称
+        city:
+          type: string
+          description: город # 城市
+        legalAddress:
+          type: string
+          description: Юридический адрес #合法地址
+        officeAddress:
+          type: string
+          description: Физический адрес #办公地址
+        timeZone:
+          type: integer
+          description: Смещение от GMT # 与格林尼治标准时间的偏差
+        tariffZone:
+          type: integer
+          description: тарифная зона ПО # 关税区软件
+    Contract:
+      type: object
+      properties:
+        id:
+          description: Уникальный идентификатор контракта (из мастер системы) #合同的唯一标识符（来自主系统）
+          type: string
+          format: uuid
+        num:
+          description: числовой идентификатор контракта, оставлен для совместимости с СДУ текущих производителей # 数字合同标识符，保留为与当前制造商的RCS兼容
+          type: integer
+          deprecated: true
+        enable:
+          description: признак активности Контракта. В случае закрытия контракта придет false
+          # 合同活动的标志。如果合同已关闭，将返回false
+          type: boolean
+        customer:
+          $ref: '#/components/schemas/Customer'
+        postOffices:
+          description: Список связанных с контрактом ОПС (где возможен прием корреспонденции)
+          # 与合同有关的OPS(邮政服务对象)清单（可以接收信件的地方）
+          # 应该就是邮局清单
+          type: array
+          items:
+            $ref: '#/components/schemas/PostOffice'
+    Customer:
+      type: object
+      properties:
+        id:
+          description: уникальный идентификатор Контрагента (из мастер системы)
+          # 客户的唯一标识符（来自主系统）
+          type: string
+          format: uuid
+        name:
+          description: наименование контрагента #客户名称
+          type: string
+        inn_ru:
+          description: ИНН контрагента # 客户客栈？
+          type: string
+        kpp_ru:
+          description: КПП контрагента # 客户检查点
+          type: string
+
+    Balance:
+      type: object
+      description: Текущий баланс контрагента. # 客户的当前余额
+      required:
+        - contractId
+        - current
+        - consolidate
+        - timestamp
+        - operationId
+      properties:
+        contractId:
+          description: Идентификатор контракта #合同编号
+          type: string
+          format: uuid
+        contractNum:
+          description: Целочисленный идентификатор контракта, оставлен для совместимости с СДУ текущих производителей
+          # 整数合同标识符，保留为与当前供应商的RCS兼容
+          deprecated: true
+          type: integer
+        current:
+          description: Текущие доступные средства (учитывая холдирование)
+          # 当前可用资金（包括持有）
+          type: number
+          format: double
+        consolidate:
+          description: Текущий баланс (только факт)
+          # 当前余额（仅事实）
+          type: number
+          format: double
+        operationId:
+          description: Идентификатор операции, породившей изменение баланса
+          # 产生余额变化的交易的标识符
+          type: string
+          format: uuid
+        timestamp:
+          description: Время изменения баланса, используется как версия данных.
+          # 余额变更时间，用作数据版本。
+          type: string
+          format: 'date-time'
+
+    TaxVersion:#税收版本
+      type: object
+      properties:
+        version:
+          type: string
+        createDate:
+          type: string
+          format: 'date-time'
+        applyDate:
+          type: string
+          format: 'date-time'
+        publishDate:
+          type: string
+          format: 'date-time'
+        changeDate:
+          type: string
+          format: 'date-time'
+        description:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostalProduct'
+    PostalProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          description:  Код объекта расчета #计算对象代码
+          example:
+            "2000"
+        name:
+          type: string
+          description: Наименование объекта расчета #计算对象名称
+          example:
+            "Письмо простое"
+        code:
+          type: string
+          description: Код объекта, который передается непосредственно в FM. #直接发送到FM的目标代码
+          example:
+            "2100"
+        regionType:
+          type: number
+          description: Область пересылки; 1 – внутреннее, 2 - внешнее
+          # 转发区域； 1-内部，2-外部
+        zoneCode:
+          type: integer
+          format: int32
+#          enum: [1,2,3,4,5]
+          description: Тарифная зона (Значения 1 - 5) # 关税区（值1-5）
+        distanceType:
+          type: integer
+#          enum: [1,2]
+          description: Удаленность; 1 - до 2000 км, 2 - более 2000 км 
+          # 偏远地区； 1-长达2000公里，2-超过2000公里
+        maxWeight:
+          type: integer
+          format: int32
+          description: Максимальный вес почтового отправления #邮政物品的最大重量
+        mailCtg:
+          type: integer
+          format: int32
+#          enum: [0,1,2]
+          description: |
+            Наименование категории почтового отправления
+            * Простое - 0
+            * Заказное - 1
+            * С объявленной ценностью - 2
+        #邮件类别的名称
+            #*简单-0
+            #*定制-1
+            #*申报价值-2
+            
+        mailType:
+          type: integer
+          format: int32
+          description: |
+            Коды видов отправлений
+            * 2 - Письмо
+            * 3 - Бандероль
+        #邮件类型代码
+            #* 2-字母
+            #* 3-包裹邮寄
+            
+        directctg:
+          type: integer
+          format: int32
+          description: |
+            Направлениедоставки отправления:
+            * 1 – внутреннее (РТМ-2);
+            * 2 – исходящее международное (РТМ-2);
+        #运输方向：
+            #* 1-内部（RTM-2）;
+            #* 2-外向国际（RTM-2）;
+            
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+    TaxRate:
+      type: object
+      properties:
+        weight:
+          type: integer
+          format: int32
+          description: Вес, г (верхняя граница) #重量，g（上限）
+        noVAT:
+          type: number
+          description: Тариф без НДС (руб) #不含增值税的关税（RUB）
+        withVAT:
+          type: number
+          description: Тариф с НДС (руб) #含增值税关税（RUB）
+        sumVAT:
+          type: number
+          description: Сумма НДС (руб) #增值税金额（卢布）
+        rateVAT:
+          type: number
+          description: Ставка НДС #增值税率

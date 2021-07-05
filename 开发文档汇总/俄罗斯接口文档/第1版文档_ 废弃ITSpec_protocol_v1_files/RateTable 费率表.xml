@@ -1,0 +1,2625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RateTable xmlns="" Version="23.0.3" ValidFrom="20190801">
+	<defines>
+		<defineArea>
+			<Value val="Domestic" enDescr="Domestic" ruDescr="Внутренние"/>
+			<Value val="International" enDescr="International" ruDescr="Международные"/>
+			<Value val="InternationalNotify" enDescr="International with notification" ruDescr="Международные с уведомлением"/>
+			<Value val="WithinCrimea" enDescr="Rates within Crimea" ruDescr="Тарифы в пределах Крыма"/>
+			<Value val="OutsideCrimea" enDescr="Rates outside Crimea" ruDescr="Тарифы за пределами Крыма"/>
+		</defineArea>
+		<defineClass>
+			<Value val="Ordinary" enDescr="Ordinary" ruDescr="Прост."/>
+			<Value val="Registered" enDescr="Registered" ruDescr="Заказн."/>
+			<Value val="OrdinaryDiff1" enDescr="Ordinary Diff 1" ruDescr="Прост. Дифф. N.1"/>
+			<Value val="OrdinaryDiff2" enDescr="Ordinary Diff 2" ruDescr="Прост. Дифф. N.2"/>
+			<Value val="OrdinaryDiff3" enDescr="Ordinary Diff 3" ruDescr="Прост. Дифф. N.3"/>
+			<Value val="OrdinaryDiff4" enDescr="Ordinary Diff 4" ruDescr="Прост. Дифф. N.4"/>
+			<Value val="OrdinaryDiff5" enDescr="Ordinary Diff 5" ruDescr="Прост. Дифф. N.5"/>
+			<Value val="OrdinaryDiff6" enDescr="Ordinary Diff 6" ruDescr="Прост. Дифф. N.6"/>
+			<Value val="OrdinaryDiff7" enDescr="Ordinary Diff 7" ruDescr="Прост. Дифф. N.7"/>
+			<Value val="OrdinaryDiff8" enDescr="Ordinary Diff 8" ruDescr="Прост. Дифф. N.8"/>
+			<Value val="OrdinaryDiff9" enDescr="Ordinary Diff 9" ruDescr="Прост. Дифф. N.9"/>
+			<Value val="OrdinaryDiff10" enDescr="Ordinary Diff 10" ruDescr="Прост. Дифф. N.10"/>
+			<Value val="OrdinaryDiff11" enDescr="Ordinary Diff 11" ruDescr="Прост. Дифф. N.11"/>
+			<Value val="OrdinaryDiff12" enDescr="Ordinary Diff 12" ruDescr="Прост. Дифф. N.12"/>
+			<Value val="OrdinaryDiff13" enDescr="Ordinary Diff 13" ruDescr="Прост. Дифф. N.13"/>
+			<Value val="OrdinaryDiff14" enDescr="Ordinary Diff 14" ruDescr="Прост. Дифф. N.14"/>
+			<Value val="OrdinaryDiff15" enDescr="Ordinary Diff 15" ruDescr="Прост. Дифф. N.15"/>
+			<Value val="OrdinaryDiff16" enDescr="Ordinary Diff 16" ruDescr="Прост. Дифф. N.16"/>
+			<Value val="OrdinaryDiff17" enDescr="Ordinary Diff 17" ruDescr="Прост. Дифф. N.17"/>
+			<Value val="OrdinaryDiff18" enDescr="Ordinary Diff 18" ruDescr="Прост. Дифф. N.18"/>
+			<Value val="OrdinaryDiff19" enDescr="Ordinary Diff 19" ruDescr="Прост. Дифф. N.19"/>
+			<Value val="OrdinaryDiff20" enDescr="Ordinary Diff 20" ruDescr="Прост. Дифф. N.20"/>
+			<Value val="OrdinaryDiff21" enDescr="Ordinary Diff 21" ruDescr="Прост. Дифф. N.21"/>
+			<Value val="OrdinaryDiff22" enDescr="Ordinary Diff 22" ruDescr="Прост. Дифф. N.22"/>
+			<Value val="OrdinaryDiff23" enDescr="Ordinary Diff 23" ruDescr="Прост. Дифф. N.23"/>
+			<Value val="OrdinaryDiff24" enDescr="Ordinary Diff 24" ruDescr="Прост. Дифф. N.24"/>
+			<Value val="OrdinaryDiff25" enDescr="Ordinary Diff 25" ruDescr="Прост. Дифф. N.25"/>
+			<Value val="OrdinaryDiff26" enDescr="Ordinary Diff 26" ruDescr="Прост. Дифф. N.26"/>
+			<Value val="OrdinaryDiff27" enDescr="Ordinary Diff 27" ruDescr="Прост. Дифф. N.27"/>
+			<Value val="OrdinaryDiff28" enDescr="Ordinary Diff 28" ruDescr="Прост. Дифф. N.28"/>
+			<Value val="OrdinaryDiff29" enDescr="Ordinary Diff 29" ruDescr="Прост. Дифф. N.29"/>
+			<Value val="OrdinaryDiff30" enDescr="Ordinary Diff 30" ruDescr="Прост. Дифф. N.30"/>
+			<Value val="OrdinaryDiff31" enDescr="Ordinary Diff 31" ruDescr="Прост. Дифф. N.31"/>
+			<Value val="OrdinaryDiff32" enDescr="Ordinary Diff 32" ruDescr="Прост. Дифф. N.32"/>
+			<Value val="OrdinaryDiff33" enDescr="Ordinary Diff 33" ruDescr="Прост. Дифф. N.33"/>
+			<Value val="OrdinaryDiff34" enDescr="Ordinary Diff 34" ruDescr="Прост. Дифф. N.34"/>
+			<Value val="OrdinaryDiff35" enDescr="Ordinary Diff 35" ruDescr="Прост. Дифф. N.35"/>
+			<Value val="OrdinaryDiff36" enDescr="Ordinary Diff 36" ruDescr="Прост. Дифф. N.36"/>
+			<Value val="OrdinaryDiff37" enDescr="Ordinary Diff 37" ruDescr="Прост. Дифф. N.37"/>
+			<Value val="OrdinaryDiff38" enDescr="Ordinary Diff 38" ruDescr="Прост. Дифф. N.38"/>
+			<Value val="OrdinaryDiff39" enDescr="Ordinary Diff 39" ruDescr="Прост. Дифф. N.39"/>
+			<Value val="OrdinaryDiff40" enDescr="Ordinary Diff 40" ruDescr="Прост. Дифф. N.40"/>
+			<Value val="OrdinaryDiff41" enDescr="Ordinary Diff 41" ruDescr="Прост. Дифф. N.41"/>
+			<Value val="OrdinaryDiff42" enDescr="Ordinary Diff 42" ruDescr="Прост. Дифф. N.42"/>
+			<Value val="OrdinaryDiff43" enDescr="Ordinary Diff 43" ruDescr="Прост. Дифф. N.43"/>
+			<Value val="OrdinaryDiff44" enDescr="Ordinary Diff 44" ruDescr="Прост. Дифф. N.44"/>
+			<Value val="OrdinaryDiff45" enDescr="Ordinary Diff 45" ruDescr="Прост. Дифф. N.45"/>
+			<Value val="OrdinaryDiff46" enDescr="Ordinary Diff 46" ruDescr="Прост. Дифф. N.46"/>
+			<Value val="OrdinaryDiff47" enDescr="Ordinary Diff 47" ruDescr="Прост. Дифф. N.47"/>
+			<Value val="OrdinaryDiff48" enDescr="Ordinary Diff 48" ruDescr="Прост. Дифф. N.48"/>
+			<Value val="OrdinaryDiff49" enDescr="Ordinary Diff 49" ruDescr="Прост. Дифф. N.49"/>
+			<Value val="OrdinaryDiff50" enDescr="Ordinary Diff 50" ruDescr="Прост. Дифф. N.50"/>
+			<Value val="OrdinaryDiff51" enDescr="Ordinary Diff 51" ruDescr="Прост. Дифф. N.51"/>
+			<Value val="OrdinaryDiff52" enDescr="Ordinary Diff 52" ruDescr="Прост. Дифф. N.52"/>
+			<Value val="OrdinaryDiff53" enDescr="Ordinary Diff 53" ruDescr="Прост. Дифф. N.53"/>
+			<Value val="OrdinaryDiff54" enDescr="Ordinary Diff 54" ruDescr="Прост. Дифф. N.54"/>
+			<Value val="OrdinaryDiff55" enDescr="Ordinary Diff 55" ruDescr="Прост. Дифф. N.55"/>
+			<Value val="OrdinaryDiff56" enDescr="Ordinary Diff 56" ruDescr="Прост. Дифф. N.56"/>
+			<Value val="OrdinaryDiff57" enDescr="Ordinary Diff 57" ruDescr="Прост. Дифф. N.57"/>
+			<Value val="OrdinaryDiff58" enDescr="Ordinary Diff 58" ruDescr="Прост. Дифф. N.58"/>
+			<Value val="OrdinaryDiff59" enDescr="Ordinary Diff 59" ruDescr="Прост. Дифф. N.59"/>
+			<Value val="RegisteredDiff1" enDescr="Registered Diff 1" ruDescr="Заказн. Дифф. N.1"/>
+			<Value val="RegisteredDiff2" enDescr="Registered Diff 2" ruDescr="Заказн. Дифф. N.2"/>
+			<Value val="RegisteredDiff3" enDescr="Registered Diff 3" ruDescr="Заказн. Дифф. N.3"/>
+			<Value val="RegisteredDiff4" enDescr="Registered Diff 4" ruDescr="Заказн. Дифф. N.4"/>
+			<Value val="RegisteredDiff5" enDescr="Registered Diff 5" ruDescr="Заказн. Дифф. N.5"/>
+			<Value val="RegisteredDiff6" enDescr="Registered Diff 6" ruDescr="Заказн. Дифф. N.6"/>
+			<Value val="RegisteredDiff7" enDescr="Registered Diff 7" ruDescr="Заказн. Дифф. N.7"/>
+			<Value val="RegisteredDiff8" enDescr="Registered Diff 8" ruDescr="Заказн. Дифф. N.8"/>
+			<Value val="RegisteredDiff9" enDescr="Registered Diff 9" ruDescr="Заказн. Дифф. N.9"/>
+			<Value val="RegisteredDiff10" enDescr="Registered Diff 10" ruDescr="Заказн. Дифф. N.10"/>
+			<Value val="RegisteredDiff11" enDescr="Registered Diff 11" ruDescr="Заказн. Дифф. N.11"/>
+			<Value val="RegisteredDiff12" enDescr="Registered Diff 12" ruDescr="Заказн. Дифф. N.12"/>
+			<Value val="RegisteredDiff13" enDescr="Registered Diff 13" ruDescr="Заказн. Дифф. N.13"/>
+			<Value val="RegisteredDiff14" enDescr="Registered Diff 14" ruDescr="Заказн. Дифф. N.14"/>
+			<Value val="RegisteredDiff15" enDescr="Registered Diff 15" ruDescr="Заказн. Дифф. N.15"/>
+			<Value val="RegisteredDiff16" enDescr="Registered Diff 16" ruDescr="Заказн. Дифф. N.16"/>
+			<Value val="RegisteredDiff17" enDescr="Registered Diff 17" ruDescr="Заказн. Дифф. N.17"/>
+			<Value val="RegisteredDiff18" enDescr="Registered Diff 18" ruDescr="Заказн. Дифф. N.18"/>
+			<Value val="RegisteredDiff19" enDescr="Registered Diff 19" ruDescr="Заказн. Дифф. N.19"/>
+			<Value val="RegisteredDiff20" enDescr="Registered Diff 20" ruDescr="Заказн. Дифф. N.20"/>
+			<Value val="RegisteredDiff21" enDescr="Registered Diff 21" ruDescr="Заказн. Дифф. N.21"/>
+			<Value val="RegisteredDiff22" enDescr="Registered Diff 22" ruDescr="Заказн. Дифф. N.22"/>
+			<Value val="RegisteredDiff23" enDescr="Registered Diff 23" ruDescr="Заказн. Дифф. N.23"/>
+			<Value val="RegisteredDiff24" enDescr="Registered Diff 24" ruDescr="Заказн. Дифф. N.24"/>
+			<Value val="RegisteredDiff25" enDescr="Registered Diff 25" ruDescr="Заказн. Дифф. N.25"/>
+			<Value val="RegisteredDiff26" enDescr="Registered Diff 26" ruDescr="Заказн. Дифф. N.26"/>
+			<Value val="RegisteredDiff27" enDescr="Registered Diff 27" ruDescr="Заказн. Дифф. N.27"/>
+			<Value val="RegisteredDiff28" enDescr="Registered Diff 28" ruDescr="Заказн. Дифф. N.28"/>
+			<Value val="RegisteredDiff29" enDescr="Registered Diff 29" ruDescr="Заказн. Дифф. N.29"/>
+			<Value val="RegisteredDiff30" enDescr="Registered Diff 30" ruDescr="Заказн. Дифф. N.30"/>
+			<Value val="RegisteredDiff31" enDescr="Registered Diff 31" ruDescr="Заказн. Дифф. N.31"/>
+			<Value val="RegisteredDiff32" enDescr="Registered Diff 32" ruDescr="Заказн. Дифф. N.32"/>
+			<Value val="RegisteredDiff33" enDescr="Registered Diff 33" ruDescr="Заказн. Дифф. N.33"/>
+			<Value val="RegisteredDiff34" enDescr="Registered Diff 34" ruDescr="Заказн. Дифф. N.34"/>
+			<Value val="RegisteredDiff35" enDescr="Registered Diff 35" ruDescr="Заказн. Дифф. N.35"/>
+			<Value val="RegisteredDiff36" enDescr="Registered Diff 36" ruDescr="Заказн. Дифф. N.36"/>
+			<Value val="RegisteredDiff37" enDescr="Registered Diff 37" ruDescr="Заказн. Дифф. N.37"/>
+			<Value val="RegisteredDiff38" enDescr="Registered Diff 38" ruDescr="Заказн. Дифф. N.38"/>
+			<Value val="RegisteredDiff39" enDescr="Registered Diff 39" ruDescr="Заказн. Дифф. N.39"/>
+			<Value val="RegisteredDiff40" enDescr="Registered Diff 40" ruDescr="Заказн. Дифф. N.40"/>
+			<Value val="RegisteredDiff41" enDescr="Registered Diff 41" ruDescr="Заказн. Дифф. N.41"/>
+			<Value val="RegisteredDiff42" enDescr="Registered Diff 42" ruDescr="Заказн. Дифф. N.42"/>
+			<Value val="RegisteredDiff43" enDescr="Registered Diff 43" ruDescr="Заказн. Дифф. N.43"/>
+			<Value val="RegisteredDiff44" enDescr="Registered Diff 44" ruDescr="Заказн. Дифф. N.44"/>
+			<Value val="RegisteredDiff45" enDescr="Registered Diff 45" ruDescr="Заказн. Дифф. N.45"/>
+			<Value val="RegisteredDiff46" enDescr="Registered Diff 46" ruDescr="Заказн. Дифф. N.46"/>
+			<Value val="RegisteredDiff47" enDescr="Registered Diff 47" ruDescr="Заказн. Дифф. N.47"/>
+			<Value val="RegisteredDiff48" enDescr="Registered Diff 48" ruDescr="Заказн. Дифф. N.48"/>
+			<Value val="RegisteredDiff49" enDescr="Registered Diff 49" ruDescr="Заказн. Дифф. N.49"/>
+			<Value val="RegisteredDiff50" enDescr="Registered Diff 50" ruDescr="Заказн. Дифф. N.50"/>
+			<Value val="RegisteredDiff51" enDescr="Registered Diff 51" ruDescr="Заказн. Дифф. N.51"/>
+			<Value val="RegisteredDiff52" enDescr="Registered Diff 52" ruDescr="Заказн. Дифф. N.52"/>
+			<Value val="RegisteredDiff53" enDescr="Registered Diff 53" ruDescr="Заказн. Дифф. N.53"/>
+			<Value val="RegisteredDiff54" enDescr="Registered Diff 54" ruDescr="Заказн. Дифф. N.54"/>
+			<Value val="RegisteredDiff55" enDescr="Registered Diff 55" ruDescr="Заказн. Дифф. N.55"/>
+			<Value val="RegisteredDiff56" enDescr="Registered Diff 56" ruDescr="Заказн. Дифф. N.56"/>
+			<Value val="RegisteredDiff57" enDescr="Registered Diff 57" ruDescr="Заказн. Дифф. N.57"/>
+			<Value val="RegisteredDiff58" enDescr="Registered Diff 58" ruDescr="Заказн. Дифф. N.58"/>
+			<Value val="RegisteredDiff59" enDescr="Registered Diff 59" ruDescr="Заказн. Дифф. N.59"/>
+			<Value val="RegisteredDiff60" enDescr="Registered Diff 60" ruDescr="Заказн. Дифф. N.60"/>
+			<Value val="RegisteredDiff61" enDescr="Registered Diff 61" ruDescr="Заказн. Дифф. N.61"/>
+			<Value val="RegisteredDiff62" enDescr="Registered Diff 62" ruDescr="Заказн. Дифф. N.62"/>
+			<Value val="RegisteredDiff63" enDescr="Registered Diff 63" ruDescr="Заказн. Дифф. N.63"/>
+			<Value val="RegisteredDiff64" enDescr="Registered Diff 64" ruDescr="Заказн. Дифф. N.64"/>
+			<Value val="RegisteredDiff65" enDescr="Registered Diff 65" ruDescr="Заказн. Дифф. N.65"/>
+			<Value val="RegisteredDiff66" enDescr="Registered Diff 66" ruDescr="Заказн. Дифф. N.66"/>
+			<Value val="RegisteredDiff67" enDescr="Registered Diff 67" ruDescr="Заказн. Дифф. N.67"/>
+			<Value val="RegisteredDiff68" enDescr="Registered Diff 68" ruDescr="Заказн. Дифф. N.68"/>
+			<Value val="RegisteredDiff69" enDescr="Registered Diff 69" ruDescr="Заказн. Дифф. N.69"/>
+			<Value val="RegisteredDiff70" enDescr="Registered Diff 70" ruDescr="Заказн. Дифф. N.70"/>
+			<Value val="RegisteredDiff71" enDescr="Registered Diff 71" ruDescr="Заказн. Дифф. N.71"/>
+			<Value val="RegisteredDiff72" enDescr="Registered Diff 72" ruDescr="Заказн. Дифф. N.72"/>
+			<Value val="RegisteredDiff73" enDescr="Registered Diff 73" ruDescr="Заказн. Дифф. N.73"/>
+			<Value val="RegisteredDiff74" enDescr="Registered Diff 74" ruDescr="Заказн. Дифф. N.74"/>
+			<Value val="RegisteredDiff75" enDescr="Registered Diff 75" ruDescr="Заказн. Дифф. N.75"/>
+			<Value val="RegisteredDiff76" enDescr="Registered Diff 76" ruDescr="Заказн. Дифф. N.76"/>
+			<Value val="RegisteredDiff77" enDescr="Registered Diff 77" ruDescr="Заказн. Дифф. N.77"/>
+			<Value val="RegisteredDiff78" enDescr="Registered Diff 78" ruDescr="Заказн. Дифф. N.78"/>
+			<Value val="RegisteredDiff79" enDescr="Registered Diff 79" ruDescr="Заказн. Дифф. N.79"/>
+			<Value val="RegisteredDiff80" enDescr="Registered Diff 80" ruDescr="Заказн. Дифф. N.80"/>
+			<Value val="RegisteredDiff81" enDescr="Registered Diff 81" ruDescr="Заказн. Дифф. N.81"/>
+			<Value val="RegisteredDiff82" enDescr="Registered Diff 82" ruDescr="Заказн. Дифф. N.82"/>
+			<Value val="RegisteredDiff83" enDescr="Registered Diff 83" ruDescr="Заказн. Дифф. N.83"/>
+			<Value val="RegisteredDiff84" enDescr="Registered Diff 84" ruDescr="Заказн. Дифф. N.84"/>
+			<Value val="RegisteredDiff85" enDescr="Registered Diff 85" ruDescr="Заказн. Дифф. N.85"/>
+			<Value val="RegisteredDiff86" enDescr="Registered Diff 86" ruDescr="Заказн. Дифф. N.86"/>
+			<Value val="RegisteredDiff87" enDescr="Registered Diff 87" ruDescr="Заказн. Дифф. N.87"/>
+			<Value val="RegisteredDiff88" enDescr="Registered Diff 88" ruDescr="Заказн. Дифф. N.88"/>
+			<Value val="RegisteredDiff89" enDescr="Registered Diff 89" ruDescr="Заказн. Дифф. N.89"/>
+			<Value val="OrdinaryNotify" enDescr="Ordinary with Notification" ruDescr="Прост. с увед."/>
+			<Value val="RegisteredNotify" enDescr="Registered with Notification" ruDescr="Заказн. с увед."/>
+			<Value val="ZeroFrank" enDescr="Zero Franking" ruDescr="Нулевой франк"/>
+			<Value val="declaredValue" enDescr="Declared Value" ruDescr="ОЦ"/>
+			<Value val="Diff1" enDescr="Diff 1" ruDescr="Дифф. N.1"/>
+			<Value val="Diff2" enDescr="Diff 2" ruDescr="Дифф. N.2"/>
+			<Value val="Diff3" enDescr="Diff 3" ruDescr="Дифф. N.3"/>
+			<Value val="Diff4" enDescr="Diff 4" ruDescr="Дифф. N.4"/>
+			<Value val="Diff5" enDescr="Diff 5" ruDescr="Дифф. N.5"/>
+			<Value val="Diff6" enDescr="Diff 6" ruDescr="Дифф. N.6"/>
+			<Value val="Diff7" enDescr="Diff 7" ruDescr="Дифф. N.7"/>
+			<Value val="Diff8" enDescr="Diff 8" ruDescr="Дифф. N.8"/>
+			<Value val="Diff9" enDescr="Diff 9" ruDescr="Дифф. N.9"/>
+			<Value val="Diff10" enDescr="Diff 10" ruDescr="Дифф. N.10"/>
+			<Value val="Diff11" enDescr="Diff 11" ruDescr="Дифф. N.11"/>
+			<Value val="Diff12" enDescr="Diff 12" ruDescr="Дифф. N.12"/>
+			<Value val="Diff13" enDescr="Diff 13" ruDescr="Дифф. N.13"/>
+			<Value val="Diff14" enDescr="Diff 14" ruDescr="Дифф. N.14"/>
+			<Value val="Diff15" enDescr="Diff 15" ruDescr="Дифф. N.15"/>
+			<Value val="Diff16" enDescr="Diff 16" ruDescr="Дифф. N.16"/>
+			<Value val="Diff17" enDescr="Diff 17" ruDescr="Дифф. N.17"/>
+			<Value val="Diff18" enDescr="Diff 18" ruDescr="Дифф. N.18"/>
+			<Value val="Diff19" enDescr="Diff 19" ruDescr="Дифф. N.19"/>
+			<Value val="Diff20" enDescr="Diff 20" ruDescr="Дифф. N.20"/>
+			<Value val="Diff21" enDescr="Diff 21" ruDescr="Дифф. N.21"/>
+			<Value val="Diff22" enDescr="Diff 22" ruDescr="Дифф. N.22"/>
+			<Value val="Diff23" enDescr="Diff 23" ruDescr="Дифф. N.23"/>
+			<Value val="Diff24" enDescr="Diff 24" ruDescr="Дифф. N.24"/>
+		</defineClass>
+		<defineDeliveryMethod>
+			<Value val="Any" enDescr="Any" ruDescr="Любой"/>
+			<Value val="Air" enDescr="by Air" ruDescr="Воздушным"/>
+			<Value val="Surface" enDescr="by Surface" ruDescr="Наземным"/>
+			<Value val="up2000" enDescr="Up to 2000 Km" ruDescr="до 2000 км"/>
+			<Value val="after2000" enDescr="after 2000 Km" ruDescr="свыше 2000 км"/>
+		</defineDeliveryMethod>
+		<defineProduct>
+			<Value val="1ClLetter" enDescr="1st Class Letter" ruDescr="Письмо 1 кл."/>
+			<Value val="1ClSmallParcel" enDescr="1st Class Small Parcel" ruDescr="Бандероль 1 кл."/>
+			<Value val="Letter" enDescr="Letter" ruDescr="Письмо"/>
+			<Value val="MultiConv" enDescr="MultiConvert" ruDescr="Мультиконверт"/>
+			<Value val="PostCard" enDescr="Postcard" ruDescr="Почт. Карт"/>
+			<Value val="SmallParcel" enDescr="Small Parcel" ruDescr="Бандероль"/>
+			<Value val="1ClCityLetter" enDescr="1st Class City Letter" ruDescr="почтовое отправление 1-го класса"/>
+			<Value val="TestTariff" enDescr="Test Tariff" ruDescr="Тестовый тариф"/>
+			<Value val="TrackedPostcard" enDescr="Tracked Postcard" ruDescr="Трек-открытка"/>
+			<Value val="TrackedLetter" enDescr="Tracked Letter" ruDescr="Трек-письмо"/>
+		</defineProduct>
+	</defines>
+	<Product value="MultiConv">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="2010" maxWeight="150">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="50" value="30"/>
+							<WeightedTariff from="51" to="100" value="40"/>
+							<WeightedTariff from="101" to="150" value="50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="2011" maxWeight="150">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="50" value="65"/>
+							<WeightedTariff from="51" to="100" value="75"/>
+							<WeightedTariff from="101" to="150" value="90"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="1ClLetter">
+		<Area value="Domestic" sendingZone="1">
+			<DeliveryMethod value="Any">
+				<Class value="Registered" ProductType="5106" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="80"/>
+							<WeightedTariff from="21" to="50" value="95"/>
+							<WeightedTariff from="51" to="100" value="110"/>
+							<WeightedTariff from="101" to="200" value="135"/>
+							<WeightedTariff from="201" to="500" value="155"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="up2000">
+				<Class value="declaredValue" ProductType="5111" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="135"/>
+							<WeightedTariff from="21" to="50" value="150"/>
+							<WeightedTariff from="51" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="190"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="declaredValue" ProductType="5112" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="135"/>
+							<WeightedTariff from="21" to="50" value="150"/>
+							<WeightedTariff from="51" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="210"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="2">
+			<DeliveryMethod value="Any">
+				<Class value="Registered" ProductType="5107" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="90"/>
+							<WeightedTariff from="21" to="50" value="100"/>
+							<WeightedTariff from="51" to="100" value="120"/>
+							<WeightedTariff from="101" to="200" value="145"/>
+							<WeightedTariff from="201" to="500" value="195"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="up2000">
+				<Class value="declaredValue" ProductType="5113" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="145"/>
+							<WeightedTariff from="21" to="50" value="155"/>
+							<WeightedTariff from="51" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="180"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="declaredValue" ProductType="5114" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="145"/>
+							<WeightedTariff from="21" to="50" value="155"/>
+							<WeightedTariff from="51" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="220"/>
+							<WeightedTariff from="201" to="500" value="270"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="3">
+			<DeliveryMethod value="Any">
+				<Class value="Registered" ProductType="5108" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="90"/>
+							<WeightedTariff from="21" to="50" value="100"/>
+							<WeightedTariff from="51" to="100" value="120"/>
+							<WeightedTariff from="101" to="200" value="145"/>
+							<WeightedTariff from="201" to="500" value="195"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="up2000">
+				<Class value="declaredValue" ProductType="5115" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="145"/>
+							<WeightedTariff from="21" to="50" value="155"/>
+							<WeightedTariff from="51" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="180"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="declaredValue" ProductType="5116" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="145"/>
+							<WeightedTariff from="21" to="50" value="155"/>
+							<WeightedTariff from="51" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="220"/>
+							<WeightedTariff from="201" to="500" value="270"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="4">
+			<DeliveryMethod value="Any">
+				<Class value="Registered" ProductType="5109" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="110"/>
+							<WeightedTariff from="21" to="50" value="120"/>
+							<WeightedTariff from="51" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="225"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="up2000">
+				<Class value="declaredValue" ProductType="5117" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="165"/>
+							<WeightedTariff from="21" to="50" value="175"/>
+							<WeightedTariff from="51" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="195"/>
+							<WeightedTariff from="201" to="500" value="260"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="declaredValue" ProductType="5118" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="165"/>
+							<WeightedTariff from="21" to="50" value="175"/>
+							<WeightedTariff from="51" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="235"/>
+							<WeightedTariff from="201" to="500" value="300"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="5">
+			<DeliveryMethod value="Any">
+				<Class value="Registered" ProductType="5110" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="110"/>
+							<WeightedTariff from="21" to="50" value="120"/>
+							<WeightedTariff from="51" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="225"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="up2000">
+				<Class value="declaredValue" ProductType="5119" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="165"/>
+							<WeightedTariff from="21" to="50" value="175"/>
+							<WeightedTariff from="51" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="195"/>
+							<WeightedTariff from="201" to="500" value="260"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="declaredValue" ProductType="5120" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="165"/>
+							<WeightedTariff from="21" to="50" value="175"/>
+							<WeightedTariff from="51" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="235"/>
+							<WeightedTariff from="201" to="500" value="300"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="WithinCrimea">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="8101" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="58"/>
+							<WeightedTariff from="21" to="50" value="65"/>
+							<WeightedTariff from="51" to="100" value="82"/>
+							<WeightedTariff from="101" to="200" value="103"/>
+							<WeightedTariff from="201" to="500" value="155"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8201" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="94"/>
+							<WeightedTariff from="21" to="50" value="100"/>
+							<WeightedTariff from="51" to="100" value="115"/>
+							<WeightedTariff from="101" to="200" value="119"/>
+							<WeightedTariff from="201" to="500" value="158"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="8102" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="58"/>
+							<WeightedTariff from="21" to="50" value="65"/>
+							<WeightedTariff from="51" to="100" value="82"/>
+							<WeightedTariff from="101" to="200" value="103"/>
+							<WeightedTariff from="201" to="500" value="155"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8202" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="94"/>
+							<WeightedTariff from="21" to="50" value="100"/>
+							<WeightedTariff from="51" to="100" value="115"/>
+							<WeightedTariff from="101" to="200" value="119"/>
+							<WeightedTariff from="201" to="500" value="158"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="OutsideCrimea">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="8501" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="80"/>
+							<WeightedTariff from="21" to="50" value="95"/>
+							<WeightedTariff from="51" to="100" value="110"/>
+							<WeightedTariff from="101" to="200" value="135"/>
+							<WeightedTariff from="201" to="500" value="155"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8601" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="135"/>
+							<WeightedTariff from="21" to="50" value="150"/>
+							<WeightedTariff from="51" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="190"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="8502" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="80"/>
+							<WeightedTariff from="21" to="50" value="95"/>
+							<WeightedTariff from="51" to="100" value="110"/>
+							<WeightedTariff from="101" to="200" value="135"/>
+							<WeightedTariff from="201" to="500" value="155"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8602" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="135"/>
+							<WeightedTariff from="21" to="50" value="150"/>
+							<WeightedTariff from="51" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="210"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="1ClCityLetter">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="OrdinaryDiff1" ProductType="1701" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="5.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff2" ProductType="1703" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="6.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff3" ProductType="1705" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="6.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff4" ProductType="1707" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff5" ProductType="1709" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7.15"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff6" ProductType="1711" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff7" ProductType="1713" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="8.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff8" ProductType="1715" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="8.50"/>
+							<WeightIncrement after="20" every="20" value="5.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff9" ProductType="1717" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="9.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff10" ProductType="1719" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="9.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff11" ProductType="1721" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="10.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff12" ProductType="1723" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="10.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff13" ProductType="1725" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="10.83"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff14" ProductType="1727" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="11.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff15" ProductType="1729" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="11.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff16" ProductType="1731" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="12.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff17" ProductType="1733" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="12.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff18" ProductType="1735" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="13.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff19" ProductType="1737" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="13.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff20" ProductType="1739" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="14.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff21" ProductType="1741" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="14.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff22" ProductType="1743" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="15.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff23" ProductType="1745" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="15.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff24" ProductType="1747" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="16.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff25" ProductType="1749" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="16.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff26" ProductType="1751" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="17.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff27" ProductType="1753" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="17.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff28" ProductType="1755" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="18.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff29" ProductType="1757" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="18.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff30" ProductType="1759" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="19.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff31" ProductType="1761" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="19.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff32" ProductType="1763" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="20.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff33" ProductType="1765" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="20.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff34" ProductType="1767" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff35" ProductType="1769" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff36" ProductType="1771" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff37" ProductType="1773" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff38" ProductType="1775" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff39" ProductType="1777" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff40" ProductType="1779" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="24.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff41" ProductType="1781" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="25.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff42" ProductType="1783" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="28.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff43" ProductType="1785" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="26"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff44" ProductType="1787" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="27"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff45" ProductType="1789" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="6.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff46" ProductType="1791" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff47" ProductType="1793" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7.15"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff48" ProductType="1795" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="7.50"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff49" ProductType="1797" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="8"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff50" ProductType="1799" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="8.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff51" ProductType="1801" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="9"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff52" ProductType="1803" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="10"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff53" ProductType="1805" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="11"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff54" ProductType="1807" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="12"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff55" ProductType="1809" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="13"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff56" ProductType="1811" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="14"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff57" ProductType="1813" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="15"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff58" ProductType="1815" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="17"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff59" ProductType="1817" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="12"/>
+							<WeightIncrement after="20" every="20" value="6"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff1" ProductType="1702" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="20.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff2" ProductType="1704" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff3" ProductType="1706" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21.25"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff4" ProductType="1708" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff5" ProductType="1710" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.40"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff6" ProductType="1712" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff7" ProductType="1714" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff8" ProductType="1716" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.10"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff9" ProductType="1718" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff10" ProductType="1720" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="24.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff11" ProductType="1722" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="24.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff12" ProductType="1724" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="25.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff13" ProductType="1726" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="25.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff14" ProductType="1728" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="26.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff15" ProductType="1730" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="26.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff16" ProductType="1732" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="27.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff17" ProductType="1734" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="27.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff18" ProductType="1736" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="28.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff19" ProductType="1738" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="28.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff20" ProductType="1740" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="29.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff21" ProductType="1742" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="29.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff22" ProductType="1744" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="30.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff23" ProductType="1746" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="31.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff24" ProductType="1748" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="31.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff25" ProductType="1750" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="32.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff26" ProductType="1752" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="33.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff27" ProductType="1754" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="33.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff28" ProductType="1756" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="34.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff29" ProductType="1758" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="34.33"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff30" ProductType="1760" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="34.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff31" ProductType="1762" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="35.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff32" ProductType="1764" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="35.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff33" ProductType="1766" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="36.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff34" ProductType="1768" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="36.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff35" ProductType="1770" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="37.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff36" ProductType="1772" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="37.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff37" ProductType="1774" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="38.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff38" ProductType="1776" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="38.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff39" ProductType="1778" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="39.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff40" ProductType="1780" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="40.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff41" ProductType="1782" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="41.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff42" ProductType="1784" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="42.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff43" ProductType="1786" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="43.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff44" ProductType="1788" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="43.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff45" ProductType="1790" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="44.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff46" ProductType="1792" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="44.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff47" ProductType="1794" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="45.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff48" ProductType="1796" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="45.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff49" ProductType="1798" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="46.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff50" ProductType="1800" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="47.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff51" ProductType="1802" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="48.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff52" ProductType="1804" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="49.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff53" ProductType="1806" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="50.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff54" ProductType="1808" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="51.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff55" ProductType="1810" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="52.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff56" ProductType="1812" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="53.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff57" ProductType="1814" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="54.00"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff58" ProductType="1816" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="58.80"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff59" ProductType="1818" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="59.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff60" ProductType="1820" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="68.19"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff61" ProductType="1822" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="32.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff62" ProductType="1824" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="42.50"/>
+							<WeightIncrement after="20" every="20" value="4.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff63" ProductType="1826" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff64" ProductType="1828" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="21.25"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff65" ProductType="1830" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.00"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff66" ProductType="1832" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.40"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff67" ProductType="1834" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22.50"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff68" ProductType="1836" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff69" ProductType="1838" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.10"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff70" ProductType="1840" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23.30"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff71" ProductType="1842" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="24"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff72" ProductType="1844" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="25"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff73" ProductType="1846" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="26"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff74" ProductType="1848" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="27"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff75" ProductType="1850" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="28"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff76" ProductType="1852" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="28.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff77" ProductType="1854" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="29"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff78" ProductType="1856" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="29.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff79" ProductType="1858" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="30"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff80" ProductType="1860" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="31"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff81" ProductType="1862" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="32"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff82" ProductType="1864" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="33"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff83" ProductType="1866" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="33.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff84" ProductType="1868" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="34.5"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff85" ProductType="1870" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="35"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff86" ProductType="1872" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="36"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff87" ProductType="1874" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="37"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff88" ProductType="1876" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="38"/>
+							<WeightIncrement after="20" every="20" value="5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff89" ProductType="1878" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="33.5"/>
+							<WeightIncrement after="20" every="20" value="6"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="TestTariff">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="ZeroFrank" ProductType="1000" maxWeight="20">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="0"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="1ClSmallParcel">
+		<Area value="Domestic" sendingZone="1">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="5201" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="180"/>
+							<WeightedTariff from="501" to="1000" value="230"/>
+							<WeightedTariff from="1001" to="1500" value="430"/>
+							<WeightedTariff from="1501" to="2000" value="530"/>
+							<WeightedTariff from="2001" to="2500" value="640"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5211" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="190"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="460"/>
+							<WeightedTariff from="1501" to="2000" value="560"/>
+							<WeightedTariff from="2001" to="2500" value="670"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="5202" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="180"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="475"/>
+							<WeightedTariff from="1501" to="2000" value="590"/>
+							<WeightedTariff from="2001" to="2500" value="700"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5212" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="210"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="505"/>
+							<WeightedTariff from="1501" to="2000" value="620"/>
+							<WeightedTariff from="2001" to="2500" value="730"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="2">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="5203" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="145"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="220"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="460"/>
+							<WeightedTariff from="1501" to="2000" value="580"/>
+							<WeightedTariff from="2001" to="2500" value="690"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5213" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="180"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="490"/>
+							<WeightedTariff from="1501" to="2000" value="610"/>
+							<WeightedTariff from="2001" to="2500" value="720"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="5204" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="145"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="220"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="505"/>
+							<WeightedTariff from="1501" to="2000" value="640"/>
+							<WeightedTariff from="2001" to="2500" value="750"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5214" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="220"/>
+							<WeightedTariff from="201" to="500" value="270"/>
+							<WeightedTariff from="501" to="1000" value="320"/>
+							<WeightedTariff from="1001" to="1500" value="535"/>
+							<WeightedTariff from="1501" to="2000" value="670"/>
+							<WeightedTariff from="2001" to="2500" value="780"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="3">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="5205" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="145"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="220"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="460"/>
+							<WeightedTariff from="1501" to="2000" value="580"/>
+							<WeightedTariff from="2001" to="2500" value="690"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5215" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="180"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="490"/>
+							<WeightedTariff from="1501" to="2000" value="610"/>
+							<WeightedTariff from="2001" to="2500" value="720"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="5206" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="145"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="220"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="505"/>
+							<WeightedTariff from="1501" to="2000" value="640"/>
+							<WeightedTariff from="2001" to="2500" value="750"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5216" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="175"/>
+							<WeightedTariff from="101" to="200" value="220"/>
+							<WeightedTariff from="201" to="500" value="270"/>
+							<WeightedTariff from="501" to="1000" value="320"/>
+							<WeightedTariff from="1001" to="1500" value="535"/>
+							<WeightedTariff from="1501" to="2000" value="670"/>
+							<WeightedTariff from="2001" to="2500" value="780"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="4">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="5207" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="160"/>
+							<WeightedTariff from="101" to="200" value="185"/>
+							<WeightedTariff from="201" to="500" value="250"/>
+							<WeightedTariff from="501" to="1000" value="300"/>
+							<WeightedTariff from="1001" to="1500" value="530"/>
+							<WeightedTariff from="1501" to="2000" value="675"/>
+							<WeightedTariff from="2001" to="2500" value="790"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5217" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="195"/>
+							<WeightedTariff from="201" to="500" value="260"/>
+							<WeightedTariff from="501" to="1000" value="330"/>
+							<WeightedTariff from="1001" to="1500" value="560"/>
+							<WeightedTariff from="1501" to="2000" value="705"/>
+							<WeightedTariff from="2001" to="2500" value="820"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="5208" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="160"/>
+							<WeightedTariff from="101" to="200" value="185"/>
+							<WeightedTariff from="201" to="500" value="250"/>
+							<WeightedTariff from="501" to="1000" value="330"/>
+							<WeightedTariff from="1001" to="1500" value="575"/>
+							<WeightedTariff from="1501" to="2000" value="735"/>
+							<WeightedTariff from="2001" to="2500" value="850"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5218" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="235"/>
+							<WeightedTariff from="201" to="500" value="300"/>
+							<WeightedTariff from="501" to="1000" value="360"/>
+							<WeightedTariff from="1001" to="1500" value="605"/>
+							<WeightedTariff from="1501" to="2000" value="765"/>
+							<WeightedTariff from="2001" to="2500" value="880"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic" sendingZone="5">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="5209" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="160"/>
+							<WeightedTariff from="101" to="200" value="185"/>
+							<WeightedTariff from="201" to="500" value="250"/>
+							<WeightedTariff from="501" to="1000" value="300"/>
+							<WeightedTariff from="1001" to="1500" value="530"/>
+							<WeightedTariff from="1501" to="2000" value="675"/>
+							<WeightedTariff from="2001" to="2500" value="790"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5219" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="195"/>
+							<WeightedTariff from="201" to="500" value="260"/>
+							<WeightedTariff from="501" to="1000" value="330"/>
+							<WeightedTariff from="1001" to="1500" value="560"/>
+							<WeightedTariff from="1501" to="2000" value="705"/>
+							<WeightedTariff from="2001" to="2500" value="820"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="5210" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="160"/>
+							<WeightedTariff from="101" to="200" value="185"/>
+							<WeightedTariff from="201" to="500" value="250"/>
+							<WeightedTariff from="501" to="1000" value="330"/>
+							<WeightedTariff from="1001" to="1500" value="575"/>
+							<WeightedTariff from="1501" to="2000" value="735"/>
+							<WeightedTariff from="2001" to="2500" value="850"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="5220" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="190"/>
+							<WeightedTariff from="101" to="200" value="235"/>
+							<WeightedTariff from="201" to="500" value="300"/>
+							<WeightedTariff from="501" to="1000" value="360"/>
+							<WeightedTariff from="1001" to="1500" value="605"/>
+							<WeightedTariff from="1501" to="2000" value="765"/>
+							<WeightedTariff from="2001" to="2500" value="880"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="WithinCrimea">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="8301" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="88"/>
+							<WeightedTariff from="101" to="200" value="102"/>
+							<WeightedTariff from="201" to="500" value="154"/>
+							<WeightedTariff from="501" to="1000" value="228"/>
+							<WeightedTariff from="1001" to="1500" value="300"/>
+							<WeightedTariff from="1501" to="2000" value="364"/>
+							<WeightedTariff from="2001" to="2500" value="437"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8401" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="117"/>
+							<WeightedTariff from="101" to="200" value="123"/>
+							<WeightedTariff from="201" to="500" value="162"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="317"/>
+							<WeightedTariff from="1501" to="2000" value="380"/>
+							<WeightedTariff from="2001" to="2500" value="458"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="8302" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="88"/>
+							<WeightedTariff from="101" to="200" value="102"/>
+							<WeightedTariff from="201" to="500" value="154"/>
+							<WeightedTariff from="501" to="1000" value="228"/>
+							<WeightedTariff from="1001" to="1500" value="300"/>
+							<WeightedTariff from="1501" to="2000" value="364"/>
+							<WeightedTariff from="2001" to="2500" value="437"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8402" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="117"/>
+							<WeightedTariff from="101" to="200" value="123"/>
+							<WeightedTariff from="201" to="500" value="162"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="317"/>
+							<WeightedTariff from="1501" to="2000" value="380"/>
+							<WeightedTariff from="2001" to="2500" value="458"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="OutsideCrimea">
+			<DeliveryMethod value="up2000">
+				<Class value="Registered" ProductType="8701" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="180"/>
+							<WeightedTariff from="501" to="1000" value="230"/>
+							<WeightedTariff from="1001" to="1500" value="430"/>
+							<WeightedTariff from="1501" to="2000" value="530"/>
+							<WeightedTariff from="2001" to="2500" value="640"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8801" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="170"/>
+							<WeightedTariff from="201" to="500" value="190"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="460"/>
+							<WeightedTariff from="1501" to="2000" value="560"/>
+							<WeightedTariff from="2001" to="2500" value="670"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="after2000">
+				<Class value="Registered" ProductType="8702" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="135"/>
+							<WeightedTariff from="101" to="200" value="160"/>
+							<WeightedTariff from="201" to="500" value="180"/>
+							<WeightedTariff from="501" to="1000" value="260"/>
+							<WeightedTariff from="1001" to="1500" value="475"/>
+							<WeightedTariff from="1501" to="2000" value="590"/>
+							<WeightedTariff from="2001" to="2500" value="700"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="declaredValue" ProductType="8802" maxWeight="2500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="165"/>
+							<WeightedTariff from="101" to="200" value="210"/>
+							<WeightedTariff from="201" to="500" value="230"/>
+							<WeightedTariff from="501" to="1000" value="290"/>
+							<WeightedTariff from="1001" to="1500" value="505"/>
+							<WeightedTariff from="1501" to="2000" value="620"/>
+							<WeightedTariff from="2001" to="2500" value="730"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="PostCard">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="6100" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="18"/>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="6101" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="39"/>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="International">
+			<DeliveryMethod value="Surface">
+				<Class value="Ordinary" ProductType="6210" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="45"/>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="6211" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="195"/>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="Air">
+				<Class value="Ordinary" ProductType="6220" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="50"/>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="6221" maxWeight="20">
+					<Tariff>
+						<FixedTariff value="200"/>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="Letter">
+		<Area value="WithinCrimea">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="7101" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="18"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="7102" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="41"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="OutsideCrimea">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="7301" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="22"/>
+							<WeightIncrement after="20" every="20" value="2.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="7302" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="46"/>
+							<WeightIncrement after="20" every="20" value="2.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="2100" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23"/>
+							<WeightIncrement after="20" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="2101" maxWeight="100">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="50"/>
+							<WeightIncrement after="20" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff1" ProductType="2102" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="23"/>
+							<WeightIncrement after="20" every="20" value="0"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff1" ProductType="2103" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="50"/>
+							<WeightIncrement after="20" every="20" value="0"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff2" ProductType="2104" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="20.38"/>
+							<WeightIncrement after="20" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff2" ProductType="2105" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="46"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff3" ProductType="2106" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="19"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff3" ProductType="2107" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="41"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff4" ProductType="2108" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="15"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff4" ProductType="2109" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="38"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="OrdinaryDiff5" ProductType="2110" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="20"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="RegisteredDiff5" ProductType="2111" maxWeight="100" PostalMarketOnly="true">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="44"/>
+							<WeightIncrement after="20" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="International">
+			<DeliveryMethod value="Surface">
+				<Class value="Ordinary" ProductType="2210" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="45"/>
+							<WeightedTariff from="21" to="100" value="85"/>
+							<WeightedTariff from="101" to="250" value="180"/>
+							<WeightedTariff from="251" to="500" value="350"/>
+							<WeightedTariff from="501" to="1000" value="650"/>
+							<WeightedTariff from="1001" to="2000" value="1050"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="2211" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="195"/>
+							<WeightedTariff from="21" to="100" value="235"/>
+							<WeightedTariff from="101" to="250" value="330"/>
+							<WeightedTariff from="251" to="500" value="500"/>
+							<WeightedTariff from="501" to="1000" value="800"/>
+							<WeightedTariff from="1001" to="2000" value="1200"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+				<Class value="RegisteredNotify" ProductType="2223" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="287"/>
+							<WeightedTariff from="21" to="100" value="327"/>
+							<WeightedTariff from="101" to="250" value="422"/>
+							<WeightedTariff from="251" to="500" value="592"/>
+							<WeightedTariff from="501" to="1000" value="892"/>
+							<WeightedTariff from="1001" to="2000" value="1292"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="Air">
+				<Class value="Ordinary" ProductType="2220" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="50"/>
+							<WeightedTariff from="21" to="100" value="105"/>
+							<WeightedTariff from="101" to="250" value="220"/>
+							<WeightedTariff from="251" to="500" value="400"/>
+							<WeightedTariff from="501" to="1000" value="800"/>
+							<WeightedTariff from="1001" to="2000" value="1350"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="2221" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="200"/>
+							<WeightedTariff from="21" to="100" value="255"/>
+							<WeightedTariff from="101" to="250" value="370"/>
+							<WeightedTariff from="251" to="500" value="550"/>
+							<WeightedTariff from="501" to="1000" value="950"/>
+							<WeightedTariff from="1001" to="2000" value="1500"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+				<Class value="RegisteredNotify" ProductType="2225" maxWeight="2000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="292"/>
+							<WeightedTariff from="21" to="100" value="347"/>
+							<WeightedTariff from="101" to="250" value="462"/>
+							<WeightedTariff from="251" to="500" value="642"/>
+							<WeightedTariff from="501" to="1000" value="1042"/>
+							<WeightedTariff from="1001" to="2000" value="1592"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="SmallParcel">
+		<Area value="InternationalNotify">
+			<DeliveryMethod value="Air">
+				<Class value="RegisteredNotify" ProductType="3301" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="287"/>
+							<WeightedTariff from="21" to="100" value="327"/>
+							<WeightedTariff from="101" to="250" value="422"/>
+							<WeightedTariff from="251" to="500" value="592"/>
+							<WeightedTariff from="501" to="1000" value="892"/>
+							<WeightedTariff from="1001" to="2000" value="1292"/>
+							<WeightIncrement after="2000" every="1000" value="555"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="Surface">
+				<Class value="RegisteredNotify" ProductType="3302" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="292"/>
+							<WeightedTariff from="21" to="100" value="347"/>
+							<WeightedTariff from="101" to="250" value="462"/>
+							<WeightedTariff from="251" to="500" value="642"/>
+							<WeightedTariff from="501" to="1000" value="1042"/>
+							<WeightedTariff from="1001" to="2000" value="1592"/>
+							<WeightIncrement after="2000" every="1000" value="665"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="WithinCrimea">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="7201" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="25"/>
+							<WeightIncrement after="100" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="7202" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="50"/>
+							<WeightIncrement after="100" every="20" value="2.5"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="OutsideCrimea">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="7401" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="40"/>
+							<WeightIncrement after="100" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="7402" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="66"/>
+							<WeightIncrement after="100" every="20" value="2.50"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="3100" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="40"/>
+							<WeightIncrement after="100" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="3101" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="100" value="70"/>
+							<WeightIncrement after="100" every="20" value="3"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+		<Area value="International">
+			<DeliveryMethod value="Surface">
+				<Class value="Ordinary" ProductType="3210" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="45"/>
+							<WeightedTariff from="21" to="100" value="85"/>
+							<WeightedTariff from="101" to="250" value="180"/>
+							<WeightedTariff from="251" to="500" value="350"/>
+							<WeightedTariff from="501" to="1000" value="650"/>
+							<WeightedTariff from="1001" to="2000" value="1050"/>
+							<WeightIncrement after="2000" every="1000" value="555"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="3211" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="195"/>
+							<WeightedTariff from="21" to="100" value="235"/>
+							<WeightedTariff from="101" to="250" value="330"/>
+							<WeightedTariff from="251" to="500" value="500"/>
+							<WeightedTariff from="501" to="1000" value="800"/>
+							<WeightedTariff from="1001" to="2000" value="1200"/>
+							<WeightIncrement after="2000" every="1000" value="555"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+			<DeliveryMethod value="Air">
+				<Class value="Ordinary" ProductType="3220" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="50"/>
+							<WeightedTariff from="21" to="100" value="105"/>
+							<WeightedTariff from="101" to="250" value="220"/>
+							<WeightedTariff from="251" to="500" value="400"/>
+							<WeightedTariff from="501" to="1000" value="800"/>
+							<WeightedTariff from="1001" to="2000" value="1350"/>
+							<WeightIncrement after="2000" every="1000" value="665"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+				<Class value="Registered" ProductType="3221" maxWeight="5000">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="200"/>
+							<WeightedTariff from="21" to="100" value="255"/>
+							<WeightedTariff from="101" to="250" value="370"/>
+							<WeightedTariff from="251" to="500" value="550"/>
+							<WeightedTariff from="501" to="1000" value="950"/>
+							<WeightedTariff from="1001" to="2000" value="1500"/>
+							<WeightIncrement after="2000" every="1000" value="665"/>
+						</VariableTariff>
+					</Tariff>
+					<FixedTax value="0"/>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="TrackedPostcard">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="4100" maxWeight="20">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="27"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+	<Product value="TrackedLetter">
+		<Area value="Domestic">
+			<DeliveryMethod value="Any">
+				<Class value="Ordinary" ProductType="4101" maxWeight="500">
+					<Tariff>
+						<VariableTariff>
+							<WeightedTariff from="0" to="20" value="34"/>
+							<WeightedTariff from="21" to="40" value="36.5"/>
+							<WeightedTariff from="41" to="60" value="39"/>
+							<WeightedTariff from="61" to="80" value="41.5"/>
+							<WeightedTariff from="81" to="100" value="44"/>
+							<WeightedTariff from="101" to="120" value="55.5"/>
+							<WeightedTariff from="121" to="140" value="58"/>
+							<WeightedTariff from="141" to="160" value="60.5"/>
+							<WeightedTariff from="161" to="180" value="67"/>
+							<WeightedTariff from="181" to="200" value="73"/>
+							<WeightedTariff from="201" to="220" value="79.50"/>
+							<WeightedTariff from="221" to="240" value="85.50"/>
+							<WeightedTariff from="241" to="260" value="91.50"/>
+							<WeightedTariff from="261" to="280" value="98"/>
+							<WeightedTariff from="281" to="300" value="104"/>
+							<WeightedTariff from="301" to="320" value="110"/>
+							<WeightedTariff from="321" to="340" value="116.50"/>
+							<WeightedTariff from="341" to="360" value="122.50"/>
+							<WeightedTariff from="361" to="380" value="128.50"/>
+							<WeightedTariff from="381" to="400" value="135"/>
+							<WeightedTariff from="401" to="420" value="141"/>
+							<WeightedTariff from="421" to="440" value="147"/>
+							<WeightedTariff from="441" to="460" value="153.50"/>
+							<WeightedTariff from="461" to="480" value="159.50"/>
+							<WeightedTariff from="481" to="500" value="166"/>
+						</VariableTariff>
+					</Tariff>
+				</Class>
+			</DeliveryMethod>
+		</Area>
+	</Product>
+</RateTable>

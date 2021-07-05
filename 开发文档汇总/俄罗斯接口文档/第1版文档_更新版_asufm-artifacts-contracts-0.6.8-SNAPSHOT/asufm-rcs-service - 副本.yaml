@@ -1,0 +1,435 @@
+openapi: 3.0.1
+info:
+  title: RCS service API
+  description: должно быть реализовано на стороне удаленной системы управления
+  version: 0.6.8-SNAPSHOT
+servers:
+  - url: 'https://asufm.russianpost.ru/rcs-service.adoc/v1'
+paths:
+  /frankMachines/{frankMachineId}/publicKey:
+    post:
+      summary: запрос публичного ключа
+      operationId: publicKeyRequest
+      description: Запросить публичный ключ у франкировальеной машины. При необходимости (если параметр regenerate = true) перегенерировать.
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+        - in: query
+          name: regenerate
+          required: false
+          schema:
+            type: boolean
+          description: требование пересоздать приватный ключ
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /frankMachines/{frankMachineId}/changeStatus:
+    post:
+      summary: Изменить статус ФМ (блокировка/разблокировка)
+      operationId: changeMachineStatus
+      tags:
+        - Frank Machine Management
+      parameters:
+        - in: path
+          name: frankMachineId
+          required: true
+          schema:
+            type: string
+          description: идентификатор франк машины
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /postOffices:
+    put:
+      summary: Выгрузка данных (обновление) ОПС в ФМ
+      operationId: setPostOffice
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOffice'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /taxes:
+    put:
+      summary: Выгрузить тарифы в СДУ
+      operationId: setTaxes
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxVersion'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /contracts:
+    put:
+      summary: Выгрузить данные по договорам
+      operationId: setContract
+      tags:
+        - ContractManagement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contract'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /contracts/{contractId}/balance:
+    put:
+      summary: Синхронизация баланс договора
+      operationId: syncBalance
+      tags:
+        - ContractManagement
+      parameters:
+        - in: path
+          name: contractId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Balance'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Business Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 1700
+                message: "Unknown FM Id"
+        500:
+          description: Internal Service Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          description: Код ошибки
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: Internal Server Error
+          description: Описание ошибки
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/FMStatus'
+        postOffice:
+          type: string
+    FMStatus:
+      type: string
+      enum:
+        - BLOCKED
+        - ENABLED
+        - DEMO
+        - UNAUTHORIZED
+        - LOST
+    PostOffice:
+      type: object
+      properties:
+        index:
+          type: string
+          description: Индекс ОПС
+        name:
+          type: string
+          description: наименовение ПО
+        city:
+          type: string
+          description: город
+        legalAddress:
+          type: string
+          description: Юридический адрес
+        officeAddress:
+          type: string
+          description: Физический адрес
+        timeZone:
+          type: integer
+          description: Смещение от GMT
+        tariffZone:
+          type: integer
+          description: тарифная зона ПО
+    Contract:
+      type: object
+      properties:
+        id:
+          description: Уникальный идентификатор контракта (из мастер системы)
+          type: string
+          format: uuid
+        num:
+          description: числовой идентификатор контракта, оставлен для совместимости с СДУ текущих производителей
+          type: integer
+          deprecated: true
+        enable:
+          description: признак активности Контракта. В случае закрытия контракта придет false
+          type: boolean
+        customer:
+          $ref: '#/components/schemas/Customer'
+        postOffices:
+          description: Список связанных с контрактом ОПС (где возможен прием корреспонденции)
+          type: array
+          items:
+            $ref: '#/components/schemas/PostOffice'
+    Customer:
+      type: object
+      properties:
+        id:
+          description: уникальный идентификатор Контрагента (из мастер системы)
+          type: string
+          format: uuid
+        name:
+          description: наименование контрагента
+          type: string
+        inn_ru:
+          description: ИНН контрагента
+          type: string
+        kpp_ru:
+          description: КПП контрагента
+          type: string
+
+    Balance:
+      type: object
+      description: Текущий баланс контрагента.
+      required:
+        - contractId
+        - current
+        - consolidate
+        - timestamp
+        - operationId
+      properties:
+        contractId:
+          description: Идентификатор контракта
+          type: string
+          format: uuid
+        contractNum:
+          description: Целочисленный идентификатор контракта, оставлен для совместимости с СДУ текущих производителей
+          deprecated: true
+          type: integer
+        current:
+          description: Текущие доступные средства (учитывая холдирование)
+          type: number
+          format: double
+        consolidate:
+          description: Текущий баланс (только факт)
+          type: number
+          format: double
+        operationId:
+          description: Идентификатор операции, породившей изменение баланса
+          type: string
+          format: uuid
+        timestamp:
+          description: Время изменения баланса, используется как версия данных.
+          type: string
+          format: 'date-time'
+
+    TaxVersion:
+      type: object
+      properties:
+        version:
+          type: string
+        createDate:
+          type: string
+          format: 'date-time'
+        applyDate:
+          type: string
+          format: 'date-time'
+        publishDate:
+          type: string
+          format: 'date-time'
+        changeDate:
+          type: string
+          format: 'date-time'
+        description:
+          type: string
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostalProduct'
+    PostalProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          description:  Код объекта расчета
+          example:
+            "2000"
+        name:
+          type: string
+          description: Наименование объекта расчета
+          example:
+            "Письмо простое"
+        code:
+          type: string
+          description: Код объекта, который передается непосредственно в ФМ.
+          example:
+            "2100"
+        regionType:
+          type: number
+          description: Область пересылки; 1 – внутреннее, 2 - внешнее
+        zoneCode:
+          type: integer
+          format: int32
+#          enum: [1,2,3,4,5]
+          description: Тарифная зона (Значения 1 - 5)
+        distanceType:
+          type: integer
+#          enum: [1,2]
+          description: Удаленность; 1 - до 2000 км, 2 - более 2000 км
+        maxWeight:
+          type: integer
+          format: int32
+          description: Максимальный вес почтового отправления
+        mailCtg:
+          type: integer
+          format: int32
+#          enum: [0,1,2]
+          description: |
+            Наименование категории почтового отправления
+            * Простое - 0
+            * Заказное - 1
+            * С объявленной ценностью - 2
+        mailType:
+          type: integer
+          format: int32
+          description: |
+            Коды видов отправлений
+            * 2 - Письмо
+            * 3 - Бандероль
+        directctg:
+          type: integer
+          format: int32
+          description: |
+            Направлениедоставки отправления:
+            * 1 – внутреннее (РТМ-2);
+            * 2 – исходящее международное (РТМ-2);
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+    TaxRate:
+      type: object
+      properties:
+        weight:
+          type: integer
+          format: int32
+          description: Вес, г (верхняя граница)
+        noVAT:
+          type: number
+          description: Тариф без НДС (руб)
+        withVAT:
+          type: number
+          description: Тариф с НДС (руб)
+        sumVAT:
+          type: number
+          description: Сумма НДС (руб)
+        rateVAT:
+          type: number
+          description: Ставка НДС
