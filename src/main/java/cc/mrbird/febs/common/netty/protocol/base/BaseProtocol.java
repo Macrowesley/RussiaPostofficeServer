@@ -86,7 +86,7 @@ public abstract class BaseProtocol {
         int protocolLen = getResponseProtocolLen(data);
         byte[] length = BaseTypeUtils.int2ByteArrayCons(protocolLen);
         byte[] typeData = new byte[]{type};
-        byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(typeData, data));
+        byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(BaseTypeUtils.byteMerger(typeData, getOperateIdArr()), data));
         byte[] end = {(byte) 0xD0};
 
         int totalLen = 0;

@@ -77,7 +77,7 @@ public class MyDecoder extends ByteToMessageDecoder {
             }
             if (buffer.readableBytes() < length) {
                 // 还原读指针
-                log.info("buffer.readableBytes()={} 长度不够，还原读指针位置",buffer.readableBytes());
+                log.info("buffer.readableBytes()={} 长度不够{}，还原读指针位置",buffer.readableBytes(),length);
                 buffer.readerIndex(beginReaderIndex);
                 return;
             }
