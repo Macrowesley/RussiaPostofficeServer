@@ -75,6 +75,10 @@ public class ServiceApi {
         log.info("【俄罗斯调用服务器api 开始 publicKey】");
         log.info("frankMachineId={},regenerate={}",frankMachineId,regenerate);
 
+        if (!deviceService.checkExistByFmId(frankMachineId)){
+            throw new RcsApiException(RcsApiErrorEnum.UnknownFMId);
+        }
+
         if (regenerate) {
             //如果打印任务没有结束，拒绝
             if(!printJobService.checkPrintJobFinish(frankMachineId)){

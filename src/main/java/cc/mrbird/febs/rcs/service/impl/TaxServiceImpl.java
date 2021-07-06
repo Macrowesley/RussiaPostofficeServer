@@ -92,8 +92,18 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 	}
 
     @Override
+    public boolean checkIExist(String taxVersion) {
+        LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Tax::getVersion, taxVersion);
+        return this.baseMapper.selectCount(wrapper) > 0;
+    }
+
+    @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveTaxVersion(TaxVersionDTO taxVersionDTO) {
+        if (this.checkIExist(taxVersionDTO.getVersion())){
+            throw new RcsApiException(RcsApiErrorEnum.TaxVersionExist);
+        }
         try {
             log.info("保存tax开始");
             long t1 = System.currentTimeMillis();

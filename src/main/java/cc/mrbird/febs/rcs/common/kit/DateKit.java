@@ -117,8 +117,10 @@ public class DateKit {
      */
     public static Date dealDateFormatToDate(String oldDateStr) throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
-        Date  date = df.parse(oldDateStr);
-        return date;
+        Date  date = df.parse(oldDateStr.trim());
+        SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+        Date date1 =  df1.parse(date.toString());
+        return date1;
     }
 
     /**
@@ -172,9 +174,14 @@ public class DateKit {
 //        log.info(offsetMinuteToDate(120));
 //        log.info(offsetMinuteToDateTime(120));
 //        log.info(getNowDateToFileName());
-        String russiatime = createRussiatime();
+        /*String russiatime = createRussiatime();
         log.info(russiatime);
-        log.info(parseRussiatime(russiatime).toString());
+        log.info(parseRussiatime(russiatime).toString());*/
+        String rTime = "2021-01-01T09:00:00.001+03:00";
+        log.info(parseRussiatime(rTime).toString());
+
+        String rTime2 = "2021-01-01T09: 00: 00.001+03: 00";
+        log.info(parseRussiatime(rTime2).toString());
 
     }
 

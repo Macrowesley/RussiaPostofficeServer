@@ -10,6 +10,7 @@ import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
+import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
@@ -98,8 +99,19 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 	}
 
     @Override
+    public boolean checkIExist(String code) {
+        LambdaQueryWrapper<Contract> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Contract::getCode, code);
+        return this.baseMapper.selectCount(wrapper) > 0;
+    }
+
+    @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveContractDto(ContractDTO contractDTO) {
+        if (checkIExist(contractDTO.getCode())){
+            throw new RcsApiException(RcsApiErrorEnum.ContractExist);
+        }
+
         try {
             log.info("接收服务器传递过来的合同数据 开始");
 
@@ -123,8 +135,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             Customer customer = new Customer();
             customer.setId(customerDTO.getId());
             customer.setContractCode(contract.getCode());
-            customer.setInnRu(customerDTO.getInnRu());
-            customer.setKppRu(customerDTO.getKppRu());
+            customer.setInnRu(customerDTO.getInn_ru());
+            customer.setKppRu(customerDTO.getKpp_ru());
             customer.setName(customerDTO.getName());
             customer.setLegalAddress(customerDTO.getLegalAddress());
             customer.setOfficeAddress(customerDTO.getOfficeAddress());

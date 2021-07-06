@@ -160,7 +160,7 @@ public interface IDeviceService extends IService<Device> {
      * @param frankMachineId
      * @return
      */
-    boolean checkByFmId(String frankMachineId);
+    boolean checkExistByFmId(String frankMachineId);
 
     Device getDeviceByFrankMachineId(String frankMachineId);
 

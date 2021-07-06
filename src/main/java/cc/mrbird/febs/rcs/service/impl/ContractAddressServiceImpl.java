@@ -170,7 +170,7 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
                 throw new Exception("ContractCode: "+contractCode+" 不存在");
             }
 
-            if (!deviceService.checkByFmId(frankMachineId)){
+            if (!deviceService.checkExistByFmId(frankMachineId)){
                 throw new Exception("frankMachineId: "+frankMachineId+" 不存在");
             }
 

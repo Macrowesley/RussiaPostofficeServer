@@ -13,9 +13,9 @@ public class CustomerDTO {
 
     String name;
 
-    String innRu;
+    String inn_ru;
 
-    String kppRu;
+    String kpp_ru;
 
     String legalAddress;
 

@@ -53,6 +53,8 @@ public interface ITaxService extends IService<Tax> {
      */
     void deleteTax(Tax tax);
 
+    boolean checkIExist(String taxVersion);
+
     void saveTaxVersion(TaxVersionDTO taxVersionDTO);
 
     Tax getLastestTax();

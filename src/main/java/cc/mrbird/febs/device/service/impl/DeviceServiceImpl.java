@@ -396,21 +396,21 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             throw new RcsApiException(RcsApiErrorEnum.WaitStatusChangeFinish);
         }
         try {
-            Device device = new Device();
-            device.setFrankMachineId(frankMachineId);
-            device.setFutureFmStatus(changeStatusRequestDTO.getStatus().getCode());
-            device.setPostOffice(changeStatusRequestDTO.getPostOffice());
+            dbDevice.setFrankMachineId(frankMachineId);
+            dbDevice.setFutureFmStatus(changeStatusRequestDTO.getStatus().getCode());
+            dbDevice.setPostOffice(changeStatusRequestDTO.getPostOffice());
             //开始修改的话，把流程状态改成进行中
-            device.setFlow(FlowEnum.FlowIng.getCode());
-            device.setUpdatedTime(new Date());
+            dbDevice.setFlow(FlowEnum.FlowIng.getCode());
+            dbDevice.setUpdatedTime(new Date());
 
             LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Device::getFrankMachineId, device.getFrankMachineId());
-            this.update(device, wrapper);
+            wrapper.eq(Device::getFrankMachineId, dbDevice.getFrankMachineId());
+            this.update(dbDevice, wrapper);
 
             //保存状态改变记录
             FmStatusLog fmStatusLog = new FmStatusLog();
-            BeanUtils.copyProperties(device, fmStatusLog);
+            BeanUtils.copyProperties(dbDevice, fmStatusLog);
+            //log.info("\ndevice={},\nfmStatusLog={}",dbDevice.toString(), fmStatusLog.toString());
             fmStatusLog.setChangeFrom(ChangeFromEnum.Russia.getCode());
             fmStatusLog.setInterfaceName(InterfaceNameEnum.CHANGE_STATUS.getCode());
             fmStatusLog.setUpdatedTime(new Date());
@@ -615,7 +615,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
      * @return
      */
     @Override
-    public boolean checkByFmId(String frankMachineId) {
+    public boolean checkExistByFmId(String frankMachineId) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, frankMachineId);
         return this.baseMapper.selectCount(wrapper) > 0;
@@ -630,7 +630,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         Device device = this.getOne(wrapper);
 
         if (device == null) {
-            log.error("Unknown FM Id" + frankMachineId);
+            log.error("Unknown FM Id " + frankMachineId);
             throw new RcsApiException(RcsApiErrorEnum.UnknownFMId);
         }
         return device;

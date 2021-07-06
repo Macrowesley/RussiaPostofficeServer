@@ -81,6 +81,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveBalance(String contractCode, ServiceBalanceDTO serviceBalanceDTO) {
+        if (!contractService.checkIExist(contractCode)){
+            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+        }
         try {
             Balance balance = new Balance();
             BeanUtils.copyProperties(serviceBalanceDTO,balance);
@@ -105,6 +108,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
 
     @Override
     public void saveReturnBalance(String contractCode, ManagerBalanceDTO managerBalanceDTO) {
+        if (!contractService.checkIExist(contractCode)){
+            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+        }
         try {
             Balance balance = new Balance();
             BeanUtils.copyProperties(managerBalanceDTO,balance);

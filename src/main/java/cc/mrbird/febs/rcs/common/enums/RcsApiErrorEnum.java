@@ -9,9 +9,13 @@ public enum RcsApiErrorEnum {
     ChangeStatusError(1005,"internal server error"),
     SaveBalanceError(1006,"internal server error"),
     SaveContractDtoError(1007,"internal server error"),
+
     SavePostOfficeDTOError(1008,"internal server error"),
     SavePublicKeyError(1009,"internal server error"),
-    SaveTaxVersionError(1010,"internal server error")
+    SaveTaxVersionError(1010,"internal server error"),
+    TaxVersionExist(1101,"tax version is exist"),
+    ContractExist(1102,"contract is exist"),
+    ContractNotExist(1103,"contract is not exist")
     ;
 
     int code;
