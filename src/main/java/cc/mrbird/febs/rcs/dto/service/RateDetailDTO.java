@@ -1,11 +1,12 @@
 package cc.mrbird.febs.rcs.dto.service;
 
-import cc.mrbird.febs.rcs.entity.Tariff;
+import com.alibaba.fastjson.annotation.JSONType;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
+@JSONType(orders={"PostalProductDTO","TariffDTO","String"})
 public class RateDetailDTO {
     PostalProductDTO product;
     TariffDTO tarif;

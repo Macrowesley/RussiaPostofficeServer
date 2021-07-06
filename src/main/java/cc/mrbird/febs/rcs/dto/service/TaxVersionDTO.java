@@ -1,10 +1,12 @@
 package cc.mrbird.febs.rcs.dto.service;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
+@JSONType(orders={"version","description","source","details","applyDate","publishDate","modified"})
 public class TaxVersionDTO {
     String version;
 

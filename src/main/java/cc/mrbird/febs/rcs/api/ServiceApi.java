@@ -12,6 +12,7 @@ import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -140,7 +141,7 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
-        log.info("taxVersionDTO={}",taxVersionDTO.toString());
+        log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
         //数据库保存信息
         taxService.saveTaxVersion(taxVersionDTO);
 

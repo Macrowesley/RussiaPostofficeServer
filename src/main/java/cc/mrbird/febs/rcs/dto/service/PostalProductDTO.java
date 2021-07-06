@@ -1,13 +1,13 @@
 package cc.mrbird.febs.rcs.dto.service;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 @Data
 @ToString
+@JSONType(orders={"code","name","mailType","mailCtg","maxWeight","transType","regionType","regionZone","distanceType","contractName",
+        "numdiff","labelRu","isPostalMarketOnly","modified"})
 public class PostalProductDTO {
     String code;
     String name;
