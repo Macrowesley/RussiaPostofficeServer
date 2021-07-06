@@ -38,7 +38,24 @@ public class MangerTestController {
 
     int count1 = 10;
     double weight1 = 10;
-    double amount1 = count1 * weight1;
+    double amount1 = 100;
+
+    /**
+     *     String frankMachineId = "FM100002";
+     *     String contractCode = "00001032";
+     *     String contractId = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
+     *     String userId = "11a8005e-6d6a-499d-9fca-82aa69103f90";
+     *     String taxVersion = "22.1.1";
+     *     String postOffice = "994700";
+     *     double contractMaxCurrent = 3000.23;
+     *     String productCode1 = "2100";
+     *     String productCode2 = "2101";
+     *     String foreseenId = "";
+     *
+     *     int count1 = 10;
+     *     double weight1 = 2;
+     *     double amount1 = 25.0;
+     */
 
     int count2 = 20;
     double weight2 = 10;
@@ -179,7 +196,7 @@ public class MangerTestController {
         log.info("开始测试 rateTables");
 
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
-        taxVersion = "2.3.3";
+
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
@@ -223,7 +240,8 @@ public class MangerTestController {
         foreseenDTO.setId(foreseenId);
         foreseenDTO.setPostOffice(postOffice);
         foreseenDTO.setUserId(userId);
-        foreseenDTO.setContractCode(contractCode);
+//        foreseenDTO.setContractCode(contractCode);
+        foreseenDTO.setContractId(contractCode);
         foreseenDTO.setTotalCount(totalCount);
 //        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct});
@@ -280,13 +298,14 @@ public class MangerTestController {
         //产品重量 实际重量 0020
         String productWeight_4 = String.valueOf((int)weight1*100);
         //客户的唯一Id(代码) 00150568
-        String CustomerId_8 = "";
+        String CustomerId_8 = "00001032";
 
         String dmMessage = Prefix_4 + VersionOfCode_2 + ManufacturerCode_2 + CountryCode_3 + postCode_6 + postDate_6 + RegistrationNumber_6 + totalCount_8 + amount_7 + productType_4 + productWeight_4 + CustomerId_8;
         log.info("dmMessage={}",dmMessage);
 
         FrankDTO frank = new FrankDTO();
         frank.setDmMessage("!45!01NE6434238001504211007130111638000026003100002200130941");
+        frank.setDmMessage(dmMessage);
 
        /* FrankDTO frank2 = new FrankDTO();
         frank2.setDmMessage("message");*/
@@ -298,9 +317,10 @@ public class MangerTestController {
         transactionDTO.setForeseenId(foreseenId);
         transactionDTO.setPostOffice(postOffice);
         transactionDTO.setFrankMachineId(frankMachineId);
-        transactionDTO.setContractCode(contractCode);
+//        transactionDTO.setContractCode(contractCode);
+        transactionDTO.setContractId(contractCode);
         transactionDTO.setStartDateTime(DateKit.createRussiatime(new Date()));
-        transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
+        transactionDTO.setStopDateTime(DateKit.createRussiatime(DateKit.offsetDayDate(1)));
         transactionDTO.setUserId(userId);
         /*transactionDTO.setCreditVal(amount1 + amount2);
         transactionDTO.setAmount(amount1 + amount2);
@@ -311,7 +331,7 @@ public class MangerTestController {
         transactionDTO.setGraphId("");
         transactionDTO.setTaxVersion(taxVersion);
 //        transactionDTO.setFranks(new FrankDTO[]{frank , frank2});
-//        transactionDTO.setFranks(new FrankDTO[]{frank});
+        transactionDTO.setFranks(new FrankDTO[]{frank});
         log.info("transaction = {}", JSON.toJSONString(transactionDTO));
 
         ApiResponse apiResponse = serviceInvokeRussia.transactions(transactionDTO);

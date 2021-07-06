@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.dto.manager;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import lombok.Data;
 import lombok.ToString;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @ToString
+@JSONType(orders={"id","postOffice","userId","frankMachineId","contractCode","contractId","totalCount","totalAmmount","taxVersion","products"})
 public class ForeseenDTO {
     /**
      * format: uuid
@@ -25,6 +27,7 @@ public class ForeseenDTO {
      * 8位数字
      */
     String contractCode;
+    String contractId;
 
     @NotNull
     Integer totalCount;

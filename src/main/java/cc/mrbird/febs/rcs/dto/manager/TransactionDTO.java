@@ -1,10 +1,14 @@
 package cc.mrbird.febs.rcs.dto.manager;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
+@JSONType(orders={"id","foreseenId","postOffice","frankMachineId","contractCode","contractId",
+        "startDateTime","stopDateTime","userId","creditVal",
+        "amount","count","graphId","taxVersion","franks"})
 public class TransactionDTO {
 
     /**
@@ -25,6 +29,7 @@ public class TransactionDTO {
      * 8位数字
      */
     String contractCode;
+    String contractId;
 
 
     /**

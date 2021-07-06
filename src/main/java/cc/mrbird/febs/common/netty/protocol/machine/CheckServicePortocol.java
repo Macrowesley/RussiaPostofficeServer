@@ -196,8 +196,10 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //数据库的合同信息
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
                     PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
+                    String transactionId = "";
                     boolean isPrintEnd = true;
                     if (dbPrintJob != null) {
+                        transactionId = dbPrintJob.getTransactionId();
                         //订单是否结束（1 结束 0 未结束）
                         isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
 
@@ -209,6 +211,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                             BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
                             foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
                         }
+
                     }
 
                     /**
@@ -247,7 +250,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setActualCount(actualCount);
                     resultDto.setActualAmount(actualAmount);
                     resultDto.setDmMsg(dmMsg);
-                    resultDto.setTransactionId(dbPrintJob.getTransactionId());
+                    resultDto.setTransactionId(transactionId);
                     resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
                     String responseData = JSON.toJSONString(resultDto);
 
@@ -261,7 +264,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                                     + JSON.toJSONString(foreseenFMDTO);*/
                     String tempKey = checkServicePortocol.tempKeyUtils.getTempKey(ctx);
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-                    log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+                    log.info(OPERATION_NAME + "协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
