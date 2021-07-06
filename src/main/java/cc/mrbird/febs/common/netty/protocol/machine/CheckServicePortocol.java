@@ -4,7 +4,9 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceResultDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
@@ -16,15 +18,18 @@ import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import cc.mrbird.febs.rcs.service.ITaxService;
+import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,6 +67,9 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @Autowired
     ITaxService taxService;
+
+    @Autowired
+    ITransactionMsgService dmMsgService;
 
     public static CheckServicePortocol checkServicePortocol;
 
@@ -203,15 +211,54 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         }
                     }
 
+                    /**
+                     * 【处理dmMsg信息】
+                     * 开机启动的时候，根据订单是否结束判断是否需要存入数据库
+                     *    订单结束，不处理
+                     *    订单未结束，判断上一个批次是否结束
+                     *      结束了，不处理
+                     *      未结束：找到没有结束的那个批次，得到dm_msg等信息，保存到数据库中，同时返回这个批次打印的count等信息给机器
+                     */
+                    TransactionMsgFMDTO transactionMsgFMDTO = checkServiceDTO.getTransactionMsgFMDTO();
+                    //当前任务已经打印的总数量
+                    int actualCount = 0;
+                    //当前任务已经打印的总金额 单位是分
+                    String actualAmount = "0";
+                    //二维码内容（不包含签名）
+                    String dmMsg = "";
+                    //如果没有打印结束而且，transactionid已经创建了，就不处理
+                    if (!isPrintEnd && !StringUtils.isEmpty(dbPrintJob.getTransactionId())){
+                        DmMsgDetail dmMsgDetail = checkServicePortocol.dmMsgService.getDmMsgDetailOnFmStart(dbPrintJob.getTransactionId(), transactionMsgFMDTO);
+                        if (dmMsgDetail != null){
+                            actualCount = dmMsgDetail.getActualCount();
+                            actualAmount = dmMsgDetail.getActualAmount();
+                            dmMsg = (dmMsgDetail.getFranks())[0].getDmMessage();
+                        }
+                    }
+
                     //拼接返回信息
-                    String responseData =
+                    CheckServiceResultDTO resultDto = new CheckServiceResultDTO();
+                    resultDto.setResult(FMResultEnum.SUCCESS.getSuccessCode());
+                    resultDto.setVersion(version);
+                    resultDto.setFmStatus(curStatus);
+                    resultDto.setIsPrintEnd(isPrintEnd == true ? 1 : 0);
+                    resultDto.setIsFmPrivateNeedUpdate(isFmPrivateNeedUpdate);
+                    resultDto.setIsFmTaxNeedUpdate(isFmTaxNeedUpdate);
+                    resultDto.setActualCount(actualCount);
+                    resultDto.setActualAmount(actualAmount);
+                    resultDto.setDmMsg(dmMsg);
+                    resultDto.setTransactionId(dbPrintJob.getTransactionId());
+                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
+                    String responseData = JSON.toJSONString(resultDto);
+
+                    /*String responseData =
                             FMResultEnum.SUCCESS.getSuccessCode()
                                     + version
                                     + String.valueOf(curStatus)
                                     + (isPrintEnd == true ? 1 : 0)
                                     + String.valueOf(isFmPrivateNeedUpdate)
                                     + String.valueOf(isFmTaxNeedUpdate)
-                                    + JSON.toJSONString(foreseenFMDTO);
+                                    + JSON.toJSONString(foreseenFMDTO);*/
                     String tempKey = checkServicePortocol.tempKeyUtils.getTempKey(ctx);
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);

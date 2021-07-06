@@ -6,6 +6,7 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
@@ -254,19 +255,18 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
             dbPrintJob.setUpdatedTime(new Date());
-            dbPrintJob.setTransactionId(transactionDTO.getId());
+//            dbPrintJob.setTransactionId(transactionDTO.getId());
             this.updatePrintJob(dbPrintJob);
         }
 
 
-        //添加 transaction
+        //完成 transaction
         Transaction transaction = new Transaction();
         BeanUtils.copyProperties(transactionDTO, transaction);
         transaction.setTransactionStatus(FlowEnum.FlowEnd.getCode());
+        transaction.setStopDateTime(DateKit.createRussiatime(new Date()));
         transaction.setUpdatedTime(new Date());
-        transaction.setCreatedTime(new Date());
-        transaction.setTransactionStatus(1);
-        transactionService.createTransaction(transaction);
+        transactionService.updateTransaction(transaction);
 
         //废弃，不批量保存了
         // 添加frank

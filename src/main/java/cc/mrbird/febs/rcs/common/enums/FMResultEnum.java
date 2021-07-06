@@ -20,9 +20,12 @@ public enum FMResultEnum {
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
+    TransactionExist(32,"transaction已经存在，不能新建"),
 
     //privateKey异常
     PrivateKeyNotExist(41,"privatekey不存在"),
+
+    DmmsgIsNotFinish(51,"批次记录为奇数，有没有完成的批次"),
 
     DefaultError(0,"其他异常导致的失败");
 

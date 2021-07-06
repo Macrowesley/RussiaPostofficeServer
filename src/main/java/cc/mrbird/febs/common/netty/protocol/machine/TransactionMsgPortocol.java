@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -25,28 +26,28 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @NoArgsConstructor
 @Component
-public class TransactionsPortocol extends MachineToServiceProtocol {
+public class TransactionMsgPortocol extends MachineToServiceProtocol {
 
-    public static final byte PROTOCOL_TYPE = (byte) 0xB6;
+    public static final byte PROTOCOL_TYPE = (byte) 0xBA;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
 
-    private static final String OPERATION_NAME = "TransactionsPortocol";
+    private static final String OPERATION_NAME = "TransactionMsgPortocol";
 
     @Autowired
     ITransactionMsgService dmMsgService;
 
-    public static TransactionsPortocol transactionsPortocol;
+    public static TransactionMsgPortocol transactionMsgPortocol;
 
     @PostConstruct
     public void init(){
-        this.transactionsPortocol = this;
+        this.transactionMsgPortocol = this;
     }
 
     @Override
     public BaseProtocol getOperator() {
-        return transactionsPortocol;
+        return transactionMsgPortocol;
     }
 
     /**
@@ -73,25 +74,25 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             /*
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];			//
-                unsigned char type;					//0xB6
-                unsigned char  operateID[2];
+                unsigned char length[2];
+                unsigned char type;					//0xBA
+                unsigned char operateID[2];
                 unsigned char acnum[6];             //机器表头号
                 unsigned char version[3];           //版本号
-                unsigned char content[?];			//加密后内容: TransactionFMDTO的json
+                unsigned char content[?];			//加密后内容: TransactionMsgFMDTO 的json
                 unsigned char check;				//校验位
                 unsigned char tail;					//0xD0
-            }__attribute__((packed))Transactions, *Transactions;
+            }__attribute__((packed))TransactionMsg, *TransactionMsg;
              */
-            log.info("机器开始 transaction");
+            log.info("机器开始 transactionMsg");
 
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (transactionsPortocol.redisService.hasKey(key)) {
+            if (transactionMsgPortocol.redisService.hasKey(key)) {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                transactionsPortocol.redisService.set(key, "wait", WAIT_TIME);
+                transactionMsgPortocol.redisService.set(key, "wait", WAIT_TIME);
             }
 
             int pos = getBeginPos();
@@ -106,33 +107,12 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    TransactionFMDTO transactionFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionFMDTO.class);
-                    log.info("解析得到的对象：TransactionFMDTO={}", transactionFMDTO.toString());
+                    TransactionMsgFMDTO transactionMsgFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionMsgFMDTO.class);
+                    log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFMDTO.toString());
 
-                    //创建UUID
-                    /*String transactionId = AESUtils.createUUID();
-                    transactionFMDTO.setId(transactionId);*/
-                    String transactionId = transactionFMDTO.getId();
+                    String transactionId = transactionMsgPortocol.dmMsgService.saveMsg(transactionMsgFMDTO);
 
-                    Contract dbContract = null;
-                    //取消订单
-                    if (Long.valueOf(transactionFMDTO.getAmount()) == 0) {
-                        CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
-                        cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
-                        cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
-                        cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
-                        cancelJobFMDTO.setContractCode(transactionFMDTO.getContractCode());
-                        dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
-                    } else {
-                        //处理transaction
-                        //数据库得到具体的dmMsg信息
-                        DmMsgDetail dmMsgDetail = transactionsPortocol.dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
-                        transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
-                        transactionFMDTO.setCount(dmMsgDetail.getActualCount());
-                        transactionFMDTO.setFranks(dmMsgDetail.getFranks());
-                        dbContract = transactionsPortocol.serviceManageCenter.transactions(transactionFMDTO);
-                    }
-                    return getSuccessResult(version, ctx, transactionId, dbContract);
+                    return getSuccessResult(version, ctx, transactionId);
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
@@ -149,25 +129,28 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 transaction");
+            log.info("机器结束 transactionMsg");
         }
     }
 
-    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, String transactionId, Contract contract) throws Exception {
+    private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, String transactionId) throws Exception {
         /**
          typedef  struct{
-         unsigned char length;				     //一个字节
-         unsigned char type;				 	 //0xB6
-         unsigned char  operateID[2];
-         unsigned char content;				     //加密内容: result(1 成功) + version + transactionId（36）+ consolidate(8 分为单位) + current(8 分为单位)
-         unsigned char check;				     //校验位
-         unsigned char tail;					 //0xD0
-         }__attribute__((packed))ForeseensResult, *ForeseensResult;
+             unsigned char length[2];				 //2个字节
+             unsigned char type;				 	     //0xBA
+             unsigned char operateID[2];
+             unsigned char content;				     //加密内容: result(长度为2 1 成功) + version + transactionId（36）
+             result(长度为2 不为1,操作失败具体原因看 FMResultEnum) + 版本内容(3)
+             unsigned char check;				     //校验位
+             unsigned char tail;					     //0xD0
+         }__attribute__((packed))TransactionsMsgResult, *TransactionsMsgResult;
          */
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + transactionId + MoneyUtils.changeY2F(contract.getConsolidate()) + MoneyUtils.changeY2F(contract.getCurrent());
-        String tempKey = transactionsPortocol.tempKeyUtils.getTempKey(ctx);
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode()
+                + version
+                + transactionId;
+        String tempKey = transactionMsgPortocol.tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.info("transaction 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        log.info("transactionMsg 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 }

@@ -556,8 +556,8 @@ public class ServiceManageCenter {
         //消耗的分钟
         int constMinuteTime = Integer.valueOf(transactionFMDTO.getCostTime());
 
-        transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
-        transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));
+       /* transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
+        transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));*/
         transactionDTO.setAmount(fmAmount);
         transactionDTO.setCreditVal(fmCreditVal);
 

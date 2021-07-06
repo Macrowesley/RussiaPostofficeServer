@@ -8,4 +8,5 @@ import lombok.ToString;
 public class CheckServiceDTO {
     String frankMachineId;
     String taxVersion;
+    TransactionMsgFMDTO transactionMsgFMDTO;
 }

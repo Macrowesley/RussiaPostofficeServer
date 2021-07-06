@@ -198,13 +198,16 @@ public class ProtocolService {
             case ForeseensPortocol.PROTOCOL_TYPE:
                 baseProtocol = new ForeseensPortocol();
                 //todo 临时测试
-                isNeedLogin = false;
+//                isNeedLogin = false;
                 break;
             case ForeseensCancelPortocol.PROTOCOL_TYPE:
                 baseProtocol = new ForeseensCancelPortocol();
                 break;
             case TransactionsPortocol.PROTOCOL_TYPE:
                 baseProtocol = new TransactionsPortocol();
+                break;
+            case TransactionMsgPortocol.PROTOCOL_TYPE:
+                baseProtocol = new TransactionMsgPortocol();
                 break;
             default:
                 wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
