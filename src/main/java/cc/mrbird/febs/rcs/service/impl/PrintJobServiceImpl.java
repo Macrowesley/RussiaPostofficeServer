@@ -202,7 +202,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     /**
      * job流程中，foreseensCancel的进度更新
-     *
+     * foreseen的balance改变current的值
+     * transaction成功后，改变consolidate的值
      * @param cancelJobFMDTO
      * @param flowDetailEnum
      */
@@ -236,7 +237,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     /**
      * job流程中，Transaction的进度更新
-     *
+     * foreseen的balance改变current的值
+     * transaction成功后，改变consolidate的值
      * @param dbPrintJob
      * @param transactionDTO
      * @param curFlowDetail
