@@ -125,7 +125,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     /**
      * job流程中，foreseens的进度更新
-     *
+     *   foreseen的balance改变current的值
+     *   transaction成功后，改变consolidate的值
      * @param dbDevice
      * @param flowDetailEnum
      */
@@ -217,16 +218,15 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
 
-            //todo 修改合同的申请金额管理
             Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
-            Double consolidate = dbContract.getConsolidate();
+            Double dbCurrent = dbContract.getCurrent();
 
-            //foreseen的金额
+            //foreseen的金额 关联current
             Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
-            Double usedConsolidate = dbForeseen.getTotalAmmount();
+            Double userdCurrent = dbForeseen.getTotalAmmount();
 
-            double newConsolidate = DoubleKit.add(consolidate, usedConsolidate);
-            dbContract.setConsolidate(newConsolidate);
+            double newCurrent = DoubleKit.add(dbCurrent, userdCurrent);
+            dbContract.setCurrent(newCurrent);
             contractService.saveOrUpdate(dbContract);
         }
         dbPrintJob.setUpdatedTime(new Date());
@@ -284,8 +284,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
         transactionMsgService.saveBatch(frankList);*/
 
-        //如果一切OK，更新contract的实际消耗金额 todo 确定金额是哪个减哪个
-        //todo 修改合同的申请金额管理 实际申请金额 和实际使用金额一致，然后更新申请金额
+        //如果一切OK
         if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
             /*Double dbCurrent = dbContract.getCurrent();
             Double dbConsolidate = dbContract.getConsolidate();
@@ -297,7 +296,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
             Double usedConsolidate = dbForeseen.getTotalAmmount();
 
-            //todo 这里逻辑待定：Consolidate 金额： 当前合同金额 + foreseen中的金额 — 实际消耗的金额
             double newConsolidate = DoubleKit.add(dbConsolidate, usedConsolidate);
             newConsolidate = DoubleKit.sub(newConsolidate, transaction.getCreditVal());
 

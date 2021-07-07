@@ -33,7 +33,7 @@ public class ServiceInvokeRussia {
     //最新
 	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
 //    private final String baseUrl = "http://localhost/p/test/manager";
-    private final String testContractCode = "3aaeb112-ccb8-4312-ad2a-d50f9c91485a";
+    private final String testContractCode = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     /**
      * 发送机器状况
      *
@@ -160,6 +160,9 @@ public class ServiceInvokeRussia {
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,new ManagerBalanceDTO());
         }*/
 
+        //todo 测试，使用固定id
+        foreseenDTO.setContractId(testContractCode);
+
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -177,6 +180,8 @@ public class ServiceInvokeRussia {
         /*if (contractId.equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
         }*/
+        //todo 测试，使用固定id
+        contractCode = testContractCode;
 
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
 
@@ -195,6 +200,9 @@ public class ServiceInvokeRussia {
         /*if (transactionDTO.getContractId().equals(testContractId)){
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
         }*/
+        //todo 测试，使用固定id
+        transactionDTO.setContractId(testContractCode);
+
         String url = baseUrl + "/transactions";
         return doExchange(url, transactionDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
