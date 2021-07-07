@@ -62,6 +62,12 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
     List<TransactionMsg> selectByTransactionId(String transactionId);
 
     /**
+     * 获取最新的msg
+     * @param transactionId
+     * @return
+     */
+    TransactionMsg getLastestMsg(String transactionId);
+    /**
      * 判断是否有一样的记录
      * @param transactionMsgFMDTO
      * @return

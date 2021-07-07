@@ -13,7 +13,7 @@ public enum FMResultEnum {
     TaxVersionNeedUpdate(9,"税率版本需要更新，机器需要更新税率表，然后通知服务器"),
     DonotAgain(10,"已闭环，请勿操作"),
     StatusTypeError(11,"未闭环，但是要改的状态不对"),
-    PrivateKeyNeedUpdate(12,"服务器更新了私钥，机器需要需要更新"),
+    PrivateKeyNeedUpdate(12,"机器需要发送公钥和私钥给服务器"),
     DeviceNotFind(13,"表头号或者FrankMachineId不存在"),
     contractCodeAbnormal(14,"俄罗斯返回的contractCode异常"),
     MachineLogined(15,"机器已经登录了"),

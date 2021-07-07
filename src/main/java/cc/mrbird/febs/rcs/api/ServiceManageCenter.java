@@ -447,8 +447,8 @@ public class ServiceManageCenter {
 
         //判断publickey是否更新
         if (!publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId())){
-            log.error("机器{}私钥没有更新 ", frankMachineId);
-            throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "私钥没有更新");
+            log.error("机器{}需要发送公钥和私钥给服务器 ", frankMachineId);
+            throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "需要发送公钥和私钥给服务器");
         }
 
         log.info("foreseenFMDTO.getContractCode() = {}", foreseenFMDTO.getContractCode());

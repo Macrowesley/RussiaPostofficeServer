@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @NoArgsConstructor
 @Component
+@Deprecated
 public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
 
     @Autowired

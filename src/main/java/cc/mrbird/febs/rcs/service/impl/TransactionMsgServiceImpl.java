@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -111,6 +110,13 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         wrapper.eq(TransactionMsg::getTransactionId, transactionId);
         wrapper.orderByAsc(TransactionMsg::getCreatedTime);
         return this.baseMapper.selectList(wrapper);
+    }
+
+    @Override
+    public TransactionMsg getLastestMsg(String transactionId) {
+        LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(TransactionMsg::getCreatedTime).last("limit 1");
+        return this.getOne(queryWrapper);
     }
 
     @Override
@@ -205,6 +211,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
         }
 
+
+
         String transactionId = transactionMsgFMDTO.getId();
         if (idType == 1){
             //id是ForeseensId
@@ -244,6 +252,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
          * id是TransactionId
          * 保存transactionMsgFMDTO
          */
+        String status = idType == 1 ? "1" : transactionMsgFMDTO.getStatus();
+        TransactionMsg lastestMsg = getLastestMsg(transactionId);
+        //如果最新的消息不为空，且status一样，那么，肯定是上一个批次没有结束
+        if (lastestMsg != null && lastestMsg.getStatus().equals(status)){
+            throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"有没有完成的批次,那个批次信息为：" + lastestMsg.toString());
+        }
 
         TransactionMsg transactionMsg = new TransactionMsg();
         transactionMsg.setTransactionId(transactionId);
@@ -251,7 +265,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         transactionMsg.setAmount(MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount()));
         transactionMsg.setDmMsg(transactionMsgFMDTO.getDmMsg());
         transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
-        transactionMsg.setStatus(idType == 1 ? "1" : transactionMsgFMDTO.getStatus());
+        transactionMsg.setStatus(status);
         transactionMsg.setCreatedTime(new Date());
         this.createTransactionMsg(transactionMsg);
 
