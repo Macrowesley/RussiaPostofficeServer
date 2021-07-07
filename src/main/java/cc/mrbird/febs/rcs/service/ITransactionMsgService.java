@@ -62,6 +62,12 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
     List<TransactionMsg> selectByTransactionId(String transactionId);
 
     /**
+     * 判断是否有一样的记录
+     * @param transactionMsgFMDTO
+     * @return
+     */
+    boolean checkIsExist(TransactionMsgFMDTO transactionMsgFMDTO);
+    /**
      * 根据列表信息，得到详情
      * @param msgList
      * @return

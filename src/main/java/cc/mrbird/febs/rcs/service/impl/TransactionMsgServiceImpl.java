@@ -90,6 +90,15 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 	    this.remove(wrapper);
 	}
 
+    @Override
+    public boolean checkIsExist(TransactionMsgFMDTO transactionMsgFMDTO) {
+        LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(TransactionMsg::getAmount, MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount()));
+        wrapper.eq(TransactionMsg::getCount, transactionMsgFMDTO.getTotalCount());
+        wrapper.eq(TransactionMsg::getFrankMachineId, transactionMsgFMDTO.getFrankMachineId());
+        return this.baseMapper.selectCount(wrapper) > 0;
+    }
+
     /**
      * 根据transactionId得到打印任务中所有的dmMsg列表,按时间顺序
      *
@@ -168,6 +177,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             transactionMsg.setCount(fmTotalCount);
             transactionMsg.setAmount(fmTotalAmount);
             transactionMsg.setDmMsg(transactionMsgList.get(transactionMsgList.size()-1).getDmMsg());
+            transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
             transactionMsg.setStatus("2");
             transactionMsg.setCreatedTime(new Date());
             this.createTransactionMsg(transactionMsg);
@@ -191,6 +201,10 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //dbPrintJob.setTransactionId(transactionDTO.getId());
         int idType = transactionMsgFMDTO.getIdType();
 
+        if (checkIsExist(transactionMsgFMDTO)){
+            throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
+        }
+
         String transactionId = transactionMsgFMDTO.getId();
         if (idType == 1){
             //id是ForeseensId
@@ -200,6 +214,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
              * 3. 保存transactionMsgFMDTO
              */
             String foreseenId = transactionMsgFMDTO.getId();
+            PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
+            //如果已经有了transactionId,就不能创建了
+            if (!StringUtils.isEmpty(dbPrintJob.getTransactionId())){
+                throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
+            }
+
             transactionId = AESUtils.createUUID();
             Transaction transaction = new Transaction();
             transaction.setId(transactionId);
@@ -216,24 +236,21 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             transaction.setCreatedTime(new Date());
             transactionService.createTransaction(transaction);
 
-            PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
-            //如果已经有了transactionId,就不能创建了
-            if (!StringUtils.isEmpty(dbPrintJob.getTransactionId())){
-                throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
-            }
+
             dbPrintJob.setTransactionId(transactionId);
             printJobService.updatePrintJob(dbPrintJob);
-
         }
         /**
          * id是TransactionId
          * 保存transactionMsgFMDTO
          */
+
         TransactionMsg transactionMsg = new TransactionMsg();
         transactionMsg.setTransactionId(transactionId);
         transactionMsg.setCount(transactionMsgFMDTO.getTotalCount());
         transactionMsg.setAmount(MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount()));
         transactionMsg.setDmMsg(transactionMsgFMDTO.getDmMsg());
+        transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
         transactionMsg.setStatus(idType == 1 ? "1" : transactionMsgFMDTO.getStatus());
         transactionMsg.setCreatedTime(new Date());
         this.createTransactionMsg(transactionMsg);

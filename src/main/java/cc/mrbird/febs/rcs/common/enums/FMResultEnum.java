@@ -26,6 +26,7 @@ public enum FMResultEnum {
     PrivateKeyNotExist(41,"privatekey不存在"),
 
     DmmsgIsNotFinish(51,"批次记录为奇数，有没有完成的批次"),
+    TransactionMsgExist(52,"transactionMsg已经存在，不能新建"),
 
     DefaultError(0,"其他异常导致的失败");
 

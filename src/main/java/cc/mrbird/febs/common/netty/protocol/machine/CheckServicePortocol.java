@@ -163,7 +163,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 //                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
                     String frankMachineId = checkServiceDTO.getFrankMachineId().trim();
-                    if (!deviceService.checkExistByFmId(frankMachineId)) {
+                    if (!checkServicePortocol.deviceService.checkExistByFmId(frankMachineId)) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
                     }
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
@@ -184,6 +184,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         Integer deviceTaxIsUpdate = dbDevice.getTaxIsUpdate();
                         if (deviceTaxIsUpdate == TaxUpdateEnum.NOT_UPDATE.getCode()){
                             //机器已经更新了tax，但是数据库的device没有更新状态，更新数据库机器状态
+                            log.info("调用俄罗斯tax接口，更新数据库");
+                            dbDevice.setTaxVersion(fmTaxVersion);
                             checkServicePortocol.serviceManageCenter.rateTableUpdateEvent(dbDevice);
                         }else{
                             //机器更新了tax,数据库也更新了device的tax信息，不处理
@@ -194,7 +196,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     }
 
                     //校验数据库的私钥是否完成闭环 机器的私钥是否需要更新（0 不需要更新 1需要更新）
-                    int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService. checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
+                    int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
 
                     //数据库的合同信息
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
@@ -214,8 +216,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                             BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
                             foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
                         }
-
                     }
+                    log.info("构建foreseenFMDTO信息");
 
                     /**
                      * 【处理dmMsg信息】
@@ -241,6 +243,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                             dmMsg = (dmMsgDetail.getFranks())[0].getDmMessage();
                         }
                     }
+                    log.info("处理dmMsg信息");
 
                     //拼接返回信息
                     CheckServiceResultDTO resultDto = new CheckServiceResultDTO();
