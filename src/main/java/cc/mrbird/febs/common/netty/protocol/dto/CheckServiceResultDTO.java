@@ -10,15 +10,15 @@ public class CheckServiceResultDTO {
     String result;
     String version;
     //机器状态
-    int fmStatus;
+    String fmStatus;
     //订单是否结束（1 结束 0 未结束）
-    int isPrintEnd;
+    String isPrintEnd;
     //机器的私钥是否需要更新（0 不需要更新 1需要更新）
-    int isFmPrivateNeedUpdate;
+    String isFmPrivateNeedUpdate;
     //机器的税率是否需要更新（0不需要 1需要更新）
-    int isFmTaxNeedUpdate;
+    String isFmTaxNeedUpdate;
     //当前任务已经打印的总数量
-    int actualCount;
+    String actualCount;
     //当前任务已经打印的总金额 单位是分
     String actualAmount;
     //二维码内容（不包含签名）

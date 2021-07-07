@@ -14,7 +14,7 @@ public enum FMResultEnum {
     DonotAgain(10,"已闭环，请勿操作"),
     StatusTypeError(11,"未闭环，但是要改的状态不对"),
     PrivateKeyNeedUpdate(12,"服务器更新了私钥，机器需要需要更新"),
-    DeviceNotFind(13,"表头号不存在"),
+    DeviceNotFind(13,"表头号或者FrankMachineId不存在"),
     contractCodeAbnormal(14,"俄罗斯返回的contractCode异常"),
     MachineLogined(15,"机器已经登录了"),
 

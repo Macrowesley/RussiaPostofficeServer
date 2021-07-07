@@ -175,7 +175,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
         } catch (FmException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
             if (-1 != e.getCode()) {
                 return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
@@ -183,7 +183,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                 return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             log.error(e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         }

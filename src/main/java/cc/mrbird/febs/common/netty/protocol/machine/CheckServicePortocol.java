@@ -163,6 +163,9 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 //                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
                     String frankMachineId = checkServiceDTO.getFrankMachineId().trim();
+                    if (!deviceService.checkExistByFmId(frankMachineId)) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
+                    }
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
 
                     //请求服务器返回最新状态
@@ -243,11 +246,11 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     CheckServiceResultDTO resultDto = new CheckServiceResultDTO();
                     resultDto.setResult(FMResultEnum.SUCCESS.getSuccessCode());
                     resultDto.setVersion(version);
-                    resultDto.setFmStatus(curStatus);
-                    resultDto.setIsPrintEnd(isPrintEnd == true ? 1 : 0);
-                    resultDto.setIsFmPrivateNeedUpdate(isFmPrivateNeedUpdate);
-                    resultDto.setIsFmTaxNeedUpdate(isFmTaxNeedUpdate);
-                    resultDto.setActualCount(actualCount);
+                    resultDto.setFmStatus(String.valueOf(curStatus));
+                    resultDto.setIsPrintEnd(String.valueOf(isPrintEnd == true ? 1 : 0));
+                    resultDto.setIsFmPrivateNeedUpdate(String.valueOf(isFmPrivateNeedUpdate));
+                    resultDto.setIsFmTaxNeedUpdate(String.valueOf(isFmTaxNeedUpdate));
+                    resultDto.setActualCount(String.valueOf(actualCount));
                     resultDto.setActualAmount(actualAmount);
                     resultDto.setDmMsg(dmMsg);
                     resultDto.setTransactionId(transactionId);
