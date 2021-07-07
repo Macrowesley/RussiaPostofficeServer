@@ -197,9 +197,9 @@ public class ServiceManageCenter {
             deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthEndSuccess);
         }
 
-        //如果授权成功，数据库保存秘钥，然后通知机器
+        //如果授权成功，数据库改状态，机器开机会自动检测
         PublicKey publicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-        serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, publicKey);
+//        serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, publicKey);
 
         log.info("{} 操作成功",operationName);
     }

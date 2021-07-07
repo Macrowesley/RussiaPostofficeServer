@@ -93,11 +93,11 @@ public class ServiceApi {
                 throw new RcsApiException(RcsApiErrorEnum.WaitPublicKeyUpdateFinish);
             }
 
-            //生成publickey，更新数据库
+            //生成publickey，更新数据库，机器开机后，检查是需要改变publickey
             PublicKey dbPublicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-            //异步：发送privateKey给机器
+            /*//异步：发送privateKey给机器
             log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的privateKey给机器");
-            serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, dbPublicKey);
+            serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, dbPublicKey);*/
         }
         log.info("【俄罗斯调用服务器api 结束 publicKey】");
         return new ApiResponse(200, "ok");

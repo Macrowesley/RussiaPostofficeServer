@@ -168,12 +168,12 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                          *     unsigned char length[2];				 //2个字节
                          *     unsigned char type;				 	     //0xB9
                          *     unsigned char  operateID[2];
-                         *     unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version
+                         *     unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(4位，不够用0填充)
                          *     unsigned char check;				     //校验位
                          *     unsigned char tail;					     //0xD0
                          * }__attribute__((packed))privateKeyRes, *privateKeyRes;
                          */
-                        return getWriteContent(BaseTypeUtils.stringToByte(FMResultEnum.SUCCESS.getSuccessCode() + version, BaseTypeUtils.UTF8));
+                        return getWriteContent(BaseTypeUtils.stringToByte(FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%04d",dbPubliceKey.getRevision()), BaseTypeUtils.UTF8));
                     }else{
                         log.error("publickey 已经闭环了，无序操作");
                         throw new FmException(FMResultEnum.DonotAgain.getCode(), "publickey 已经闭环了，无序操作 ");

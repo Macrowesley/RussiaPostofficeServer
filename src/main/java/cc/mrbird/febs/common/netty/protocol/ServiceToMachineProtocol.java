@@ -193,6 +193,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * 发送privateKey给机器
      */
     @Async(FebsConstant.ASYNC_POOL)
+    @Deprecated
     public void sentPrivateKeyInfo(String frankMachineId, PublicKey dbPublicKey){
         try {
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFMId(frankMachineId));
