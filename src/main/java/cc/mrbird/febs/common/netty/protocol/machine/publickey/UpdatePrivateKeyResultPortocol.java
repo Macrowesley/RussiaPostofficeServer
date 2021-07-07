@@ -116,9 +116,9 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     String frankMachineId = dectryptContent.substring(1, dectryptContent.length());*/
 
                     PublicKeyFMDTO publicKeyFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, PublicKeyFMDTO.class);
-                    String fmRes = publicKeyFMDTO.getResult();
+//                    String fmRes = publicKeyFMDTO.getResult();
                     String frankMachineId = publicKeyFMDTO.getFrankMachineId();
-                    log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + fmRes);
+                    log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + publicKeyFMDTO.toString());
                     /**
                      typedef  struct{
                      unsigned char length[2];				 //2个字节
@@ -129,10 +129,10 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                      unsigned char tail;					     //0xD0
                      }__attribute__((packed))privateKeyRes, *privateKeyRes;
                      */
-                    if (fmRes != "1"){
+                    /*if (fmRes != "1"){
                         //如果机器没有成功更新私钥，让机器重新更新，数据库不改变
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.PrivateKeyNeedUpdate.getCode());
-                    }
+                    }*/
                     //如果机器privateKey更新成功，而且publickey没有闭环，那就通知俄罗斯更新，俄罗斯更新成功后，更新数据库状态
                     PublicKey dbPubliceKey = updatePrivateKeyResultPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
 
