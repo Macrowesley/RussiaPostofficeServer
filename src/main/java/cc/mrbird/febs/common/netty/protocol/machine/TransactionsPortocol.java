@@ -125,7 +125,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
                     Contract dbContract = null;
                     //取消订单
-                    if (Long.valueOf(transactionFMDTO.getAmount()) == 0) {
+                    if (transactionFMDTO.getAmount()==null || Long.valueOf(transactionFMDTO.getAmount()) == 0) {
                         CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
                         cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
                         cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
