@@ -207,14 +207,14 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         transactionId = dbPrintJob.getTransactionId();
                         //订单是否结束（1 结束 0 未结束）
                         isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
-
-                        if (!isPrintEnd) {
-                            //没有闭环，返回foreseen信息  问问小刘 需不需要细节？ 需不需要transaction信息
-                            String foreseenId = dbPrintJob.getForeseenId();
+                        String foreseenId = dbPrintJob.getForeseenId();
+                        if (!isPrintEnd && StringUtils.isNotEmpty(foreseenId)) {
+                            //没有闭环，返回foreseen信息
                             Foreseen dbForeseen = checkServicePortocol.printJobService.getForeseenById(foreseenId);
-
-                            BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
-                            foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+                            if (dbForeseen != null) {
+                                BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
+                                foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+                            }
                         }
                     }
                     log.info("构建foreseenFMDTO信息");

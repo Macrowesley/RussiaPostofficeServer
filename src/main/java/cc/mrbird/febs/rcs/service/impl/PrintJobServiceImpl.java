@@ -170,15 +170,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         foreseenService.createForeseen(foreseen);
 
         List<ForeseenProduct> foreseenProductList = new ArrayList<>();
-        for (ForeseenProductDTO productDto : foreseenDTO.getProducts()) {
-            ForeseenProduct foreseenProduct = new ForeseenProduct();
-            BeanUtils.copyProperties(productDto, foreseenProduct);
-            foreseenProduct.setForeseenId(foreseen.getId());
-            foreseenProduct.setCreatedTime(new Date());
-            foreseenProductList.add(foreseenProduct);
+        if (foreseenDTO.getProducts() != null) {
+            for (ForeseenProductDTO productDto : foreseenDTO.getProducts()) {
+                ForeseenProduct foreseenProduct = new ForeseenProduct();
+                BeanUtils.copyProperties(productDto, foreseenProduct);
+                foreseenProduct.setForeseenId(foreseen.getId());
+                foreseenProduct.setCreatedTime(new Date());
+                foreseenProductList.add(foreseenProduct);
+            }
+            foreseenProductService.saveBatch(foreseenProductList);
         }
 
-        foreseenProductService.saveBatch(foreseenProductList);
 
         //todo 修改合同的申请金额管理
         /**

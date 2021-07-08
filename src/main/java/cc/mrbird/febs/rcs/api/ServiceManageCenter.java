@@ -495,13 +495,15 @@ public class ServiceManageCenter {
         }
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) foreseensResponse.getObject();
         log.info("foreseens 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
-
+        balanceDTO.setContractCode(foreseenDTO.getContractCode());
         //正常接收俄罗斯返回，更新数据库
-        if (!foreseenDTO.getContractCode().equals(balanceDTO.getContractCode())) {
+        /*if (!foreseenDTO.getContractCode().equals(balanceDTO.getContractCode())) {
             throw new FmException(FMResultEnum.contractCodeAbnormal.getCode(), "ContractCode应该是" + foreseenDTO.getContractCode() + "，但是俄罗斯返回的是：" + balanceDTO.getContractCode());
-        }
+        }*/
         printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingForeseensSuccess,balanceDTO);
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
+        dbContract.setCurrent(balanceDTO.getCurrent());
+        dbContract.setConsolidate(balanceDTO.getConsolidate());
         return dbContract;
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
     }
@@ -581,11 +583,12 @@ public class ServiceManageCenter {
             }
         }
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
+        balanceDTO.setContractCode(transactionDTO.getContractCode());
         log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
         //正常接收俄罗斯返回，更新数据库
-        if (!transactionDTO.getContractCode().equals(balanceDTO.getContractCode())) {
+        /*if (!transactionDTO.getContractCode().equals(balanceDTO.getContractCode())) {
             throw new FmException(FMResultEnum.contractCodeAbnormal.getCode(), "ContractCode应该是" + transactionDTO.getContractCode() + "，但是俄罗斯返回的是：" + balanceDTO.getContractCode());
-        }
+        }*/
 
         Contract curContract = printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobEndSuccess, balanceDTO);
 

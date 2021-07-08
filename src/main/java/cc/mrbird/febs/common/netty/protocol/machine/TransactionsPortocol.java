@@ -16,6 +16,7 @@ import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -108,6 +109,15 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                 case FebsConstant.FmVersion1:
                     TransactionFMDTO transactionFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionFMDTO.class);
                     log.info("解析得到的对象：TransactionFMDTO={}", transactionFMDTO.toString());
+
+                    if (StringUtils.isEmpty(transactionFMDTO.getContractCode())
+                            || StringUtils.isEmpty(transactionFMDTO.getFrankMachineId())
+                            || StringUtils.isEmpty(transactionFMDTO.getPostOffice())
+                            || StringUtils.isEmpty(transactionFMDTO.getTaxVersion())
+                            || StringUtils.isEmpty(transactionFMDTO.getForeseenId())
+                            || StringUtils.isEmpty(transactionFMDTO.getId())) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
 
                     //创建UUID
                     /*String transactionId = AESUtils.createUUID();

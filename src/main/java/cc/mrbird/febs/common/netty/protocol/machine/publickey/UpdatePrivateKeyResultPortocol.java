@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.PublicKeyFMDTO;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.api.ServiceInvokeRussia;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
@@ -19,6 +20,7 @@ import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -116,6 +118,11 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     String frankMachineId = dectryptContent.substring(1, dectryptContent.length());*/
 
                     PublicKeyFMDTO publicKeyFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, PublicKeyFMDTO.class);
+                    if (StringUtils.isEmpty(publicKeyFMDTO.getPublicKey())
+                            || StringUtils.isEmpty(publicKeyFMDTO.getPrivateKey())
+                            || StringUtils.isEmpty(publicKeyFMDTO.getFrankMachineId())) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
 //                    String fmRes = publicKeyFMDTO.getResult();
                     String frankMachineId = publicKeyFMDTO.getFrankMachineId();
                     log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + publicKeyFMDTO.toString());
@@ -137,6 +144,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     PublicKey dbPubliceKey = updatePrivateKeyResultPortocol.publicKeyService.findByFrankMachineId(frankMachineId);
 
                     if (dbPubliceKey.getFlow() != FlowEnum.FlowEnd.getCode()) {
+                        log.info("没有闭环，开始处理publickey");
                         //返回给俄罗斯
                         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
                         publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKeyFMDTO.getPublicKey() + " -----END PUBLIC KEY-----");
@@ -161,7 +169,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         dbPubliceKey.setPrivateKey(publicKeyFMDTO.getPrivateKey());
                         dbPubliceKey.setPublicKey(publicKeyFMDTO.getPublicKey());
                         updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyEndSuccess);
-                        log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId, OPERATION_NAME);
+                        log.info("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，收到了俄罗斯返回", frankMachineId, OPERATION_NAME);
 
                         /**
                          * typedef  struct{
@@ -173,21 +181,31 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                          *     unsigned char tail;					     //0xD0
                          * }__attribute__((packed))privateKeyRes, *privateKeyRes;
                          */
-                        return getWriteContent(BaseTypeUtils.stringToByte(FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%04d",dbPubliceKey.getRevision()), BaseTypeUtils.UTF8));
+                        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + String.format("%04d",dbPubliceKey.getRevision());
+                        String tempKey = updatePrivateKeyResultPortocol.tempKeyUtils.getTempKey(ctx);
+                        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+                        log.info("UpdatePrivateKeyResultPortocol 协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+                        return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                     }else{
-                        log.error("publickey 已经闭环了，无序操作");
-                        throw new FmException(FMResultEnum.DonotAgain.getCode(), "publickey 已经闭环了，无序操作 ");
+                        log.error("publickey 已经闭环了，无需操作");
+                        throw new FmException(FMResultEnum.DonotAgain.getCode(), "publickey 已经闭环了，无需操作 ");
                     }
 
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
-
+        }catch (FmException e){
+            log.error(OPERATION_NAME + " FmException info = " + e.getMessage());
+            if (-1 != e.getCode()) {
+                return getErrorResult(ctx, version, OPERATION_NAME, e.getCode());
+            }else{
+                return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
+            }
         } catch (Exception e) {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 ForeseensCancelPortocol");
+            log.info("机器结束 UpdatePrivateKeyResultPortocol");
         }
     }
 }

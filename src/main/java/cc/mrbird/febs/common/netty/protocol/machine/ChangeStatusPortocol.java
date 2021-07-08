@@ -15,6 +15,7 @@ import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -105,6 +106,9 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                     StatusFMDTO statusFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, StatusFMDTO.class);
 
                     log.info("解析得到的对象：statusDTO={}", statusFMDTO.toString());
+                    if (StringUtils.isEmpty(statusFMDTO.getFrankMachineId())) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
 
                     //解析参数
                     String frankMachineId = statusFMDTO.getFrankMachineId();

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
@@ -79,10 +80,17 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
         String responseData = String.format("%02d", resCode) + version;
 
         //返回内容的加密数据
-        //获取临时密钥
-        String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
-        String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
-        log.error("操作出错了  操作名："+operationName+"：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        String resEntryctContent;
+        if (!operationName.equals(QueryTemKeyPortocol.OPERATION_NAME)){
+            //获取临时密钥
+            String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
+            resEntryctContent = AESUtils.encrypt(responseData, tempKey);
+            log.error("操作出错了  操作名："+operationName+"：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+        }else{
+            resEntryctContent = responseData;
+            log.error("操作出错了  操作名："+operationName+"：原始数据：" + responseData);
+        }
+
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
 
@@ -99,6 +107,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
         String responseData = String.format("%02d", resCode) + version ;
         //返回内容的加密数据
         //获取临时密钥
+
         String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

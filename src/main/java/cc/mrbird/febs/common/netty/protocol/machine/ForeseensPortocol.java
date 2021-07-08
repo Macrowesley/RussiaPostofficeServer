@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -131,6 +132,15 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                     ForeseenFMDTO foreseenFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
                     log.info("解析得到的对象：foreseenFMDTO={}", foreseenFMDTO.toString());
 
+                    if (StringUtils.isEmpty(foreseenFMDTO.getContractCode())
+                            || StringUtils.isEmpty(foreseenFMDTO.getFrankMachineId())
+                            || StringUtils.isEmpty(foreseenFMDTO.getPostOffice())
+                            || StringUtils.isEmpty(foreseenFMDTO.getTaxVersion())
+                            || StringUtils.isEmpty(foreseenFMDTO.getTotalAmmount())
+                            || foreseenFMDTO.getTotalCount() == 0) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
+
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFMDTO.getFrankMachineId());
                     if (dbPrintJob != null) {
@@ -152,6 +162,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
                     String foreseenId = AESUtils.createUUID();
                     foreseenFMDTO.setId(foreseenId);
+
                     //数据库的合同信息
                     Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFMDTO);
 

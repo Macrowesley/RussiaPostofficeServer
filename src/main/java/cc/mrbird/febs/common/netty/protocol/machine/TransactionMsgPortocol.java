@@ -3,20 +3,16 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
-import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -109,6 +105,9 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
                 case FebsConstant.FmVersion1:
                     TransactionMsgFMDTO transactionMsgFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionMsgFMDTO.class);
                     log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFMDTO.toString());
+                    if (StringUtils.isEmpty(transactionMsgFMDTO.getFrankMachineId())) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
 
                     String transactionId = transactionMsgPortocol.dmMsgService.saveMsg(transactionMsgFMDTO);
 

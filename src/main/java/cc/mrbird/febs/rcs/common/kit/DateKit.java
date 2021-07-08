@@ -5,6 +5,7 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -162,6 +163,9 @@ public class DateKit {
      */
     public static Date parseRussiatime(String date){
         try {
+            if (StringUtils.isEmpty(date)){
+                return new Date();
+            }
             return dealDateFormatToDate(date);
         } catch (ParseException e) {
             log.info(e.getMessage());

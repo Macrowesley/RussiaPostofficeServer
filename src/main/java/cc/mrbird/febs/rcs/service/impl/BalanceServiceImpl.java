@@ -128,6 +128,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new RcsApiException(RcsApiErrorEnum.SaveBalanceError);
         }

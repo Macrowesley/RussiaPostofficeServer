@@ -10,6 +10,7 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
-    String OPERATION_NAME = "QueryTemKeyPortocol";
+    public static String OPERATION_NAME = "QueryTemKeyPortocol";
 
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
@@ -91,7 +92,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 long timestamp = System.currentTimeMillis();
                 //todo 要删掉这段代码，用下面的代码，需要添加一个时间戳
 //                String entryptContent = AESUtils.encrypt(tempKey , uuid);
-                String content = tempKey + String.valueOf(timestamp);
+                String content =  FMResultEnum.SUCCESS.getSuccessCode() + version +  tempKey + String.valueOf(timestamp);
                 String entryptContent = AESUtils.encrypt(content, uuid);
 
 
@@ -99,19 +100,19 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 queryTemKeyPortocol.tempKeyUtils.addTempKey(ctx, tempKey);
                 //保存临时时间戳
                 queryTemKeyPortocol.tempTimeUtils.addTempTime(ctx, timestamp);
-
-                byte[] versionBytes = new byte[VERSION_LEN];
+                byte[] encryptBytes = BaseTypeUtils.stringToByte(entryptContent, RES_ENCRYPT_LEN, BaseTypeUtils.UTF8);
+/*//                byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
 
-                versionBytes = BaseTypeUtils.stringToByte(version, VERSION_LEN, BaseTypeUtils.UTF8);
+//                versionBytes = BaseTypeUtils.stringToByte(version, VERSION_LEN, BaseTypeUtils.UTF8);
                 encryptBytes = BaseTypeUtils.stringToByte(entryptContent, RES_ENCRYPT_LEN, BaseTypeUtils.UTF8);
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);
-                baos.write(versionBytes, 0, versionBytes.length);
-                baos.write(encryptBytes, 0, encryptBytes.length);
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream(VERSION_LEN + RES_ENCRYPT_LEN);
+//                baos.write(versionBytes, 0, versionBytes.length);
+//                baos.write(encryptBytes, 0, encryptBytes.length);*/
                 log.info("获取临时密钥：  结束 ， 临时密钥= {} content = {} 发给机器的是{}", tempKey, content, entryptContent);
 
-                return getWriteContent(baos.toByteArray());
+                return getWriteContent(encryptBytes);
             default:
                 throw new Exception("获取临时密钥：版本不存在");
         }
