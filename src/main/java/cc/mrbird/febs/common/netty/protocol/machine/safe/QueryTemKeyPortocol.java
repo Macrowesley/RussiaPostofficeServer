@@ -100,7 +100,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
                 queryTemKeyPortocol.tempKeyUtils.addTempKey(ctx, tempKey);
                 //保存临时时间戳
                 queryTemKeyPortocol.tempTimeUtils.addTempTime(ctx, timestamp);
-                byte[] encryptBytes = BaseTypeUtils.stringToByte(entryptContent, RES_ENCRYPT_LEN, BaseTypeUtils.UTF8);
+                byte[] encryptBytes = BaseTypeUtils.stringToByte(entryptContent, BaseTypeUtils.UTF8);
 /*//                byte[] versionBytes = new byte[VERSION_LEN];
                 byte[] encryptBytes = new byte[RES_ENCRYPT_LEN];
 

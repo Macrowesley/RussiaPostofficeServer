@@ -114,8 +114,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                             || StringUtils.isEmpty(transactionFMDTO.getFrankMachineId())
                             || StringUtils.isEmpty(transactionFMDTO.getPostOffice())
                             || StringUtils.isEmpty(transactionFMDTO.getTaxVersion())
-                            || StringUtils.isEmpty(transactionFMDTO.getForeseenId())
-                            || StringUtils.isEmpty(transactionFMDTO.getId())) {
+                            || StringUtils.isEmpty(transactionFMDTO.getForeseenId())) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                     }
 
@@ -134,7 +133,10 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                         cancelJobFMDTO.setContractCode(transactionFMDTO.getContractCode());
                         dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
                     } else {
-                        //处理transaction
+                        if (StringUtils.isEmpty(transactionFMDTO.getId())){
+                            return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                        }
+                            //处理transaction
                         //数据库得到具体的dmMsg信息
                         DmMsgDetail dmMsgDetail = transactionsPortocol.dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
                         transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());

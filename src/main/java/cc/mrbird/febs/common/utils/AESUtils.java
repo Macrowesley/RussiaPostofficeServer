@@ -173,10 +173,20 @@ public class AESUtils {
     }
 
     private static void test8() throws Exception {
-        String oldStr = "";
-        String entryContent = "AUPbY+5msM3/n2mRdoAVHg==";
-        String tempKey = "ZmrFj2m7xjBMGzMY";
-        decrypt(entryContent, tempKey);
+        String oldStr = "010010Jjewv5xTxvLkCTC1625724678073";
+        String tempKey = "0Jjewv5xTxvLkCTC";
+        //010010Jjewv5xTxvLkCTC1625724678073
+        //010010Jjewv5xTxvLkCTC1625724678073
+
+        String entryContent = encrypt(oldStr,tempKey);
+        ////
+        entryContent = "R9QaL2IkAg7B28uEjTLPs0S3RE4ezgBkEeaC3nq/3i4y8608PDAYzFpETk5OGvQlXiafVNWKrQUXuQOXNy910FP1F7PEg07n/2xpOy87mZJMUFOQTggLMmSVqALTiOAP2BEf9AUjPvEtIOy+WsG49NbyfrVyxlGS9A59kq5k2Jjr1s4mPgGNRqzOioDh938HoVxANwB3UVMabyDxq5Rs9LwYCTUtW4GCnZmsmJwKcp73LieJ3ZXLyZVI2z2pBLRkjJ2sNi8DW+PQTl+GJC4CSatjD9aJ0gyuA9L5sP1qo4u66hVMyjzrk7s4gkjluucttwXKbwpmvSnxXOHUu1MTEIJxTMJF0bSaUuhuf6LWdVw=";
+        tempKey = "N6qIswrfGDHX8wU7";
+        log.info("加密后内容长度："+entryContent.length());
+
+        String decrypt = decrypt(entryContent, tempKey);
+        log.info(decrypt);
+        log.info(String.valueOf(decrypt.equals(oldStr)));
     }
 
     private static void test7() {

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.machine.safe;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
@@ -7,6 +8,7 @@ import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
     //时间戳长度
     private static final int TIMESTAMP_LEN = 13;
+
+    private static final String OPERATION_NAME = "MachineLoginPortocol";
 
     @Autowired
     IDeviceService deviceService;
@@ -75,6 +79,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             unsigned char tail;                 //0xD0
         }__attribute__((packed))machineInfo,*machineInfo;
          */
+        String version = "";
         try {
             int pos = getBeginPos();
             log.info("【协议】机器登录校验协议 开始");
@@ -84,7 +89,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             pos += REQ_ACNUM_LEN;
 
             //解析版本
-            String versionContent = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+            version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
             pos += VERSION_LEN;
 
             //加密内容
@@ -97,10 +102,9 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             //解密后内容
             String dectryptContent = AESUtils.decrypt(enctryptContent, tempKey);
 //            String versionContent = dectryptContent.substring(0, VERSION_LEN);
-            //解析版本号
-            int version = Integer.valueOf(versionContent);
+
             switch (version) {
-                case 1:
+                case FebsConstant.FmVersion1:
                     pos = VERSION_LEN;
 
 //                    String timestamp = dectryptContent.substring(pos, pos + TIMESTAMP_LEN);
@@ -142,7 +146,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("机器登录校验协议： 解析出错" + e.getMessage());
-            throw new Exception(e.getMessage());
+            return getWriteContent(new byte[]{0x00});
         }
     }
 }

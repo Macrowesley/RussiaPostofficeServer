@@ -151,9 +151,10 @@ public abstract class BaseProtocol {
      */
     public String getDecryptContent(byte[] bytes, ChannelHandlerContext ctx, int pos, int REQ_ACNUM_LEN) throws Exception {
         String enctryptContent = BaseTypeUtils.byteToString(bytes, pos, bytes.length - TYPE_LEN - OPERATEID_LEN - REQ_ACNUM_LEN - VERSION_LEN - CHECK_LEN - END_LEN, BaseTypeUtils.UTF8);
-//        log.info("baseProtocol = " + getOperator().toString());
+//        log.info("加密后内容长度：" + enctryptContent.length() + " enctryptContent = " + enctryptContent);
         //获取临时密钥
         String tempKey = getOperator().tempKeyUtils.getTempKey(ctx);
+//        log.info(tempKey);
         //todo 测试
 //        tempKey = "2dc1f4d99e7fcadc";
         //解密后内容
