@@ -162,6 +162,13 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //获取上次打印任务信息
 //                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
+                    log.info(checkServiceDTO.toString());
+                    if (StringUtils.isEmpty(checkServiceDTO.getTaxVersion())
+                            || StringUtils.isEmpty(checkServiceDTO.getFrankMachineId())
+                            || checkServiceDTO.getDmMsgDto() == null) {
+                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
+                    }
+
                     String frankMachineId = checkServiceDTO.getFrankMachineId().trim();
                     if (!checkServicePortocol.deviceService.checkExistByFmId(frankMachineId)) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
@@ -227,7 +234,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                      *      结束了，不处理
                      *      未结束：找到没有结束的那个批次，得到dm_msg等信息，保存到数据库中，同时返回这个批次打印的count等信息给机器
                      */
-                    TransactionMsgFMDTO transactionMsgFMDTO = checkServiceDTO.getTransactionMsgFMDTO();
+                    TransactionMsgFMDTO transactionMsgFMDTO = checkServiceDTO.getDmMsgDto();
                     //当前任务已经打印的总数量
                     int actualCount = 0;
                     //当前任务已经打印的总金额 单位是分
@@ -240,7 +247,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         if (dmMsgDetail != null){
                             actualCount = dmMsgDetail.getActualCount();
                             actualAmount = dmMsgDetail.getActualAmount();
-                            dmMsg = (dmMsgDetail.getFranks())[0].getDmMessage();
+                            dmMsg = (dmMsgDetail.getFranks())[dmMsgDetail.getFranks().length - 1].getDmMessage();
                         }
                     }
                     log.info("处理dmMsg信息");

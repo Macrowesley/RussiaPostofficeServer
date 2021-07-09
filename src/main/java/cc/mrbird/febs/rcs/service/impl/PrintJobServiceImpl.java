@@ -230,6 +230,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             double newCurrent = DoubleKit.add(dbCurrent, userdCurrent);
             dbContract.setCurrent(newCurrent);
             contractService.saveOrUpdate(dbContract);
+            log.info("取消订单后：dbCurrent={}, userdCurrent={}, newCurrent={}", dbCurrent, userdCurrent, newCurrent);
         }
         dbPrintJob.setUpdatedTime(new Date());
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
@@ -250,17 +251,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public Contract changeTransactionStatus(PrintJob dbPrintJob, Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         //更新PrintJob
-        if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow) {
+        if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
+            dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
+            dbPrintJob.setUpdatedTime(new Date());
+//            dbPrintJob.setTransactionId(transactionDTO.getId());
+            this.updatePrintJob(dbPrintJob);
+        } else {
             //todo 碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
             dbPrintJob.setUpdatedTime(new Date());
             this.updatePrintJob(dbPrintJob);
             return dbContract;
-        } else {
-            dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
-            dbPrintJob.setUpdatedTime(new Date());
-//            dbPrintJob.setTransactionId(transactionDTO.getId());
-            this.updatePrintJob(dbPrintJob);
         }
 
 
@@ -322,6 +323,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         return foreseenService.getById(foreseenId);
     }
 
+    @Override
+    public Transaction getTransactionById(String transactionId) {
+        return transactionService.getById(transactionId);
+    }
 
     /**
      * 返回true，表示这个机器的所有打印任务都完成了

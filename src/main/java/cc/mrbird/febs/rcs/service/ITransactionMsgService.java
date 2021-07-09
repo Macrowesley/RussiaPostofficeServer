@@ -72,7 +72,7 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param transactionMsgFMDTO
      * @return
      */
-    boolean checkIsExist(TransactionMsgFMDTO transactionMsgFMDTO);
+    boolean checkIsSameWithLastOne(TransactionMsgFMDTO transactionMsgFMDTO);
     /**
      * 根据列表信息，得到详情
      * @param msgList

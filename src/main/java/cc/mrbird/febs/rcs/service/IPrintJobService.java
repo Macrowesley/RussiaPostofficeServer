@@ -9,6 +9,7 @@ import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Transaction;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -88,10 +89,12 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param transactionDTO
      * @param curFlowDetail
      */
-    Contract changeTransactionStatus(PrintJob dbPrintJob,Contract dbContract, TransactionDTO transactionDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
+    Contract changeTransactionStatus(PrintJob dbPrintJob,Contract dbContract, TransactionDTO transactionDTO,  FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
 
 
     Foreseen getForeseenById(String foreseenId);
+
+    Transaction getTransactionById(String transactionId);
 
 
     boolean checkPrintJobFinish(String frankMachineId);

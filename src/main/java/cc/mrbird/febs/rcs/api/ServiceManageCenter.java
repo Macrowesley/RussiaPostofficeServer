@@ -11,11 +11,9 @@ import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
+import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.*;
-import cc.mrbird.febs.rcs.entity.Contract;
-import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.entity.PublicKey;
-import cc.mrbird.febs.rcs.entity.Tax;
+import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +59,9 @@ public class ServiceManageCenter {
 
     @Autowired
     ICustomerService customerService;
+
+    @Autowired
+    ITransactionMsgService dmMsgService;
 
     /**
      * 机器状态改变事件
@@ -516,7 +517,19 @@ public class ServiceManageCenter {
         String operationName = "transactions";
         String frankMachineId = transactionFMDTO.getFrankMachineId();
         String foreseenId = transactionFMDTO.getForeseenId();
+        String transactionId = transactionFMDTO.getId();
         log.info("transactions 开始 {}, frankMachineId={}", operationName, frankMachineId);
+
+        Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
+
+        //数据库得到具体的dmMsg信息
+        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
+        //实际花费的
+        transactionFMDTO.setCreditVal(dmMsgDetail.getActualAmount());
+        //预计花费，应该是从foreseen的amount
+        transactionFMDTO.setAmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+        transactionFMDTO.setCount(dmMsgDetail.getActualCount());
+        transactionFMDTO.setFranks(dmMsgDetail.getFranks());
 
         /**
          判断订单状态是否符合条件：
@@ -530,7 +543,8 @@ public class ServiceManageCenter {
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
         if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
-                curFlowDetail != FlowDetailEnum.JobErrorTransactionUnKnow) {
+                curFlowDetail != FlowDetailEnum.JobErrorTransactionUnKnow
+                && curFlowDetail != FlowDetailEnum.JobEndFailTransaction4xxError) {
             throw new FmException("transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
 
@@ -555,13 +569,19 @@ public class ServiceManageCenter {
         //数据转换
         TransactionDTO transactionDTO = new TransactionDTO();
         BeanUtils.copyProperties(transactionFMDTO, transactionDTO);
-        //消耗的分钟
-        int constMinuteTime = Integer.valueOf(transactionFMDTO.getCostTime());
 
-       /* transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
+        //消耗的分钟
+      /*   int constMinuteTime = Integer.valueOf(transactionFMDTO.getCostTime());
+       transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
         transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));*/
+        Transaction dbTransaction = printJobService.getTransactionById(transactionId);
+        transactionDTO.setStartDateTime(dbTransaction.getStartDateTime());
+        transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
+
+        //处理金额
         transactionDTO.setAmount(fmAmount);
         transactionDTO.setCreditVal(fmCreditVal);
+        transactionDTO.setGraphId("");
 
         //处理UserId
         String userId = getUserIdByContractCode(transactionDTO.getContractCode());

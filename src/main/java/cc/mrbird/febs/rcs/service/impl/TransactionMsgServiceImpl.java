@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -90,12 +91,22 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 	}
 
     @Override
-    public boolean checkIsExist(TransactionMsgFMDTO transactionMsgFMDTO) {
-        LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
+    public boolean checkIsSameWithLastOne(TransactionMsgFMDTO transactionMsgFMDTO) {
+        /*LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(TransactionMsg::getAmount, MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount()));
         wrapper.eq(TransactionMsg::getCount, transactionMsgFMDTO.getTotalCount());
-        wrapper.eq(TransactionMsg::getFrankMachineId, transactionMsgFMDTO.getFrankMachineId());
-        return this.baseMapper.selectCount(wrapper) > 0;
+        wrapper.eq(TransactionMsg::getDmMsg, transactionMsgFMDTO.getDmMsg());
+        wrapper.eq(TransactionMsg::getStatus, transactionMsgFMDTO.getStatus());
+//        wrapper.eq(TransactionMsg::getFrankMachineId, transactionMsgFMDTO.getFrankMachineId());
+        return this.baseMapper.selectCount(wrapper) > 0;*/
+        TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
+        if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+                && lastestMsg.getAmount().equals(transactionMsgFMDTO.getTotalAmount())
+                && lastestMsg.getCount().equals(transactionMsgFMDTO.getTotalCount())
+                && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -131,29 +142,29 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         double actualAmount = 0.0;
 
         int arraySize = msgList.size() / 2;
-        FrankDTO[] frankDTOArray = new FrankDTO[arraySize];
-
 
         //list是根据时间顺序序的，互相相减即可
         //msg是批次的开始记录
         TransactionMsg beginMsg = null;
         //的msg是批次的结束记录
         TransactionMsg endMsg = null;
+        List<FrankDTO> frankDTOList = new ArrayList<>();
         for (int i = 0; i < msgList.size(); i++) {
             if (i % 2 == 0) {
                 beginMsg = msgList.get(i);
             }else{
                 endMsg = msgList.get(i);
                 //list是顺序的，array数组也是正序的
-                frankDTOArray[(i-1)/2] = new FrankDTO(endMsg.getDmMsg());
-                if (beginMsg != null && endMsg != null) {
+
+                if (beginMsg != null && endMsg != null && endMsg.getCount() != beginMsg.getCount()) {
                     //log.info("\nbeginMsg={},\nendMsg={}",beginMsg,endMsg);
                     actualCount += endMsg.getCount() - beginMsg.getCount();
                     actualAmount += DoubleKit.sub(endMsg.getAmount(),beginMsg.getAmount());
+                    frankDTOList.add(new FrankDTO(endMsg.getDmMsg()));
                 }
             }
         }
-
+        FrankDTO[] frankDTOArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
         dmMsgDetail.setActualCount(actualCount);
         dmMsgDetail.setActualAmount(String.valueOf(MoneyUtils.changeY2F(actualAmount)));
         dmMsgDetail.setFranks(frankDTOArray);
@@ -188,7 +199,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             transactionMsg.setCreatedTime(new Date());
             this.createTransactionMsg(transactionMsg);
             transactionMsgList.add(transactionMsg);
-
         }
 
         //到了这里，list是偶数的，倒叙相减，累计总金额和数量
@@ -207,14 +217,14 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //dbPrintJob.setTransactionId(transactionDTO.getId());
         int idType = transactionMsgFMDTO.getIdType();
 
-        if (checkIsExist(transactionMsgFMDTO)){
+        if (checkIsSameWithLastOne(transactionMsgFMDTO)){
             throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
         }
 
 
-
         String transactionId = transactionMsgFMDTO.getId();
         if (idType == 1){
+            log.info("foreseen之后第一个批次信息处理");
             //id是ForeseensId
             /**
              * 1. 创建transaction

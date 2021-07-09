@@ -88,7 +88,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
                 return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
             } else {
                 log.info("channelId={}的操作记录放入redis", key);
-                transactionMsgPortocol.redisService.set(key, "wait", WAIT_TIME);
+                transactionMsgPortocol.redisService.set(key, "wait", 2L);
             }
 
             int pos = getBeginPos();

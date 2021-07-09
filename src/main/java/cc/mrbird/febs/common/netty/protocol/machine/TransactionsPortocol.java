@@ -35,8 +35,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
     private static final String OPERATION_NAME = "TransactionsPortocol";
 
-    @Autowired
-    ITransactionMsgService dmMsgService;
+
 
     public static TransactionsPortocol transactionsPortocol;
 
@@ -133,15 +132,12 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                         cancelJobFMDTO.setContractCode(transactionFMDTO.getContractCode());
                         dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
                     } else {
-                        if (StringUtils.isEmpty(transactionFMDTO.getId())){
+                        if (StringUtils.isEmpty(transactionFMDTO.getId())
+                                || StringUtils.isEmpty(transactionFMDTO.getAmount())
+                                || StringUtils.isEmpty(transactionFMDTO.getCreditVal())){
                             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                         }
-                            //处理transaction
-                        //数据库得到具体的dmMsg信息
-                        DmMsgDetail dmMsgDetail = transactionsPortocol.dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
-                        transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
-                        transactionFMDTO.setCount(dmMsgDetail.getActualCount());
-                        transactionFMDTO.setFranks(dmMsgDetail.getFranks());
+                        //处理transaction
                         dbContract = transactionsPortocol.serviceManageCenter.transactions(transactionFMDTO);
                     }
                     return getSuccessResult(version, ctx, transactionId, dbContract);

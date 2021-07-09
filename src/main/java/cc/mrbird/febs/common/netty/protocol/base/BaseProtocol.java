@@ -104,9 +104,9 @@ public abstract class BaseProtocol {
         baos.write(checkSume, 0, CHECK_LEN);
         baos.write(end, 0, END_LEN);
 
-        if (type != (byte) 0xa0) {
+        /*if (type != (byte) 0xa0) {
             log.info("最后发送给客户端的数据：" + BaseTypeUtils.bytesToHexString(baos.toByteArray()));
-        }
+        }*/
         return baos.toByteArray();
     }
 
