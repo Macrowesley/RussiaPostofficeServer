@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80019
 File Encoding         : 65001
 
-Date: 2021-07-05 09:13:23
+Date: 2021-07-10 14:11:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,17 +24,21 @@ CREATE TABLE `rcs_balance` (
   `contract_code` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '合同id',
   `contract_current` double(10,2) NOT NULL COMMENT '【待定】当前可用资金',
   `consolidate` double(10,2) NOT NULL COMMENT '当前余额',
-  `operation_id` varchar(64) NOT NULL COMMENT '【待定】',
+  `operation_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '【待定】',
   `from_type` int DEFAULT NULL COMMENT '1 服务器发送给俄罗斯，俄罗斯返回的信息  2 俄罗斯发给服务器的数据',
   `created_time` datetime NOT NULL COMMENT '创建时间',
   `russia_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `contract_id` (`contract_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='数据同步记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='数据同步记录表';
 
 -- ----------------------------
 -- Records of rcs_balance
 -- ----------------------------
+INSERT INTO `rcs_balance` VALUES ('32', '00001032', '20795.00', '27512.00', null, '1', '2021-07-10 10:48:41', '2021-07-10 10:48:41');
+INSERT INTO `rcs_balance` VALUES ('33', '00001032', '20795.00', '27507.00', null, '1', '2021-07-10 10:53:30', '2021-07-10 10:53:30');
+INSERT INTO `rcs_balance` VALUES ('34', '00001032', '20790.00', '27507.00', null, '1', '2021-07-10 11:01:42', '2021-07-10 11:01:42');
+INSERT INTO `rcs_balance` VALUES ('35', '00001032', '20793.00', '27505.00', null, '1', '2021-07-10 11:02:39', '2021-07-10 11:02:39');
 
 -- ----------------------------
 -- Table structure for rcs_contract
@@ -55,7 +59,7 @@ CREATE TABLE `rcs_contract` (
 -- ----------------------------
 -- Records of rcs_contract
 -- ----------------------------
-INSERT INTO `rcs_contract` VALUES ('3aaeb112-ccb8-4312-ad2a-d50f9c91485a', null, '1', '3000.23', '3000.23', '2021-06-02 13:58:05', '2021-05-31 23:13:52', null);
+INSERT INTO `rcs_contract` VALUES ('00001032', null, '1', '20793.00', '27505.00', '2021-07-06 14:12:10', '2021-07-10 11:02:39', '2021-01-01 14:00:00');
 
 -- ----------------------------
 -- Table structure for rcs_contract_address
@@ -68,15 +72,13 @@ CREATE TABLE `rcs_contract_address` (
   `created_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `contractId` (`contract_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of rcs_contract_address
 -- ----------------------------
-INSERT INTO `rcs_contract_address` VALUES ('11', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', '1号地址', '2021-06-15 15:18:02');
-INSERT INTO `rcs_contract_address` VALUES ('12', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', '\n2号地址', '2021-06-15 15:18:02');
-INSERT INTO `rcs_contract_address` VALUES ('13', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', '\n3号地址', '2021-06-15 15:18:02');
-INSERT INTO `rcs_contract_address` VALUES ('14', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', '\n4号地址', '2021-06-15 15:18:02');
+INSERT INTO `rcs_contract_address` VALUES ('11', '00001032', 'Иркутская обл, Иркутск г', '2021-06-15 15:18:02');
+INSERT INTO `rcs_contract_address` VALUES ('15', '00001032', 'Иркутская обл', '2021-07-06 14:15:43');
 
 -- ----------------------------
 -- Table structure for rcs_customer
@@ -99,7 +101,7 @@ CREATE TABLE `rcs_customer` (
 -- ----------------------------
 -- Records of rcs_customer
 -- ----------------------------
-INSERT INTO `rcs_customer` VALUES ('11a8005e-6d6a-499d-9fca-82aa69103f90', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', 'Заказчик', '680320076000', '346313002', null, null, '2021-06-02 13:58:05', '2021-06-02 13:58:05', null);
+INSERT INTO `rcs_customer` VALUES ('11a8005e-6d6a-499d-9fca-82aa69103f90', '00001032', 'Заказчик', '680320076000', '346313002', '664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257', '664033, Иркутская обл, Иркутск г, Лермонтова ул, дом № 257, оф. 802', '2021-07-06 14:12:10', '2021-07-06 14:12:10', '2021-01-01 14:00:00');
 
 -- ----------------------------
 -- Table structure for rcs_fm_status_log
@@ -108,26 +110,35 @@ DROP TABLE IF EXISTS `rcs_fm_status_log`;
 CREATE TABLE `rcs_fm_status_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `frank_machine_id` varchar(64) NOT NULL COMMENT '机器id',
-  `change_from` int NOT NULL COMMENT '提交改变方：1 机器 2 俄罗斯',
-  `interface_name` int NOT NULL COMMENT '接口名',
-  `cur_fm_status` int NOT NULL COMMENT '机器当前状态',
-  `future_fm_status` int NOT NULL COMMENT '机器想要达到的状态',
-  `flow` int NOT NULL COMMENT '流程 0 未闭环   1 闭环',
+  `change_from` int DEFAULT NULL COMMENT '提交改变方：1 机器 2 俄罗斯',
+  `interface_name` int DEFAULT NULL COMMENT '接口名',
+  `cur_fm_status` int DEFAULT NULL COMMENT '机器当前状态',
+  `future_fm_status` int DEFAULT NULL COMMENT '机器想要达到的状态',
+  `flow` int DEFAULT NULL COMMENT '流程 0 未闭环   1 闭环',
   `flow_detail` int DEFAULT NULL COMMENT '各种FlowXXXEnum的状态',
-  `post_office` varchar(6) NOT NULL COMMENT '邮局信息',
-  `tax_version` varchar(10) NOT NULL COMMENT 'tax版本',
-  `fm_event` int NOT NULL COMMENT '1 STATUS \r\n									 2 RATE_TABLE_UPDATE',
-  `error_code` varchar(6) NOT NULL COMMENT '错误代码',
+  `post_office` varchar(6) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮局信息',
+  `tax_version` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT 'tax版本',
+  `fm_event` int DEFAULT NULL COMMENT '1 STATUS \r\n									 2 RATE_TABLE_UPDATE',
+  `error_code` varchar(6) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '错误代码',
   `error_message` varchar(64) DEFAULT NULL COMMENT '错误信息',
   `created_time` datetime NOT NULL COMMENT '创建时间',
   `updated_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `frank_machine_id` (`frank_machine_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='机器状态变更表';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='机器状态变更表';
 
 -- ----------------------------
 -- Records of rcs_fm_status_log
 -- ----------------------------
+INSERT INTO `rcs_fm_status_log` VALUES ('1', 'FM100002', '1', '4', '1', '1', '0', '13', '994700', '2.3.3', '1', null, null, '2021-05-13 09:36:26', '2021-07-06 13:16:33');
+INSERT INTO `rcs_fm_status_log` VALUES ('2', '', '1', '4', null, '1', '1', '13', null, null, null, null, null, '2021-07-07 10:20:50', '2021-07-07 10:20:50');
+INSERT INTO `rcs_fm_status_log` VALUES ('3', '', '1', '4', null, '1', '1', '13', null, null, null, null, null, '2021-07-07 12:36:47', '2021-07-07 12:36:47');
+INSERT INTO `rcs_fm_status_log` VALUES ('4', 'FM100002', '1', '4', null, '1', '1', '13', null, null, null, null, null, '2021-07-07 12:47:32', '2021-07-07 12:47:32');
+INSERT INTO `rcs_fm_status_log` VALUES ('5', 'FM100002', '1', '4', '1', '1', '1', '11', null, null, null, null, null, '2021-07-07 12:51:36', '2021-07-07 12:51:36');
+INSERT INTO `rcs_fm_status_log` VALUES ('6', 'FM100002', '1', '4', '1', '1', '1', '11', null, null, null, null, null, '2021-07-07 13:17:30', '2021-07-07 13:17:30');
+INSERT INTO `rcs_fm_status_log` VALUES ('7', 'FM100002', '1', '4', '1', '1', '1', '11', null, null, null, null, null, '2021-07-07 13:45:51', '2021-07-07 13:45:51');
+INSERT INTO `rcs_fm_status_log` VALUES ('8', 'FM100002', '1', '4', '1', '1', '1', '11', null, null, null, null, null, '2021-07-07 13:59:27', '2021-07-07 13:59:27');
+INSERT INTO `rcs_fm_status_log` VALUES ('9', 'FM100002', '1', '4', '1', '1', '1', '11', null, null, null, null, null, '2021-07-07 14:01:42', '2021-07-07 14:01:42');
 
 -- ----------------------------
 -- Table structure for rcs_foreseen
@@ -152,6 +163,8 @@ CREATE TABLE `rcs_foreseen` (
 -- ----------------------------
 -- Records of rcs_foreseen
 -- ----------------------------
+INSERT INTO `rcs_foreseen` VALUES ('36fcf82a-f078-470e-a2cc-cbe5fc9320be', '994700', '00001032', 'FM100002', '11a8005e-6d6a-499d-9fca-82aa69103f90', '2', '22.1.1', '5.00', '2021-07-10 10:48:41', '2021-07-10 10:48:41', '1');
+INSERT INTO `rcs_foreseen` VALUES ('9d8386f7-5fc2-493b-885a-2ae76160a155', '994700', '00001032', 'FM100002', '11a8005e-6d6a-499d-9fca-82aa69103f90', '2', '22.1.1', '5.00', '2021-07-10 11:01:42', '2021-07-10 11:01:42', '1');
 
 -- ----------------------------
 -- Table structure for rcs_foreseen_product
@@ -181,15 +194,15 @@ DROP TABLE IF EXISTS `rcs_postal_product`;
 CREATE TABLE `rcs_postal_product` (
   `code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '【待定】',
   `tax_id` int NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '【待定】',
-  `mail_type` int NOT NULL COMMENT '【待定】',
-  `mail_ctg` int NOT NULL COMMENT '转发区域； 1-内部，2-外部',
-  `max_weight` int NOT NULL COMMENT '关税区（值1-5）',
-  `trans_type` varchar(10) NOT NULL COMMENT '偏远地区； 1-长达2000公里，2-超过2000公里',
-  `region_type` varchar(20) NOT NULL COMMENT '邮政物品的最大重量',
-  `region_zone` int NOT NULL COMMENT '邮件类别的名称\r\n									 #*简单-0\r\n									 #*定制-1\r\n									 #*申报价值-2',
-  `distance_type` varchar(10) NOT NULL COMMENT '邮件类型代码  2-字母  3-包裹邮寄',
-  `contract_name` varchar(50) NOT NULL COMMENT '运输方向  1-内部（RTM-2）;  2-外向国际（RTM-2）;',
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '【待定】',
+  `mail_type` int DEFAULT NULL COMMENT '【待定】',
+  `mail_ctg` int DEFAULT NULL COMMENT '转发区域； 1-内部，2-外部',
+  `max_weight` int DEFAULT NULL COMMENT '关税区（值1-5）',
+  `trans_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '偏远地区； 1-长达2000公里，2-超过2000公里',
+  `region_type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮政物品的最大重量',
+  `region_zone` int DEFAULT NULL COMMENT '邮件类别的名称\r\n									 #*简单-0\r\n									 #*定制-1\r\n									 #*申报价值-2',
+  `distance_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮件类型代码  2-字母  3-包裹邮寄',
+  `contract_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '运输方向  1-内部（RTM-2）;  2-外向国际（RTM-2）;',
   `numdiff` int DEFAULT NULL,
   `label_ru` varchar(255) DEFAULT NULL,
   `is_postal_market_only` varchar(1) DEFAULT NULL,
@@ -202,6 +215,12 @@ CREATE TABLE `rcs_postal_product` (
 -- ----------------------------
 -- Records of rcs_postal_product
 -- ----------------------------
+INSERT INTO `rcs_postal_product` VALUES ('2100', '15', 'Письмо', '2', '0', '100', 'ANY', 'DOMESTIC', '1', 'AFTER_2000', null, null, 'Письмо простое внутреннее', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
+INSERT INTO `rcs_postal_product` VALUES ('2101', '15', 'Письмо', '2', '1', '100', 'ANY', 'DOMESTIC', '1', 'AFTER_2000', null, null, 'Письмо заказное внутреннее', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
+INSERT INTO `rcs_postal_product` VALUES ('2210', '15', 'Письмо', '2', '0', '2000', 'ANY', 'INTERNATIONAL', '1', 'AFTER_2000', null, null, 'Письмо простое международное (исходящее)', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
+INSERT INTO `rcs_postal_product` VALUES ('2211', '15', 'Письмо', '2', '1', '2000', 'ANY', 'INTERNATIONAL', '1', 'AFTER_2000', null, null, 'Письмо заказное международное (исходящее)', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
+INSERT INTO `rcs_postal_product` VALUES ('6100', '15', 'Почтовая карточка', '6', '0', '20', 'ANY', 'DOMESTIC', '1', 'AFTER_2000', null, null, 'Карточка простая внутренняя', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
+INSERT INTO `rcs_postal_product` VALUES ('6101', '15', 'Почтовая карточка', '6', '1', '20', 'ANY', 'DOMESTIC', '1', 'AFTER_2000', null, null, 'Карточка заказная внутренняя', '0', '2021-07-06 16:13:48', '2021-07-06 16:13:48', '2021-01-01 14:00:00');
 
 -- ----------------------------
 -- Table structure for rcs_post_office
@@ -222,7 +241,7 @@ CREATE TABLE `rcs_post_office` (
 -- ----------------------------
 -- Records of rcs_post_office
 -- ----------------------------
-INSERT INTO `rcs_post_office` VALUES ('994700', 'УФПС Абстрактной области', 'Абстрактск', '0', '1', null, '2021-06-30 10:57:07', '2021-06-30 10:57:07');
+INSERT INTO `rcs_post_office` VALUES ('994700', 'УФПС Абстрактной области', 'Абстрактск', '0', '1', '2021-01-01 14:00:00', '2021-07-06 14:05:11', '2021-07-06 14:05:11');
 
 -- ----------------------------
 -- Table structure for rcs_post_office_contract
@@ -235,12 +254,12 @@ CREATE TABLE `rcs_post_office_contract` (
   PRIMARY KEY (`id`),
   KEY `contract_id` (`contract_code`),
   KEY `post_office_id` (`post_office_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='邮局-合同关系表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='邮局-合同关系表';
 
 -- ----------------------------
 -- Records of rcs_post_office_contract
 -- ----------------------------
-INSERT INTO `rcs_post_office_contract` VALUES ('2', '3aaeb112-ccb8-4312-ad2a-d50f9c91485a', '994700');
+INSERT INTO `rcs_post_office_contract` VALUES ('5', '00001032', '994700');
 
 -- ----------------------------
 -- Table structure for rcs_print_job
@@ -262,15 +281,13 @@ CREATE TABLE `rcs_print_job` (
   KEY `fm_id` (`frank_machine_id`),
   KEY `flow` (`flow`),
   KEY `foreseen_id` (`foreseen_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='打印任务表';
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='打印任务表';
 
 -- ----------------------------
 -- Records of rcs_print_job
 -- ----------------------------
-INSERT INTO `rcs_print_job` VALUES ('10', '111-aaa-333-bbb-555-666', 'abc-efg-123-567', '83d846b0-66f7-4698-9cdc-80a0f3b66800', '', 'user-1', '1', '65', '1', '2021-05-16 11:13:55', '2021-05-16 11:13:48');
-INSERT INTO `rcs_print_job` VALUES ('11', '111-aaa-333-bbb-555-666', 'abc-efg-123-567', '98410808-3ece-462f-bd27-0112d3c3844c', '', 'user-1', '1', '61', '0', '2021-05-16 11:25:38', '2021-05-16 11:25:32');
-INSERT INTO `rcs_print_job` VALUES ('12', '111-aaa-333-bbb-555-666', 'abc-efg-123-567', '407f4fff-e9ec-476d-bf7c-0779f5a25f62', '9c77874d-2ec7-4635-a65e-86ce343efa68', 'user-1', '1', '61', '0', '2021-05-17 09:15:37', '2021-05-17 09:15:33');
-INSERT INTO `rcs_print_job` VALUES ('13', '111-aaa-333-bbb-555-666', 'abc-efg-123-567', 'fa1cec4a-08e5-4967-8dd3-9c6a82be6faa', '859a8c73-6f73-4212-8f43-a1326e410d54', 'user-1', '1', '61', '0', '2021-05-18 11:00:31', '2021-05-18 11:00:27');
+INSERT INTO `rcs_print_job` VALUES ('37', '00001032', 'FM100002', '36fcf82a-f078-470e-a2cc-cbe5fc9320be', '08b41d57-190f-4020-935a-cf6876816304', '11a8005e-6d6a-499d-9fca-82aa69103f90', '1', '61', '0', '2021-07-10 10:53:30', '2021-07-10 10:48:41');
+INSERT INTO `rcs_print_job` VALUES ('38', '00001032', 'FM100002', '9d8386f7-5fc2-493b-885a-2ae76160a155', '42dfe079-ac66-4aff-9367-4271b9035c1f', '11a8005e-6d6a-499d-9fca-82aa69103f90', '1', '61', '0', '2021-07-10 11:02:39', '2021-07-10 11:01:42');
 
 -- ----------------------------
 -- Table structure for rcs_public_key
@@ -292,7 +309,7 @@ CREATE TABLE `rcs_public_key` (
 -- ----------------------------
 -- Records of rcs_public_key
 -- ----------------------------
-INSERT INTO `rcs_public_key` VALUES ('FM100001', '', '', '0', '82', '1', '2021-06-30 10:53:38', '2024-06-29 10:53:38');
+INSERT INTO `rcs_public_key` VALUES ('FM100002', 'MDIwEAYHKoZIzj0CAQYFK4EEAAYDHgAEyPdguaYv3FFD0AnEokKo/nfkkWmkoEy1\nOVnACw==', 'MD4CAQEEDqVST2CykbIB4qiEdDn/oAcGBSuBBAAGoSADHgAEyPdguaYv3FFD0AnE\nokKo/nfkkWmkoEy1OVnACw==', '1', '81', '3', '2021-07-06 13:28:30', '2024-07-05 00:00:00');
 
 -- ----------------------------
 -- Table structure for rcs_registers
@@ -357,12 +374,12 @@ CREATE TABLE `rcs_tax` (
   `source` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '【待定：长度，含义，来源】',
   PRIMARY KEY (`id`),
   KEY `version` (`version`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='税率表';
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='税率表';
 
 -- ----------------------------
 -- Records of rcs_tax
 -- ----------------------------
-INSERT INTO `rcs_tax` VALUES ('7', '2.3.3', '2021-05-31 23:06:14', 'D:\\PostmartOfficeServiceFile\\tax\\2021_06_02_13_23_15.json', '2021-05-31 23:06:14', '2021-05-31 23:06:14', '2021-05-31 23:06:14', '描述一下', null);
+INSERT INTO `rcs_tax` VALUES ('15', '22.1.1', '2021-07-06 16:13:48', 'D:\\PostmartOfficeServiceFile\\tax\\2021_07_06_16_13_47.json', '2021-10-01 08:00:00', '2021-06-30 15:13:38', '2021-01-01 14:00:00', 'Тарифы на 4 квартал 2021', 'ИС Тарификатор - АТиКС');
 
 -- ----------------------------
 -- Table structure for rcs_transaction
@@ -371,21 +388,21 @@ DROP TABLE IF EXISTS `rcs_transaction`;
 CREATE TABLE `rcs_transaction` (
   `id` varchar(64) NOT NULL,
   `foreseen_id` varchar(64) NOT NULL COMMENT 'foreseen id',
-  `post_office` varchar(6) NOT NULL COMMENT '邮局信息',
-  `contract_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '合同id',
+  `post_office` varchar(6) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '邮局信息',
+  `contract_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '合同id',
   `user_id` varchar(64) DEFAULT NULL,
   `graph_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '【待定】',
-  `frank_machine_id` varchar(64) NOT NULL COMMENT '机器id',
+  `frank_machine_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '机器id',
   `contract_num` int DEFAULT NULL COMMENT '合同号',
-  `credit_val` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '【待定】',
-  `amount` double(10,2) NOT NULL COMMENT '金额（单位是分）',
+  `credit_val` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '【待定】',
+  `amount` double(10,2) DEFAULT NULL COMMENT '金额（单位是分）',
   `count` int DEFAULT NULL COMMENT '总数量',
-  `tax_version` varchar(10) NOT NULL COMMENT 'tax版本',
-  `start_date_time` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '开始时间',
-  `stop_date_time` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '停止时间',
-  `created_time` datetime NOT NULL COMMENT '创建时间',
-  `updated_time` datetime NOT NULL COMMENT '更新时间',
-  `transaction_status` int NOT NULL COMMENT '0 流程中 1 闭环',
+  `tax_version` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT 'tax版本',
+  `start_date_time` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '开始时间',
+  `stop_date_time` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '停止时间',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `updated_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `transaction_status` int DEFAULT NULL COMMENT '0 流程中 1 闭环',
   PRIMARY KEY (`id`),
   KEY `contract_id` (`contract_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易表';
@@ -393,9 +410,8 @@ CREATE TABLE `rcs_transaction` (
 -- ----------------------------
 -- Records of rcs_transaction
 -- ----------------------------
-INSERT INTO `rcs_transaction` VALUES ('03f779e4-44eb-40ca-8b42-1c4c5eae6e3b', '98410808-3ece-462f-bd27-0112d3c3844c', '1000', '111-aaa-333-bbb-555-666', 'user-1', 'graph-info', 'abc-efg-123-567', null, '0.0', '20.00', '100', '001', '2021-05-16', '2021-05-18', '2021-05-16 11:25:38', '2021-05-16 11:25:38', '1');
-INSERT INTO `rcs_transaction` VALUES ('859a8c73-6f73-4212-8f43-a1326e410d54', 'fa1cec4a-08e5-4967-8dd3-9c6a82be6faa', '1000', '111-aaa-333-bbb-555-666', 'user-1', 'graph-info', 'abc-efg-123-567', null, '0.0', '20.00', '100', '001', '2021-05-18', '2021-05-20', '2021-05-18 11:00:31', '2021-05-18 11:00:31', '1');
-INSERT INTO `rcs_transaction` VALUES ('9c77874d-2ec7-4635-a65e-86ce343efa68', '407f4fff-e9ec-476d-bf7c-0779f5a25f62', '1000', '111-aaa-333-bbb-555-666', 'user-1', 'graph-info', 'abc-efg-123-567', null, '0.0', '20.00', '100', '001', '2021-05-17', '2021-05-19', '2021-05-17 09:15:37', '2021-05-17 09:15:37', '1');
+INSERT INTO `rcs_transaction` VALUES ('08b41d57-190f-4020-935a-cf6876816304', '36fcf82a-f078-470e-a2cc-cbe5fc9320be', '994700', '00001032', '11a8005e-6d6a-499d-9fca-82aa69103f90', '', 'FM100002', null, '2.0', '5.00', '2', '22.1.1', '2021-07-10T10:50:19.000+08:00', '2021-07-10T10:53:29.000+08:00', '2021-07-10 10:50:20', '2021-07-10 10:53:30', '1');
+INSERT INTO `rcs_transaction` VALUES ('42dfe079-ac66-4aff-9367-4271b9035c1f', '9d8386f7-5fc2-493b-885a-2ae76160a155', '994700', '00001032', '11a8005e-6d6a-499d-9fca-82aa69103f90', '', 'FM100002', null, '5.0', '2.00', '2', '22.1.1', '2021-07-10T11:02:08.000+08:00', '2021-07-10T11:02:39.000+08:00', '2021-07-10 11:02:08', '2021-07-10 11:02:39', '1');
 
 -- ----------------------------
 -- Table structure for rcs_transaction_data
@@ -426,16 +442,25 @@ DROP TABLE IF EXISTS `rcs_transaction_msg`;
 CREATE TABLE `rcs_transaction_msg` (
   `id` int NOT NULL AUTO_INCREMENT,
   `transaction_id` varchar(64) DEFAULT NULL,
+  `frank_machine_id` varchar(64) DEFAULT NULL,
   `count` int DEFAULT NULL COMMENT '一批邮票的数量',
   `amount` double(10,2) DEFAULT NULL,
   `dm_msg` varchar(255) DEFAULT NULL,
+  `status` varchar(1) DEFAULT NULL COMMENT '1开始 2结束 0开机：需要服务器自己判断：上一个为2，不存入数据库，上一个为1，服务器储存这条信息，status改成2',
   `created_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `s_id` (`transaction_id`,`count`,`amount`,`created_time`,`dm_msg`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of rcs_transaction_msg
 -- ----------------------------
+INSERT INTO `rcs_transaction_msg` VALUES ('38', '08b41d57-190f-4020-935a-cf6876816304', 'FM100002', '16', '15.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '1', '2021-07-10 10:50:20');
+INSERT INTO `rcs_transaction_msg` VALUES ('39', '08b41d57-190f-4020-935a-cf6876816304', 'FM100002', '17', '16.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '2', '2021-07-10 10:50:32');
+INSERT INTO `rcs_transaction_msg` VALUES ('40', '08b41d57-190f-4020-935a-cf6876816304', 'FM100002', '17', '16.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '1', '2021-07-10 10:50:38');
+INSERT INTO `rcs_transaction_msg` VALUES ('41', '08b41d57-190f-4020-935a-cf6876816304', 'FM100002', '18', '17.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '2', '2021-07-10 10:50:47');
+INSERT INTO `rcs_transaction_msg` VALUES ('42', '42dfe079-ac66-4aff-9367-4271b9035c1f', 'FM100002', '18', '17.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '1', '2021-07-10 11:02:08');
+INSERT INTO `rcs_transaction_msg` VALUES ('43', '42dfe079-ac66-4aff-9367-4271b9035c1f', 'FM100002', '20', '19.00', '!45!01NE6439947000101001000020000000500000012101000100001032', '2', '2021-07-10 11:02:20');
 
 -- ----------------------------
 -- Table structure for t_audit
@@ -640,19 +665,19 @@ CREATE TABLE `t_device` (
 -- ----------------------------
 -- Records of t_device
 -- ----------------------------
-INSERT INTO `t_device` VALUES ('27', 'CPU223', 'CPU223', '10000.00', '100000.00', '90b1cfeee895c54a', '7', '0', null, null, null, '1', '1', '0', null, '2', '2', '1', '1', null, null, null, null);
-INSERT INTO `t_device` VALUES ('28', 'CPU111', 'CPU111', '10000.00', '100000.00', '6a244383aa6a83e4', '7', '0', null, null, null, '1', '1', '0', null, '3', '3', '1', '1', null, null, null, '2020-08-20 10:02:53');
-INSERT INTO `t_device` VALUES ('29', 'CPU222', 'CPU222', '10000.00', '100000.00', '8b588ca58b1becc8', '7', '0', null, null, null, '1', '1', '0', null, '4', '4', '1', '1', null, null, null, '2020-08-20 10:02:53');
-INSERT INTO `t_device` VALUES ('30', 'CPU333', 'CPU333', '10000.00', '100000.00', '2dc1f4d99e7fcadc', '7', '0', null, null, null, '1', '1', '0', null, '5', '5', '1', '1', null, null, null, '2020-08-20 10:02:53');
-INSERT INTO `t_device` VALUES ('31', 'S20008', 'S20008', '10000.00', '100000.00', 'de6065699a75d260', '7', '0', null, null, null, '1', '1', '0', null, '6', '6', '1', '1', null, null, null, '2020-11-11 10:50:40');
-INSERT INTO `t_device` VALUES ('32', 'CPU444', 'CPU444', '10000.00', '100000.00', '44bed2cd689055aa', '7', '0', null, null, null, '1', '1', '0', null, '7', '7', '1', '1', null, null, null, '2020-12-07 15:40:28');
-INSERT INTO `t_device` VALUES ('33', 'CPU555', 'CPU555', '80000.00', '900000.00', 'b59dafb2f91b74af', '10', '0', null, null, null, '1', '1', '0', null, '8', '8', '1', '1', null, null, null, '2020-12-07 15:40:28');
-INSERT INTO `t_device` VALUES ('34', 'CPU666', '8CPU666', '80000.00', '900000.00', 'acef44ecb441f668', '8', '0', null, null, null, '1', '1', '0', null, '9', '9', '1', '1', null, null, null, '2020-12-07 15:40:46');
-INSERT INTO `t_device` VALUES ('35', 'CPU777', 'CPU777', '70000.00', '700000.00', '16c91b1bbcab12b1', '7', '0', null, null, null, '1', '1', '0', null, '10', '10', '1', '1', null, null, null, '2020-12-07 16:09:17');
-INSERT INTO `t_device` VALUES ('36', 'AAA123', 'AAA123', '10000.00', '100000.00', '2e5858c0215a0e85', '7', '0', null, null, null, '1', '1', '0', null, '11', '11', '1', '1', null, null, null, '2021-01-06 09:43:25');
-INSERT INTO `t_device` VALUES ('37', 'CPU123', 'CPU1234', '0.00', '0.00', '', '0', '', '', '', null, '0', '1', '0', null, '12号邮局', '1.0', '1', '0', '', '', '2021-04-22 16:41:55', '2021-04-22 16:41:55');
-INSERT INTO `t_device` VALUES ('38', 'MXX001', 'CPU123', '10000.00', '100000.00', 'b4b9d97816a46b25', '7', '0', null, 'FM100002', null, '1', '1', '1', '13', '994700', '2.3.3', '1', '1', null, null, '2021-06-19 14:39:10', '2021-05-13 09:36:26');
-INSERT INTO `t_device` VALUES ('39', 'CPU567', 'CPU567', '10000.00', '100000.00', '5cdb4b82335f2bd6', '7', '0', null, null, null, '1', null, null, null, null, null, '1', null, null, null, null, '2021-05-22 11:06:13');
+INSERT INTO `t_device` VALUES ('27', 'CPU223', 'CPU223', '10000.00', '100000.00', '90b1cfeee895c54a', '7', '0', null, null, null, '1', '1', '0', null, '2', '2', '0', '1', null, null, null, null);
+INSERT INTO `t_device` VALUES ('28', 'CPU111', 'CPU111', '10000.00', '100000.00', '6a244383aa6a83e4', '7', '0', null, null, null, '1', '1', '0', null, '3', '3', '0', '1', null, null, null, '2020-08-20 10:02:53');
+INSERT INTO `t_device` VALUES ('29', 'CPU222', 'CPU222', '10000.00', '100000.00', '8b588ca58b1becc8', '7', '0', null, null, null, '1', '1', '0', null, '4', '4', '0', '1', null, null, null, '2020-08-20 10:02:53');
+INSERT INTO `t_device` VALUES ('30', 'CPU333', 'CPU333', '10000.00', '100000.00', '2dc1f4d99e7fcadc', '7', '0', null, null, null, '1', '1', '0', null, '5', '5', '0', '1', null, null, null, '2020-08-20 10:02:53');
+INSERT INTO `t_device` VALUES ('31', 'S20008', 'S20008', '10000.00', '100000.00', 'de6065699a75d260', '7', '0', null, null, null, '1', '1', '0', null, '6', '6', '0', '1', null, null, null, '2020-11-11 10:50:40');
+INSERT INTO `t_device` VALUES ('32', 'CPU444', 'CPU444', '10000.00', '100000.00', '44bed2cd689055aa', '7', '0', null, null, null, '1', '1', '0', null, '7', '7', '0', '1', null, null, null, '2020-12-07 15:40:28');
+INSERT INTO `t_device` VALUES ('33', 'CPU555', 'CPU555', '80000.00', '900000.00', 'b59dafb2f91b74af', '10', '0', null, null, null, '1', '1', '0', null, '8', '8', '0', '1', null, null, null, '2020-12-07 15:40:28');
+INSERT INTO `t_device` VALUES ('34', 'CPU666', '8CPU666', '80000.00', '900000.00', 'acef44ecb441f668', '8', '0', null, null, null, '1', '1', '0', null, '9', '9', '0', '1', null, null, null, '2020-12-07 15:40:46');
+INSERT INTO `t_device` VALUES ('35', 'CPU777', 'CPU777', '70000.00', '700000.00', '16c91b1bbcab12b1', '7', '0', null, null, null, '1', '1', '0', null, '10', '10', '0', '1', null, null, null, '2020-12-07 16:09:17');
+INSERT INTO `t_device` VALUES ('36', 'AAA123', 'AAA123', '10000.00', '100000.00', '2e5858c0215a0e85', '7', '0', null, null, null, '1', '1', '0', null, '11', '11', '0', '1', null, null, null, '2021-01-06 09:43:25');
+INSERT INTO `t_device` VALUES ('37', 'CPU123', 'CPU1234', '0.00', '0.00', '', '0', '', '', '', null, '0', '1', '1', '13', '12号邮局', '1.0', '0', '0', '', '', '2021-07-07 12:36:47', '2021-04-22 16:41:55');
+INSERT INTO `t_device` VALUES ('38', 'MXX001', 'MXX001', '10000.00', '100000.00', 'b4b9d97816a46b25', '7', '0', null, 'FM100002', null, '1', '1', '1', '11', '994700', '22.1.1', '1', '1', null, null, '2021-07-07 14:01:42', '2021-05-13 09:36:26');
+INSERT INTO `t_device` VALUES ('39', 'CPU567', 'CPU567', '10000.00', '100000.00', '5cdb4b82335f2bd6', '7', '0', null, null, null, '1', null, null, null, null, null, '0', null, null, null, null, '2021-05-22 11:06:13');
 
 -- ----------------------------
 -- Table structure for t_eximport
@@ -949,7 +974,7 @@ CREATE TABLE `t_login_log` (
   `browser` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '浏览器',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `t_login_log_login_time` (`login_time`)
-) ENGINE=MyISAM AUTO_INCREMENT=403 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='登录日志表';
+) ENGINE=MyISAM AUTO_INCREMENT=405 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='登录日志表';
 
 -- ----------------------------
 -- Records of t_login_log
@@ -1105,6 +1130,8 @@ INSERT INTO `t_login_log` VALUES ('399', 'admin', '2021-06-10 10:01:58', '中国
 INSERT INTO `t_login_log` VALUES ('400', 'admin', '2021-06-10 10:31:25', '中国|华东|浙江省|杭州市|电信', '119.37.199.25', 'Windows ', 'Chrome 70');
 INSERT INTO `t_login_log` VALUES ('401', 'admin', '2021-06-10 14:40:39', '中国|华东|浙江省|杭州市|电信', '119.37.199.25', 'Windows ', 'Chrome 86');
 INSERT INTO `t_login_log` VALUES ('402', 'admin', '2021-06-25 11:05:52', '中国|华东|浙江省|杭州市|电信', '183.128.179.68', 'Windows 10', 'Chrome 91');
+INSERT INTO `t_login_log` VALUES ('403', 'admin', '2021-07-08 14:17:08', '中国|华东|浙江省|杭州市|电信', '115.230.122.20', 'Windows ', 'Chrome 91');
+INSERT INTO `t_login_log` VALUES ('404', 'adminEls', '2021-07-10 13:41:35', '中国|华东|浙江省|杭州市|电信', '115.206.119.218', 'Windows 10', 'Chrome 91');
 
 -- ----------------------------
 -- Table structure for t_menu
@@ -1416,8 +1443,8 @@ CREATE TABLE `t_user` (
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES ('8', 'admin', '37f66f3264e255aede93f3bcab13cf88', '最靓的仔', '0', '11', '', '', '1', '2020-05-26 16:18:07', '2021-02-07 10:52:20', '2021-06-25 11:13:56', '0', '1', 'black', 'default.jpg', '系统管理员');
-INSERT INTO `t_user` VALUES ('9', 'adminEls', 'edde340d00161dc2d18e83ab0c38ed25', 'adminEls', '0', '16', '', '', '1', '2021-05-12 14:21:01', null, '2021-05-12 15:29:49', '0', '1', 'black', 'default.jpg', '');
+INSERT INTO `t_user` VALUES ('8', 'admin', '37f66f3264e255aede93f3bcab13cf88', '最靓的仔', '0', '11', '', '', '1', '2020-05-26 16:18:07', '2021-02-07 10:52:20', '2021-07-08 14:17:12', '0', '1', 'black', 'default.jpg', '系统管理员');
+INSERT INTO `t_user` VALUES ('9', 'adminEls', 'edde340d00161dc2d18e83ab0c38ed25', 'adminEls', '0', '16', '', '', '1', '2021-05-12 14:21:01', null, '2021-07-10 13:41:37', '0', '1', 'black', 'default.jpg', '');
 INSERT INTO `t_user` VALUES ('31', '23333a', 'e69be170ce9373441fe61944c0597e0d', 'bbbbbbbb', '0', '11', '', '', '1', '2020-08-20 09:54:43', '2020-12-28 14:25:35', '2020-12-28 14:10:37', '0', '1', 'black', 'default.jpg', '');
 INSERT INTO `t_user` VALUES ('32', 'rp123456', 'b60a884d39718b8730c780d74a936e00', 'rp123456', '31', '16', '', '', '1', '2020-08-20 10:04:59', '2021-01-06 09:46:34', '2020-12-03 14:38:35', '0', '1', 'black', 'default.jpg', '');
 INSERT INTO `t_user` VALUES ('33', '123456rp', '215651f1bb450748489623b61f49ebf4', '123456rp', '31', '11', '', '', '1', '2020-08-20 10:05:20', '2020-12-09 13:51:53', '2020-12-03 14:34:01', '0', '1', 'black', 'default.jpg', '');
