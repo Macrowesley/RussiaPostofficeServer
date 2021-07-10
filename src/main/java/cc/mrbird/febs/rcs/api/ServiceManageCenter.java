@@ -525,9 +525,9 @@ public class ServiceManageCenter {
         //数据库得到具体的dmMsg信息
         DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
         //实际花费的
-        transactionFMDTO.setCreditVal(dmMsgDetail.getActualAmount());
+        transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
         //预计花费，应该是从foreseen的amount
-        transactionFMDTO.setAmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+        transactionFMDTO.setCreditVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
         transactionFMDTO.setCount(dmMsgDetail.getActualCount());
         transactionFMDTO.setFranks(dmMsgDetail.getFranks());
 

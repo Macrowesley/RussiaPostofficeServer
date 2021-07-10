@@ -100,7 +100,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 //        wrapper.eq(TransactionMsg::getFrankMachineId, transactionMsgFMDTO.getFrankMachineId());
         return this.baseMapper.selectCount(wrapper) > 0;*/
         TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
-        if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+        if (lastestMsg!=null && lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
                 && lastestMsg.getAmount().equals(transactionMsgFMDTO.getTotalAmount())
                 && lastestMsg.getCount().equals(transactionMsgFMDTO.getTotalCount())
                 && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {

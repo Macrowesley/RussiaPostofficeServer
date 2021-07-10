@@ -312,6 +312,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             contractService.saveOrUpdate(dbContract);*/
             balanceService.saveReturnBalance(balanceDTO.getContractCode(), balanceDTO);
+            dbContract.setConsolidate(balanceDTO.getConsolidate());
+            dbContract.setCurrent(balanceDTO.getCurrent());
         }
 
         //返回最新的contract
