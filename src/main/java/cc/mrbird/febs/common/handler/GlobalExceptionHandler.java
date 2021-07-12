@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = RcsApiException.class)
     public ApiResponse handleRcsApiException(RcsApiException e) {
         log.error("RCS api 错误 {}", e.getMessage());
-        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(e.getCode(),e.getMessage()));
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(e.getCode(),e.getMessage()));
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)

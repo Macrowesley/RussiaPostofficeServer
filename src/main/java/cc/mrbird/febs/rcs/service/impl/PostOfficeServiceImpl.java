@@ -74,14 +74,14 @@ public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOff
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void savePostOfficeDTO(PostOfficeDTO postOfficeDTO) {
+        //数据校验
+        if(postOfficeDTO.getTimeZone()< 1 || postOfficeDTO.getTimeZone() > 12){
+            throw new RcsApiException(RcsApiErrorEnum.InvalidTimezoneValue);
+        }
+        if(postOfficeDTO.getTariffZone()< 1 || postOfficeDTO.getTariffZone() > 5){
+            throw new RcsApiException(RcsApiErrorEnum.InvalidTarrifZoneValue);
+        }
         try {
-            //数据校验
-            if(postOfficeDTO.getTimeZone()< 1 || postOfficeDTO.getTimeZone() > 12){
-                throw new RcsApiException(RcsApiErrorEnum.InvalidTimezoneValue);
-            }
-            if(postOfficeDTO.getTariffZone()< 1 || postOfficeDTO.getTariffZone() > 5){
-                throw new RcsApiException(RcsApiErrorEnum.InvalidTarrifZoneValue);
-            }
             PostOffice postOffice = new PostOffice();
             BeanUtils.copyProperties(postOfficeDTO, postOffice);
 

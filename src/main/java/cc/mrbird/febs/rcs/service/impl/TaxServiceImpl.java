@@ -30,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 税率表 Service实现
@@ -160,5 +162,15 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
         LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Tax::getId).last("limit 1");
         return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public String[] getTaxVersionArr() {
+        LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(Tax::getVersion);
+        List<String> list = this.baseMapper.selectList(wrapper).stream().map(item -> {
+            return item.getVersion();
+        }).collect(Collectors.toList());
+        return list.toArray(new String[list.size()]);
     }
 }

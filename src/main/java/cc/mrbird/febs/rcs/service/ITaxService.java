@@ -58,4 +58,10 @@ public interface ITaxService extends IService<Tax> {
     void saveTaxVersion(TaxVersionDTO taxVersionDTO);
 
     Tax getLastestTax();
+
+    /**
+     * 获取version数组
+     * @return
+     */
+    String[] getTaxVersionArr();
 }

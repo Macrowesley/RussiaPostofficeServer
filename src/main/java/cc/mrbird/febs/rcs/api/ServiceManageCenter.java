@@ -333,7 +333,7 @@ public class ServiceManageCenter {
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
         rateTableFeedbackDTO.setTaxVersion(dbDevice.getTaxVersion());
         rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
+        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
@@ -393,7 +393,7 @@ public class ServiceManageCenter {
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
         rateTableFeedbackDTO.setTaxVersion(deviceDTO.getTaxVersion());
         rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
+        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
