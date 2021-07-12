@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -17,6 +18,7 @@ import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,6 +64,7 @@ public class ServiceManageCenter {
 
     @Autowired
     ITransactionMsgService dmMsgService;
+
 
     /**
      * 机器状态改变事件
@@ -429,12 +432,7 @@ public class ServiceManageCenter {
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         //判断机器状态是否正常
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
-        Integer dbCurFmStatus = dbDevice.getCurFmStatus();
-        FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
-            throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
-        }
+        checkFMEnable(frankMachineId);
 
         //判断机器税率表是否更新
         Tax tax = taxService.getLastestTax();
@@ -447,7 +445,7 @@ public class ServiceManageCenter {
         }
 
         //判断publickey是否更新
-        if (!publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId())){
+        if (!publicKeyService.checkFmIsUpdate(frankMachineId)){
             log.error("机器{}需要发送公钥和私钥给服务器 ", frankMachineId);
             throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "需要发送公钥和私钥给服务器");
         }
@@ -509,6 +507,31 @@ public class ServiceManageCenter {
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
     }
 
+    public String saveMsg(TransactionMsgFMDTO transactionMsgFMDTO) {
+        log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFMDTO.toString());
+        if (StringUtils.isEmpty(transactionMsgFMDTO.getFrankMachineId())) {
+            throw new FmException(FMResultEnum.SomeInfoIsEmpty.getCode(), "foreseens 信息缺失");
+        }
+
+        //判断机器状态是否正常
+        checkFMEnable(transactionMsgFMDTO.getFrankMachineId());
+
+        return dmMsgService.saveMsg(transactionMsgFMDTO);
+    }
+
+    /**
+     * 校验机器是否可用
+     * @param frankMachineId
+     */
+    private void checkFMEnable(String frankMachineId) {
+        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+        Integer dbCurFmStatus = dbDevice.getCurFmStatus();
+        FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
+        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
+            throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
+        }
+    }
+
     /**
      * 【机器请求transactions协议】调用本方法
      * 交易
@@ -547,6 +570,9 @@ public class ServiceManageCenter {
                 && curFlowDetail != FlowDetailEnum.JobEndFailTransaction4xxError) {
             throw new FmException("transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
+
+        //判断机器状态是否正常
+        checkFMEnable(frankMachineId);
 
         //判断合同状态是否可用
         Contract dbContract = contractService.getByConractCode(transactionFMDTO.getContractCode());
@@ -682,4 +708,6 @@ public class ServiceManageCenter {
     private String getUserIdByContractCode(String contractCode) {
         return customerService.getUserIdByContractCode(contractCode);
     }
+
+
 }

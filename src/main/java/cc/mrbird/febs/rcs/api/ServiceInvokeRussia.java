@@ -273,6 +273,7 @@ public class ServiceInvokeRussia {
             return new ApiResponse(statusCodeValue,responseEntity.getBody());
         } catch (HttpClientErrorException e){
 //            e.printStackTrace();
+            log.info("HttpClientErrorException error = " + e.getMessage());
             log.info("HttpClientErrorException StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
             OperationError operationError = JSONObject.parseObject(e.getResponseBodyAsString(), OperationError.class);
             return new ApiResponse(e.getRawStatusCode(), operationError);

@@ -101,8 +101,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         return this.baseMapper.selectCount(wrapper) > 0;*/
         TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
         if (lastestMsg!=null && lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
-                && lastestMsg.getAmount().equals(transactionMsgFMDTO.getTotalAmount())
-                && lastestMsg.getCount().equals(transactionMsgFMDTO.getTotalCount())
+                && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
+                && lastestMsg.getCount() == Long.valueOf(transactionMsgFMDTO.getTotalCount())
                 && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
             return true;
         }
@@ -185,7 +185,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         if (transactionMsgList.size() % 2 != 0){
             double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
-            long fmTotalCount = transactionMsgFMDTO.getTotalCount();
+            long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
+
+            TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
+            if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(),fmTotalAmount)){
+                throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(),"transactionMsg信息中的的总数量或者总金额小于数据库的值");
+            }
 
             //如果不是偶数，说明有一个批次没有结束，把当前的数据作为批次的结束
             //找到没有结束的那个批次，得到dm_msg等信息，保存这个dm_msg到数据库中
@@ -216,11 +221,29 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //创建transaction
         //dbPrintJob.setTransactionId(transactionDTO.getId());
         int idType = transactionMsgFMDTO.getIdType();
+        double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
+        Long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
-        if (checkIsSameWithLastOne(transactionMsgFMDTO)){
+        //金额数量是累加的，不能小于数据库的值
+        TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
+        if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(),fmTotalAmount)){
+            throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(),"transactionMsg信息中的的总数量或者总金额小于数据库的值");
+        }
+
+        //判断是否有和上一个msg一样
+        if (lastestMsg!=null && lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+                && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
+                && lastestMsg.getCount() == fmTotalCount
+                && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
             throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
         }
 
+        //如果最新的消息不为空，且status一样，那么，肯定是上一个批次没有结束
+        String status = idType == 1 ? "1" : transactionMsgFMDTO.getStatus();
+        //判断批次是否完成
+        if (lastestMsg != null && lastestMsg.getStatus().equals(status)){
+            throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"有没有完成的批次,那个批次信息为：" + lastestMsg.toString());
+        }
 
         String transactionId = transactionMsgFMDTO.getId();
         if (idType == 1){
@@ -262,17 +285,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
          * id是TransactionId
          * 保存transactionMsgFMDTO
          */
-        String status = idType == 1 ? "1" : transactionMsgFMDTO.getStatus();
-        TransactionMsg lastestMsg = getLastestMsg(transactionId);
-        //如果最新的消息不为空，且status一样，那么，肯定是上一个批次没有结束
-        if (lastestMsg != null && lastestMsg.getStatus().equals(status)){
-            throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"有没有完成的批次,那个批次信息为：" + lastestMsg.toString());
-        }
 
         TransactionMsg transactionMsg = new TransactionMsg();
         transactionMsg.setTransactionId(transactionId);
-        transactionMsg.setCount(transactionMsgFMDTO.getTotalCount());
-        transactionMsg.setAmount(MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount()));
+        transactionMsg.setCount(fmTotalCount);
+        transactionMsg.setAmount(fmTotalAmount);
         transactionMsg.setDmMsg(transactionMsgFMDTO.getDmMsg());
         transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
         transactionMsg.setStatus(status);

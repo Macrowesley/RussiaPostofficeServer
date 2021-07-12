@@ -11,7 +11,7 @@ public class TransactionMsgFMDTO {
     //id类型
     int idType;
     //累加总数量
-    long totalCount;
+    String totalCount;
     //累加总金额，单位是分
     String totalAmount;
     //二维码数据矩阵 开机时机器发送的二维码为空

@@ -141,31 +141,31 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
                     switch (event) {
                         case STATUS:
-                            if (isMachineActive){
-                                switch (status) {
-                                    case ADD_MACHINE_INFO:
-                                        //可能要废弃了，机器信息是直接在公司就录了的
-                                        changeStatusPortocol.serviceManageCenter.addMachineInfo(acnum, deviceDto);
-                                        break;
-                                    case ENABLED:
-                                        changeStatusPortocol.serviceManageCenter.auth(deviceDto);
-                                        break;
-                                    case UNAUTHORIZED:
-                                        changeStatusPortocol.serviceManageCenter.unauth(deviceDto);
-                                        break;
-                                    case LOST:
-                                        changeStatusPortocol.serviceManageCenter.lost(deviceDto);
-                                    default:
-                                        changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
-                                        break;
-                                }
+                            if (status == FMStatusEnum.ADD_MACHINE_INFO){
+                                //机器注册信息到服务器
+                                changeStatusPortocol.serviceManageCenter.addMachineInfo(acnum, deviceDto);
                             }else{
-                                changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
+                                if (isMachineActive){
+                                    switch (status) {
+                                        case ENABLED:
+                                            changeStatusPortocol.serviceManageCenter.auth(deviceDto);
+                                            break;
+                                        case UNAUTHORIZED:
+                                            changeStatusPortocol.serviceManageCenter.unauth(deviceDto);
+                                            break;
+                                        case LOST:
+                                            changeStatusPortocol.serviceManageCenter.lost(deviceDto);
+                                        default:
+                                            changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
+                                            break;
+                                    }
+                                }else{
+                                    changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
+                                }
                             }
-
                             break;
                         case RATE_TABLE_UPDATE:
-                            //todo 这里应该是作废的，先留着看看
+                            //todo 这里应该是作废的，目前是在开机的时候，机器发送版本号给服务器，服务器来判断是否需要发给俄罗斯，代码先留着看看
                             changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
                             break;
                         default:

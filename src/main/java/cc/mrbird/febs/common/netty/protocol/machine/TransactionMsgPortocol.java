@@ -31,8 +31,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
 
     private static final String OPERATION_NAME = "TransactionMsgPortocol";
 
-    @Autowired
-    ITransactionMsgService dmMsgService;
+
 
     public static TransactionMsgPortocol transactionMsgPortocol;
 
@@ -104,12 +103,9 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
             switch (version) {
                 case FebsConstant.FmVersion1:
                     TransactionMsgFMDTO transactionMsgFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionMsgFMDTO.class);
-                    log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFMDTO.toString());
-                    if (StringUtils.isEmpty(transactionMsgFMDTO.getFrankMachineId())) {
-                        return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
-                    }
 
-                    String transactionId = transactionMsgPortocol.dmMsgService.saveMsg(transactionMsgFMDTO);
+
+                    String transactionId = transactionMsgPortocol.serviceManageCenter.saveMsg(transactionMsgFMDTO);
 
                     return getSuccessResult(version, ctx, transactionId);
                 default:
