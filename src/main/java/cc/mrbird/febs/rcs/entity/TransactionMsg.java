@@ -22,7 +22,7 @@ public class TransactionMsg {
     private String transactionId;
 
     @TableField("count")
-    private Integer count;
+    private Long count;
 
     @TableField("amount")
     private Double amount;

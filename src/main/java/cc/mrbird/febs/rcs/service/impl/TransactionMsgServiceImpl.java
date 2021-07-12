@@ -185,7 +185,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         if (transactionMsgList.size() % 2 != 0){
             double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
-            int fmTotalCount = transactionMsgFMDTO.getTotalCount();
+            long fmTotalCount = transactionMsgFMDTO.getTotalCount();
 
             //如果不是偶数，说明有一个批次没有结束，把当前的数据作为批次的结束
             //找到没有结束的那个批次，得到dm_msg等信息，保存这个dm_msg到数据库中
