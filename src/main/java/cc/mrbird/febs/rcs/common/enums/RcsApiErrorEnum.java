@@ -15,7 +15,10 @@ public enum RcsApiErrorEnum {
     SaveTaxVersionError(1010,"internal server error"),
     TaxVersionExist(1101,"tax version is exist"),
     ContractExist(1102,"contract is exist"),
-    ContractNotExist(1103,"contract is not exist")
+    ContractNotExist(1103,"contract is not exist"),
+    InvalidTimezoneValue(1104,"Invalid timezone value"),
+    InvalidTarrifZoneValue(1105,"Invalid tarrifZone value"),
+    CurrentOrConsolidateIsNull(1105,"Current or Consolidate is null")
     ;
 
     int code;

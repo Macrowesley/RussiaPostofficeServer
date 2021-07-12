@@ -84,6 +84,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         if (!contractService.checkIExist(contractCode)){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
         }
+        if (serviceBalanceDTO.getCurrent() == null || serviceBalanceDTO.getConsolidate() == null){
+            throw new RcsApiException(RcsApiErrorEnum.CurrentOrConsolidateIsNull);
+        }
         try {
             Balance balance = new Balance();
             BeanUtils.copyProperties(serviceBalanceDTO,balance);
@@ -110,6 +113,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     public void saveReturnBalance(String contractCode, ManagerBalanceDTO managerBalanceDTO) {
         if (!contractService.checkIExist(contractCode)){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+        }
+        if (managerBalanceDTO.getCurrent() == null || managerBalanceDTO.getConsolidate() == null){
+            throw new RcsApiException(RcsApiErrorEnum.CurrentOrConsolidateIsNull);
         }
         try {
             Balance balance = new Balance();

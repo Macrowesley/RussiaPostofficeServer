@@ -236,7 +236,7 @@ public class ServiceInvokeRussia {
     private HttpHeaders getHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         //没有头部信息，暂时忽略
-        httpHeaders.add("X-API-KEY", "apiKeyStab");
+        httpHeaders.add("X-API-KEY", "postmartUat");
         return httpHeaders;
     }
 
