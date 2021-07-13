@@ -19,6 +19,7 @@ import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
+import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Tax;
@@ -247,7 +248,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         if (dmMsgDetail != null){
                             actualCount = dmMsgDetail.getActualCount();
                             actualAmount = dmMsgDetail.getActualAmount();
-                            dmMsg = (dmMsgDetail.getFranks())[dmMsgDetail.getFranks().length - 1].getDmMessage();
+                            FrankDTO[] franks = dmMsgDetail.getFranks();
+                            dmMsg = franks.length > 0 ? franks[franks.length - 1].getDmMessage() : "";
                         }
                     }
                     log.info("处理dmMsg信息");
