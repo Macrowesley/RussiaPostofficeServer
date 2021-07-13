@@ -104,7 +104,7 @@ public class MoneyUtils {
     }
 
     private static void test3() {
-        String fen =  "130";
+        String fen =  "0";
         double yuan = changeF2Y(fen);
         log.info("fen={},yuan={}", fen, yuan);
     }

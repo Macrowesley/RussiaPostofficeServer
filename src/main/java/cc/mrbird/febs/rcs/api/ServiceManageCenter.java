@@ -543,14 +543,16 @@ public class ServiceManageCenter {
         String transactionId = transactionFMDTO.getId();
         log.info("transactions 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
-        Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
-
+        /*Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
+        transactionFMDTO.setCreditVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));*/
+        //机器不让欠钱，暂时为0
+        transactionFMDTO.setCreditVal("0");
         //数据库得到具体的dmMsg信息
         DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
         //实际花费的
         transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
         //预计花费，应该是从foreseen的amount
-        transactionFMDTO.setCreditVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+
         transactionFMDTO.setCount(dmMsgDetail.getActualCount());
         transactionFMDTO.setFranks(dmMsgDetail.getFranks());
 
