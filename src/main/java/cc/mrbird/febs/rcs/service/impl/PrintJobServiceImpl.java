@@ -7,7 +7,6 @@ import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -211,16 +210,16 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @param flowDetailEnum
      */
     @Override
-    public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail) {
+    public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         //更新PrintJob
-        if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnowError) {
+        if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnow) {
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
-        } else if (curFlowDetail == FlowDetailEnum.JobEndFailForeseensCancel4xxError) {
-            dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
+        } else if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancel4xx) {
+            dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
         } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
-
-            Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
+            balanceService.saveReturnBalance(dbPrintJob.getContractCode(), balanceDTO);
+            /*Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
             Double dbCurrent = dbContract.getCurrent();
 
             //foreseen的金额 关联current
@@ -230,7 +229,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             double newCurrent = DoubleKit.add(dbCurrent, userdCurrent);
             dbContract.setCurrent(newCurrent);
             contractService.saveOrUpdate(dbContract);
-            log.info("取消订单后：dbCurrent={}, userdCurrent={}, newCurrent={}", dbCurrent, userdCurrent, newCurrent);
+            log.info("取消订单后：dbCurrent={}, userdCurrent={}, newCurrent={}", dbCurrent, userdCurrent, newCurrent);*/
         }
         dbPrintJob.setUpdatedTime(new Date());
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());

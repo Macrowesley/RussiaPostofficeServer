@@ -63,24 +63,6 @@ public class ServiceInvokeRussia {
 //        }
 
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
-
-        //测试代码
-        /*frankMachineId = "FM100002";
-//        frankMachineId = "NE100700";
-        String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
-        HashMap<String, String> map = new HashMap<>();
-        map.put("frankMachineId", frankMachineId);
-
-        DeviceTest deviceTest = new DeviceTest();
-        deviceTest.setId(frankMachineId);
-        deviceTest.setPostOffice("994700");
-        deviceTest.setDateTime(DateKit.createRussiatime());
-        deviceTest.setStatus("ENABLED");
-        deviceTest.setTaxVersion("2.3.3");
-
-        log.info(JSON.toJSONString(deviceTest));
-
-        return doExchange(url, deviceTest, HttpMethod.POST, String.class, map);*/
     }
 
     /**
@@ -161,7 +143,7 @@ public class ServiceInvokeRussia {
         }*/
 
         //todo 测试，使用固定id
-        foreseenDTO.setContractId(testContractCode);
+//        foreseenDTO.setContractId(testContractCode);
 
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
@@ -181,7 +163,7 @@ public class ServiceInvokeRussia {
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,"ok");
         }*/
         //todo 测试，使用固定id
-        contractCode = testContractCode;
+//        contractCode = testContractCode;
 
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
 

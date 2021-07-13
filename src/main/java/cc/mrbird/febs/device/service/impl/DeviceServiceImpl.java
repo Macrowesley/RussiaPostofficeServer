@@ -445,10 +445,10 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 device.setCurFmStatus(fmChangeStatus);
                 break;
-            case StatusChangeEndFailUnKnowError:
+            case StatusChangeEndFailUnKnow:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
-            case StatusChangeError4xxError:
+            case StatusChangeError4xx:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
         }

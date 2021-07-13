@@ -81,7 +81,7 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param cancelJobFMDTO
      * @param flowDetailEnum
      */
-    void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail);
+    void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
 
     /**
      * job流程中，Transaction的进度更新

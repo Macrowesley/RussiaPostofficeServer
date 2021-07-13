@@ -156,12 +156,12 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         if (!publickeyResponse.isOK()) {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFailUnKnow);
+                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorUnKnow);
                                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是没有收到返回", frankMachineId, OPERATION_NAME);
                                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                             } else {
                                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyErrorFail4xxError);
+                                updatePrivateKeyResultPortocol.publicKeyService.changeFlowInfo(dbPubliceKey,FlowDetailEnum.PublicKeyError4xx);
                                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，然后发送了publickey给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, OPERATION_NAME);
                                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "auth.isOK() false ");
                             }

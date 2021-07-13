@@ -104,7 +104,7 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             publicKey.setRevision(revision);
             publicKey.setExpireTime(DateKit.offsetDayDate(expire));
             publicKey.setFlow(FlowEnum.FlowIng.getCode());
-            publicKey.setFlowDetail(FlowDetailEnum.PublicKeyBegin.getCode());
+            publicKey.setFlowDetail(FlowDetailEnum.PublicKeyingBegin.getCode());
             publicKey.setCreatedTime(new Date());
             this.saveOrUpdate(publicKey);
             log.info("更新服务器public 成功");
@@ -137,9 +137,9 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
             case PublicKeyEndSuccess:
                 dbPubliceKey.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
-            case PublicKeyErrorFail4xxError:
+            case PublicKeyError4xx:
                 break;
-            case PublicKeyErrorFailUnKnow:
+            case PublicKeyErrorUnKnow:
                 break;
         }
         dbPubliceKey.setFlowDetail(curFlowDetail.getCode());
