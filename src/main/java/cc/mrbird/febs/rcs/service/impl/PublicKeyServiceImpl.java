@@ -127,7 +127,11 @@ public class PublicKeyServiceImpl extends ServiceImpl<PublicKeyMapper, PublicKey
         LambdaQueryWrapper<PublicKey> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PublicKey::getFrankMachineId, frankMachineId);
         wrapper.select(PublicKey::getFlow);
-        return this.baseMapper.selectOne(wrapper).getFlow() == FlowEnum.FlowEnd.getCode();
+        PublicKey publicKey = this.baseMapper.selectOne(wrapper);
+        if (publicKey == null){
+            return true;
+        }
+        return publicKey.getFlow() == FlowEnum.FlowEnd.getCode();
     }
 
     @Override

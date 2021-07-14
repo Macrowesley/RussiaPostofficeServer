@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -109,6 +110,12 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     public AddressDTO[] selectArrayByConractCode(String contractCode) {
         return selectListByConractCode(contractCode).stream().map(contractAddress -> {
             return new AddressDTO(contractAddress.getAddress());
+            /*String address = contractAddress.getAddress();
+            try {
+                return new AddressDTO(new String(address.getBytes("UTF-8"),"gb2312"));
+            } catch (UnsupportedEncodingException e) {
+                return "";
+            }*/
         }).collect(Collectors.toList()).stream().toArray(AddressDTO[]::new);
     }
 

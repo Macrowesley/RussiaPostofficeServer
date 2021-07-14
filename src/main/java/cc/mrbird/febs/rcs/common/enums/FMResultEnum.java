@@ -18,6 +18,7 @@ public enum FMResultEnum {
     contractCodeAbnormal(14,"俄罗斯返回的contractCode异常"),
     MachineLogined(15,"机器已经登录了"),
     SomeInfoIsEmpty(16,"部分信息为空"),
+    OrderProcessIsNotRight(17,"订单进度不符合条件"),
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),

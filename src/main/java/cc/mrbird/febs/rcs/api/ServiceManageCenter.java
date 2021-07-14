@@ -570,7 +570,7 @@ public class ServiceManageCenter {
         if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
                 curFlowDetail != FlowDetailEnum.JobErrorTransactionUnKnow
                 && curFlowDetail != FlowDetailEnum.JobErrorTransaction4xx) {
-            throw new FmException("transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
+            throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(), "transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
 
         //判断机器状态是否正常
@@ -665,13 +665,13 @@ public class ServiceManageCenter {
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
         if (dbFlow == FlowEnum.FlowEnd){
-            throw new FmException("cancelJob 订单已经闭环，不能操作了");
+            throw new FmException(FMResultEnum.DonotAgain.getCode(),"printJob 订单已经闭环，不能操作了");
         }
 
         if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess
                 && curFlowDetail != FlowDetailEnum.JobErrorForeseensCancelUnKnow
                 && curFlowDetail != FlowDetailEnum.JobErrorForeseensCancel4xx) {
-            throw new FmException("cancelJob 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
+            throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(),"cancelJob 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
 
         //判断合同状态是否可用
