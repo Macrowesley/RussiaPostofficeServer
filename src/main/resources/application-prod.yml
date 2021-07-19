@@ -1,3 +1,7 @@
+server:
+  port: 88
+  address: 192.168.30.60
+
 spring:
   datasource:
     dynamic:

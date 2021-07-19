@@ -186,7 +186,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //机器的税率是否需要更新（0不需要 1需要更新）
                     int isFmTaxNeedUpdate = 0;
                     Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
-                    if (fmTaxVersion.equals(lastestTax.getVersion())){
+                    if (lastestTax != null && fmTaxVersion.equals(lastestTax.getVersion())){
                         //机器已经更新了tax,需要处理下数据库的状态了
                         //tax是否更新 默认为1 最新状态  0 没有更新到最新状态
                         Integer deviceTaxIsUpdate = dbDevice.getTaxIsUpdate();
