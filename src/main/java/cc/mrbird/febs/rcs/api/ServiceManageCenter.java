@@ -703,6 +703,8 @@ public class ServiceManageCenter {
 
         printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobEndFailForeseensCancelSuccess, balanceDTO);
 
+        dbContract.setCurrent(balanceDTO.getCurrent());
+        dbContract.setConsolidate(balanceDTO.getConsolidate());
         log.info("结束 {}, frankMachineId={}", operationName, frankMachineId);
         return dbContract;
     }
