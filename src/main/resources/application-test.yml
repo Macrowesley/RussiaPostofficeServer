@@ -58,4 +58,5 @@ websocket:
 netty:
   port: 12801
   #  ip: localhost
-  ip: 119.37.199.25
+  # ip: 119.37.199.25
+  ip: 192.168.30.2
