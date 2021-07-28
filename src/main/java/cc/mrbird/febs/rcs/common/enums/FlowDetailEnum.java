@@ -11,20 +11,19 @@ public enum FlowDetailEnum {
     StatusChangeEndFailUnKnow(13,"闭环：返回4XX或者5XX错误"),
     StatusChangeError4xx(12,"未闭环：未成功发送给俄罗斯"),
 
-    AuthEndSuccess(21, "闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，收到俄罗斯返回"),
-    AuthEndFail(22, "闭环：服务器收到，发给俄罗斯，收到返回，但返回状态码不是200"),
-    AuthError1(23, "未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
-    AuthError2(24, "未闭环：服务器收到，发给俄罗斯，收到返回，已经发送publickey给俄罗斯，未收到俄罗斯返回"),
+    AuthEndSuccess(21, "闭环：服务器收到，发给俄罗斯，收到返回"),
+    AuthEndFail(22, "闭环：服务器收到，发给俄罗斯，请求返回4XX或者5XX错误"),
+    AuthErrorUnKnow(23, "未闭环：服务器收到，未成功发送给俄罗斯"),
 
     UnauthEndSuccess(31,"闭环：服务器收到，发给俄罗斯，俄罗斯返回OK"),
-    UnAuthEndFail(32,"闭环：服务器收到，发给俄罗斯，俄罗斯返回 error "),
-    UnAuthError(32,"未闭环：服务器收到，发给俄罗斯，未收到俄罗斯返回"),
+    UnAuthEndFail(32,"闭环：服务器收到，发给俄罗斯，请求返回4XX或者5XX错误 "),
+    UnAuthErrorUnkonw(32,"未闭环：服务器收到，未成功发送给俄罗斯"),
 
-    LostEndSuccess(41,""),
-    LostEndFail(42,""),
-    LostError(43,"错误1"),
+    LostEndSuccess(41,"闭环：服务器收到，发给俄罗斯，俄罗斯返回OK"),
+    LostEndFail(42,"闭环：服务器收到，发给俄罗斯，请求返回4XX或者5XX错误"),
+    LostErrorUnknow(43,"未闭环：服务器收到，未成功发送给俄罗斯"),
 
-    TaxError1(51,""),
+//    TaxError1(51,""),
 
     //打印任务：结束的各种状态
     JobEndSuccess(61,"闭环：Foreseen和Transaction 都成功了"),
@@ -39,7 +38,7 @@ public enum FlowDetailEnum {
     //打印任务：进行中的状态
     JobingForeseensSuccess(69,"未闭环：Foreseen请求成功"),
 
-    BalanceEndSuccess(73,""),
+//    BalanceEndSuccess(73,""),
 
     PublicKeyEndSuccess(81,"闭环：publickey流程结束"),
     PublicKeyingBegin(82,"未闭环：publickey创建/更新"),

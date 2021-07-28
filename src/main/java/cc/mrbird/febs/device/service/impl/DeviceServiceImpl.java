@@ -557,7 +557,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             case LostEndFail:
                 device.setFlow(FlowEnum.FlowEnd.getCode());
                 break;
-            case LostError:
+            case LostErrorUnknow:
                 device.setFlow(FlowEnum.FlowIng.getCode());
                 break;
         }

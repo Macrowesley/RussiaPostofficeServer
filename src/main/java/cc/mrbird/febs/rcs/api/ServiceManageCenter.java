@@ -181,13 +181,13 @@ public class ServiceManageCenter {
 
         //访问俄罗斯服务器，请求授权
 
-        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthError1 || curFlowDetail == FlowDetailEnum.AuthEndFail) {
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthErrorUnKnow || curFlowDetail == FlowDetailEnum.AuthEndFail) {
             ApiResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
 
             if (!authResponse.isOK()) {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthError1);
+                    deviceService.changeAuthStatus(dbDevice, frankMachineId, FlowDetailEnum.AuthErrorUnKnow);
                     log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "auth.isOK() false ");
                 } else {
@@ -238,12 +238,12 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.StatusTypeError.getCode(),"未闭环，但是要改的状态不对");
         }
 
-        if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthError) {
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthErrorUnkonw) {
             ApiResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthError);
+                    deviceService.changeUnauthStatus(dbDevice, frankMachineId, FlowDetailEnum.UnAuthErrorUnkonw);
                     log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "unauth.isOK() false ");
                 } else {
@@ -288,12 +288,12 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.StatusTypeError.getCode(),"未闭环，但是要改的状态不对");
         }
 
-        if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostError || curFlowDetail == FlowDetailEnum.LostEndFail) {
+        if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostErrorUnknow || curFlowDetail == FlowDetailEnum.LostEndFail) {
             ApiResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                    deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostError);
+                    deviceService.changeLostStatus(dbDevice, frankMachineId, FlowDetailEnum.LostErrorUnknow);
                     log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                     throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "lost.isOK() false ");
                 } else {
