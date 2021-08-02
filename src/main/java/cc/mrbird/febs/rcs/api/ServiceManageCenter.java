@@ -154,7 +154,7 @@ public class ServiceManageCenter {
          * 1. 闭环的不通过
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
-        if (isFirstAuth && curFlowDetail == FlowDetailEnum.AuthEndSuccess) {
+        if (dbFutureStatus == FMStatusEnum.ENABLED) {
             log.info("auth 已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(), "auth.isOK() false ");
         }
