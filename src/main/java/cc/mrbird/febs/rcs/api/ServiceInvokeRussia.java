@@ -138,13 +138,13 @@ public class ServiceInvokeRussia {
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (foreseenDTO.getContractCode().equals("00001032")){
+        /*if (foreseenDTO.getContractCode().equals("00001032")){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode("00001032");
             balanceDTO.setCurrent(20793D);
             balanceDTO.setConsolidate(27505D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }
+        }*/
 
         //todo 测试，使用固定id
 //        foreseenDTO.setContractId(testContractCode);
@@ -163,13 +163,13 @@ public class ServiceInvokeRussia {
      */
     public ApiResponse cancel(String foreseenId, String contractCode, ForeseenCancel foreseenCancel) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (contractCode.equals("00001032")){
+        /*if (contractCode.equals("00001032")){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode("00001032");
             balanceDTO.setCurrent(20793D);
             balanceDTO.setConsolidate(27505D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }
+        }*/
         //todo 测试，使用固定id
 //        contractCode = testContractCode;
 
@@ -187,13 +187,13 @@ public class ServiceInvokeRussia {
      */
     public ApiResponse transactions(TransactionDTO transactionDTO) {
         //todo 当看到特殊合同号，返回模拟结果
-        if (transactionDTO.getContractCode().equals("00001032")){
+        /*if (transactionDTO.getContractCode().equals("00001032")){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode("00001032");
             balanceDTO.setCurrent(20793D);
             balanceDTO.setConsolidate(27505D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }
+        }*/
         //todo 测试，使用固定id
         transactionDTO.setContractId(testContractCode);
 
