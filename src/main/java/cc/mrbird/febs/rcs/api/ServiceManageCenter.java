@@ -123,7 +123,7 @@ public class ServiceManageCenter {
      * @throws Exception
      */
 //    @Deprecated
-    public void addMachineInfo(String acnum, DeviceDTO deviceDTO) throws Exception {
+    public void addMachineInfo(String acnum, DeviceDTO deviceDTO) {
         Device dbDevice = deviceService.findDeviceByAcnum(acnum);
         if (dbDevice == null){
             throw new FmException(FMResultEnum.DeviceNotFind.getCode(), "auth.isOK() false ");
@@ -136,7 +136,7 @@ public class ServiceManageCenter {
      *
      * @param deviceDTO
      */
-    public void auth(DeviceDTO deviceDTO) throws Exception {
+    public void auth(DeviceDTO deviceDTO)  {
         String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
         log.error("服务器收到了设备{}发送的auth协议", frankMachineId);
