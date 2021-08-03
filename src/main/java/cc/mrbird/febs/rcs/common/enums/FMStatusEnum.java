@@ -7,7 +7,7 @@ public enum FMStatusEnum {
     DEMO(2,"DEMO","演示"),
     BLOCKED(3,"BLOCKED","已封锁"),
     UNAUTHORIZED(4,"UNAUTHORIZED","取消授权"),
-    LOST(5,"UNAUTHORIZED","取消授权");
+    LOST(5,"LOST","lost");
 
     private final int code;
     private final String status;

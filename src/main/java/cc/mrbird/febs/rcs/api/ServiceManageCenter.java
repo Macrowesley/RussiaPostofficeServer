@@ -146,6 +146,7 @@ public class ServiceManageCenter {
         //当前的进度
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbDevice.getFlowDetail());
         FMStatusEnum dbFutureStatus = FMStatusEnum.getByCode(dbDevice.getFutureFmStatus());
+        FMStatusEnum dbCurFmStatus = FMStatusEnum.getByCode(dbDevice.getCurFmStatus());
 
         //是否是第一次请求授权
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
@@ -154,11 +155,12 @@ public class ServiceManageCenter {
          * 1. 闭环的不通过
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
-        if (dbFutureStatus == FMStatusEnum.ENABLED) {
+        //如果设备已经是授权状态了，再点击授权就直接拒绝
+        if (dbCurFmStatus == FMStatusEnum.ENABLED) {
             log.info("auth 已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(), "auth.isOK() false ");
         }
-
+        //这个方法就是授权请求，如果是在上一次的授权流程中中断了，那么dbFutureStatus应该是ENABLED，但如果不是，肯定是异常状态
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.ENABLED) {
             log.error("auth 未闭环，但是要改的状态不是 FMStatusEnum.ENABLED dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.ENABLED);
             throw new FmException(FMResultEnum.StatusTypeError.getCode(), "auth.isOK() false ");
