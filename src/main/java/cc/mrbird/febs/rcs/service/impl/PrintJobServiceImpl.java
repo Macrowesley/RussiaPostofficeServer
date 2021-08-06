@@ -3,8 +3,10 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
@@ -119,7 +121,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public PrintJob getByForeseenId(String foreseenId) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getForeseenId, foreseenId);
-        return this.getOne(wrapper);
+        PrintJob printJob = this.getOne(wrapper);
+        if (printJob == null){
+            throw new FmException(FMResultEnum.ForeseenIdNoExist.getCode(), "dbPrintJob == null fmForeseenId="+foreseenId);
+        }
+        return printJob;
     }
 
     /**

@@ -563,9 +563,7 @@ public class ServiceManageCenter {
          只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow
          */
         PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
-        if (dbPrintJob == null){
-            throw new FmException("dbPrintJob == null foreseenId="+foreseenId);
-        }
+
         FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
