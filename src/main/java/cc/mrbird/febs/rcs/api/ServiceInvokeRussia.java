@@ -35,11 +35,23 @@ public class ServiceInvokeRussia {
 //    private final String baseUrl = "http://localhost/p/test/manager";
     private final String testContractCode = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     /**
+     * 表头号     FMID          合同id
+     * MXX001 PM100500 00001032
+     * CPU123 FM100002  00001033
+     * 端口号：12800
+     */
+    private final boolean isTest = true;
+    /**
      * 发送机器状况
      *
      * @PutMapping("frankMachines")
      */
     public ApiResponse frankMachines(DeviceDTO deviceDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
+        }
+
         String url = baseUrl + "/frankMachines";
         return doExchange(url, deviceDTO, HttpMethod.PUT, DeviceDTO.class,null);
     }
@@ -54,13 +66,14 @@ public class ServiceInvokeRussia {
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
     public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+        }
+
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
-
-//        if (frankMachineId.equals("FM100001")){
-//            return new ApiResponse(ResultEnum.SUCCESS.getCode(), "ok");
-//        }
 
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
     }
@@ -74,6 +87,12 @@ public class ServiceInvokeRussia {
      * @PostMapping("/frankMachines/{frankMachineId}/unauth")
      */
     public ApiResponse unauth(String frankMachineId, DeviceDTO deviceDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+        }
+
+
         String url = baseUrl + "/frankMachines/{frankMachineId}/unauth";
 
         HashMap<String, String> map = new HashMap<>();
@@ -92,6 +111,11 @@ public class ServiceInvokeRussia {
      * @PostMapping("/frankMachines/{frankMachineId}/lost")
      */
     public ApiResponse lost(String frankMachineId, DeviceDTO deviceDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+        }
+
         String url = baseUrl + "/frankMachines/{frankMachineId}/lost";
 
         HashMap<String, String> map = new HashMap<>();
@@ -109,10 +133,17 @@ public class ServiceInvokeRussia {
      * @PutMapping("/frankMachines/{frankMachineId}/publicKey")
      */
     public ApiResponse publicKey(String frankMachineId, PublicKeyDTO publicKeyDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+        }
+
+
         String url = baseUrl + "/frankMachines/{frankMachineId}/publicKey";
 
         Map<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
+
         return doExchange(url, publicKeyDTO, HttpMethod.PUT, String.class, map);
     }
 
@@ -125,6 +156,11 @@ public class ServiceInvokeRussia {
      */
 //    @Async(value = FebsConstant.ASYNC_POOL)
     public ApiResponse rateTables(RateTableFeedbackDTO rateTableFeedbackDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+        }
+
         String url = baseUrl + "/rateTables";
         return doExchange(url, rateTableFeedbackDTO, HttpMethod.PUT, String.class,null);
     }
@@ -137,17 +173,14 @@ public class ServiceInvokeRussia {
      * @PostMapping("/foreseens")
      */
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
-        //todo 当看到特殊合同号，返回模拟结果
-        /*if (foreseenDTO.getContractCode().equals("00001032")){
+        //测试条件下，返回假数据
+        if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
-            balanceDTO.setContractCode("00001032");
-            balanceDTO.setCurrent(20793D);
-            balanceDTO.setConsolidate(27505D);
+            balanceDTO.setContractCode(foreseenDTO.getContractCode());
+            balanceDTO.setCurrent(foreseenDTO.getTotalAmmount()-10);
+            balanceDTO.setConsolidate(foreseenDTO.getTotalAmmount()-10);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }*/
-
-        //todo 测试，使用固定id
-//        foreseenDTO.setContractId(testContractCode);
+        }
 
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
@@ -162,16 +195,14 @@ public class ServiceInvokeRussia {
      * @PostMapping("/foreseens/{foreseenId}/cancel")
      */
     public ApiResponse cancel(String foreseenId, String contractCode, ForeseenCancel foreseenCancel) {
-        //todo 当看到特殊合同号，返回模拟结果
-        /*if (contractCode.equals("00001032")){
+        //测试条件下，返回假数据
+        if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
-            balanceDTO.setContractCode("00001032");
-            balanceDTO.setCurrent(20793D);
+            balanceDTO.setContractCode(contractCode);
+            balanceDTO.setCurrent(27505D);
             balanceDTO.setConsolidate(27505D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }*/
-        //todo 测试，使用固定id
-//        contractCode = testContractCode;
+        }
 
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
 
@@ -186,16 +217,14 @@ public class ServiceInvokeRussia {
      * @PostMapping("/transactions")
      */
     public ApiResponse transactions(TransactionDTO transactionDTO) {
-        //todo 当看到特殊合同号，返回模拟结果
-        /*if (transactionDTO.getContractCode().equals("00001032")){
+        //测试条件下，返回假数据
+        if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
-            balanceDTO.setContractCode("00001032");
-            balanceDTO.setCurrent(20793D);
-            balanceDTO.setConsolidate(27505D);
+            balanceDTO.setContractCode(transactionDTO.getContractCode());
+            balanceDTO.setCurrent(transactionDTO.getAmount() - 10);
+            balanceDTO.setConsolidate(transactionDTO.getAmount() - 10);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
-        }*/
-        //todo 测试，使用固定id
-        transactionDTO.setContractId(testContractCode);
+        }
 
         String url = baseUrl + "/transactions";
         return doExchange(url, transactionDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
