@@ -126,6 +126,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Override
     public TransactionMsg getLastestMsg(String transactionId) {
         LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TransactionMsg::getTransactionId, transactionId);
         queryWrapper.orderByDesc(TransactionMsg::getCreatedTime).last("limit 1");
         return this.getOne(queryWrapper);
     }
@@ -188,8 +189,10 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
             TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
-            if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(),fmTotalAmount)){
-                throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(),"transactionMsg信息中的的总数量或者总金额小于数据库的值");
+            if (lastestMsg!=null) {
+                if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(), fmTotalAmount)) {
+                    throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
+                }
             }
 
             //如果不是偶数，说明有一个批次没有结束，把当前的数据作为批次的结束
@@ -224,25 +227,30 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
         Long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
-        //金额数量是累加的，不能小于数据库的值
-        TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
-        if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(),fmTotalAmount)){
-            throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(),"transactionMsg信息中的的总数量或者总金额小于数据库的值");
-        }
-
-        //判断是否有和上一个msg一样
-        if (lastestMsg!=null && lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
-                && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
-                && lastestMsg.getCount() == fmTotalCount
-                && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
-            throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
-        }
-
         //如果最新的消息不为空，且status一样，那么，肯定是上一个批次没有结束
         String status = idType == 1 ? "1" : transactionMsgFMDTO.getStatus();
-        //判断批次是否完成
-        if (lastestMsg != null && lastestMsg.getStatus().equals(status)){
-            throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"有没有完成的批次,那个批次信息为：" + lastestMsg.toString());
+
+        //金额数量是累加的，不能小于数据库的值
+        TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
+
+        if (lastestMsg != null) {
+            log.info("lastestMsg={}",lastestMsg.toString());
+            if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(), fmTotalAmount)){
+                throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
+            }
+
+            //判断是否有和上一个msg一样
+            if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+                    && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
+                    && lastestMsg.getCount() == fmTotalCount
+                    && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
+                throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
+            }
+
+            //判断批次是否完成
+            if (lastestMsg.getStatus().equals(status)){
+                throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"有没有完成的批次,那个批次信息为：" + lastestMsg.toString());
+            }
         }
 
         String transactionId = transactionMsgFMDTO.getId();
