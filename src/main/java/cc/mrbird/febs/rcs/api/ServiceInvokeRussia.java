@@ -177,8 +177,8 @@ public class ServiceInvokeRussia {
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(foreseenDTO.getContractCode());
-            balanceDTO.setCurrent(foreseenDTO.getTotalAmmount()-10);
-            balanceDTO.setConsolidate(foreseenDTO.getTotalAmmount()-10);
+            balanceDTO.setCurrent(100000D);
+            balanceDTO.setConsolidate(100000D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
@@ -199,8 +199,8 @@ public class ServiceInvokeRussia {
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(contractCode);
-            balanceDTO.setCurrent(27505D);
-            balanceDTO.setConsolidate(27505D);
+            balanceDTO.setCurrent(100000D);
+            balanceDTO.setConsolidate(100000D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
@@ -221,8 +221,8 @@ public class ServiceInvokeRussia {
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(transactionDTO.getContractCode());
-            balanceDTO.setCurrent(transactionDTO.getAmount() - 10);
-            balanceDTO.setConsolidate(transactionDTO.getAmount() - 10);
+            balanceDTO.setCurrent(100000D);
+            balanceDTO.setConsolidate(100000D);
             return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
