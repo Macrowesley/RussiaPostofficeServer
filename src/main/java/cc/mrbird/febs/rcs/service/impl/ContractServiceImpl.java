@@ -127,7 +127,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (checkIsExist(contractDTO.getCode())) {
                 contract.setUpdatedTime(new Date());
             }
-            this.save(contract);
+            this.saveOrUpdate(contract);
 
             //保存客户信息
             CustomerDTO customerDTO = contractDTO.getCustomer();
@@ -142,7 +142,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             customer.setModified(DateKit.parseRussiatime(customerDTO.getModified()));
             customer.setCreatedTime(new Date());
             customer.setUpdatedTime(new Date());
-            customerService.save(customer);
+            customerService.saveOrUpdate(customer);
 
             //保存合同和邮局关系
             List<PostOfficeContract> postOfficeContractList = new ArrayList<>();
@@ -153,7 +153,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 postOfficeContract.setPostOfficeId(postOfficeDTO.getIndex());
                 postOfficeContractList.add(postOfficeContract);
             }
-            postOfficeContractService.saveBatch(postOfficeContractList);
+            postOfficeContractService.saveOrUpdateBatch(postOfficeContractList);
             log.info("接收服务器传递过来的合同数据 结束");
         } catch (Exception e) {
             log.error(e.getMessage());
