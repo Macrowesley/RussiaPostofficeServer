@@ -18,7 +18,8 @@ public enum RcsApiErrorEnum {
     ContractNotExist(1103,"contract is not exist"),
     InvalidTimezoneValue(1104,"Invalid timezone value"),
     InvalidTarrifZoneValue(1105,"Invalid tarrifZone value"),
-    CurrentOrConsolidateIsNull(1105,"Current or Consolidate is null")
+    CurrentOrConsolidateIsNull(1105,"Current or Consolidate is null"),
+    ContractNotSame(1106,"value in path not equal in json")
     ;
 
     int code;

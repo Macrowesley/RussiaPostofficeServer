@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -81,6 +82,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveBalance(String contractCode, ServiceBalanceDTO serviceBalanceDTO) {
+        if (!StringUtils.isEmpty(serviceBalanceDTO.getContractCode()) && !contractCode.equals(serviceBalanceDTO.getContractCode())){
+            throw new RcsApiException(RcsApiErrorEnum.ContractNotSame);
+        }
         if (!contractService.checkIExist(contractCode)){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
         }
