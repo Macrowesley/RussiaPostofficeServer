@@ -77,9 +77,10 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                 }
             }
             //本地环境，暂时关闭netty
-            if (!"dev".equals(active)) {
+            /*if (!"dev".equals(active)) {
                 startNetty();
-            }
+            }*/
+            startNetty();
         }
     }
 
