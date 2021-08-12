@@ -10,7 +10,6 @@ import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
-import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
@@ -135,8 +134,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             Customer customer = new Customer();
             customer.setId(customerDTO.getId());
             customer.setContractCode(contract.getCode());
-            customer.setInnRu(customerDTO.getInn_ru());
-            customer.setKppRu(customerDTO.getKpp_ru());
+            customer.setInnRu(customerDTO.getInnRu());
+            customer.setKppRu(customerDTO.getKppRu());
             customer.setName(customerDTO.getName());
             customer.setLegalAddress(customerDTO.getLegalAddress());
             customer.setOfficeAddress(customerDTO.getOfficeAddress());
