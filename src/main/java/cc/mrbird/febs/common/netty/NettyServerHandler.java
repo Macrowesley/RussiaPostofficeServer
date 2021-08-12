@@ -59,7 +59,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
     public void channelActive(ChannelHandlerContext ctx) {
         log.info("channelActive NettyServerHandler 对象是：" + this);
 
-        ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
+        /*ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
                 new GenericFutureListener<Future<Channel>>() {
                     @Override
                     public void operationComplete(Future<Channel> future) throws Exception {
@@ -98,7 +98,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
                         }
                     }
                 });
-
+*/
 
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
 
