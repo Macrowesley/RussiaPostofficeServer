@@ -382,20 +382,7 @@ public class ServiceManageCenter {
         //访问俄罗斯服务器，改变状态
 //        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
 
-        /*
-            {
-              "taxVersion": "RP.202001-1",
-              "status": true,
-              "rcsVersions": [
-                "A0042015A",
-                "B0042015A",
-                "C0042015A",
-                "D0042015A",
-                "E0042015A"
-              ]
-            }
-         */
-        RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
+        /*RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
         rateTableFeedbackDTO.setTaxVersion(deviceDTO.getTaxVersion());
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
@@ -420,7 +407,7 @@ public class ServiceManageCenter {
         device.setPostOffice(deviceDTO.getPostOffice());
         device.setTaxVersion(deviceDTO.getTaxVersion());
         deviceService.updateDeviceTaxVersionStatus(device);
-        log.info("{} 操作成功",operationName);
+        log.info("{} 操作成功",operationName);*/
     }
 
     /**

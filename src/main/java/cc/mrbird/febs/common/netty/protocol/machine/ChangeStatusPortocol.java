@@ -165,8 +165,8 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                             }
                             break;
                         case RATE_TABLE_UPDATE:
-                            //todo 这里应该是作废的，目前是在开机的时候，机器发送版本号给服务器，服务器来判断是否需要发给俄罗斯，代码先留着看看
-                            changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
+                            //这里应该是作废的，目前是在开机的时候，机器发送版本号给服务器，服务器来判断是否需要发给俄罗斯，代码先留着看看
+//                            changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
                             break;
                         default:
                             //处理异常
