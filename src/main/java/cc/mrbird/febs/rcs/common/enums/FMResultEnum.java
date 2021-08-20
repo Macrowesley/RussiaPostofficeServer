@@ -24,6 +24,7 @@ public enum FMResultEnum {
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
     TransactionExist(32,"transaction已经存在，不能新建"),
     ForeseenIdNoExist(33,"foreseen Id 不存在"),
+    ContractCodeInCoutomeNoExist(34,"customer中contractCode不存在"),
 
     //privateKey异常
     PrivateKeyNotExist(41,"privatekey不存在"),
