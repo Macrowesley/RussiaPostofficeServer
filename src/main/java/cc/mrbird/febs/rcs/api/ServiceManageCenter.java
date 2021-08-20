@@ -702,7 +702,7 @@ public class ServiceManageCenter {
      * @return
      */
     private String getUserIdByContractCode(String contractCode) {
-        return customerService.getUserIdByContractCode(contractCode);
+        return customerService.getCustomerByContractCode(contractCode).getId();
     }
 
 

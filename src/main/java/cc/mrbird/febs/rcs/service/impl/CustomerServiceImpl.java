@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.mapper.CustomerMapper;
 import cc.mrbird.febs.rcs.service.ICustomerService;
@@ -66,9 +68,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 	}
 
     @Override
-    public String getUserIdByContractCode(String contractCode) {
+    public Customer getCustomerByContractCode(String contractCode) {
         LambdaQueryWrapper<Customer> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Customer::getContractCode, contractCode);
-        return this.baseMapper.selectOne(wrapper).getId();
+        Customer customer = this.baseMapper.selectOne(wrapper);
+        if (customer == null){
+            throw new FmException(FMResultEnum.ContractCodeInCoutomeNoExist.getCode(), "合同号" + contractCode + "不存在");
+        }
+        return customer;
     }
 }
