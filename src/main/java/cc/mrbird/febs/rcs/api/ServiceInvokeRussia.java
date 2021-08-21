@@ -148,7 +148,35 @@ public class ServiceInvokeRussia {
     }
 
     /**
-     * todo 待定资费表加载结果
+     * 通过该接口发送机器税率信息
+     * 场景有以下2种：
+     * 1. 机器完成auth接口，成功后，更新税率表后，调用此接口
+     * 2. 机器更新税率信息后，更新税率表
+     * 其实都是开机启动的时候，需要判断机器是否更新税率表
+     {
+         "id": "PM100500",
+         "dateTime": "2021-01-01T09:00:00.001+03:00",
+         "status": "BLOCKED",
+         "postOffice": "131000",
+         "taxVersion": "22.1.1",
+         "event": "RATE_TABLE_UPDATE",
+         "error": {}
+     }
+     */
+    public ApiResponse frankMachinesRateTableUpdateEvent(DeviceDTO deviceDTO) {
+        //测试条件下，返回假数据
+        if (isTest){
+            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
+        }
+
+        String url = baseUrl + "/frankMachines";
+        return doExchange(url, deviceDTO, HttpMethod.PUT, DeviceDTO.class,null);
+    }
+
+    /**
+     * 告知俄罗斯税率表加载ok
+     * 场景如下：
+     * 服务器收到俄罗斯给的税率表后，处理成功后，再发送给俄罗斯
      *
      * @param rateTableFeedbackDTO
      * @return

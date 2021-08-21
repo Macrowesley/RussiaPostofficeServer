@@ -16,6 +16,7 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
 import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
@@ -154,7 +155,14 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                      unsigned char length[2];				 //2个字节
                      unsigned char type;				 	 //0xB3
                      unsigned char  operateID[2];
-                     unsigned char content;				     //加密内容: result(长度为2 1 成功) + version + 机器状态code(1) + 订单是否结束（1 结束 0 未结束）+ 机器的私钥是否需要更新（0 不需要更新 1需要更新） + 机器的税率是否需要更新（0不需要 1需要更新） + ForeseenFMDTO 的Json
+                     unsigned char content;				     //加密内容:
+                                                                        result(长度为2 1 成功)
+                                                                        + version
+                                                                        + 机器状态code(1)
+                                                                        + 订单是否结束（1 结束 0 未结束）
+                                                                        + 机器的私钥是否需要更新（0 不需要更新 1需要更新）
+                                                                        + 机器的税率是否需要更新（0不需要 1需要更新）
+                                                                        + ForeseenFMDTO 的Json
                      unsigned char check;				     //校验位
                      unsigned char tail;					 //0xD0
                      }__attribute__((packed))CheckServiceResult, *CheckServiceResult;
@@ -177,7 +185,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
 
                     //请求服务器返回最新状态
-                    Device dbDevice = checkServicePortocol.deviceService.findDeviceByAcnum(acnum);
+                    Device dbDevice = checkServicePortocol.deviceService.getDeviceByFrankMachineId(frankMachineId);
                     int curStatus = dbDevice.getCurFmStatus();
 
                     /**
@@ -187,17 +195,27 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     int isFmTaxNeedUpdate = 0;
                     Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
                     if (lastestTax != null && fmTaxVersion.equals(lastestTax.getVersion())){
+                        if (lastestTax.getInformRussia().equals(InformRussiaEnum.NO.getCode())){
+                            //服务器没有成功通知俄罗斯/rateTables 再次尝试
+                            if(!checkServicePortocol.serviceManageCenter.rateTables(lastestTax.getVersion())){
+                                throw new FmException(FMResultEnum.RateTablesFail.getCode(), "rateTables fail ");
+                            }
+                        }
+
+                        //服务器已经成功通知俄罗斯/rateTables
                         //机器已经更新了tax,需要处理下数据库的状态了
                         //tax是否更新 默认为1 最新状态  0 没有更新到最新状态
                         Integer deviceTaxIsUpdate = dbDevice.getTaxIsUpdate();
-                        if (deviceTaxIsUpdate == TaxUpdateEnum.NOT_UPDATE.getCode()){
+                        if (deviceTaxIsUpdate == TaxUpdateEnum.NOT_UPDATE.getCode()) {
                             //机器已经更新了tax，但是数据库的device没有更新状态，更新数据库机器状态
-                            log.info("调用俄罗斯tax接口，更新数据库");
+                            log.info("调用俄罗斯frankMachines接口，更新数据库");
                             dbDevice.setTaxVersion(fmTaxVersion);
-                            checkServicePortocol.serviceManageCenter.rateTableUpdateEvent(dbDevice);
-                        }else{
+                            checkServicePortocol.serviceManageCenter.frankMachinesRateTableUpdateEvent(dbDevice);
+                        } else {
                             //机器更新了tax,数据库也更新了device的tax信息，不处理
+                            log.info("机器更新了tax,数据库也更新了device的tax信息，不处理");
                         }
+
                     }else{
                         //机器没有更新tax，需要更新
                         isFmTaxNeedUpdate = 1;

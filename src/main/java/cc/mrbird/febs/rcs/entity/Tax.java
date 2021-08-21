@@ -68,4 +68,10 @@ public class Tax {
     @TableField("publish_date")
     private Date publishDate;
 
+    /**
+     * 是否通知俄罗斯 0 未通知 1 已通知
+     */
+    @TableField("inform_russia")
+    private Integer informRussia;
+
 }

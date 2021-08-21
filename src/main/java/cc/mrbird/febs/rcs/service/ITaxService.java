@@ -55,7 +55,7 @@ public interface ITaxService extends IService<Tax> {
 
     boolean checkIExist(String taxVersion);
 
-    void saveTaxVersion(TaxVersionDTO taxVersionDTO);
+    boolean saveTaxVersion(TaxVersionDTO taxVersionDTO);
 
     Tax getLastestTax();
 
@@ -64,4 +64,6 @@ public interface ITaxService extends IService<Tax> {
      * @return
      */
     String[] getTaxVersionArr();
+
+    void alreadyInformRussia(String taxVersion);
 }

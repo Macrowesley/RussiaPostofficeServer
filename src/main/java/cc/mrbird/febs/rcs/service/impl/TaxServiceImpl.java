@@ -2,7 +2,10 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.ServiceManageCenter;
+import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
@@ -30,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,9 +70,9 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Override
     public List<Tax> findTaxs(Tax tax) {
-	    LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
-		return this.baseMapper.selectList(queryWrapper);
+        LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
+        // TODO 设置查询条件
+        return this.baseMapper.selectList(queryWrapper);
     }
 
     @Override
@@ -89,9 +91,9 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
     @Transactional(rollbackFor = Exception.class)
     public void deleteTax(Tax tax) {
         LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
-	    this.remove(wrapper);
-	}
+        // TODO 设置删除条件
+        this.remove(wrapper);
+    }
 
     @Override
     public boolean checkIExist(String taxVersion) {
@@ -102,10 +104,8 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void saveTaxVersion(TaxVersionDTO taxVersionDTO) {
-        if (this.checkIExist(taxVersionDTO.getVersion())){
-            throw new RcsApiException(RcsApiErrorEnum.TaxVersionExist);
-        }
+    public boolean saveTaxVersion(TaxVersionDTO taxVersionDTO) {
+
         try {
             log.info("保存tax开始");
             long t1 = System.currentTimeMillis();
@@ -113,23 +113,24 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
             String savePath = "D:\\PostmartOfficeServiceFile\\tax\\" + DateKit.getNowDateToFileName() + ".json";
 
             Tax tax = new Tax();
-            BeanUtils.copyProperties(taxVersionDTO,tax);
+            BeanUtils.copyProperties(taxVersionDTO, tax);
             tax.setSavePath(savePath);
             tax.setApplyDate(DateKit.parseRussiatime(taxVersionDTO.getApplyDate()));
             tax.setPublishDate(DateKit.parseRussiatime(taxVersionDTO.getPublishDate()));
             tax.setModified(DateKit.parseRussiatime(taxVersionDTO.getModified()));
             tax.setCreatedDate(new Date());
+            tax.setInformRussia(InformRussiaEnum.NO.getCode());
 //            tax.setCreatedDate(DateKit.parseRussiatime(taxVersionDTO.getCreateDate()));
-            this.save(tax);
+            this.saveOrUpdate(tax);
 
             RateDetailDTO[] rateDetailDTOS = taxVersionDTO.getDetails();
             List<PostalProduct> postalProductList = new ArrayList<>();
-            for (RateDetailDTO item : rateDetailDTOS){
+            for (RateDetailDTO item : rateDetailDTOS) {
 
                 //暂时数据库文件只保存postalProduct信息，其他就不存入数据库中了，但是整个文件保存在了D盘中
                 PostalProduct postalProduct = new PostalProduct();
                 BeanUtils.copyProperties(item.getProduct(), postalProduct);
-                postalProduct.setIsPostalMarketOnly(item.getProduct().isPostalMarketOnly()?"1":"0");
+                postalProduct.setIsPostalMarketOnly(item.getProduct().isPostalMarketOnly() ? "1" : "0");
                 postalProduct.setTaxId(tax.getId());
                 postalProduct.setCreatedTime(new Date());
                 postalProduct.setUpdatedTime(new Date());
@@ -151,9 +152,10 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
                 log.error(e.getMessage());
             }
             log.info("保存tax结束，耗时：{}", (System.currentTimeMillis() - t1));
+            return true;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new RcsApiException(RcsApiErrorEnum.SaveTaxVersionError);
+            return false;
         }
     }
 
@@ -172,5 +174,18 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
             return item.getVersion();
         }).collect(Collectors.toList());
         return list.toArray(new String[list.size()]);
+    }
+
+    /**
+     * 通知俄罗斯成功后，更新数据库
+     * @param taxVersion
+     */
+    @Override
+    public void alreadyInformRussia(String taxVersion) {
+        Tax tax = new Tax();
+        tax.setInformRussia(InformRussiaEnum.YES.getCode());
+        LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Tax::getVersion, taxVersion);
+        this.update(tax, wrapper);
     }
 }

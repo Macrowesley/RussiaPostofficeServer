@@ -19,6 +19,7 @@ public enum FMResultEnum {
     MachineLogined(15,"机器已经登录了"),
     SomeInfoIsEmpty(16,"部分信息为空"),
     OrderProcessIsNotRight(17,"订单进度不符合条件"),
+    RateTablesFail(18,"RateTablesFail接口返回失败"),
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),
@@ -32,6 +33,8 @@ public enum FMResultEnum {
     DmmsgIsNotFinish(51,"批次记录为奇数，有没有完成的批次"),
     TransactionMsgExist(52,"transactionMsg 已经存在，不能新建"),
     CountOrAmountSmallThenDb(53,"transactionMsg信息中的的总数量或者总金额小于数据库的值"),
+
+
 
     DefaultError(0,"其他异常导致的失败");
 

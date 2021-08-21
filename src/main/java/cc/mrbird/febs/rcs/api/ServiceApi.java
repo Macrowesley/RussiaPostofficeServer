@@ -2,8 +2,8 @@ package cc.mrbird.febs.rcs.api;
 
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
@@ -15,6 +15,8 @@ import cc.mrbird.febs.rcs.service.*;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,9 +39,6 @@ public class ServiceApi {
     ServiceToMachineProtocol serviceToMachineProtocol;
 
     @Autowired
-    ServiceInvokeRussia serviceInvokeRussia;
-
-    @Autowired
     IDeviceService deviceService;
 
     @Autowired
@@ -58,10 +57,15 @@ public class ServiceApi {
     IPublicKeyService publicKeyService;
 
     @Autowired
-    RedisService redisService;
+    IPrintJobService printJobService;
 
     @Autowired
-    IPrintJobService printJobService;
+    ServiceManageCenter serviceManageCenter;
+
+    @Autowired
+    @Qualifier(value = FebsConstant.ASYNC_POOL)
+    ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
 
 
     /**
@@ -142,11 +146,22 @@ public class ServiceApi {
     public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
         log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
+        if (taxService.checkIExist(taxVersionDTO.getVersion())){
+            throw new RcsApiException(RcsApiErrorEnum.TaxVersionExist);
+        }
         //数据库保存信息
-        taxService.saveTaxVersion(taxVersionDTO);
+        if(taxService.saveTaxVersion(taxVersionDTO)){
+            //告知俄罗斯已经收到 异步
+            threadPoolTaskExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    serviceManageCenter.rateTables(taxVersionDTO.getVersion());
+                }
+            });
+        }else{
+            throw new RcsApiException(RcsApiErrorEnum.SaveTaxVersionError);
+        }
 
-        //todo 目前只保存，接下来如何处理得看安排，不能直接通知机器更新版本信息
-//        serviceToMachineProtocol.updateTaxes(taxVersionDTO);
         log.info("【俄罗斯调用服务器api 结束 taxes】");
         return new ApiResponse(200, "ok");
     }

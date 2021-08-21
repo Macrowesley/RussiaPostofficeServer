@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -311,36 +313,35 @@ public class ServiceManageCenter {
     }
 
 
+
     /**
-     * 机器开机发送tax版本信息，需要更新的时候，触发这个方法
+     * 机器开机发送tax版本信息，如果机器刚刚更新到了最新的版本号，触发这个方法
      * @param dbDevice
      */
-    public void rateTableUpdateEvent(Device dbDevice) {
-        String operationName = "rateTableUpdateEvent";
+    public void frankMachinesRateTableUpdateEvent(Device dbDevice) {
+        String operationName = "frankMachines rateTableUpdateEvent";
         String frankMachineId = dbDevice.getFrankMachineId();
-
-        //访问俄罗斯服务器，改变状态
-//        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
 
         /*
             {
-              "taxVersion": "RP.202001-1",
-              "status": true,
-              "rcsVersions": [
-                "A0042015A",
-                "B0042015A",
-                "C0042015A",
-                "D0042015A",
-                "E0042015A"
-              ]
-            }
+                 "id": "PM100500",
+                 "dateTime": "2021-01-01T09:00:00.001+03:00",
+                 "status": "BLOCKED",
+                 "postOffice": "131000",
+                 "taxVersion": "22.1.1",
+                 "event": "RATE_TABLE_UPDATE",
+                 "error": {}
+             }
          */
-        RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
-        rateTableFeedbackDTO.setTaxVersion(dbDevice.getTaxVersion());
-        rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
-        rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
-        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
+        DeviceDTO deviceDTO = new DeviceDTO();
+        deviceDTO.setId(frankMachineId);
+        deviceDTO.setStatus(FMStatusEnum.getByCode(dbDevice.getCurFmStatus()));
+        deviceDTO.setPostOffice(dbDevice.getPostOffice());
+        deviceDTO.setTaxVersion(dbDevice.getTaxVersion());
+        deviceDTO.setEvent(EventEnum.RATE_TABLE_UPDATE);
+        deviceDTO.setDateTime(DateKit.createRussiatime());
+
+        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -360,30 +361,27 @@ public class ServiceManageCenter {
     }
 
     /**
-     * 收到费率表事件
-     * 机器更新了taxVersion后，调用这个协议，触发该方法
-     *
-     * @param deviceDTO
+     * 告知俄罗斯税率表加载ok
+     * @param dbDevice
      */
-    @Deprecated
-    public void rateTableUpdateEvent(DeviceDTO deviceDTO) {
-        String operationName = "rateTableUpdateEvent";
-        String frankMachineId = deviceDTO.getId();
+    public synchronized boolean rateTables(String taxVersion) {
+        String operationName = "rateTables";
 
-        Tax tax = taxService.getLastestTax();
-
-        String fmTaxVersion = deviceDTO.getTaxVersion();
-        String dbTaxVersion = tax.getVersion();
-
-        if (!fmTaxVersion.equals(dbTaxVersion)) {
-            throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
-        }
-
-        //访问俄罗斯服务器，改变状态
-//        ApiResponse changeTaxVersionResponse = serviceInvokeManager.frankMachines(deviceDTO);
-
-        /*RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
-        rateTableFeedbackDTO.setTaxVersion(deviceDTO.getTaxVersion());
+        /*
+            {
+              "taxVersion": "RP.202001-1",
+              "status": true,
+              "rcsVersions": [
+                "A0042015A",
+                "B0042015A",
+                "C0042015A",
+                "D0042015A",
+                "E0042015A"
+              ]
+            }
+         */
+        RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
+        rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
         rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
@@ -391,24 +389,22 @@ public class ServiceManageCenter {
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
-                //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
-                throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "rateTableUpdateEvent.isOK() false ");
+                log.error("服务器发送{}协议给俄罗斯，VisitRussiaTimedOut", operationName);
+//                throw new FmException(FMResultEnum..getCode(), "rateTableUpdateEvent.isOK() false ");
             } else {
-                //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
-                throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "rateTableUpdateEvent.isOK() false ");
+                log.error("服务器发送{}协议给俄罗斯，RussiaServerRefused", operationName);
+//                throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "rateTableUpdateEvent.isOK() false ");
             }
+            return false;
         }
 
-        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
-        Device device = new Device();
-        device.setFrankMachineId(deviceDTO.getId());
-        device.setPostOffice(deviceDTO.getPostOffice());
-        device.setTaxVersion(deviceDTO.getTaxVersion());
-        deviceService.updateDeviceTaxVersionStatus(device);
-        log.info("{} 操作成功",operationName);*/
+        //更新tax字段记录是否通知俄罗斯
+        taxService.alreadyInformRussia(taxVersion);
+
+        log.info("{} 操作成功",operationName);
+        return true;
     }
+
 
     /**
      * 【机器请求foreseens协议】调用本方法
