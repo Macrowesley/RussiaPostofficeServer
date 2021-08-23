@@ -4,3 +4,5 @@ target/
 *.iml
 src/test/
 out/test
+[~$]*.docx
+[~$]*.doc
