@@ -131,6 +131,8 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                 case FebsConstant.FmVersion1:
                     ForeseenFMDTO foreseenFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
                     log.info("解析得到的对象：foreseenFMDTO={}", foreseenFMDTO.toString());
+                    //foreseenFMDTO.setFrankMachineId("PM100501");
+                    //foreseenFMDTO.setContractCode("00001019");
 
                     if (StringUtils.isEmpty(foreseenFMDTO.getContractCode())
                             || StringUtils.isEmpty(foreseenFMDTO.getFrankMachineId())

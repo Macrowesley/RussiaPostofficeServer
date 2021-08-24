@@ -20,6 +20,7 @@ public enum FMResultEnum {
     SomeInfoIsEmpty(16,"部分信息为空"),
     OrderProcessIsNotRight(17,"订单进度不符合条件"),
     RateTablesFail(18,"RateTablesFail接口返回失败"),
+    PostOfficeNoExist(19,"PostOffice is not exist"),
 
     //transaction的异常
     TransactionError(31,"TransactionError异常，需要继续执行transaction"),

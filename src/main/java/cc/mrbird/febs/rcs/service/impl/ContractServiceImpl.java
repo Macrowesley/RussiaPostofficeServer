@@ -171,7 +171,12 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     public Contract getByConractCode(String contractCode) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
-        return getOne(queryWrapper.eq(Contract::getCode, contractCode));
+        Contract contract = getOne(queryWrapper.eq(Contract::getCode, contractCode));
+        if (contract == null) {
+            log.error("Unknown contractCode:" + contractCode);
+            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+        }
+        return contract;
     }
 
     @Override

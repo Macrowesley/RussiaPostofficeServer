@@ -6,6 +6,7 @@ import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.PostOffice;
+import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.mapper.PostOfficeMapper;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -96,4 +97,12 @@ public class PostOfficeServiceImpl extends ServiceImpl<PostOfficeMapper, PostOff
             throw new RcsApiException(RcsApiErrorEnum.SavePostOfficeDTOError);
         }
     }
+
+    @Override
+    public boolean checkPostOfficeExist(String postOffice) {
+        LambdaQueryWrapper<PostOffice> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PostOffice::getId,postOffice);
+        return this.baseMapper.selectCount(wrapper) > 0;
+    }
+
 }

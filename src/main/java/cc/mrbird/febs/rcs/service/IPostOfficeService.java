@@ -54,4 +54,6 @@ public interface IPostOfficeService extends IService<PostOffice> {
     void deletePostOffice(PostOffice postOffice);
 
     void savePostOfficeDTO(PostOfficeDTO postOfficeDTO);
+
+    boolean checkPostOfficeExist(String postOffice);
 }

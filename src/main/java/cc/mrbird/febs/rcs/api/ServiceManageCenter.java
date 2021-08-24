@@ -59,6 +59,9 @@ public class ServiceManageCenter {
     IContractService contractService;
 
     @Autowired
+    IPostOfficeService postOfficeService;
+
+    @Autowired
     ITaxService taxService;
 
     @Autowired
@@ -451,6 +454,13 @@ public class ServiceManageCenter {
         double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
         if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
+        }
+
+        //判断postOffice是否存在
+        String postOffice = foreseenFMDTO.getPostOffice();
+        log.info("postOffice:"+postOffice);
+        if(!postOfficeService.checkPostOfficeExist(postOffice)){
+            throw new FmException(FMResultEnum.PostOfficeNoExist.getCode(),"PostOffice is not exist");
         }
 
         //fm信息转ForeseenDTO

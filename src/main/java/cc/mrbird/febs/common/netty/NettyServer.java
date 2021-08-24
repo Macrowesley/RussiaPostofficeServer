@@ -61,10 +61,10 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         // 添加SSL安装验证
-                        SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
+                        /*SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
                         if (sslCtx != null) {
                             socketChannel.pipeline().addLast(sslCtx.newHandler(socketChannel.alloc()));
-                        }
+                        }*/
                         //如果客户端60秒没有任何请求,就关闭客户端连接（很重要）
                         socketChannel.pipeline().addLast("readtime", new ReadTimeoutHandler(20));
                         // 解决粘包问题 通过解析不定长的协议
