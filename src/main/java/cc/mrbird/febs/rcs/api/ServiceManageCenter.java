@@ -1,6 +1,5 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -69,6 +67,9 @@ public class ServiceManageCenter {
 
     @Autowired
     ITransactionMsgService dmMsgService;
+
+    @Autowired
+    CheckUtils checkUtils;
 
 
     /**
@@ -420,7 +421,7 @@ public class ServiceManageCenter {
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         //判断机器状态是否正常
-        checkFMEnable(frankMachineId);
+        checkUtils.checkFmEnable(frankMachineId);
 
         //判断机器税率表是否更新
         Tax tax = taxService.getLastestTax();
@@ -439,15 +440,9 @@ public class ServiceManageCenter {
         }
 
         log.info("foreseenFMDTO.getContractCode() = {}", foreseenFMDTO.getContractCode());
-        Contract dbContract = contractService.getByConractCode(foreseenFMDTO.getContractCode());
+        Contract dbContract = checkUtils.checkContractIsOk(foreseenFMDTO.getContractCode());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
-        Integer dbEnable = dbContract.getEnable();
-
-        //判断合同状态是否可用
-        if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
-            throw new FmException("foreseens 订单状态不可用，当前订单的状态为：" + dbEnable);
-        }
 
         //判断合同金额是否够用
         //todo 用哪个判断：dbCurrent 还是 dbConsolidate  申请的时候，用哪个来管钱？
@@ -457,11 +452,7 @@ public class ServiceManageCenter {
         }
 
         //判断postOffice是否存在
-        String postOffice = foreseenFMDTO.getPostOffice();
-        log.info("postOffice:"+postOffice);
-        if(!postOfficeService.checkPostOfficeExist(postOffice)){
-            throw new FmException(FMResultEnum.PostOfficeNoExist.getCode(),"PostOffice is not exist");
-        }
+        checkUtils.checkPostOfficeExist(foreseenFMDTO.getPostOffice());
 
         //fm信息转ForeseenDTO
         ForeseenDTO foreseenDTO = new ForeseenDTO();
@@ -502,111 +493,56 @@ public class ServiceManageCenter {
         //下面没有了，会自动返回结果给机器，然后机器选择：取消打印或者开始打印，打印结束后同步金额
     }
 
-    public String saveMsg(TransactionMsgFMDTO transactionMsgFMDTO) {
-        log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFMDTO.toString());
-        if (StringUtils.isEmpty(transactionMsgFMDTO.getFrankMachineId())) {
-            throw new FmException(FMResultEnum.SomeInfoIsEmpty.getCode(), "foreseens 信息缺失");
-        }
+    /**
+     * 保存批次信息
+     * @param transactionMsgFmDto
+     * @return
+     */
+    public String saveTransactionMsg(TransactionMsgFMDTO transactionMsgFmDto) {
+        log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFmDto.toString());
+
+        //判断msg是否符合规范
+        checkUtils.checkTransactionMsg(transactionMsgFmDto.getDmMsg().trim());
 
         //判断机器状态是否正常
-        checkFMEnable(transactionMsgFMDTO.getFrankMachineId());
+        checkUtils.checkFmEnable(transactionMsgFmDto.getFrankMachineId());
 
-        return dmMsgService.saveMsg(transactionMsgFMDTO);
-    }
-
-    /**
-     * 校验机器是否可用
-     * @param frankMachineId
-     */
-    private void checkFMEnable(String frankMachineId) {
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
-        Integer dbCurFmStatus = dbDevice.getCurFmStatus();
-        FMStatusEnum dbFMStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
-            throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFMStatus.getStatus());
-        }
+        return dmMsgService.saveMsg(transactionMsgFmDto);
     }
 
     /**
      * 【机器请求transactions协议】调用本方法
      * 交易
      */
-    public Contract transactions(TransactionFMDTO transactionFMDTO) {
+    public Contract transactions(TransactionFMDTO transactionFmDto) {
+        //todo 测试修改数据
+        transactionFmDto.setPostOffice("131999");
+
         String operationName = "transactions";
-        String frankMachineId = transactionFMDTO.getFrankMachineId();
-        String foreseenId = transactionFMDTO.getForeseenId();
-        String transactionId = transactionFMDTO.getId();
+        String frankMachineId = transactionFmDto.getFrankMachineId();
+        String foreseenId = transactionFmDto.getForeseenId();
+        String transactionId = transactionFmDto.getId();
         log.info("transactions 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
-        /*Foreseen dbForeseen = printJobService.getForeseenById(foreseenId);
-        transactionFMDTO.setCreditVal(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));*/
-        //机器不让欠钱，暂时为0
-        transactionFMDTO.setCreditVal("0");
-        //数据库得到具体的dmMsg信息
-        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
-        //实际花费的
-        transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
-        //预计花费，应该是从foreseen的amount
+        //校验Postoffice
+        checkUtils.checkPostOfficeExist(transactionFmDto.getPostOffice());
 
-        transactionFMDTO.setCount(dmMsgDetail.getActualCount());
-        transactionFMDTO.setFranks(dmMsgDetail.getFranks());
+        //校验FM id是否存在
+        checkUtils.checkFmIdExist(frankMachineId);
 
-        /**
-         判断订单状态是否符合条件：
-         只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow
-         */
-        PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
+        //校验contract
+        Contract dbContract = checkUtils.checkContractIsOk(transactionFmDto.getContractCode());
 
-        FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
-        FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
+        //校验dmMessage长度，不需要 dmmsg中已经校验了
 
-        if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
-                curFlowDetail != FlowDetailEnum.JobErrorTransactionUnKnow
-                && curFlowDetail != FlowDetailEnum.JobErrorTransaction4xx) {
-            throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(), "transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
-        }
+        //校验订单状态是否符合条件
+        PrintJob dbPrintJob = checkUtils.checkTransactionFlowDetailIsOk(foreseenId,frankMachineId);
 
-        //判断机器状态是否正常
-        checkFMEnable(frankMachineId);
+        //校验机器状态是否正常
+        checkUtils.checkFmEnable(frankMachineId);
 
-        //判断合同状态是否可用
-        Contract dbContract = contractService.getByConractCode(transactionFMDTO.getContractCode());
-        Integer dbEnable = dbContract.getEnable();
-        if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
-            throw new FmException("transactions 订单状态不可用，当前订单的状态为：" + dbEnable);
-        }
-
-        //判断合同金额是否够用
-        double fmAmount = MoneyUtils.changeF2Y(transactionFMDTO.getAmount());
-        double fmCreditVal = MoneyUtils.changeF2Y(transactionFMDTO.getCreditVal());
-
-        //todo 用哪个判断：dbCurrent 还是 dbConsolidate
-        Double dbCurrent = dbContract.getCurrent();
-        Double dbConsolidate = dbContract.getConsolidate();
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmAmount)) {
-            throw new FmException(FMResultEnum.MoneyTooBig.getCode(),  "transactions 订单金额 fmAmount为" + fmAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
-        }
-
-        //数据转换
-        TransactionDTO transactionDTO = new TransactionDTO();
-        BeanUtils.copyProperties(transactionFMDTO, transactionDTO);
-
-        //消耗的分钟
-      /*   int constMinuteTime = Integer.valueOf(transactionFMDTO.getCostTime());
-       transactionDTO.setStartDateTime(DateKit.formatDate(new Date()));
-        transactionDTO.setStopDateTime(DateKit.offsetMinuteToDateTime(constMinuteTime));*/
-        Transaction dbTransaction = printJobService.getTransactionById(transactionId);
-        transactionDTO.setStartDateTime(dbTransaction.getStartDateTime());
-        transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
-
-        //处理金额
-        transactionDTO.setAmount(fmAmount);
-        transactionDTO.setCreditVal(fmCreditVal);
-        transactionDTO.setGraphId("");
-
-        //处理UserId
-        String userId = getUserIdByContractCode(transactionDTO.getContractCode());
-        transactionDTO.setUserId(userId);
+        //获取需要发送给俄罗斯的数据
+        TransactionDTO transactionDTO = getTransactionDTO(transactionFmDto, transactionId, dbContract);
 
         ApiResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
@@ -626,6 +562,7 @@ public class ServiceManageCenter {
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) transactionsResponse.getObject();
         balanceDTO.setContractCode(transactionDTO.getContractCode());
         log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
+
         //正常接收俄罗斯返回，更新数据库
         /*if (!transactionDTO.getContractCode().equals(balanceDTO.getContractCode())) {
             throw new FmException(FMResultEnum.contractCodeAbnormal.getCode(), "ContractCode应该是" + transactionDTO.getContractCode() + "，但是俄罗斯返回的是：" + balanceDTO.getContractCode());
@@ -635,6 +572,48 @@ public class ServiceManageCenter {
 
         log.info("transactions结束 {}, frankMachineId={} curContract = {}", operationName, frankMachineId, curContract.toString());
         return curContract;
+    }
+
+    private TransactionDTO getTransactionDTO(TransactionFMDTO transactionFMDTO, String transactionId, Contract dbContract) {
+        //机器不让欠钱，暂时为0
+        transactionFMDTO.setCreditVal("0");
+        //数据库得到具体的dmMsg信息
+        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
+        //实际花费的
+        transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
+        //预计花费，应该是从foreseen的amount
+
+        transactionFMDTO.setCount(dmMsgDetail.getActualCount());
+        transactionFMDTO.setFranks(dmMsgDetail.getFranks());
+
+        //判断合同金额是否够用
+        double fmAmount = MoneyUtils.changeF2Y(transactionFMDTO.getAmount());
+        double fmCreditVal = MoneyUtils.changeF2Y(transactionFMDTO.getCreditVal());
+
+        Double dbCurrent = dbContract.getCurrent();
+        Double dbConsolidate = dbContract.getConsolidate();
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmAmount)) {
+            throw new FmException(FMResultEnum.MoneyTooBig.getCode(),  "transactions 订单金额 fmAmount为" + fmAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
+        }
+
+        //数据转换
+        TransactionDTO transactionDTO = new TransactionDTO();
+        BeanUtils.copyProperties(transactionFMDTO, transactionDTO);
+
+        //开始结束时间
+        Transaction dbTransaction = printJobService.getTransactionById(transactionId);
+        transactionDTO.setStartDateTime(dbTransaction.getStartDateTime());
+        transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
+
+        //处理金额
+        transactionDTO.setAmount(fmAmount);
+        transactionDTO.setCreditVal(fmCreditVal);
+        transactionDTO.setGraphId("");
+
+        //处理UserId
+        String userId = getUserIdByContractCode(transactionDTO.getContractCode());
+        transactionDTO.setUserId(userId);
+        return transactionDTO;
     }
 
     /**
@@ -668,11 +647,7 @@ public class ServiceManageCenter {
         }
 
         //判断合同状态是否可用
-        Contract dbContract = contractService.getByConractCode(dbPrintJob.getContractCode());
-        Integer dbEnable = dbContract.getEnable();
-        if (dbEnable == ContractEnableEnum.UNENABLE.getCode()) {
-            throw new FmException("订单状态不可用，当前订单的状态为：" + dbEnable);
-        }
+        Contract dbContract = checkUtils.checkContractIsOk(dbPrintJob.getContractCode());
 
 
         //给俄罗斯发消息

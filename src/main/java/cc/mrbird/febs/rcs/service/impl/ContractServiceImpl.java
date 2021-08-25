@@ -1,9 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
-import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
@@ -100,16 +98,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 	}
 
     @Override
-    public boolean checkIExist(String code) {
-        LambdaQueryWrapper<Contract> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Contract::getCode, code);
-        return this.baseMapper.selectCount(wrapper) > 0;
-    }
-
-    @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveContractDto(ContractDTO contractDTO) {
-        if (checkIExist(contractDTO.getCode())){
+        if (this.checkIsExist(contractDTO.getCode())){
             throw new RcsApiException(RcsApiErrorEnum.ContractExist);
         }
 
@@ -126,9 +117,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             contract.setCreatedTime(new Date());
             contract.setUpdatedTime(new Date());
             contract.setModified(DateKit.parseRussiatime(contractDTO.getModified()));
-            if (checkIsExist(contractDTO.getCode())) {
-                contract.setUpdatedTime(new Date());
-            }
+            contract.setUpdatedTime(new Date());
             this.saveOrUpdate(contract);
 
             //保存客户信息
@@ -166,7 +155,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     public boolean checkIsExist(String contractCode) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
-
         return contractMapper.selectCount(queryWrapper.eq(Contract::getCode, contractCode)) != 0;
     }
 
@@ -174,10 +162,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     public Contract getByConractCode(String contractCode) {
         LambdaQueryWrapper<Contract> queryWrapper = new LambdaQueryWrapper<>();
         Contract contract = getOne(queryWrapper.eq(Contract::getCode, contractCode));
-        if (contract == null) {
-            log.error("Unknown contractCode:" + contractCode);
-            throw new FmException(FMResultEnum.ContractNotExist);
-        }
         return contract;
     }
 

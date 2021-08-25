@@ -19,6 +19,7 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.device.service.IUserDeviceService;
 import cc.mrbird.febs.device.vo.UserDeviceVO;
 import cc.mrbird.febs.rcs.common.enums.*;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.dto.manager.DeviceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
@@ -621,9 +622,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return this.baseMapper.selectCount(wrapper) > 0;
     }
 
-    //todo 需要加缓存
     @Override
-    @Transactional(rollbackFor = RcsApiException.class)
+    @Transactional(rollbackFor = FmException.class)
     public Device getDeviceByFrankMachineId(String frankMachineId) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, frankMachineId);
@@ -631,7 +631,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         if (device == null) {
             log.error("Unknown FM Id " + frankMachineId);
-            throw new RcsApiException(RcsApiErrorEnum.UnknownFMId);
+            throw new FmException(FMResultEnum.DeviceNotFind);
         }
         return device;
     }

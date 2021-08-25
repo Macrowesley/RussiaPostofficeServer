@@ -76,8 +76,9 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
-    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
+    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId,  boolean regenerate){
         log.info("【俄罗斯调用服务器api 开始 publicKey】");
+        regenerate = true;
         log.info("frankMachineId={},regenerate={}",frankMachineId,regenerate);
 
         if (!deviceService.checkExistByFmId(frankMachineId)){

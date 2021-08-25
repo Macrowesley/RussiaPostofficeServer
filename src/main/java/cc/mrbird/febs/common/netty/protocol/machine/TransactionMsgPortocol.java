@@ -8,12 +8,9 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -102,10 +99,9 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
 
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    TransactionMsgFMDTO transactionMsgFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionMsgFMDTO.class);
+                    TransactionMsgFMDTO transactionMsgFmDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionMsgFMDTO.class);
 
-
-                    String transactionId = transactionMsgPortocol.serviceManageCenter.saveMsg(transactionMsgFMDTO);
+                    String transactionId = transactionMsgPortocol.serviceManageCenter.saveTransactionMsg(transactionMsgFmDto);
 
                     return getSuccessResult(version, ctx, transactionId);
                 default:

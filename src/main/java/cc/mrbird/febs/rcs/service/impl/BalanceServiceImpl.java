@@ -85,7 +85,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         if (!StringUtils.isEmpty(serviceBalanceDTO.getContractCode()) && !contractCode.equals(serviceBalanceDTO.getContractCode())){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotSame);
         }
-        if (!contractService.checkIExist(contractCode)){
+        if (!contractService.checkIsExist(contractCode)){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
         }
         if (serviceBalanceDTO.getCurrent() == null || serviceBalanceDTO.getConsolidate() == null){
@@ -115,7 +115,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
 
     @Override
     public void saveReturnBalance(String contractCode, ManagerBalanceDTO managerBalanceDTO) {
-        if (!contractService.checkIExist(contractCode)){
+        if (!contractService.checkIsExist(contractCode)){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
         }
         if (managerBalanceDTO.getCurrent() == null || managerBalanceDTO.getConsolidate() == null){

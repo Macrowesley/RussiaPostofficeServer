@@ -106,39 +106,38 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    TransactionFMDTO transactionFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionFMDTO.class);
-                    log.info("解析得到的对象：TransactionFMDTO={}", transactionFMDTO.toString());
-
-                    if (StringUtils.isEmpty(transactionFMDTO.getContractCode())
-                            || StringUtils.isEmpty(transactionFMDTO.getFrankMachineId())
-                            || StringUtils.isEmpty(transactionFMDTO.getPostOffice())
-                            || StringUtils.isEmpty(transactionFMDTO.getTaxVersion())
-                            || StringUtils.isEmpty(transactionFMDTO.getForeseenId())) {
+                    TransactionFMDTO transactionFmDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, TransactionFMDTO.class);
+                    log.info("解析得到的对象：TransactionFMDTO={}", transactionFmDto.toString());
+                    if (StringUtils.isEmpty(transactionFmDto.getContractCode())
+                            || StringUtils.isEmpty(transactionFmDto.getFrankMachineId())
+                            || StringUtils.isEmpty(transactionFmDto.getPostOffice())
+                            || StringUtils.isEmpty(transactionFmDto.getTaxVersion())
+                            || StringUtils.isEmpty(transactionFmDto.getForeseenId())) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                     }
 
                     //创建UUID
                     /*String transactionId = AESUtils.createUUID();
-                    transactionFMDTO.setId(transactionId);*/
-                    String transactionId = transactionFMDTO.getId();
+                    transactionFmDto.setId(transactionId);*/
+                    String transactionId = transactionFmDto.getId();
 
                     Contract dbContract = null;
                     //取消订单
-                    if (transactionFMDTO.getCount()==0) {
-                        CancelJobFMDTO cancelJobFMDTO = new CancelJobFMDTO();
-                        cancelJobFMDTO.setFrankMachineId(transactionFMDTO.getFrankMachineId());
-                        cancelJobFMDTO.setForeseenId(transactionFMDTO.getForeseenId());
-                        cancelJobFMDTO.setCancelMsgCode(transactionFMDTO.getCancelMsgCode());
-                        cancelJobFMDTO.setContractCode(transactionFMDTO.getContractCode());
-                        dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
+                    if (transactionFmDto.getCount()==0) {
+                        CancelJobFMDTO cancelJobFmDto = new CancelJobFMDTO();
+                        cancelJobFmDto.setFrankMachineId(transactionFmDto.getFrankMachineId());
+                        cancelJobFmDto.setForeseenId(transactionFmDto.getForeseenId());
+                        cancelJobFmDto.setCancelMsgCode(transactionFmDto.getCancelMsgCode());
+                        cancelJobFmDto.setContractCode(transactionFmDto.getContractCode());
+                        dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFmDto);
                     } else {
-                        if (StringUtils.isEmpty(transactionFMDTO.getId())
-                                || StringUtils.isEmpty(transactionFMDTO.getAmount())
-                                || StringUtils.isEmpty(transactionFMDTO.getCreditVal())){
+                        if (StringUtils.isEmpty(transactionFmDto.getId())
+                                || StringUtils.isEmpty(transactionFmDto.getAmount())
+                                || StringUtils.isEmpty(transactionFmDto.getCreditVal())){
                             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                         }
                         //处理transaction
-                        dbContract = transactionsPortocol.serviceManageCenter.transactions(transactionFMDTO);
+                        dbContract = transactionsPortocol.serviceManageCenter.transactions(transactionFmDto);
                     }
                     return getSuccessResult(version, ctx, transactionId, dbContract);
                 default:

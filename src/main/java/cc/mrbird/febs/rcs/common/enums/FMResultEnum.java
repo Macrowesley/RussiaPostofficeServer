@@ -34,6 +34,9 @@ public enum FMResultEnum {
     DmmsgIsNotFinish(51,"批次记录为奇数，有没有完成的批次"),
     TransactionMsgExist(52,"transactionMsg 已经存在，不能新建"),
     CountOrAmountSmallThenDb(53,"transactionMsg信息中的的总数量或者总金额小于数据库的值"),
+    DmmsgIsEmpty(54,"transactionMsg为空"),
+    DmmsgLengthError(55,"transactionMsg长度不对，不为60"),
+
 
 
 
