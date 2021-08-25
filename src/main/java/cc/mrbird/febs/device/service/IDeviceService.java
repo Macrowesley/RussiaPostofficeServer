@@ -162,7 +162,7 @@ public interface IDeviceService extends IService<Device> {
      */
     boolean checkExistByFmId(String frankMachineId);
 
-    Device getDeviceByFrankMachineId(String frankMachineId);
+    Device checkAndGetDeviceByFrankMachineId(String frankMachineId);
 
     FlowDetailEnum getFlowDetail(String frankMachineId);
 

@@ -5,7 +5,6 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.*;
@@ -60,7 +59,7 @@ public class CheckUtils {
             throw new FmException(FMResultEnum.SomeInfoIsEmpty.getCode(), "foreseens 信息缺失");
         }
 
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+        Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         Integer dbCurFmStatus = dbDevice.getCurFmStatus();
         FMStatusEnum dbFmStatus = FMStatusEnum.getByCode(dbCurFmStatus);

@@ -18,7 +18,6 @@ import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,7 +90,7 @@ public class ServiceManageCenter {
         String frankMachineId = deviceDTO.getId();
         String operationName = "changeStatusEvent";
 
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(deviceDTO.getId());
+        Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(deviceDTO.getId());
         int dbCurStatus = dbDevice.getCurFmStatus();
         int dbFurStatus = dbDevice.getFutureFmStatus();
 
@@ -146,7 +145,7 @@ public class ServiceManageCenter {
         String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
         log.error("服务器收到了设备{}发送的auth协议", frankMachineId);
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+        Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
         //当前的进度
@@ -223,9 +222,12 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public void unauth(DeviceDTO deviceDTO) {
+        //测试数据
+//        deviceDTO.setId("PM100501");
         String operationName = "unauth";
         String frankMachineId = deviceDTO.getId();
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+
+        Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
         //当前的进度
@@ -273,9 +275,12 @@ public class ServiceManageCenter {
      * @param deviceDTO
      */
     public void lost(DeviceDTO deviceDTO) {
+        //测试数据
+//        deviceDTO.setId("PM100501");
+
         String operationName = "lost";
         String frankMachineId = deviceDTO.getId();
-        Device dbDevice = deviceService.getDeviceByFrankMachineId(frankMachineId);
+        Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
         //当前的进度
@@ -499,6 +504,9 @@ public class ServiceManageCenter {
      * @return
      */
     public String saveTransactionMsg(TransactionMsgFMDTO transactionMsgFmDto) {
+        //测试代码
+//        transactionMsgFmDto.setDmMsg("!45!01NE6431310001207210006000001010");
+
         log.info("解析得到的对象：TransactionFMDTO={}", transactionMsgFmDto.toString());
 
         //判断msg是否符合规范
@@ -516,7 +524,9 @@ public class ServiceManageCenter {
      */
     public Contract transactions(TransactionFMDTO transactionFmDto) {
         //todo 测试修改数据
-        transactionFmDto.setPostOffice("131999");
+//        transactionFmDto.setPostOffice("131999");
+//        transactionFmDto.setFrankMachineId("PM100501");
+//        transactionFmDto.setContractCode("00001019");
 
         String operationName = "transactions";
         String frankMachineId = transactionFmDto.getFrankMachineId();

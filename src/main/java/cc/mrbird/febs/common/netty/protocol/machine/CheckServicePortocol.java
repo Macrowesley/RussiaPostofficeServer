@@ -185,7 +185,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
 
                     //请求服务器返回最新状态
-                    Device dbDevice = checkServicePortocol.deviceService.getDeviceByFrankMachineId(frankMachineId);
+                    Device dbDevice = checkServicePortocol.deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
                     int curStatus = dbDevice.getCurFmStatus();
 
                     /**

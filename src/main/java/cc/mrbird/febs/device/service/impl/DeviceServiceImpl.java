@@ -391,7 +391,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Transactional(rollbackFor = RcsApiException.class)
     public void changeStatusBegin(String frankMachineId, ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
 
-        Device dbDevice = getDeviceByFrankMachineId(frankMachineId);
+        Device dbDevice = checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         if (dbDevice.getFlow() == FlowEnum.FlowIng.getCode()) {
             throw new RcsApiException(RcsApiErrorEnum.WaitStatusChangeFinish);
@@ -605,7 +605,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public String getAcnumByFMId(String frankMachineId) {
-        Device device = getDeviceByFrankMachineId(frankMachineId);
+        Device device = checkAndGetDeviceByFrankMachineId(frankMachineId);
         return device.getAcnum();
     }
 
@@ -624,7 +624,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     @Override
     @Transactional(rollbackFor = FmException.class)
-    public Device getDeviceByFrankMachineId(String frankMachineId) {
+    public Device checkAndGetDeviceByFrankMachineId(String frankMachineId) {
         LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Device::getFrankMachineId, frankMachineId);
         Device device = this.getOne(wrapper);
@@ -639,7 +639,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     //todo 需要加缓存
     @Override
     public FlowDetailEnum getFlowDetail(String frankMachineId) {
-        return FlowDetailEnum.getByCode(getDeviceByFrankMachineId(frankMachineId).getFlowDetail());
+        return FlowDetailEnum.getByCode(checkAndGetDeviceByFrankMachineId(frankMachineId).getFlowDetail());
     }
 
     /**
