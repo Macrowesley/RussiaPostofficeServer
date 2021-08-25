@@ -48,7 +48,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.queryTemKeyPortocol = this;
+        queryTemKeyPortocol = this;
     }
 
     @Override

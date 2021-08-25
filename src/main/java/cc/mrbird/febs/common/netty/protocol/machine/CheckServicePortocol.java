@@ -77,7 +77,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.checkServicePortocol = this;
+        checkServicePortocol = this;
     }
 
     @Override

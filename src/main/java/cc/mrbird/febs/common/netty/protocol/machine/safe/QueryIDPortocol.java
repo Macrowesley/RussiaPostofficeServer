@@ -36,7 +36,7 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.queryIDPortocol = this;
+        queryIDPortocol = this;
     }
 
     @Override

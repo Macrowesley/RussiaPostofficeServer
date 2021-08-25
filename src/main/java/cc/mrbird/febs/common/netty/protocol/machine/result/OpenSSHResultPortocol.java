@@ -26,7 +26,7 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.openSSHResultPortocol = this;
+        openSSHResultPortocol = this;
     }
 
     @Override

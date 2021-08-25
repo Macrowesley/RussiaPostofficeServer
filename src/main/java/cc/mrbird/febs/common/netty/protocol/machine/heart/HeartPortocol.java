@@ -22,6 +22,7 @@ public class HeartPortocol extends MachineToServiceProtocol {
      * 获取协议类型
      * A0 心跳包
      */
+    @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
     }
@@ -31,6 +32,7 @@ public class HeartPortocol extends MachineToServiceProtocol {
      * 测试使用：AA080001010101010106D0
      * @param bytes
      */
+    @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         int pos = getBeginPos();
 

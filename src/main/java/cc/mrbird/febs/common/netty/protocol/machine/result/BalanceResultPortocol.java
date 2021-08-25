@@ -26,7 +26,7 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.balanceResultPortocol = this;
+        balanceResultPortocol = this;
     }
 
     @Override

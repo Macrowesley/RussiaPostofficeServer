@@ -35,7 +35,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.changeStatusPortocol = this;
+        changeStatusPortocol = this;
     }
 
     @Override

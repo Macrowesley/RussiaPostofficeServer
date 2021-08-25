@@ -37,7 +37,7 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.queryPrivateKeylPortocol = this;
+        queryPrivateKeylPortocol = this;
     }
 
     @Override

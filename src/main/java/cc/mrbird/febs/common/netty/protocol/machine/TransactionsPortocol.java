@@ -41,7 +41,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.transactionsPortocol = this;
+        transactionsPortocol = this;
     }
 
     @Override

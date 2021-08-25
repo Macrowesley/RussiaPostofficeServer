@@ -53,7 +53,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.machineLoginPortocol = this;
+        machineLoginPortocol = this;
     }
 
     @Override

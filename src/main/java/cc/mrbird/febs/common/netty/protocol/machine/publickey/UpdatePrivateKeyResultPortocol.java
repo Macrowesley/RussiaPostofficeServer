@@ -50,7 +50,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.updatePrivateKeyResultPortocol = this;
+        updatePrivateKeyResultPortocol = this;
     }
 
     @Override

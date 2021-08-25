@@ -46,7 +46,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.chargeResProtocol = this;
+        chargeResProtocol = this;
     }
 
     @Override

@@ -49,7 +49,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.queryProtocol = this;
+        queryProtocol = this;
     }
 
     @Override

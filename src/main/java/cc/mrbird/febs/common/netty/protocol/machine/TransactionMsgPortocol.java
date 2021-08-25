@@ -37,7 +37,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.transactionMsgPortocol = this;
+        transactionMsgPortocol = this;
     }
 
     @Override

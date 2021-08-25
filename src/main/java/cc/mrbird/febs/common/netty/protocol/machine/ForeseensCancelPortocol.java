@@ -40,7 +40,7 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.foreseensCancelPortocol = this;
+        foreseensCancelPortocol = this;
     }
 
     @Override

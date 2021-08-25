@@ -52,7 +52,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
     @PostConstruct
     public void init(){
-        this.foreseensPortocol = this;
+        foreseensPortocol = this;
     }
 
     @Override
