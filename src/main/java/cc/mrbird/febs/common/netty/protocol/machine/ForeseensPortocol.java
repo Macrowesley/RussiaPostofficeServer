@@ -129,22 +129,23 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 //            log.info(version);
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    ForeseenFMDTO foreseenFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
-                    log.info("解析得到的对象：foreseenFMDTO={}", foreseenFMDTO.toString());
-                    //foreseenFMDTO.setFrankMachineId("PM100501");
-                    //foreseenFMDTO.setContractCode("00001019");
+                    ForeseenFMDTO foreseenFmDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
+                    log.info("解析得到的对象：foreseenFmDto={}", foreseenFmDto.toString());
+                    //foreseenFmDto.setFrankMachineId("PM100501");
+                    //foreseenFmDto.setContractCode("00001019");
 
-                    if (StringUtils.isEmpty(foreseenFMDTO.getContractCode())
-                            || StringUtils.isEmpty(foreseenFMDTO.getFrankMachineId())
-                            || StringUtils.isEmpty(foreseenFMDTO.getPostOffice())
-                            || StringUtils.isEmpty(foreseenFMDTO.getTaxVersion())
-                            || StringUtils.isEmpty(foreseenFMDTO.getTotalAmmount())
-                            || foreseenFMDTO.getTotalCount() == 0) {
+                    if (StringUtils.isEmpty(foreseenFmDto.getContractCode())
+                            || StringUtils.isEmpty(foreseenFmDto.getFrankMachineId())
+                            || StringUtils.isEmpty(foreseenFmDto.getPostOffice())
+                            || StringUtils.isEmpty(foreseenFmDto.getTaxVersion())
+                            || StringUtils.isEmpty(foreseenFmDto.getTotalAmmount())
+                            || StringUtils.isEmpty(foreseenFmDto.getUserId())
+                            || foreseenFmDto.getTotalCount() == 0) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                     }
 
                     //判断上一次打印是否闭环
-                    PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFMDTO.getFrankMachineId());
+                    PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
                     if (dbPrintJob != null) {
                         /**
                          * 特殊的情况：上次订单过程中，访问俄罗斯transaction接口时，没有访问成功，导致没有闭环，解决方案如下：
@@ -163,10 +164,10 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                     }
 
                     String foreseenId = AESUtils.createUUID();
-                    foreseenFMDTO.setId(foreseenId);
+                    foreseenFmDto.setId(foreseenId);
 
                     //数据库的合同信息
-                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFMDTO);
+                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto);
 
                     return getSuccessResult(version,ctx,foreseenId,dbContract);
                 default:

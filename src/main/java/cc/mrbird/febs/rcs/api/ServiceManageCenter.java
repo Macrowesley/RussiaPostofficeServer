@@ -465,8 +465,8 @@ public class ServiceManageCenter {
         foreseenDTO.setTotalAmmount(fmTotalAmount);
 
         //处理UserId
-        String userId = getUserIdByContractCode(foreseenDTO.getContractCode());
-        foreseenDTO.setUserId(userId);
+        /*String userId = getUserIdByContractCode(foreseenDTO.getContractCode());
+        foreseenDTO.setUserId(userId);*/
 
         ApiResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
         if (!foreseensResponse.isOK()) {
@@ -620,9 +620,9 @@ public class ServiceManageCenter {
         transactionDTO.setCreditVal(fmCreditVal);
         transactionDTO.setGraphId("");
 
-        //处理UserId
+        /*//处理UserId
         String userId = getUserIdByContractCode(transactionDTO.getContractCode());
-        transactionDTO.setUserId(userId);
+        transactionDTO.setUserId(userId);*/
         return transactionDTO;
     }
 

@@ -133,7 +133,8 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                     } else {
                         if (StringUtils.isEmpty(transactionFmDto.getId())
                                 || StringUtils.isEmpty(transactionFmDto.getAmount())
-                                || StringUtils.isEmpty(transactionFmDto.getCreditVal())){
+                                || StringUtils.isEmpty(transactionFmDto.getCreditVal())
+                                || StringUtils.isEmpty(transactionFmDto.getUserId())){
                             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                         }
                         //处理transaction
