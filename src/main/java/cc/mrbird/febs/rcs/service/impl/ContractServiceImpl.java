@@ -1,7 +1,9 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
@@ -174,7 +176,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Contract contract = getOne(queryWrapper.eq(Contract::getCode, contractCode));
         if (contract == null) {
             log.error("Unknown contractCode:" + contractCode);
-            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+            throw new FmException(FMResultEnum.ContractNotExist);
         }
         return contract;
     }
