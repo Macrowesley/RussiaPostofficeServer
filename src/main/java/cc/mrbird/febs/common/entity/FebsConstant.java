@@ -65,4 +65,13 @@ public interface FebsConstant {
      * 机器版本
      */
     String FmVersion1 = "001";
+
+    /**
+     * 判断是否测试netty
+     * 需要做如下操作：
+     * - 临时秘钥写成123456
+     * - 心跳包的时候就直接放到登录缓存
+     */
+    boolean IS_TEST_NETTY = true;
+    String TEMP_KEY = "2dc1f4d99e7fcadc";
 }

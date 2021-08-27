@@ -1,6 +1,8 @@
 package cc.mrbird.febs.common.utils;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -30,6 +32,9 @@ public class AESUtils {
      */
     public static String encrypt(String content, String key) {
         try {
+            if (StringUtils.isEmpty(key) && FebsConstant.IS_TEST_NETTY){
+                key = FebsConstant.TEMP_KEY;
+            }
             Cipher cipher = Cipher.getInstance(DEFAULT_CIPHER_ALGORITHM);// 创建密码器
 
             byte[] byteContent = content.getBytes("utf-8");
@@ -54,6 +59,9 @@ public class AESUtils {
      * @return
      */
     public static String decrypt(String content, String key) throws Exception {
+        if (StringUtils.isEmpty(key) && FebsConstant.IS_TEST_NETTY){
+            key = FebsConstant.TEMP_KEY;
+        }
         //实例化
         Cipher cipher = Cipher.getInstance(DEFAULT_CIPHER_ALGORITHM);
 

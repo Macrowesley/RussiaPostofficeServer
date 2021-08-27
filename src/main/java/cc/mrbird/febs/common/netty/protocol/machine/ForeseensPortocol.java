@@ -107,12 +107,14 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
             //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
             String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (foreseensPortocol.redisService.hasKey(key)){
-                //todo 临时测试
-                return getOverTimeResult(version,ctx, key, FMResultEnum.Overtime.getCode());
-            }else{
-                log.info("channelId={}的操作记录放入redis", key);
-                foreseensPortocol.redisService.set(key,"wait", WAIT_TIME);
+            //如果不是测试，需要验证超时
+            if (!FebsConstant.IS_TEST_NETTY) {
+                if (foreseensPortocol.redisService.hasKey(key)) {
+                    return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
+                } else {
+                    log.info("channelId={}的操作记录放入redis", key);
+                    foreseensPortocol.redisService.set(key, "wait", WAIT_TIME);
+                }
             }
 
 
@@ -163,9 +165,13 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.NotFinish.getCode());
                     }
 
-                    String foreseenId = AESUtils.createUUID();
-                    foreseenFmDto.setId(foreseenId);
-
+                    String foreseenId = "";
+                    if (FebsConstant.IS_TEST_NETTY) {
+                        foreseenId = foreseenFmDto.getId();
+                    }else{
+                        foreseenId = AESUtils.createUUID();
+                        foreseenFmDto.setId(foreseenId);
+                    }
                     //数据库的合同信息
                     Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto);
 

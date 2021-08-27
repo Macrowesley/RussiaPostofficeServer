@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * 协议处理
  */
@@ -135,8 +133,8 @@ public class ProtocolService {
      * @return
      */
     public synchronized void parseContentAndWrite(byte[] data, ChannelHandlerContext ctx) throws Exception {
-        //验证校验位
-        if (!BaseTypeUtils.checkChkSum(data, data.length - 2)) {
+        //验证校验位 测试情况除外
+        if (!BaseTypeUtils.checkChkSum(data, data.length - 2) && !FebsConstant.IS_TEST_NETTY) {
             log.error("校验位验证错误");
             wrieteToCustomer(ctx, emptyResBytes);
         }
@@ -214,7 +212,16 @@ public class ProtocolService {
         }
 
         try {
-            //判断是否通过验证
+            //测试情况，就不验证了，直接放到里面
+            if (FebsConstant.IS_TEST_NETTY){
+                String acnum = BaseTypeUtils.byteToString(data, baseProtocol.getBeginPos(), 6, BaseTypeUtils.UTF8);
+                //保存到缓存
+                if (!channelMapperManager.containsKeyAcnum(acnum)) {
+                    channelMapperManager.addChannel(acnum, ctx);
+                }
+                isNeedLogin = false;
+            }
+            //判断是否通过验证 测试情况例外
             if (isNeedLogin) {
                 //检查改连接是否保存在缓存中
                 boolean isLogin = channelMapperManager.containsValue(ctx);

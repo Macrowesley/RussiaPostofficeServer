@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
