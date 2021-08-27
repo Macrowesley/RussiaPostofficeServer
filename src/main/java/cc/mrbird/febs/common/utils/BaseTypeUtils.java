@@ -365,11 +365,24 @@ public class BaseTypeUtils {
         return result;
     }
 
+    /**
+     * byte转int全是正数 0-255
+     * @param b
+     * @return
+     */
     public static int byte2Int(byte b){
         return b & 0xff;
     }
 
-
+    /**
+     * byte转int带正负值 -128~127之间
+     * @param b
+     * @return
+     */
+    public static int byte2IntWithPositiveAndNegative(byte b){
+        int i = b;
+        return i;
+    }
 
     /**
      * int 类型转换为byte 类型
@@ -409,8 +422,9 @@ public class BaseTypeUtils {
     }
 
     public static String bytesToHexString(byte[] bytes, int offset, int len) {
-        if (bytes == null)
+        if (bytes == null) {
             return "null!";
+        }
 
         StringBuilder ret = new StringBuilder(2 * len);
 
@@ -526,9 +540,29 @@ public class BaseTypeUtils {
 
     }
 
+    public static byte intToByte2(int x){
+        byte b =(byte) (x & 0xff);
+        return b;
+    }
+
+
 
 
     public static void main(String[] args) {
+//        test1();
+        test2();
+    }
+
+    private static void test2() {
+        byte end = (byte) 0xD0;
+//        end = 0x1b;
+        int i = byte2IntWithPositiveAndNegative(end);
+        byte outByte = intToByte2(i);
+        System.out.println("i = " + i);
+        System.out.println("outByte = " + bytesToHexString(new byte[]{outByte}));
+    }
+
+    private static void test1() {
         int a = 161;
         byte[] bytes = int2ByteArrayConsOnLenght(a);
         int b = ByteArray2IntConsOnLenght(bytes);
