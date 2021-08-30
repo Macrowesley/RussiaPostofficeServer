@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.kit;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.service.RedisService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,9 @@ public class TempKeyUtils {
      * @return
      */
     public synchronized String getTempKey(ChannelHandlerContext ctx) throws Exception{
+        if (FebsConstant.IS_TEST_NETTY){
+            return FebsConstant.TEMP_KEY;
+        }
         return (String) redisService.get(createKeyName(ctx));
         //todo 测试
 //        return "2c52b82ced2e2ec2";

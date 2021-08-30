@@ -551,8 +551,11 @@ public class ServiceManageCenter {
         //校验机器状态是否正常
         checkUtils.checkFmEnable(frankMachineId);
 
+        //检查transactionId是否存在
+        Transaction dbTransaction = checkUtils.checkTransactionIdExist(transactionId);
+
         //获取需要发送给俄罗斯的数据
-        TransactionDTO transactionDTO = getTransactionDTO(transactionFmDto, transactionId, dbContract);
+        TransactionDTO transactionDTO = getTransactionDTO(transactionFmDto, dbTransaction, dbContract);
 
         ApiResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
@@ -584,11 +587,11 @@ public class ServiceManageCenter {
         return curContract;
     }
 
-    private TransactionDTO getTransactionDTO(TransactionFMDTO transactionFMDTO, String transactionId, Contract dbContract) {
+    private TransactionDTO getTransactionDTO(TransactionFMDTO transactionFMDTO, Transaction dbTransaction, Contract dbContract) {
         //机器不让欠钱，暂时为0
         transactionFMDTO.setCreditVal("0");
         //数据库得到具体的dmMsg信息
-        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(transactionId);
+        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(dbTransaction.getId());
         //实际花费的
         transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
         //预计花费，应该是从foreseen的amount
@@ -611,7 +614,7 @@ public class ServiceManageCenter {
         BeanUtils.copyProperties(transactionFMDTO, transactionDTO);
 
         //开始结束时间
-        Transaction dbTransaction = printJobService.getTransactionById(transactionId);
+
         transactionDTO.setStartDateTime(dbTransaction.getStartDateTime());
         transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
 
