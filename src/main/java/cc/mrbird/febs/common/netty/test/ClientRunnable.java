@@ -111,7 +111,7 @@ public class ClientRunnable implements Runnable{
             //testHeart(future);
             foreseenId = testForeseen(future, acnum);
             //todo 写一个testTransactionMsg
-            //测试代码合并
+            //测试代码合并 测试master分支权限
             testTransaction(future, acnum, foreseenId);
             //当通道关闭了，就继续往下走
             future.channel().closeFuture().sync();
