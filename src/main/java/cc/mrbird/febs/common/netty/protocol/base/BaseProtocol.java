@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
-import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;

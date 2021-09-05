@@ -69,6 +69,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
+        String acnum = "";
         try {
             /*
             typedef  struct{
@@ -97,7 +98,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             int pos = getBeginPos();
 
             //表头号
-            String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
+            acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
             pos += REQ_ACNUM_LEN;
 
             //版本号
@@ -157,7 +158,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 transaction");
+            log.info("机器结束 transaction acnum="+ acnum);
         }
     }
 

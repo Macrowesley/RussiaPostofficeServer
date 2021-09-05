@@ -7,6 +7,7 @@ import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -140,5 +141,13 @@ public class CheckUtils {
         if (dmMsg.length() != 60){
             throw new FmException(FMResultEnum.DmmsgLengthError);
         }
+    }
+
+    public Transaction checkTransactionIdExist(String transactionId) {
+        Transaction transaction = printJobService.getTransactionById(transactionId);
+        if (transaction == null){
+            throw new FmException(FMResultEnum.TransactionIdNoExist);
+        }
+        return transaction;
     }
 }
