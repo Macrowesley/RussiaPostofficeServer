@@ -614,7 +614,6 @@ public class ServiceManageCenter {
         BeanUtils.copyProperties(transactionFMDTO, transactionDTO);
 
         //开始结束时间
-
         transactionDTO.setStartDateTime(dbTransaction.getStartDateTime());
         transactionDTO.setStopDateTime(DateKit.createRussiatime(new Date()));
 

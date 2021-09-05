@@ -78,13 +78,15 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
              */
             log.info("机器开始 transactionMsg");
 
-            //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
-            String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (transactionMsgPortocol.redisService.hasKey(key)) {
-                return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
-            } else {
-                log.info("channelId={}的操作记录放入redis", key);
-                transactionMsgPortocol.redisService.set(key, "wait", 2L);
+            if (!FebsConstant.IS_TEST_NETTY){
+                //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
+                String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
+                if (transactionMsgPortocol.redisService.hasKey(key)) {
+                    return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
+                } else {
+                    log.info("channelId={}的操作记录放入redis", key);
+                    transactionMsgPortocol.redisService.set(key, "wait", 2L);
+                }
             }
 
             int pos = getBeginPos();

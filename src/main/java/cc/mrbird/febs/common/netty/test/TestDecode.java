@@ -23,15 +23,15 @@ public class TestDecode extends ByteToMessageDecoder {
      */
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf buffer, List<Object> list) throws Exception {
-        System.out.println("channelActive NettyServerHandler 对象是：" + this);
-        byte[] lengthByte = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
+//        System.out.println("channelActive NettyServerHandler 对象是：" + this);
+/*        byte[] lengthByte = new byte[BaseProtocol.REQUEST_LENGTH_LEN];
         buffer.readBytes(lengthByte);
         int length = BaseTypeUtils.ByteArray2IntConsOnLenght(lengthByte);
 
         byte[] data = new byte[length];
         buffer.readBytes(data);
 
-        log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(data));
+        log.info("长度 = " + length + "  内容 = " + BaseTypeUtils.bytesToHexString(data));*/
 
         /*ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
                 new GenericFutureListener<Future<Channel>>() {

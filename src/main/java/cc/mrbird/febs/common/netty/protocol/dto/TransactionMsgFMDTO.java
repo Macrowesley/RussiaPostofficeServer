@@ -19,4 +19,6 @@ public class TransactionMsgFMDTO {
     //1开始 2结束 0开机：需要服务器自己判断：上一个为2，不存入数据库，上一个为1，服务器储存这条信息，status改成2
     String status;
     String frankMachineId;
+    //测试专用，代表transactionId，生产环境不会用这个id
+    String testId;
 }

@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.mapper.TransactionMapper;
 import cc.mrbird.febs.rcs.service.ITransactionService;

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.service.impl;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -253,7 +254,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             }
         }
 
-        String transactionId = transactionMsgFMDTO.getId();
+        String transactionId = null;
         if (idType == 1){
             log.info("foreseen之后第一个批次信息处理");
             //id是ForeseensId
@@ -269,7 +270,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                 throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
             }
 
-            transactionId = AESUtils.createUUID();
+            if (!FebsConstant.IS_TEST_NETTY) {
+                transactionId = AESUtils.createUUID();
+            }else{
+                transactionId = transactionMsgFMDTO.getTestId();
+            }
             Transaction transaction = new Transaction();
             transaction.setId(transactionId);
             transaction.setForeseenId(foreseenId);
@@ -288,6 +293,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
             dbPrintJob.setTransactionId(transactionId);
             printJobService.updatePrintJob(dbPrintJob);
+        } else {
+            transactionId = transactionMsgFMDTO.getId();
         }
         /**
          * id是TransactionId

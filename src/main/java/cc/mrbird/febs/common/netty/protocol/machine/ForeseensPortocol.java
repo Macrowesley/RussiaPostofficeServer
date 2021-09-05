@@ -105,10 +105,10 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.NotFinish.getCode());*/
 
 
-            //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
-            String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
             //如果不是测试，需要验证超时
             if (!FebsConstant.IS_TEST_NETTY) {
+                //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
+                String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
                 if (foreseensPortocol.redisService.hasKey(key)) {
                     return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
                 } else {
