@@ -19,7 +19,7 @@ public class Main {
         int clientCount = 1000;
         clientCount = 1;
         for (int i = 0; i < clientCount; i++) {
-            executor.submit(new ClientRunnable(i+1));
+            executor.submit(new TestQueryTemKeyByMacro(i+1));
         }
     }
 }

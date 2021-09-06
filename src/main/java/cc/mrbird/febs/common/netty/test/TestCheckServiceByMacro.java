@@ -36,7 +36,7 @@ import java.io.ByteArrayOutputStream;
 @Slf4j
 @Component
 @NoArgsConstructor
-public class ClientRunnable2 implements Runnable{
+public class TestCheckServiceByMacro implements Runnable{
     private int pos = 0;
     //请求长度：记录整条数据长度数值的长度
     public static final int REQUEST_LENGTH_LEN = 2;
@@ -66,7 +66,7 @@ public class ClientRunnable2 implements Runnable{
     static String totalAmmount = "1000";
     static Integer totalCount = 10;
 
-    public ClientRunnable2(int pos) {
+    public TestCheckServiceByMacro(int pos) {
         this.pos = pos;
         log.info("pos = " + pos + "当前线程" + Thread.currentThread().getName());
     }

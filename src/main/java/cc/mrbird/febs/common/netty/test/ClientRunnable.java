@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.test;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
@@ -108,7 +109,7 @@ public class ClientRunnable implements Runnable{
             });
 
             //连接服务器
-            ChannelFuture future = client.connect("192.168.2.233", 12800).sync();
+            ChannelFuture future = client.connect("192.168.2.118", 12800).sync();
 
             long millis = 3000;
 
@@ -123,9 +124,11 @@ public class ClientRunnable implements Runnable{
             int msgMax = 2;
             for (int msgCount = 0; msgCount < msgMax; msgCount++) {
                 testTransactionMsg(future, acnum, foreseenId, transactionId,msgCount+1, millis);
+
             }
 
             testTransaction(future, acnum, foreseenId, transactionId, millis);
+
 
             Thread.sleep(3000);
             //当通道关闭了，就继续往下走
@@ -169,7 +172,6 @@ public class ClientRunnable implements Runnable{
         foreseenFMDTO.setProducts(new ForeseenProductDTO[]{foreseenProductDTO});
         foreseenFMDTO.setTaxVersion(taxVersion);
         foreseenFMDTO.setTotalAmmount(totalAmmount);
-
 
         byte type = (byte) 0xB5;
         String encrypt = AESUtils.encrypt(JSON.toJSONString(foreseenFMDTO), FebsConstant.TEMP_KEY);
@@ -277,19 +279,7 @@ public class ClientRunnable implements Runnable{
     }
 
     private void testTransaction(ChannelFuture future, String acnum, String foreseenId, String transactionId, long millis) throws InterruptedException {
-        /*
-            typedef  struct{
-                unsigned char head;				    //0xAA
-                unsigned char length[2];			//
-                unsigned char type;					//0xB6
-                unsigned char  operateID[2];
-                unsigned char acnum[6];             //机器表头号
-                unsigned char version[3];           //版本号
-                unsigned char content[?];			//加密后内容: TransactionFMDTO的json
-                unsigned char check;				//校验位
-                unsigned char tail;					//0xD0
-            }__attribute__((packed))Transactions, *Transactions;
-         */
+
         log.info("开始 transaction");
 
         TransactionFMDTO transactionFMDTO = new TransactionFMDTO();
@@ -308,6 +298,19 @@ public class ClientRunnable implements Runnable{
 //        transactionFMDTO.setFranks(new FrankDTO[]{frankDTO});
         transactionFMDTO.setCancelMsgCode(0);
 
+        /*
+            typedef  struct{
+                unsigned char head;				    //0xAA
+                unsigned char length[2];			//
+                unsigned char type;					//0xB6
+                unsigned char  operateID[2];
+                unsigned char acnum[6];             //机器表头号
+                unsigned char version[3];           //版本号
+                unsigned char content[?];			//加密后内容: TransactionFMDTO的json
+                unsigned char check;				//校验位
+                unsigned char tail;					//0xD0
+            }__attribute__((packed))Transactions, *Transactions;
+         */
         byte type = (byte) 0xB6;
         String encrypt = AESUtils.encrypt(JSON.toJSONString(transactionFMDTO), FebsConstant.TEMP_KEY);
         byte[] data = BaseTypeUtils.stringToByte(encrypt, BaseTypeUtils.UTF8);
@@ -346,6 +349,84 @@ public class ClientRunnable implements Runnable{
         Thread.sleep(millis);
         log.info("结束 transaction");
     }
+
+    /*
+    private static void testCheckService(ChannelFuture future, String acnum, String foreseenId, String transactionId, int msgCount, long millis) throws InterruptedException {
+
+        /*
+            作用：
+             1. 请求服务器返回最新状态
+             2. 返回上一次打印任务信息
+
+            typedef  struct{
+                unsigned char head;				    //0xAA
+                unsigned char length[2];			//
+                unsigned char type;					//0xB3
+                unsigned char  operateID[2];
+                unsigned char acnum[6];             //机器表头号
+                unsigned char version[3];           //版本号
+                unsigned char content[?];			//加密后内容: CheckServiceDTO 对象的json
+                unsigned char check;				//校验位
+                unsigned char tail;					//0xD0
+            }__attribute__((packed))CheckService, *CheckService;
+         */
+
+    /*
+        log.info("开始CheckService");
+
+        CheckServiceDTO checkServiceDTO =new CheckServiceDTO();
+        checkServiceDTO.setFrankMachineId(frankMachineId);
+        checkServiceDTO.setTaxVersion(taxVersion);
+        TransactionMsgFMDTO transactionMsgFMDTO = new TransactionMsgFMDTO();
+        transactionMsgFMDTO.setId(msgCount == 1 ? foreseenId : transactionId);
+        transactionMsgFMDTO.setTestId(transactionId);
+        transactionMsgFMDTO.setIdType(msgCount == 1 ? 1 : 2);
+        transactionMsgFMDTO.setTotalCount(totalCount.toString());
+        transactionMsgFMDTO.setTotalAmount(totalAmmount);
+        transactionMsgFMDTO.setDmMsg("!45!01NE6431310002803001005000000000500000000000000100001010");//60字节
+        transactionMsgFMDTO.setStatus(msgCount % 2 == 1? "1":"2");
+        transactionMsgFMDTO.setFrankMachineId(frankMachineId);
+        checkServiceDTO.setDmMsgDto(transactionMsgFMDTO);
+        
+        byte type = (byte) 0xB3;
+        String encrypt = AESUtils.encrypt(JSON.toJSONString(checkServiceDTO), FebsConstant.TEMP_KEY);
+        byte[] data = BaseTypeUtils.stringToByte(encrypt, BaseTypeUtils.UTF8);
+
+        int protocolLen = TYPE_LEN + 2 + 6 + 3 + data.length + CHECK_LEN + END_LEN;
+        byte[] head = new byte[]{(byte) 0xAA};
+        byte[] length = BaseTypeUtils.int2ByteArrayCons(protocolLen);
+        byte[] typeData = new byte[]{type};
+        byte[] operateIdData = new byte[]{(byte) 0xFF, (byte) 0XFF};
+        byte[] acnumData = BaseTypeUtils.stringToByte(acnum, BaseTypeUtils.UTF8);
+        byte[] versionData = BaseTypeUtils.stringToByte("001", BaseTypeUtils.UTF8);
+        byte[] finalData = BaseTypeUtils.byteMerger(typeData, operateIdData);
+        finalData = BaseTypeUtils.byteMerger(finalData, acnumData);
+        finalData = BaseTypeUtils.byteMerger(finalData, versionData);
+        finalData = BaseTypeUtils.byteMerger(finalData, data);
+
+        byte[] checkSume = BaseTypeUtils.makeCheckSum(finalData);
+        byte[] end = {(byte) 0xD0};
+
+        int totalLen = 3 + protocolLen;
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(totalLen);
+        baos.write(head, 0, 1);
+        baos.write(length, 0, RESPONSE_LENGTH_LEN);
+        baos.write(typeData, 0, TYPE_LEN);
+        baos.write(operateIdData, 0, 2);
+        baos.write(acnumData, 0, 6);
+        baos.write(versionData, 0, 3);
+        baos.write(data, 0, data.length);
+        baos.write(checkSume, 0, CHECK_LEN);
+        baos.write(end, 0, END_LEN);
+
+        ByteBuf buf = Unpooled.buffer(baos.toByteArray().length);
+        buf.writeBytes(baos.toByteArray());
+        future.channel().writeAndFlush(buf);
+        Thread.sleep(millis);
+        log.info("结束CheckService");
+    }
+*/
 
     private static void testHeart(ChannelFuture future) {
         /*

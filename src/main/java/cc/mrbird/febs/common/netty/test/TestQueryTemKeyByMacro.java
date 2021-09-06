@@ -33,7 +33,7 @@ import java.io.ByteArrayOutputStream;
 @Slf4j
 @Component
 @NoArgsConstructor
-public class ClientRunnable3 implements Runnable{
+public class TestQueryTemKeyByMacro implements Runnable{
     private int pos = 0;
     //请求长度：记录整条数据长度数值的长度
     public static final int REQUEST_LENGTH_LEN = 2;
@@ -63,7 +63,7 @@ public class ClientRunnable3 implements Runnable{
     static String totalAmmount = "1000";
     static Integer totalCount = 10;
 
-    public ClientRunnable3(int pos) {
+    public TestQueryTemKeyByMacro(int pos) {
         this.pos = pos;
         log.info("pos = " + pos + "当前线程" + Thread.currentThread().getName());
     }
@@ -136,7 +136,7 @@ public class ClientRunnable3 implements Runnable{
          */
         log.info("获取临时密钥开始");
 
-        int protocolLen = TYPE_LEN + 2 + 6 + CHECK_LEN + END_LEN;
+        int protocolLen = TYPE_LEN + 2 + 3 + 6 + CHECK_LEN + END_LEN;
         int totalLen = 3 + protocolLen;
 
         byte[] head = new byte[]{(byte) 0xAA};

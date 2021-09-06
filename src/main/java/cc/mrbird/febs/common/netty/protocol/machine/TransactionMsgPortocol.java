@@ -28,8 +28,6 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
 
     private static final String OPERATION_NAME = "TransactionMsgPortocol";
 
-
-
     public static TransactionMsgPortocol transactionMsgPortocol;
 
     @PostConstruct
