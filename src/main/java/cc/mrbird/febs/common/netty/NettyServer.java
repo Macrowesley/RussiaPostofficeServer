@@ -49,7 +49,7 @@ public class NettyServer {
     //new 一个工作线程组
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    public void start(String hostname, int port) {
+    public void start(String hostname, int port, boolean isSsl) {
         ChannelFuture f = null;
 
         InetSocketAddress socketAddress = new InetSocketAddress(hostname, port);
@@ -61,9 +61,11 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         // 添加SSL安装验证
-                        SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
-                        if (sslCtx != null) {
-                            socketChannel.pipeline().addLast(sslCtx.newHandler(socketChannel.alloc()));
+                        if (isSsl) {
+                            SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
+                            if (sslCtx != null) {
+                                socketChannel.pipeline().addLast(sslCtx.newHandler(socketChannel.alloc()));
+                            }
                         }
                         //如果客户端60秒没有任何请求,就关闭客户端连接（很重要）
                         socketChannel.pipeline().addLast("readtime", new ReadTimeoutHandler(20));
@@ -76,7 +78,7 @@ public class NettyServer {
                 })
                 .localAddress(socketAddress)
                 //设置队列大小
-                .option(ChannelOption.SO_BACKLOG, 2 * 1024)
+                .option(ChannelOption.SO_BACKLOG, 4 * 1024)
                 //设置接受的缓存大小
                 .option(ChannelOption.SO_RCVBUF, 128 * 1024)
                 // 两小时内没有数据的通信时,TCP会自动发送一个活动探测数据报文

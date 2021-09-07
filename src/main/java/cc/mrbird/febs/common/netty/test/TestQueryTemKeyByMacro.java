@@ -157,7 +157,9 @@ public class TestQueryTemKeyByMacro implements Runnable{
         baos.write(length, 0, RESPONSE_LENGTH_LEN);
         baos.write(typeData, 0, TYPE_LEN);
         baos.write(operateIdData, 0, 2);
+        baos.write(versionData, 0, 3);
         baos.write(acnumData, 0, 6);
+
         baos.write(checkSume, 0, CHECK_LEN);
         baos.write(end, 0, END_LEN);
 
