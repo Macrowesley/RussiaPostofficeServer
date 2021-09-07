@@ -11,15 +11,21 @@ public class Main {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
-        executor.setQueueCapacity(500);
-        executor.setKeepAliveSeconds(30);
+        executor.setQueueCapacity(2000);
+        executor.setKeepAliveSeconds(3600);
         executor.setThreadNamePrefix("netty-test-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         int clientCount = 1000;
-        clientCount = 1;
+        clientCount = 1000;
+        int pos = 0;
+        System.out.println("开始循环");
         for (int i = 0; i < clientCount; i++) {
-            executor.submit(new ClientRunnable(i+1));
+//            executor.submit(new ClientRunnable(i+1));
+            new Thread(new ClientRunnable(i+1)).start();
+            pos++;
         }
+        System.out.println("总运行次数：" + pos);
+
     }
 }

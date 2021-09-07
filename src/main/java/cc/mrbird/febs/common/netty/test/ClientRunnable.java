@@ -57,7 +57,7 @@ public class ClientRunnable implements Runnable{
     protected static final int VERSION_LEN = 3;
     static String productCode = "2100";
     static String contractCode = "00001010";
-    static String frankMachineId = "PM100500";
+    String frankMachineId = "PM100500";
     static String userId = "Admin";
     static String postOffice = "131000";
     static String taxVersion = "22.1.1";
@@ -80,7 +80,8 @@ public class ClientRunnable implements Runnable{
          */
 //        SslContext sslCtx = SslContextBuilder.forClient().keyManager(certChainFile, keyFile).trustManager(rootFile).build();
 
-        String acnum = "CPU" + String.format("%03d", 1);
+        String acnum = "CPU" + String.format("%03d", pos);
+        frankMachineId = "AM100" + String.format("%03d", pos);
         try {
             // 首先，netty通过ServerBootstrap启动服务端
             Bootstrap client = new Bootstrap();
@@ -110,35 +111,35 @@ public class ClientRunnable implements Runnable{
             //连接服务器
             ChannelFuture future = client.connect("192.168.2.233", 12800).sync();
 
-            long millis = 3000;
+            long millis = 50;
 
             String foreseenId = AESUtils.createUUID();
             String transactionId = AESUtils.createUUID();
 
             //发送数据给服务器
             //testHeart(future);
-            testForeseen(future, acnum, foreseenId , millis);
+//            testForeseen(future, acnum, foreseenId , millis);
 
-            //不断发送dm_msg信息
-            int msgMax = 2;
+          /*  //不断发送dm_msg信息
+            int msgMax = 4;
             for (int msgCount = 0; msgCount < msgMax; msgCount++) {
                 testTransactionMsg(future, acnum, foreseenId, transactionId,msgCount+1, millis);
             }
 
             testTransaction(future, acnum, foreseenId, transactionId, millis);
 
-            Thread.sleep(3000);
+            Thread.sleep(1000);*/
             //当通道关闭了，就继续往下走
             future.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
-        System.out.println("客户端结束");
+
+        System.out.println("客户端" + pos + "结束");
     }
 
-    private static void testForeseen(ChannelFuture future, String acnum, String foreseenId, long millis) throws InterruptedException {
+    private void testForeseen(ChannelFuture future, String acnum, String foreseenId, long millis) throws InterruptedException {
          /*
         typedef  struct{
             unsigned char head;				    //0xAA
@@ -212,7 +213,7 @@ public class ClientRunnable implements Runnable{
     }
 
     //transaction过程中，不断发送dm_msg信息，服务器接收，处理
-    private static void testTransactionMsg(ChannelFuture future, String acnum, String foreseenId, String transactionId, int msgCount, long millis) throws InterruptedException{
+    private void testTransactionMsg(ChannelFuture future, String acnum, String foreseenId, String transactionId, int msgCount, long millis) throws InterruptedException{
             /*
             typedef  struct{
                 unsigned char head;				    //0xAA
@@ -226,7 +227,7 @@ public class ClientRunnable implements Runnable{
                 unsigned char tail;					//0xD0
             }__attribute__((packed))TransactionMsg, *TransactionMsg;
              */
-        log.info("开始TransactionMsg");
+        log.info("开始 TransactionMsg");
         TransactionMsgFMDTO transactionMsgFMDTO = new TransactionMsgFMDTO();
         transactionMsgFMDTO.setId(msgCount == 1 ? foreseenId : transactionId);
         transactionMsgFMDTO.setTestId(transactionId);

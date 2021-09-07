@@ -70,6 +70,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
         String acnum = "";
+        long t1 = System.currentTimeMillis();
         try {
             /*
             typedef  struct{
@@ -160,7 +161,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 transaction acnum="+ acnum);
+            log.info("机器结束 transaction acnum="+ acnum + "耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
 
