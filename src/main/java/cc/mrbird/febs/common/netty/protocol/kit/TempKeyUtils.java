@@ -57,6 +57,4 @@ public class TempKeyUtils {
         }
         return "temp:AesKey:" + cid;
     }
-
-
 }

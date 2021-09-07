@@ -125,16 +125,16 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
             }__attribute__((packed))CheckService, *CheckService;
          */
             log.info("机器开始 {}", OPERATION_NAME);
-
-            //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
-            String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
-            if (checkServicePortocol.redisService.hasKey(key)) {
-                return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
-            } else {
-                log.info("channelId={}的操作记录放入redis", key);
-                checkServicePortocol.redisService.set(key, "wait", WAIT_TIME);
+            if (!FebsConstant.IS_TEST_NETTY) {
+                //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
+                String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
+                if (checkServicePortocol.redisService.hasKey(key)) {
+                    return getOverTimeResult(version, ctx, key, FMResultEnum.Overtime.getCode());
+                } else {
+                    log.info("channelId={}的操作记录放入redis", key);
+                    checkServicePortocol.redisService.set(key, "wait", WAIT_TIME);
+                }
             }
-
 
             int pos = getBeginPos();
 
