@@ -89,7 +89,7 @@ public class FebsStartedUpRunner implements ApplicationRunner {
      * 启动netty
      */
     private void startNetty() {
-        nettyServer.start(nettyProperties.getIp(), nettyProperties.getPort());
+        nettyServer.start(nettyProperties.getIp(), nettyProperties.getPort(), nettyProperties.isSsl());
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {

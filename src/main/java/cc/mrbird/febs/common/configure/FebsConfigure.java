@@ -53,7 +53,7 @@ public class FebsConfigure {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
-        executor.setQueueCapacity(500);
+        executor.setQueueCapacity(5000);
         executor.setKeepAliveSeconds(30);
         executor.setThreadNamePrefix("Netty-Async-Thread-");
         executor.setWaitForTasksToCompleteOnShutdown(true);

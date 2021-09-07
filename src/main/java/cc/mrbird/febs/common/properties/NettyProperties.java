@@ -11,4 +11,6 @@ public class NettyProperties {
     private String ip;
     @Value("${netty.port}")
     private int port;
+    @Value("${netty.ssl}")
+    private boolean ssl;
 }

@@ -5,9 +5,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
-
     public static void main(String[] args) {
-        int corePoolSize = 100;
+        int corePoolSize = 200;
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
@@ -17,15 +16,11 @@ public class Main {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         int clientCount = 1000;
-        clientCount = 1000;
-        int pos = 0;
+        clientCount = 500;
         System.out.println("开始循环");
         for (int i = 0; i < clientCount; i++) {
-//            executor.submit(new ClientRunnable(i+1));
-            new Thread(new ClientRunnable(i+1)).start();
-            pos++;
+            executor.submit(new ClientRunnable(i+1));
+//            new Thread(new ClientRunnable(i+1)).start();
         }
-        System.out.println("总运行次数：" + pos);
-
     }
 }

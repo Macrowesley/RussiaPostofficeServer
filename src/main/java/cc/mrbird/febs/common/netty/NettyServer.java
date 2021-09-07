@@ -49,7 +49,7 @@ public class NettyServer {
     //new 一个工作线程组
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    public void start(String hostname, int port) {
+    public void start(String hostname, int port, boolean isSsl) {
         ChannelFuture f = null;
 
         InetSocketAddress socketAddress = new InetSocketAddress(hostname, port);
@@ -61,10 +61,12 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         // 添加SSL安装验证
-                        /*SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
-                        if (sslCtx != null) {
-                            socketChannel.pipeline().addLast(sslCtx.newHandler(socketChannel.alloc()));
-                        }*/
+                        if (isSsl) {
+                            SslContext sslCtx = buildSslContext(ClientAuth.REQUIRE);
+                            if (sslCtx != null) {
+                                socketChannel.pipeline().addLast(sslCtx.newHandler(socketChannel.alloc()));
+                            }
+                        }
                         //如果客户端60秒没有任何请求,就关闭客户端连接（很重要）
                         socketChannel.pipeline().addLast("readtime", new ReadTimeoutHandler(20));
                         // 解决粘包问题 通过解析不定长的协议

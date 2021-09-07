@@ -57,3 +57,4 @@ netty:
   port: 12800
 #  ip: localhost
   ip: 192.168.30.2
+  ssl: false

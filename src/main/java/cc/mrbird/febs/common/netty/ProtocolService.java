@@ -91,11 +91,6 @@ public class ProtocolService {
 
     //    @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
-        if (msg == null) {
-            log.error("socketData为null，不可用");
-            return;
-        }
-
         try {
             parseContentAndWrite(msg.getContent(), ctx);
         } catch (Exception e) {

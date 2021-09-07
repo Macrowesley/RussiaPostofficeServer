@@ -111,16 +111,16 @@ public class ClientRunnable implements Runnable{
             //连接服务器
             ChannelFuture future = client.connect("192.168.2.233", 12800).sync();
 
-            long millis = 50;
+            long millis = 100;
 
             String foreseenId = AESUtils.createUUID();
             String transactionId = AESUtils.createUUID();
 
             //发送数据给服务器
             //testHeart(future);
-//            testForeseen(future, acnum, foreseenId , millis);
+            testForeseen(future, acnum, foreseenId , millis);
 
-          /*  //不断发送dm_msg信息
+            //不断发送dm_msg信息
             int msgMax = 4;
             for (int msgCount = 0; msgCount < msgMax; msgCount++) {
                 testTransactionMsg(future, acnum, foreseenId, transactionId,msgCount+1, millis);
@@ -128,7 +128,7 @@ public class ClientRunnable implements Runnable{
 
             testTransaction(future, acnum, foreseenId, transactionId, millis);
 
-            Thread.sleep(1000);*/
+//            Thread.sleep(1000);
             //当通道关闭了，就继续往下走
             future.channel().closeFuture().sync();
 
