@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.service.impl;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -105,6 +106,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
         wrapper.eq(PrintJob::getFlow, FlowEnum.FlowIng.getCode());
+        if (FebsConstant.IS_TEST_NETTY){
+            return null;
+        }
         return this.getOne(wrapper);
     }
 
@@ -124,6 +128,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         PrintJob printJob = this.getOne(wrapper);
         if (printJob == null){
             throw new FmException(FMResultEnum.ForeseenIdNoExist.getCode(), "dbPrintJob == null fmForeseenId="+foreseenId);
+        }
+        return printJob;
+    }
+
+    @Override
+    public PrintJob getByTransactionId(String transactionId) {
+        LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PrintJob::getTransactionId, transactionId);
+        PrintJob printJob = this.getOne(wrapper);
+        if (printJob == null){
+            throw new FmException(FMResultEnum.TransactionIdNoExist.getCode(), "dbPrintJob == null fmTransactionId="+transactionId);
         }
         return printJob;
     }

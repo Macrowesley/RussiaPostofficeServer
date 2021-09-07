@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty;
 
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,6 +14,8 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +42,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
     @Autowired
     ChannelMapperManager channelMapperManager;
+
+    @Autowired
+    @Qualifier(value = FebsConstant.NETTY_ASYNC_POOL)
+    ThreadPoolTaskExecutor taskExecutor;
 
     public NettyServerHandler() {
     }
@@ -136,10 +143,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, SocketData msg) throws Exception {
-        /*if (msg.getContent().length > 10) {
-            log.info("channelRead0 NettyServerHandler 对象是：" + this);
-        }*/
-        nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
+        if (msg == null) {
+            log.error("socketData为null，不可用");
+            return;
+        }
+
+        nettyServerHandler.taskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
+            }
+        });
     }
 
 

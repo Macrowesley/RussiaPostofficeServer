@@ -18,7 +18,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("channelActive ctx = " + ctx.toString());
+       // System.out.println("channelActive ctx = " + ctx.toString());
         /*ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
                 new GenericFutureListener<Future<Channel>>() {
                     @Override

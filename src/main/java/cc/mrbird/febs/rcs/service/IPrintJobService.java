@@ -71,6 +71,8 @@ public interface IPrintJobService extends IService<PrintJob> {
 
     PrintJob getByForeseenId(String foreseenId);
 
+    PrintJob getByTransactionId(String transactionId);
+
     /**
      * job流程中，foreseens的进度更新
      */

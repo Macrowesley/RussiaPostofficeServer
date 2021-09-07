@@ -17,17 +17,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Component
 public class ChannelMapperManager {
+    static int initialCapacity = 300;
 
     /**
      * 管理一个全局map，保存连接进服务端的通道数量
      */
-    public static ConcurrentHashMap<ChannelId, ChannelHandlerContext> All_CHANNEL_MAP = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<ChannelId, ChannelHandlerContext> All_CHANNEL_MAP = new ConcurrentHashMap<>(initialCapacity);
 
 
     /**
      * 管理一个全局map，保存连接进服务端的通道数量
      */
-    private static ConcurrentHashMap<String, ChannelHandlerContext> loginChannelMap = new ConcurrentHashMap<>(100);
+    private static ConcurrentHashMap<String, ChannelHandlerContext> loginChannelMap = new ConcurrentHashMap<>(initialCapacity);
     private static volatile AtomicInteger channelCount = new AtomicInteger(0);
 
     @Autowired

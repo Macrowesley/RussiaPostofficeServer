@@ -6,7 +6,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
-
     public static void main(String[] args) {
         int corePoolSize = 200;
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

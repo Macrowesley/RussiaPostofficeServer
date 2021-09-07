@@ -5,7 +5,9 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
+import cc.mrbird.febs.rcs.api.CheckUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
@@ -56,6 +58,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Autowired
     IPrintJobService printJobService;
 
+    @Autowired
+    CheckUtils checkUtils;
+
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
         LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
@@ -103,7 +108,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
         if (lastestMsg!=null && lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
                 && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
-                && lastestMsg.getCount() == Long.valueOf(transactionMsgFMDTO.getTotalCount())
+                && lastestMsg.getCount().equals(Long.valueOf(transactionMsgFMDTO.getTotalCount()))
                 && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
             return true;
         }
@@ -120,7 +125,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     public List<TransactionMsg> selectByTransactionId(String transactionId) {
         LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(TransactionMsg::getTransactionId, transactionId);
-        wrapper.orderByAsc(TransactionMsg::getCreatedTime);
+        wrapper.orderByAsc(TransactionMsg::getId);
         return this.baseMapper.selectList(wrapper);
     }
 
@@ -128,7 +133,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     public TransactionMsg getLastestMsg(String transactionId) {
         LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TransactionMsg::getTransactionId, transactionId);
-        queryWrapper.orderByDesc(TransactionMsg::getCreatedTime).last("limit 1");
+        queryWrapper.orderByDesc(TransactionMsg::getId).last("limit 1");
         return this.getOne(queryWrapper);
     }
 
@@ -158,7 +163,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                 endMsg = msgList.get(i);
                 //list是顺序的，array数组也是正序的
 
-                if (beginMsg != null && endMsg != null && endMsg.getCount() != beginMsg.getCount()) {
+                if (beginMsg != null && endMsg != null && !(endMsg.getCount().equals(beginMsg.getCount()))) {
                     //log.info("\nbeginMsg={},\nendMsg={}",beginMsg,endMsg);
                     actualCount += endMsg.getCount() - beginMsg.getCount();
                     actualAmount += DoubleKit.sub(endMsg.getAmount(),beginMsg.getAmount());
@@ -243,7 +248,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             //判断是否有和上一个msg一样
             if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
                     && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
-                    && lastestMsg.getCount() == fmTotalCount
+                    && lastestMsg.getCount().equals(fmTotalCount)
                     && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
                 throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
             }
@@ -255,6 +260,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         }
 
         String transactionId = null;
+        PrintJob dbPrintJob = null;
         if (idType == 1){
             log.info("foreseen之后第一个批次信息处理");
             //id是ForeseensId
@@ -264,7 +270,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
              * 3. 保存transactionMsgFMDTO
              */
             String foreseenId = transactionMsgFMDTO.getId();
-            PrintJob dbPrintJob = printJobService.getByForeseenId(foreseenId);
+            dbPrintJob = printJobService.getByForeseenId(foreseenId);
             //如果已经有了transactionId,就不能创建了
             if (!StringUtils.isEmpty(dbPrintJob.getTransactionId())){
                 throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
@@ -295,6 +301,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             printJobService.updatePrintJob(dbPrintJob);
         } else {
             transactionId = transactionMsgFMDTO.getId();
+            checkUtils.checkTransactionIdExist(transactionId);
         }
         /**
          * id是TransactionId
@@ -310,6 +317,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         transactionMsg.setStatus(status);
         transactionMsg.setCreatedTime(new Date());
         this.createTransactionMsg(transactionMsg);
+        log.info("transactionMsg插入成功 id = " + transactionMsg.getId());
 
         return transactionId;
     }

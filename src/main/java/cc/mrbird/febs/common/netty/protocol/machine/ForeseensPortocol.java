@@ -79,6 +79,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
+        long t1 = System.currentTimeMillis();
         try {
         /*
         typedef  struct{
@@ -192,7 +193,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
-            log.info("机器结束 Foreseens");
+            log.info("机器结束 Foreseens 耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
 
@@ -225,7 +226,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
     @Override
     protected void finalize() throws Throwable {
-        log.info("ForeseensPortocol 调用了 finalize");
+        //log.info("ForeseensPortocol 调用了 finalize");
         super.finalize();
     }
 }
