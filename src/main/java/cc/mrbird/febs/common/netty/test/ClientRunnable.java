@@ -109,7 +109,7 @@ public class ClientRunnable implements Runnable{
             });
 
             //连接服务器
-            ChannelFuture future = client.connect("192.168.2.118", 12800).sync();
+            ChannelFuture future = client.connect("119.37.199.25", 12800).sync();
 
             long millis = 100;
 
@@ -121,12 +121,12 @@ public class ClientRunnable implements Runnable{
             testForeseen(future, acnum, foreseenId , millis);
 
             //不断发送dm_msg信息
-            int msgMax = 4;
+           /* int msgMax = 4;
             for (int msgCount = 0; msgCount < msgMax; msgCount++) {
                 testTransactionMsg(future, acnum, foreseenId, transactionId,msgCount+1, millis);
             }
 
-            testTransaction(future, acnum, foreseenId, transactionId, millis);
+            testTransaction(future, acnum, foreseenId, transactionId, millis);*/
 
 //            Thread.sleep(1000);
             //当通道关闭了，就继续往下走

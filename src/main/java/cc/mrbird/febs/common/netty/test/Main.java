@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
     public static void main(String[] args) {
-        int corePoolSize = 200;
+        int corePoolSize = 300;
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
@@ -17,12 +17,13 @@ public class Main {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         int clientCount = 1000;
-        clientCount = 500;
+        clientCount = 300;
         clientCount = 1;
         System.out.println("开始循环");
         for (int i = 0; i < clientCount; i++) {
+            executor.submit(new ClientRunnable(i+1));
             //executor.submit(new TestChangeStatusByMacro(i+1));
-           new Thread(new TestChangeStatusByMacro(i+1)).start();
+//           new Thread(new TestChangeStatusByMacro(i+1)).start();
         }
     }
 }
