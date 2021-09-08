@@ -111,7 +111,7 @@ public class ClientRunnable implements Runnable{
             //连接服务器
             ChannelFuture future = client.connect("119.37.199.25", 12800).sync();
 
-            long millis = 100;
+            long millis = 5;
 
             String foreseenId = AESUtils.createUUID();
             String transactionId = AESUtils.createUUID();
