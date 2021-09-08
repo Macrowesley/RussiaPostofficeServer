@@ -203,6 +203,11 @@ public class ServiceInvokeRussia {
     public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
         //测试条件下，返回假数据
         if (isTest){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(foreseenDTO.getContractCode());
             balanceDTO.setCurrent(100000D);

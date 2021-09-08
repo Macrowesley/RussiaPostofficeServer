@@ -51,8 +51,8 @@ public class FebsConfigure {
     @Bean(FebsConstant.NETTY_ASYNC_POOL)
     public ThreadPoolTaskExecutor nettyAsyncThreadPoolTaskExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(corePoolSize);
+        executor.setCorePoolSize(corePoolSize*2);
+        executor.setMaxPoolSize(corePoolSize*2);
         executor.setQueueCapacity(5000);
         executor.setKeepAliveSeconds(30);
         executor.setThreadNamePrefix("Netty-Async-Thread-");
