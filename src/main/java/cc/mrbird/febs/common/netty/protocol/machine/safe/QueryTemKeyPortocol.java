@@ -71,8 +71,6 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         //解析版本号
         String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
         pos += VERSION_LEN;
-        //测试用
-        version = "001";
         switch (version) {
             case FebsConstant.FmVersion1:
                 //解析表头号

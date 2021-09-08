@@ -18,10 +18,11 @@ public class Main {
         executor.initialize();
         int clientCount = 1000;
         clientCount = 500;
+        clientCount = 1;
         System.out.println("开始循环");
         for (int i = 0; i < clientCount; i++) {
-            executor.submit(new ClientRunnable(i+1));
-//            new Thread(new ClientRunnable(i+1)).start();
+            //executor.submit(new TestChangeStatusByMacro(i+1));
+           new Thread(new TestChangeStatusByMacro(i+1)).start();
         }
     }
 }

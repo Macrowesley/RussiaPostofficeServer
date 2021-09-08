@@ -113,8 +113,10 @@ public class TestCheckServiceByMacro implements Runnable{
 
             //不断发送dm_msg信息
             int msgMax = 2;
-            int msgCount = 0;
-            testCheckService(future, acnum, foreseenId, transactionId, msgCount+1, millis);
+            for (int msgCount = 0; msgCount < msgMax; msgCount++) {
+
+                testCheckService(future, acnum, foreseenId, transactionId, msgCount+1, millis);
+            }
 
             Thread.sleep(3000);
             //当通道关闭了，就继续往下走

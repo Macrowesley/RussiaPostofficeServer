@@ -109,7 +109,7 @@ public class ClientRunnable implements Runnable{
             });
 
             //连接服务器
-            ChannelFuture future = client.connect("192.168.2.233", 12800).sync();
+            ChannelFuture future = client.connect("192.168.2.118", 12800).sync();
 
             long millis = 100;
 
