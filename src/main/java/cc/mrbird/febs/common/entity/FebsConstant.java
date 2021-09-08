@@ -72,6 +72,6 @@ public interface FebsConstant {
      * - 临时秘钥写成123456
      * - 心跳包的时候就直接放到登录缓存
      */
-    boolean IS_TEST_NETTY = true;
+    boolean IS_TEST_NETTY = false;
     String TEMP_KEY = "2dc1f4d99e7fcadc";
 }
