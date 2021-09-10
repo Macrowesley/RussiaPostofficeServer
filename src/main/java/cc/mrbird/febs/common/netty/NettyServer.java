@@ -90,6 +90,7 @@ public class NettyServer {
         try {
             ChannelFuture future = bootstrap.bind(socketAddress).sync();
             logger.info("服务器启动开始监听端口: {}", socketAddress.getPort());
+            logger.info(isSsl ? "启动SSL" : "关闭SSL");
 
             //服务端管道关闭的监听器并同步阻塞,直到channel关闭,线程才会往下执行,结束进程
             future.channel().closeFuture().sync();
