@@ -31,8 +31,8 @@ public class ServiceInvokeRussia {
 //    private final String baseUrl = "http://40.114.247.228:8080/rcs-manager/v1";
 //    private final String baseUrl = "https://asufm.russianpost.ru/rcs-manager/v1";
     //最新
-	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
-//    private final String baseUrl = "http://localhost/p/test/manager";
+//	 private final String baseUrl = "http://test.asufm-test.10.238.33.32.nip.io/rcs-manager";
+    private final String baseUrl = "http://rcs-manager.asufm-test.10.193.86.137.nip.io";
     private final String testContractCode = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     /**
      * 表头号     FMID          合同id

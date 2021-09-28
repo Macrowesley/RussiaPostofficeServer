@@ -66,7 +66,10 @@ public class ServiceApi {
     @Qualifier(value = FebsConstant.ASYNC_POOL)
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-
+    @GetMapping("/test")
+    public ApiResponse publicKey(){
+        return new ApiResponse(200, "ok");
+    }
 
     /**
      * 公钥请求
