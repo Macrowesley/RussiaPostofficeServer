@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.api;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -308,7 +309,7 @@ public class ServiceInvokeRussia {
      * @return
      */
     private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
-        log.info("给manager服务器发送消息：url = {}, 内容={}", url, requestBody.toString());
+        log.info("给manager服务器发送消息：url = {}, 内容={}", url, JSON.toJSONString(requestBody));
         try {
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
 //            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);

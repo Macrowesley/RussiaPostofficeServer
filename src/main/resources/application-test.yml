@@ -1,5 +1,5 @@
 server:
-  port: 89
+  port: 80
   address: 192.168.30.60
   servlet:
     context-path: /pmTest

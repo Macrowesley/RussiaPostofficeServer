@@ -26,7 +26,7 @@ public class MangerTestController {
     @Autowired
     ServiceInvokeRussia serviceInvokeRussia;
 
-    String frankMachineId = "FM100002";
+    String frankMachineId = "PM100500";
     String contractCode = "190eac0d-844c-11e5-90db-2c59e5453bd0";
     String userId = "11a8005e-6d6a-499d-9fca-82aa69103f90";
     String taxVersion = "2.3.3";
@@ -106,18 +106,19 @@ public class MangerTestController {
      * 机器状况
      * http://localhost/p/test/managerTest/auth
      * http://localhost/p/test/managerTest/auth
+     * http://192.168.30.60:89/pmTest/test/managerTest/auth
      */
     @GetMapping("auth")
     public void auth(){
         log.info("开始测试auth");
-
+        //{"dateTime":"2021-09-28T13:16:54.000+08:00","event":"STATUS","id":"PM100500","postOffice":"131000","status":"ENABLED","taxVersion":"22.1.1"}
         DeviceDTO bean = new DeviceDTO();
-        bean.setId(frankMachineId);
+        bean.setId("PM100500");
         bean.setStatus(FMStatusEnum.ENABLED);
-        bean.setPostOffice(postOffice);
+        bean.setPostOffice("131000");
         bean.setDateTime(DateKit.createRussiatime(new Date()));
-//        bean.setTaxVersion(taxVersion);
-//        bean.setEventEnum(EventEnum.STATUS);
+        bean.setTaxVersion("22.1.1");
+        bean.setEvent(EventEnum.STATUS);
 
         log.info("auth = {}", JSON.toJSONString(bean));
 
