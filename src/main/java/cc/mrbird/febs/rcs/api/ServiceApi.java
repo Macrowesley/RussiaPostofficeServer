@@ -67,7 +67,7 @@ public class ServiceApi {
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @GetMapping("/test")
-    public ApiResponse publicKey(){
+    public ApiResponse test(){
         return new ApiResponse(200, "ok");
     }
 

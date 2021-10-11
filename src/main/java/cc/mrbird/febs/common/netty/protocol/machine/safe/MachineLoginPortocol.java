@@ -124,6 +124,8 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                                     + machineLoginPortocol.channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
                         }
 
+                    } else {
+                        log.error("发送过来的时间戳无效");
                     }
 
 
