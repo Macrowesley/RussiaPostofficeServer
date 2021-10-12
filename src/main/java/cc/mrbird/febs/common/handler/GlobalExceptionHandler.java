@@ -5,11 +5,9 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.exception.FileDownloadException;
 import cc.mrbird.febs.common.exception.LimitAccessException;
 import cc.mrbird.febs.common.exception.LimitAccessViewException;
-import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.rcs.common.exception.FmException;
-import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.exception.RcsManagerBalanceException;
 import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.manager.OperationError;
@@ -25,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -43,11 +42,19 @@ import java.util.Set;
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
+    /*@ExceptionHandler(value = Exception.class)
     public FebsResponse handleException(Exception e) {
         e.printStackTrace();
         log.error("系统内部异常，异常信息 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(MessageUtils.getMessage("globalHandler.system.error"));
+    }
+    */
+
+    @ExceptionHandler(value = Exception.class)
+    public ApiResponse handleException(Exception e) {
+        e.printStackTrace();
+        log.error("系统内部异常，异常信息 {}", e.getMessage());
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
     }
 
     @ExceptionHandler(value = FebsException.class)
@@ -55,6 +62,13 @@ public class GlobalExceptionHandler {
         log.error("系统错误 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
     }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    public ApiResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        log.error("访问方式不对 {}", e.getMessage());
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
 
     @ExceptionHandler(value = LimitAccessException.class)
     public FebsResponse handleLimitAccessApiException(LimitAccessException e) {
