@@ -7,27 +7,17 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class ApiResponse {
+public class ApiRussiaResponse {
     int code;
     Object object;
 
-    public ApiResponse(){
+    public ApiRussiaResponse(){
 
     }
 
-    public ApiResponse(int code, Object object) {
+    public ApiRussiaResponse(int code, Object object) {
         this.code = code;
         this.object = object;
-    }
-
-    public ApiResponse code(int code){
-        this.code = code;
-        return this;
-    }
-
-    public ApiResponse data(Object object){
-        this.object = object;
-        return this;
     }
 
     @JsonIgnore

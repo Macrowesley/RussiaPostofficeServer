@@ -101,10 +101,10 @@ public class ServiceManageCenter {
 */
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse apiResponse = serviceInvokeRussia.frankMachines(deviceDTO);
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.frankMachines(deviceDTO);
 
-        if (!apiResponse.isOK()) {
-            if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+        if (!apiRussiaResponse.isOK()) {
+            if (apiRussiaResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnow, isMachineActive);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
@@ -189,7 +189,7 @@ public class ServiceManageCenter {
         //访问俄罗斯服务器，请求授权
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthErrorUnKnow || curFlowDetail == FlowDetailEnum.AuthEndFail) {
-            ApiResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
+            ApiRussiaResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
 
             if (!authResponse.isOK()) {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -249,7 +249,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthErrorUnkonw) {
-            ApiResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
+            ApiRussiaResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -302,7 +302,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostErrorUnknow || curFlowDetail == FlowDetailEnum.LostEndFail) {
-            ApiResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
+            ApiRussiaResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -350,7 +350,7 @@ public class ServiceManageCenter {
         deviceDTO.setEvent(EventEnum.RATE_TABLE_UPDATE);
         deviceDTO.setDateTime(DateKit.createRussiatime());
 
-        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
+        ApiRussiaResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -395,7 +395,7 @@ public class ServiceManageCenter {
 //        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
         rateTableFeedbackDTO.setRcsVersions(new String[]{taxVersion});
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
-        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
+        ApiRussiaResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -469,7 +469,7 @@ public class ServiceManageCenter {
         /*String userId = getUserIdByContractCode(foreseenDTO.getContractCode());
         foreseenDTO.setUserId(userId);*/
 
-        ApiResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
+        ApiRussiaResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -558,7 +558,7 @@ public class ServiceManageCenter {
         //获取需要发送给俄罗斯的数据
         TransactionDTO transactionDTO = getTransactionDTO(transactionFmDto, dbTransaction, dbContract);
 
-        ApiResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
+        ApiRussiaResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
             if (transactionsResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -664,7 +664,7 @@ public class ServiceManageCenter {
 
 
         //给俄罗斯发消息
-        ApiResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
+        ApiRussiaResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
         if (!cancelResponse.isOK()) {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度

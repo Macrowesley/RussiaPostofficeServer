@@ -1,6 +1,5 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import com.alibaba.fastjson.JSON;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -47,10 +45,10 @@ public class ServiceInvokeRussia {
      *
      * @PutMapping("frankMachines")
      */
-    public ApiResponse frankMachines(DeviceDTO deviceDTO) {
+    public ApiRussiaResponse frankMachines(DeviceDTO deviceDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
         }
 
         String url = baseUrl + "/frankMachines";
@@ -66,10 +64,10 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/auth")
      */
-    public ApiResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
+    public ApiRussiaResponse auth(String frankMachineId, DeviceDTO deviceDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),"ok");
         }
 
         String url = baseUrl + "/frankMachines/{frankMachineId}/auth";
@@ -87,10 +85,10 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/unauth")
      */
-    public ApiResponse unauth(String frankMachineId, DeviceDTO deviceDTO) {
+    public ApiRussiaResponse unauth(String frankMachineId, DeviceDTO deviceDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),"ok");
         }
 
 
@@ -111,10 +109,10 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/frankMachines/{frankMachineId}/lost")
      */
-    public ApiResponse lost(String frankMachineId, DeviceDTO deviceDTO) {
+    public ApiRussiaResponse lost(String frankMachineId, DeviceDTO deviceDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),"ok");
         }
 
         String url = baseUrl + "/frankMachines/{frankMachineId}/lost";
@@ -133,10 +131,10 @@ public class ServiceInvokeRussia {
      * @return
      * @PutMapping("/frankMachines/{frankMachineId}/publicKey")
      */
-    public ApiResponse publicKey(String frankMachineId, PublicKeyDTO publicKeyDTO) {
+    public ApiRussiaResponse publicKey(String frankMachineId, PublicKeyDTO publicKeyDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),"ok");
         }
 
 
@@ -164,10 +162,10 @@ public class ServiceInvokeRussia {
          "error": {}
      }
      */
-    public ApiResponse frankMachinesRateTableUpdateEvent(DeviceDTO deviceDTO) {
+    public ApiRussiaResponse frankMachinesRateTableUpdateEvent(DeviceDTO deviceDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
         }
 
         String url = baseUrl + "/frankMachines";
@@ -184,10 +182,10 @@ public class ServiceInvokeRussia {
      * @PutMapping("/rateTables")
      */
 //    @Async(value = FebsConstant.ASYNC_POOL)
-    public ApiResponse rateTables(RateTableFeedbackDTO rateTableFeedbackDTO) {
+    public ApiRussiaResponse rateTables(RateTableFeedbackDTO rateTableFeedbackDTO) {
         //测试条件下，返回假数据
         if (isTest){
-            return  new ApiResponse(ResultEnum.SUCCESS.getCode(),"ok");
+            return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),"ok");
         }
 
         String url = baseUrl + "/rateTables";
@@ -201,7 +199,7 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/foreseens")
      */
-    public ApiResponse foreseens(ForeseenDTO foreseenDTO) {
+    public ApiRussiaResponse foreseens(ForeseenDTO foreseenDTO) {
         //测试条件下，返回假数据
         if (isTest){
             try {
@@ -213,7 +211,7 @@ public class ServiceInvokeRussia {
             balanceDTO.setContractCode(foreseenDTO.getContractCode());
             balanceDTO.setCurrent(100000D);
             balanceDTO.setConsolidate(100000D);
-            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
+            return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
         String url = baseUrl + "/foreseens";
@@ -228,14 +226,14 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/foreseens/{foreseenId}/cancel")
      */
-    public ApiResponse cancel(String foreseenId, String contractCode, ForeseenCancel foreseenCancel) {
+    public ApiRussiaResponse cancel(String foreseenId, String contractCode, ForeseenCancel foreseenCancel) {
         //测试条件下，返回假数据
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(contractCode);
             balanceDTO.setCurrent(100000D);
             balanceDTO.setConsolidate(100000D);
-            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
+            return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
         String url = baseUrl + "/foreseens/{foreseenId}/cancel";
@@ -250,14 +248,14 @@ public class ServiceInvokeRussia {
      * @param transactionDTO
      * @PostMapping("/transactions")
      */
-    public ApiResponse transactions(TransactionDTO transactionDTO) {
+    public ApiRussiaResponse transactions(TransactionDTO transactionDTO) {
         //测试条件下，返回假数据
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(transactionDTO.getContractCode());
             balanceDTO.setCurrent(100000D);
             balanceDTO.setConsolidate(100000D);
-            return new ApiResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
+            return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
         String url = baseUrl + "/transactions";
@@ -269,7 +267,7 @@ public class ServiceInvokeRussia {
      * @PostMapping("/refills")
      */
     @Deprecated
-    public ApiResponse refills(RegistersDTO registersDTO) {
+    public ApiRussiaResponse refills(RegistersDTO registersDTO) {
         String url = baseUrl + "/refills";
         return doExchange(url, registersDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -279,7 +277,7 @@ public class ServiceInvokeRussia {
      * @PostMapping("/franking/stats")
      */
     @Deprecated
-    public ApiResponse stats(StatisticsDTO statisticsDTO) {
+    public ApiRussiaResponse stats(StatisticsDTO statisticsDTO) {
         String url = baseUrl + "/franking/stats";
         return doExchange(url, statisticsDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
@@ -308,7 +306,7 @@ public class ServiceInvokeRussia {
      * @param <E> 发送的数据类型
      * @return
      */
-    private <T, E> ApiResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
+    private <T, E> ApiRussiaResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
         log.info("给manager服务器发送消息：url = {}, 内容={}", url, JSON.toJSONString(requestBody));
         try {
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
@@ -325,24 +323,24 @@ public class ServiceInvokeRussia {
 
             int statusCodeValue = responseEntity.getStatusCodeValue();
             if (responseEntity.getBody() == null){
-                return new ApiResponse(statusCodeValue,"ok");
+                return new ApiRussiaResponse(statusCodeValue,"ok");
             }
-            return new ApiResponse(statusCodeValue,responseEntity.getBody());
+            return new ApiRussiaResponse(statusCodeValue,responseEntity.getBody());
         } catch (HttpClientErrorException e){
 //            e.printStackTrace();
             log.info("HttpClientErrorException error = " + e.getMessage());
             log.info("HttpClientErrorException StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
             OperationError operationError = JSONObject.parseObject(e.getResponseBodyAsString(), OperationError.class);
-            return new ApiResponse(e.getRawStatusCode(), operationError);
+            return new ApiRussiaResponse(e.getRawStatusCode(), operationError);
         } catch (HttpServerErrorException.InternalServerError e) {
 //            e.printStackTrace();
             log.info("InternalServerError StatusCode={}, ResponseBody={}",  e.getRawStatusCode(), e.getResponseBodyAsString());
             ApiError apiError = JSONObject.parseObject(e.getResponseBodyAsString(), ApiError.class);
-            return new ApiResponse(e.getRawStatusCode(), apiError);
+            return new ApiRussiaResponse(e.getRawStatusCode(), apiError);
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error("Exception信息：" + e.getMessage());
-            return new ApiResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
+            return new ApiRussiaResponse(ResultEnum.UNKNOW_ERROR.getCode(), "网络问题，无法收到返回值2");
         }
     }
 }

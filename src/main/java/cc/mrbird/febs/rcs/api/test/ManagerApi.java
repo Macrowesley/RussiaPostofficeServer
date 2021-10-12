@@ -17,15 +17,15 @@ public class ManagerApi {
      * 机器状况
      */
     @PutMapping("frankMachines")
-    public ApiResponse frankMachines(@Validated @RequestBody DeviceDTO deviceDTO, HttpServletRequest request){
+    public ApiRussiaResponse frankMachines(@Validated @RequestBody DeviceDTO deviceDTO, HttpServletRequest request){
         log.info("收到消息：{}", deviceDTO.toString());
         log.info("收到的header X-API-KEY={}", request.getHeader("X-API-KEY"));
         deviceDTO.setId("666 manager收到了");
         int code = 400;
-        ApiResponse apiResponse;
+        ApiRussiaResponse apiResponse;
         switch (code){
             case 200:
-                apiResponse =  new ApiResponse(200, deviceDTO);
+                apiResponse =  new ApiRussiaResponse(200, deviceDTO);
                 break;
             case 400:
                 ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
@@ -33,15 +33,15 @@ public class ManagerApi {
                 managerBalanceDTO.setContractCode("222");
                 managerBalanceDTO.setCurrent(444.0D);
                 managerBalanceDTO.setConsolidate(555.0D);
-                apiResponse =  new ApiResponse(400, new OperationError(400,"操作失误111", managerBalanceDTO));
+                apiResponse =  new ApiRussiaResponse(400, new OperationError(400,"操作失误111", managerBalanceDTO));
 
                 break;
             case 500:
-                apiResponse =  new ApiResponse(500, new ApiError(500,"网络问题111"));
+                apiResponse =  new ApiRussiaResponse(500, new ApiError(500,"网络问题111"));
 
                 break;
             default:
-                apiResponse =  new ApiResponse(500, new ApiError(500,"网络问题111"));
+                apiResponse =  new ApiRussiaResponse(500, new ApiError(500,"网络问题111"));
                 break;
         }
 
@@ -55,12 +55,12 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/auth")
-    public ApiResponse auth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
+    public ApiRussiaResponse auth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
         log.info("manager auth frankMachineId={}",frankMachineId);
         log.info("manager auth frankMachine={}", deviceDTO.toString());
 
         deviceDTO.setId("manager auth 新的id");
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, "ok");
 
         return apiResponse;
     }
@@ -72,10 +72,10 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/unauth")
-    public ApiResponse unauth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
+    public ApiRussiaResponse unauth(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
 
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-        apiResponse =  new ApiResponse(500, new ApiError());
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, "ok");
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());
         return apiResponse;
     }
 
@@ -86,11 +86,11 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/frankMachines/{frankMachineId}/lost")
-    public ApiResponse lost(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
+    public ApiRussiaResponse lost(@PathVariable @NotBlank String frankMachineId, @RequestBody DeviceDTO deviceDTO){
         log.info("manager lost frankMachineId={}", frankMachineId);
         log.info("manager lost frankMachine={}", deviceDTO);
-        ApiResponse apiResponse =  new ApiResponse(200, "ok 666");
-        apiResponse =  new ApiResponse(500, new ApiError(500, "错误"));
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, "ok 666");
+        apiResponse =  new ApiRussiaResponse(500, new ApiError(500, "错误"));
         return apiResponse;
     }
 
@@ -101,11 +101,11 @@ public class ManagerApi {
      * @return
      */
     @PutMapping("/frankMachines/{frankMachineId}/publicKey")
-    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId, @RequestBody PublicKeyDTO publicKeyDTO){
+    public ApiRussiaResponse publicKey(@PathVariable @NotBlank String frankMachineId, @RequestBody PublicKeyDTO publicKeyDTO){
         log.info("manager lost frankMachineId={}", frankMachineId);
         log.info("manager lost publicKey={}", publicKeyDTO.toString());
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
-//        apiResponse =  new ApiResponse(500, new ApiError(200,"error hahaha"));
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, "ok");
+//        apiResponse =  new ApiRussiaResponse(500, new ApiError(200,"error hahaha"));
         return apiResponse;
     }
 
@@ -115,10 +115,10 @@ public class ManagerApi {
      * @return
      */
     @PutMapping("/rateTables")
-    public ApiResponse rateTables(@RequestBody RateTableFeedbackDTO rateTableFeedbackDTO){
-        ApiResponse apiResponse =  new ApiResponse(200, "ok");
+    public ApiRussiaResponse rateTables(@RequestBody RateTableFeedbackDTO rateTableFeedbackDTO){
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, "ok");
         log.info("manager rateTables rateTableFeedback={}", rateTableFeedbackDTO.toString());
-//        apiResponse =  new ApiResponse(500, new ApiError(200,"error hahaha"));
+//        apiResponse =  new ApiRussiaResponse(500, new ApiError(200,"error hahaha"));
         return apiResponse;
     }
 
@@ -128,16 +128,16 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/foreseens")
-    public ApiResponse foreseens(@RequestBody ForeseenDTO foreseenDTO){
+    public ApiRussiaResponse foreseens(@RequestBody ForeseenDTO foreseenDTO){
         log.info("manager foreseen foreseen={}", foreseenDTO.toString());
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
         managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
-        ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
-        /*apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, managerBalanceDTO);
+        /*apiResponse =  new ApiRussiaResponse(400, new OperationError());
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());*/
         return apiResponse;
     }
 
@@ -148,7 +148,7 @@ public class ManagerApi {
      * @return
      */
     @PostMapping("/foreseens/{foreseenId}/cancel")
-    public ApiResponse cancel(@PathVariable @NotBlank String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
+    public ApiRussiaResponse cancel(@PathVariable @NotBlank String foreseenId, @RequestBody ForeseenCancel foreseenCancel){
 
         log.info("manager cancel foreseenCancel={}", foreseenCancel.toString());
         log.info("manager cancel foreseenId={}", foreseenId);
@@ -158,15 +158,15 @@ public class ManagerApi {
         managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
-        ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, managerBalanceDTO);
 
- /*       apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
+ /*       apiResponse =  new ApiRussiaResponse(400, new OperationError());
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/transactions")
-    public ApiResponse transactions(@NotNull @RequestBody TransactionDTO transactionDTO){
+    public ApiRussiaResponse transactions(@NotNull @RequestBody TransactionDTO transactionDTO){
         log.info("manager transaction transaction={}", transactionDTO.toString());
 
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
@@ -174,30 +174,30 @@ public class ManagerApi {
         managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
-        ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, managerBalanceDTO);
 
-  /*      apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
+  /*      apiResponse =  new ApiRussiaResponse(400, new OperationError());
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/refills")
-    public ApiResponse refills(@RequestBody RegistersDTO registersDTO){
+    public ApiRussiaResponse refills(@RequestBody RegistersDTO registersDTO){
         log.info("manager registers registers={}", registersDTO.toString());
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
         managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
-        ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, managerBalanceDTO);
 
-  /*      apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
+  /*      apiResponse =  new ApiRussiaResponse(400, new OperationError());
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());*/
         return apiResponse;
     }
 
     @PostMapping("/franking/stats")
-    public ApiResponse stats(@RequestBody StatisticsDTO statisticsDTO){
+    public ApiRussiaResponse stats(@RequestBody StatisticsDTO statisticsDTO){
         log.info("manager statistics statistics={}", statisticsDTO.toString());
 
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
@@ -205,10 +205,10 @@ public class ManagerApi {
         managerBalanceDTO.setContractCode("222");
         managerBalanceDTO.setCurrent(444.0D);
         managerBalanceDTO.setConsolidate(555.0D);
-        ApiResponse apiResponse =  new ApiResponse(200, managerBalanceDTO);
+        ApiRussiaResponse apiResponse =  new ApiRussiaResponse(200, managerBalanceDTO);
 
-  /*      apiResponse =  new ApiResponse(400, new OperationError());
-        apiResponse =  new ApiResponse(500, new ApiError());*/
+  /*      apiResponse =  new ApiRussiaResponse(400, new OperationError());
+        apiResponse =  new ApiRussiaResponse(500, new ApiError());*/
         return apiResponse;
     }
 

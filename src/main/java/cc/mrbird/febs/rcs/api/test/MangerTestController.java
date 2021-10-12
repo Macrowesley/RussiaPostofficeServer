@@ -84,8 +84,8 @@ public class MangerTestController {
 
         log.info("frankMachines = {}", JSON.toJSONString(bean));
 
-        ApiResponse apiResponse = serviceInvokeRussia.frankMachines(bean);
-        log.info("从manager服务器得到的数据{}", apiResponse.toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.frankMachines(bean);
+        log.info("从manager服务器得到的数据{}", apiRussiaResponse.toString());
         /*switch (ResultEnum.getByCode(apiResponse.getCode())) {
             case SUCCESS:
                 DeviceDTO deviceDTO = (DeviceDTO) apiResponse.getObject();
@@ -122,8 +122,8 @@ public class MangerTestController {
 
         log.info("auth = {}", JSON.toJSONString(bean));
 
-        ApiResponse apiResponse = serviceInvokeRussia.auth(frankMachineId, bean);
-        log.info("测试结束：object = " + apiResponse.getObject());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.auth(frankMachineId, bean);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject());
     }
 
     /**
@@ -142,8 +142,8 @@ public class MangerTestController {
         bean.setEvent(EventEnum.STATUS);
 
         log.info("unauth = {}", JSON.toJSONString(bean));
-        ApiResponse  apiResponse = serviceInvokeRussia.unauth(frankMachineId, bean);
-        log.info("测试结束：object = " + apiResponse.getObject());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.unauth(frankMachineId, bean);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject());
     }
 
 
@@ -163,8 +163,8 @@ public class MangerTestController {
         bean.setEvent(EventEnum.STATUS);
 
         log.info("lost = {}", JSON.toJSONString(bean));
-        ApiResponse apiResponse = serviceInvokeRussia.lost(frankMachineId, bean);
-        log.info("测试结束：object = " + apiResponse.getObject());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.lost(frankMachineId, bean);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject());
     }
 
     /**
@@ -184,8 +184,8 @@ public class MangerTestController {
         int expire = 365*3;
         publicKeyDTO.setExpireDate(DateKit.createRussiatime(DateKit.offsetDayDate(expire)));
         log.info("publicKeyDTO = {}", JSON.toJSONString(publicKeyDTO));
-        ApiResponse apiResponse = serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
     /**
@@ -203,10 +203,10 @@ public class MangerTestController {
         rateTableFeedbackDTO.setRcsVersions(new String[]{"22.1.0"});
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         log.info("rateTableFeedbackDTO = {}", JSON.toJSONString(rateTableFeedbackDTO));
-        ApiResponse apiResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
-        if (apiResponse != null) {
-            log.info("测试结束：object = " + apiResponse.getObject().toString());
+        if (apiRussiaResponse != null) {
+            log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
         }else{
             log.info("apiResponse is null ");
         }
@@ -253,8 +253,8 @@ public class MangerTestController {
         log.info("foreseenId = {}", foreseenId);
         log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
 
-        ApiResponse apiResponse = serviceInvokeRussia.foreseens(foreseenDTO);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.foreseens(foreseenDTO);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
     /**
@@ -266,8 +266,8 @@ public class MangerTestController {
 
         ForeseenCancel foreseenCancel = new ForeseenCancel("cancel job");
         log.info("foreseenCancel = {} foreseenId = {}", JSON.toJSONString(foreseenCancel), foreseenId);
-        ApiResponse apiResponse = serviceInvokeRussia.cancel(foreseenId, contractCode, foreseenCancel);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.cancel(foreseenId, contractCode, foreseenCancel);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
 
     }
 
@@ -335,8 +335,8 @@ public class MangerTestController {
         transactionDTO.setFranks(new FrankDTO[]{frank});
         log.info("transaction = {}", JSON.toJSONString(transactionDTO));
 
-        ApiResponse apiResponse = serviceInvokeRussia.transactions(transactionDTO);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.transactions(transactionDTO);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
     /**
@@ -360,8 +360,8 @@ public class MangerTestController {
         registersDTO.setType("");
 
 
-        ApiResponse apiResponse = serviceInvokeRussia.refills(registersDTO);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.refills(registersDTO);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
     /**
@@ -408,8 +408,8 @@ public class MangerTestController {
         statisticsDTO.setFranks(new FrankDTO[]{frank,frank2});
 
 
-        ApiResponse apiResponse = serviceInvokeRussia.stats(statisticsDTO);
-        log.info("测试结束：object = " + apiResponse.getObject().toString());
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.stats(statisticsDTO);
+        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
 

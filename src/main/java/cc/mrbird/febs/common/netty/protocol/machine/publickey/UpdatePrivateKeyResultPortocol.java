@@ -13,7 +13,7 @@ import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.dto.manager.ApiRussiaResponse;
 import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
@@ -151,7 +151,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         publicKeyDTO.setRevision(dbPubliceKey.getRevision());
                         publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
 
-                        ApiResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
+                        ApiRussiaResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
 
                         if (!publickeyResponse.isOK()) {
                             if (publickeyResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
