@@ -168,12 +168,14 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Override
     public String[] getTaxVersionArr() {
-        LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
+        /*LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Tax::getVersion);
         List<String> list = this.baseMapper.selectList(wrapper).stream().map(item -> {
             return item.getVersion();
         }).collect(Collectors.toList());
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[list.size()]);*/
+        String[] taxVersionArr = new String[]{getLastestTax().getVersion()};
+        return taxVersionArr;
     }
 
     /**

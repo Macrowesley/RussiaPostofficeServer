@@ -8,6 +8,7 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
@@ -67,8 +68,8 @@ public class ServiceApi {
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @GetMapping("/test")
-    public ApiResponse test(){
-        return new ApiResponse(200, "ok");
+    public ApiError test(){
+        return new ApiError(200, "ok");
     }
 
     /**

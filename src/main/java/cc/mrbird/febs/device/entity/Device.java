@@ -123,6 +123,12 @@ public class Device implements Serializable {
     @TableField("flow_detail")
     private Integer flowDetail;
 
+    /**
+     * 谁在改变状态 1 俄罗斯改变状态  0 机器改变状态
+     */
+    @TableField("is_russia")
+    private Integer isRussia;
+
 
     /**
      * 错误代码

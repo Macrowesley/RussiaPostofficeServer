@@ -159,6 +159,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                                                                         result(长度为2 1 成功)
                                                                         + version
                                                                         + 机器状态code(1)
+
                                                                         + 订单是否结束（1 结束 0 未结束）
                                                                         + 机器的私钥是否需要更新（0 不需要更新 1需要更新）
                                                                         + 机器的税率是否需要更新（0不需要 1需要更新）
@@ -186,7 +187,6 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
                     //请求服务器返回最新状态
                     Device dbDevice = checkServicePortocol.deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
-                    int curStatus = dbDevice.getCurFmStatus();
 
                     /**
                      * 校验机器tax是否需要更新
@@ -276,7 +276,10 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     CheckServiceResultDTO resultDto = new CheckServiceResultDTO();
                     resultDto.setResult(FMResultEnum.SUCCESS.getSuccessCode());
                     resultDto.setVersion(version);
-                    resultDto.setFmStatus(String.valueOf(curStatus));
+                    resultDto.setFmStatus(String.valueOf(dbDevice.getCurFmStatus()));
+                    resultDto.setFutureStatus(String.valueOf(dbDevice.getFutureFmStatus()));
+                    resultDto.setIsFmNeedChangeStatus(dbDevice.getFlow() == 1 ? "0" : "1");
+                    resultDto.setIsRussia(String.valueOf(dbDevice.getIsRussia()));
                     resultDto.setIsPrintEnd(String.valueOf(isPrintEnd == true ? 1 : 0));
                     resultDto.setIsFmPrivateNeedUpdate(String.valueOf(isFmPrivateNeedUpdate));
                     resultDto.setIsFmTaxNeedUpdate(String.valueOf(isFmTaxNeedUpdate));

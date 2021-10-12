@@ -198,9 +198,9 @@ public class MangerTestController {
 
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
 
-        rateTableFeedbackDTO.setTaxVersion(taxVersion);
+        rateTableFeedbackDTO.setTaxVersion("22.1.0");
         rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(new String[]{"A0042015A","B0042015A","C0042015A","D0042015A","E0042015A"});
+        rateTableFeedbackDTO.setRcsVersions(new String[]{"22.1.0"});
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         log.info("rateTableFeedbackDTO = {}", JSON.toJSONString(rateTableFeedbackDTO));
         ApiResponse apiResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);

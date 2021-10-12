@@ -161,10 +161,10 @@ public class ServiceManageCenter {
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
         //如果设备已经是授权状态了，再点击授权就直接拒绝
-        if (dbCurFmStatus == FMStatusEnum.ENABLED) {
+        /*if (dbCurFmStatus == FMStatusEnum.ENABLED) {
             log.info("auth 已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(), "auth.isOK() false ");
-        }
+        }*/
         //这个方法就是授权请求，如果是在上一次的授权流程中中断了，那么dbFutureStatus应该是ENABLED，但如果不是，肯定是异常状态
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.ENABLED) {
             log.error("auth 未闭环，但是要改的状态不是 FMStatusEnum.ENABLED dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.ENABLED);
@@ -238,10 +238,10 @@ public class ServiceManageCenter {
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
 
-        if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
+        /*if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
             log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
-        }
+        }*/
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.UNAUTHORIZED) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.UNAUTHORIZED);
@@ -392,7 +392,8 @@ public class ServiceManageCenter {
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
+//        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
+        rateTableFeedbackDTO.setRcsVersions(new String[]{taxVersion});
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
         ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 

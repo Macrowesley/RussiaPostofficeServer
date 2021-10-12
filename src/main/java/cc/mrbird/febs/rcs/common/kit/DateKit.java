@@ -124,6 +124,14 @@ public class DateKit {
         return date1;
     }
 
+    public static Date dealDateFormatToDate2(String oldDateStr) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
+        Date  date = df.parse(oldDateStr.trim());
+        SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+        Date date1 =  df1.parse(date.toString());
+        return date1;
+    }
+
     /**
      * 日期格式转换 yyyy-MM-dd HH:mm:ss  TO yyyy-MM-dd'T'HH:mm:ss.SSSXXX  (yyyy-MM-dd'T'HH:mm:ss.SSSZ)
      * 2020-04-09 23:00:00 TO 2020-04-09T23:00:00.000+08:00
@@ -166,6 +174,20 @@ public class DateKit {
             if (StringUtils.isEmpty(date)){
                 return new Date();
             }
+
+            for (int i = 0; i < date.length(); i++) {
+                date = date.replaceAll(" ", "");
+                //if(rTime.length()==20&&rTime.charAt(i)=='Z'){
+                if (date.length() > 19) {
+                    date = date.substring(0, 19);
+                    date += ".001+03:00";
+                    //rTime = rTime.replace("Z",".001+03: 00");
+                } else {
+                    log.info("时间长度不够");
+                    return new Date();
+                }
+            }
+
             return dealDateFormatToDate(date);
         } catch (ParseException e) {
             log.info(e.getMessage());
@@ -173,7 +195,7 @@ public class DateKit {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 //        log.info("时间: " + formatDateTime(new Date()));
 //        log.info(offsetMinuteToDate(120));
 //        log.info(offsetMinuteToDateTime(120));
@@ -181,11 +203,15 @@ public class DateKit {
         /*String russiatime = createRussiatime();
         log.info(russiatime);
         log.info(parseRussiatime(russiatime).toString());*/
+        //             "2021-01-01T09:00:00.001+03:00"
         String rTime = "2021-01-01T09:00:00.001+03:00";
         log.info(parseRussiatime(rTime).toString());
 
         String rTime2 = "2021-01-01T09: 00: 00.001+03: 00";
         log.info(parseRussiatime(rTime2).toString());
+
+        String rTime3 = "2021-10-12T05:15:33.327019Z";
+        log.info(parseRussiatime(rTime3).toString());
 
     }
 

@@ -147,7 +147,7 @@ public interface IDeviceService extends IService<Device> {
     void changeAuthStatus(Device dbDevice, String frankMachineId, FlowDetailEnum curFlowDetail);
     void changeUnauthStatus(Device dbDevice, String frankMachineId, FlowDetailEnum curFlowDetail);
     void changeLostStatus(Device dbDevice, String frankMachineId, FlowDetailEnum curFlowDetail);
-    void changeForeseensStatus(Device dbDevice, FlowDetailEnum curFlowDetail);
+//    void changeForeseensStatus(Device dbDevice, FlowDetailEnum curFlowDetail);
     /**
      * 通过frankMachineId得到acnum
      * @param frankMachineId

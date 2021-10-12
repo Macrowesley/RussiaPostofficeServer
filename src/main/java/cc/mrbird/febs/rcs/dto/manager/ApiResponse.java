@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.dto.manager;
 
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 
@@ -29,6 +30,7 @@ public class ApiResponse {
         return this;
     }
 
+    @JsonIgnore
     public boolean isOK(){
         return this.code == ResultEnum.SUCCESS.getCode() || this.code == ResultEnum.SUCCESS_204.getCode() || this.code == ResultEnum.SUCCESS_201.getCode();
     }
