@@ -85,26 +85,36 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         if (!StringUtils.isEmpty(serviceBalanceDTO.getContractCode()) && !contractCode.equals(serviceBalanceDTO.getContractCode())){
             throw new RcsApiException(RcsApiErrorEnum.ContractNotSame);
         }
-        if (!contractService.checkIsExist(contractCode)){
-            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
-        }
+
         if (serviceBalanceDTO.getCurrent() == null || serviceBalanceDTO.getConsolidate() == null){
             throw new RcsApiException(RcsApiErrorEnum.CurrentOrConsolidateIsNull);
+        }
+        //判断时间是否正常
+        Contract dbContract = contractService.getByConractCode(contractCode);
+        if (dbContract == null){
+            throw new RcsApiException(RcsApiErrorEnum.ContractNotExist);
+        }
+        Date newDate = DateKit.parseRussiatime(serviceBalanceDTO.getModified());
+        Date dbDate = dbContract.getBalanceModified();
+        if (dbDate != null && newDate.before(dbDate)){
+            log.info("balance 修改时间是旧的，不能改动");
+            return;
         }
         try {
             Balance balance = new Balance();
             BeanUtils.copyProperties(serviceBalanceDTO,balance);
             balance.setFromType(2);
             balance.setCreatedTime(new Date());
-            balance.setRussiaTime(DateKit.parseRussiatime(serviceBalanceDTO.getModified()));
-
+            balance.setRussiaTime(newDate);
             this.save(balance);
+
             //更新contract的金额
             Contract contract = new Contract();
             contract.setCode(contractCode);
             contract.setCurrent(serviceBalanceDTO.getCurrent());
             contract.setConsolidate(serviceBalanceDTO.getConsolidate());
-            contract.setUpdatedTime(DateKit.parseRussiatime(serviceBalanceDTO.getModified()));
+            contract.setUpdatedTime(newDate);
+            contract.setBalanceModified(newDate);
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
         } catch (Exception e) {

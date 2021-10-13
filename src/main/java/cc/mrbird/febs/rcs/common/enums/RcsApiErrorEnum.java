@@ -5,7 +5,7 @@ public enum RcsApiErrorEnum {
     WaitPrintJobFinish(1001,"Frank job is not finish, please wait"),
     WaitPublicKeyUpdateFinish(1002,"update public key is not finish, please wait"),
     WaitStatusChangeFinish(1003,"The last status change was not completed. Please wait"),
-    UnknownFMId(1004,"Unknown FM Id "),
+    UnknownFMId(9912,"FM not found "),
     ChangeStatusError(1005,"internal server error"),
     SaveBalanceError(1006,"internal server error"),
     SaveContractDtoError(1007,"internal server error"),
@@ -15,11 +15,12 @@ public enum RcsApiErrorEnum {
     SaveTaxVersionError(1010,"internal server error"),
     TaxVersionExist(1101,"tax version is exist"),
     ContractExist(1102,"contract is exist"),
-    ContractNotExist(1103,"contract is not exist"),
+    ContractNotExist(9913,"Contract not found"),
     InvalidTimezoneValue(1104,"Invalid timezone value"),
     InvalidTarrifZoneValue(1105,"Invalid tarrifZone value"),
     CurrentOrConsolidateIsNull(1105,"Current or Consolidate is null"),
-    ContractNotSame(1106,"value in path not equal in json")
+    ContractNotSame(1106,"value in path not equal in json"),
+    ModitifyDateIsOld(1007,"Modified date is old"),
     ;
 
     int code;

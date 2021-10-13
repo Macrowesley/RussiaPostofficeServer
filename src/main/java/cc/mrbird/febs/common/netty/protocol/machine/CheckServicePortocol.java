@@ -184,6 +184,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
                     }
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
+                    log.info("fmTaxVersion = " + fmTaxVersion);
 
                     //请求服务器返回最新状态
                     Device dbDevice = checkServicePortocol.deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
@@ -194,14 +195,17 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //机器的税率是否需要更新（0不需要 1需要更新）
                     int isFmTaxNeedUpdate = 0;
                     Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
+                    log.info(lastestTax.toString());
                     if (lastestTax != null && fmTaxVersion.equals(lastestTax.getVersion())){
                         if (lastestTax.getInformRussia().equals(InformRussiaEnum.NO.getCode())){
                             //服务器没有成功通知俄罗斯/rateTables 再次尝试
+                            log.info("服务器没有成功通知俄罗斯/rateTables 再次尝试");
                             if(!checkServicePortocol.serviceManageCenter.rateTables(lastestTax.getVersion())){
+                                log.info("rateTables fail");
                                 throw new FmException(FMResultEnum.RateTablesFail.getCode(), "rateTables fail ");
                             }
                         }
-
+                        log.info("开始判断是否需要通知俄罗斯");
                         //服务器已经成功通知俄罗斯/rateTables
                         //机器已经更新了tax,需要处理下数据库的状态了
                         //tax是否更新 默认为1 最新状态  0 没有更新到最新状态
@@ -218,6 +222,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
                     }else{
                         //机器没有更新tax，需要更新
+                        log.info("机器没有更新tax，需要更新");
                         isFmTaxNeedUpdate = 1;
                     }
 

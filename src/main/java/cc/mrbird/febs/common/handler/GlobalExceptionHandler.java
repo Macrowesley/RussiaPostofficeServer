@@ -19,6 +19,7 @@ import org.apache.shiro.session.ExpiredSessionException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -29,9 +30,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +53,8 @@ public class GlobalExceptionHandler {
     */
 
     @ExceptionHandler(value = Exception.class)
-    public ApiRcsResponse handleException(Exception e) {
+    public ApiRcsResponse handleException(Exception e, HttpServletResponse response) {
+        response.setStatus(400);
         e.printStackTrace();
         log.error("系统内部异常，异常信息 {}", e.getMessage());
 //        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
@@ -58,16 +62,44 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = FebsException.class)
-    public FebsResponse handleFebsException(FebsException e) {
+    public FebsResponse handleFebsException(FebsException e, HttpServletResponse response) {
+        response.setStatus(400);
         log.error("系统错误 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
     }
 
+
+    /**
+     * 处理俄罗斯访问我们接口时发生的异常
+     * @param e
+     * @return
+     */
+   /* @ExceptionHandler(value = RcsApiException.class)
+    public ApiRcsResponse handleRcsApiException(RcsApiException e, HttpServletResponse response) {
+        response.setStatus(400);
+        log.error("RCS api 错误 {}", e.getMessage());
+        return new ApiRcsResponse(e.getCode(), e.getMessage());
+    }*/
+
+    @ExceptionHandler(value = RcsApiException.class)
+    public ResponseEntity handleRcsApiException(RcsApiException e) {
+        log.error("RCS api 错误 {}", e.getMessage());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", e.getCode());
+        msg.put("message", e.getMessage());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
-    public ApiRcsResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletResponse response) {
         log.error("访问方式不对 {}", e.getMessage());
 //        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-        return new ApiRcsResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+//        return new ApiRcsResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.BAD_REQUEST.value());
+        msg.put("message", e.getMessage());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -106,30 +138,27 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = RcsManagerBalanceException.class)
-    public OperationError handleRcsManagerBalanceException(RcsManagerBalanceException e) {
+    public ResponseEntity handleRcsManagerBalanceException(RcsManagerBalanceException e) {
         log.error("RCS 金额异常 {} , balance = {}", e.getMessage(), e.getManagerBalanceDTO().toString());
        /* return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new OperationError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage(),e.getManagerBalanceDTO()));*/
-        return new OperationError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage(),e.getManagerBalanceDTO());
+//        return new OperationError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage(),e.getManagerBalanceDTO());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        msg.put("message", e.getManagerBalanceDTO().toString());
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * 处理俄罗斯访问我们接口时发生的异常
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(value = RcsApiException.class)
-    public ApiRcsResponse handleRcsApiException(RcsApiException e) {
-        log.error("RCS api 错误 {}", e.getMessage());
-//        return new ApiResponse(HttpStatus.BAD_REQUEST.value(),new ApiError(e.getCode(),e.getMessage()));
-        return new ApiRcsResponse(e.getCode(), e.getMessage());
-    }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ApiRcsResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletResponse response) {
         log.error("RCS handleHttpMessageNotReadableException 错误 {}", e.getMessage());
 //        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage()));
-        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+//        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        msg.put("message", e.getMessage());
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -139,7 +168,7 @@ public class GlobalExceptionHandler {
      * @return FebsResponse
      */
     @ExceptionHandler(BindException.class)
-    public ApiRcsResponse validExceptionHandler(BindException e) {
+    public ResponseEntity validExceptionHandler(BindException e) {
         log.error("请求参数校验(实体对象传参-form) 错误 {}", e.getMessage());
         e.printStackTrace();
         StringBuilder message = new StringBuilder();
@@ -149,7 +178,11 @@ public class GlobalExceptionHandler {
         }
         message = new StringBuilder(message.substring(0, message.length() - 1));
 //        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
-        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+//        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.BAD_REQUEST.value());
+        msg.put("message", message.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -159,9 +192,9 @@ public class GlobalExceptionHandler {
      * @return FebsResponse
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiRcsResponse handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("请求参数校验(json) 错误 {}", e.getMessage());
-        e.printStackTrace();
+//        e.printStackTrace();
         StringBuilder message = new StringBuilder();
         for (FieldError error : e.getBindingResult().getFieldErrors()) {
             message.append(error.getField()).append(error.getDefaultMessage()).append(",");
@@ -170,8 +203,13 @@ public class GlobalExceptionHandler {
         log.error(message.toString());
 //        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
 //        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString()));
-        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+//        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.BAD_REQUEST.value());
+        msg.put("message", message.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
+
 
 
     /**
@@ -181,7 +219,7 @@ public class GlobalExceptionHandler {
      * @return FebsResponse
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
-    public ApiRcsResponse handleConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
         log.error("统一处理请求参数校验(普通传参) 错误 {}", e.getMessage());
         StringBuilder message = new StringBuilder();
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
@@ -193,7 +231,11 @@ public class GlobalExceptionHandler {
         message = new StringBuilder(message.substring(0, message.length() - 1));
 //        return new FebsResponse().code(HttpStatus.BAD_REQUEST).message(message.toString());
 //        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString()));
-        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+//        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),message.toString());
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.BAD_REQUEST.value());
+        msg.put("message", message.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 
 

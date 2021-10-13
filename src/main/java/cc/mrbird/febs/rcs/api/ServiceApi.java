@@ -8,7 +8,6 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
-import cc.mrbird.febs.rcs.dto.manager.ApiError;
 import cc.mrbird.febs.rcs.dto.manager.ApiRcsResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
@@ -21,6 +20,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -68,8 +68,14 @@ public class ServiceApi {
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @GetMapping("/test")
-    public ApiError test(){
-        return new ApiError(200, "ok");
+    public void test(HttpServletResponse response){
+//        response.setStatus(400);
+//        return new ApiRcsResponse(200, "ok");
+    }
+
+    @GetMapping("/test2")
+    public String test2(){
+        return "ok";
     }
 
     /**
@@ -80,7 +86,7 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
-    public ApiRcsResponse publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate){
+    public void publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 publicKey】");
         regenerate = true;
         log.info("frankMachineId={},regenerate={}",frankMachineId,regenerate);
@@ -109,7 +115,7 @@ public class ServiceApi {
             serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, dbPublicKey);*/
         }
         log.info("【俄罗斯调用服务器api 结束 publicKey】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -120,8 +126,8 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_changeStatus")
-    public ApiRcsResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
-                                          @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
+    public void changeStatus(@PathVariable @NotBlank String frankMachineId,
+                                          @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO, HttpServletResponse response) throws RuntimeException {
         log.info("【俄罗斯调用服务器api 开始 changeStatus】");
         log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
@@ -138,7 +144,8 @@ public class ServiceApi {
 
         //执行到这就返回给俄罗斯
         log.info("【俄罗斯调用服务器api 结束 changeStatus】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
+//        return "ok";
     }
 
     /**
@@ -148,7 +155,7 @@ public class ServiceApi {
      */
     @PutMapping("/taxes")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
-    public ApiRcsResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
+    public void taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
         log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
         if (taxService.checkIExist(taxVersionDTO.getVersion())){
@@ -168,7 +175,7 @@ public class ServiceApi {
         }
 
         log.info("【俄罗斯调用服务器api 结束 taxes】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -178,12 +185,12 @@ public class ServiceApi {
      */
     @PutMapping("/postOffices")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
-    public ApiRcsResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
+    public void postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 postOffices】");
         log.info("postOfficeDTO={}",postOfficeDTO.toString());
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
         log.info("【俄罗斯调用服务器api 结束 postOffices】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -193,12 +200,12 @@ public class ServiceApi {
      */
     @PutMapping("/contracts")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
-    public ApiRcsResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
+    public void contracts(@RequestBody @Validated ContractDTO contractDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 contracts】");
         log.info("contractDTO={}",contractDTO.toString());
         contractService.saveContractDto(contractDTO);
         log.info("【俄罗斯调用服务器api 结束 contracts】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -209,12 +216,12 @@ public class ServiceApi {
      */
     @PutMapping("/contracts/{code}/balance")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
-    public ApiRcsResponse balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
+    public void balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 balance】");
         log.info("code={}, serviceBalanceDTO={}",code, serviceBalanceDTO.toString());
         balanceService.saveBalance(code, serviceBalanceDTO);
         log.info("【俄罗斯调用服务器api 结束 balance】");
-        return new ApiRcsResponse(200, "ok");
+//        return new ApiRcsResponse(200, "ok");
     }
 
 }

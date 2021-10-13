@@ -74,7 +74,11 @@ public class ServiceInvokeRussia {
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
 
-        return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
+        DeviceDTO data = new DeviceDTO();
+        data.setId(deviceDTO.getId());
+        data.setDateTime(deviceDTO.getDateTime());
+        data.setPostOffice(deviceDTO.getPostOffice());
+        return doExchange(url, data, HttpMethod.POST, String.class, map);
     }
 
     /**

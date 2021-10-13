@@ -8,6 +8,7 @@ import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.ChangeFromEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -170,13 +171,14 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             statusFMDTO.setPostOffice(changeStatusRequestDTO.getPostOffice());
             statusFMDTO.setStatus(changeStatusRequestDTO.getStatus().getCode());
             statusFMDTO.setEvent(1);
+            statusFMDTO.setIsAuto(2);
 
             /*int status = changeStatusRequestDTO.getStatus().getType();
             String postOffice = changeStatusRequestDTO.getPostOffice();*/
 
             String content = JSON.toJSONString(statusFMDTO);
             String entryctContent = AESUtils.encrypt(content, tempKey);
-            log.info("服务器改变机器状态 content={},加密后entryctContent={}", content, entryctContent);
+            log.info("服务器主动改变机器状态 content={},加密后entryctContent={}", content, entryctContent);
             //发送数据
             wrieteToCustomer(
                     ctx,
