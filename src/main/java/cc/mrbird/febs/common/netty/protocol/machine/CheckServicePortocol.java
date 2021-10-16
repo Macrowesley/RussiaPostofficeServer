@@ -264,15 +264,15 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //当前任务已经打印的总金额 单位是分
                     String actualAmount = "0";
                     //二维码内容（不包含签名）
-                    String dmMsg = "";
+//                    String dmMsg = "";
                     //如果没有打印结束而且，transactionid已经创建了，就不处理
                     if (!isPrintEnd && !StringUtils.isEmpty(dbPrintJob.getTransactionId())){
                         DmMsgDetail dmMsgDetail = checkServicePortocol.dmMsgService.getDmMsgDetailOnFmStart(dbPrintJob.getTransactionId(), transactionMsgFMDTO);
                         if (dmMsgDetail != null){
                             actualCount = dmMsgDetail.getActualCount();
                             actualAmount = dmMsgDetail.getActualAmount();
-                            FrankDTO[] franks = dmMsgDetail.getFranks();
-                            dmMsg = franks.length > 0 ? franks[franks.length - 1].getDmMessage() : "";
+//                            FrankDTO[] franks = dmMsgDetail.getFranks();
+//                            dmMsg = franks.length > 0 ? franks[franks.length - 1].getDmMessage() : "";
                         }
                     }
                     log.info("处理dmMsg信息");
@@ -290,7 +290,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setIsFmTaxNeedUpdate(String.valueOf(isFmTaxNeedUpdate));
                     resultDto.setActualCount(String.valueOf(actualCount));
                     resultDto.setActualAmount(actualAmount);
-                    resultDto.setDmMsg(dmMsg);
+//                    resultDto.setDmMsg(dmMsg);
                     resultDto.setTransactionId(transactionId);
                     resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
                     String responseData = JSON.toJSONString(resultDto);

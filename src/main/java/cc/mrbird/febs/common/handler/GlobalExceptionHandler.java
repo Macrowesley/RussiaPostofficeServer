@@ -53,12 +53,16 @@ public class GlobalExceptionHandler {
     */
 
     @ExceptionHandler(value = Exception.class)
-    public ApiRcsResponse handleException(Exception e, HttpServletResponse response) {
+    public ResponseEntity handleException(Exception e, HttpServletResponse response) {
         response.setStatus(400);
         e.printStackTrace();
         log.error("系统内部异常，异常信息 {}", e.getMessage());
 //        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR"));
-        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR");
+//        return new ApiRcsResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR");
+        HashMap msg = new HashMap<>(2);
+        msg.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        msg.put("message", "INTERNAL_SERVER_ERROR");
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = FebsException.class)

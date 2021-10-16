@@ -141,6 +141,16 @@ public class CheckUtils {
         if (dmMsg.length() != 60){
             throw new FmException(FMResultEnum.DmmsgLengthError);
         }
+
+        //验证打印数量累计数据类型是否正确
+        try {
+            int firstPos = 29;
+            int endPos = 37;
+            int pieceCount = Integer.valueOf(dmMsg.substring(firstPos, endPos));
+        }catch (Exception e){
+            throw new FmException(FMResultEnum.DmmsgTotalPieceError);
+        }
+
     }
 
     public Transaction checkTransactionIdExist(String transactionId) {

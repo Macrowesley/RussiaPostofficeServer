@@ -78,7 +78,7 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param msgList
      * @return
      */
-    DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList);
+    DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList);
 
     /**
      * 机器开机的时候获取dmMsgDetail

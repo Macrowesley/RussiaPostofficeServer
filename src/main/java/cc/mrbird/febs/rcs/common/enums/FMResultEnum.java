@@ -37,6 +37,7 @@ public enum FMResultEnum {
     CountOrAmountSmallThenDb(53,"transactionMsg信息中的的总数量或者总金额小于数据库的值"),
     DmmsgIsEmpty(54,"transactionMsg为空"),
     DmmsgLengthError(55,"transactionMsg长度不对，不为60"),
+    DmmsgTotalPieceError(55,"transactionMsg中Total piece count这个值有问题"),
 
 
 
