@@ -64,7 +64,7 @@ public class CheckUtils {
 
         Integer dbCurFmStatus = dbDevice.getCurFmStatus();
         FMStatusEnum dbFmStatus = FMStatusEnum.getByCode(dbCurFmStatus);
-        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode()) {
+        if (dbCurFmStatus == FMStatusEnum.UNAUTHORIZED.getCode() || dbCurFmStatus == FMStatusEnum.LOST.getCode() || dbCurFmStatus == FMStatusEnum.BLOCKED.getCode()) {
             throw new FmException(FMResultEnum.StatusNotValid.getCode(), "foreseens 机器状态不正常，当前状态为：" + dbFmStatus.getStatus());
         }
     }

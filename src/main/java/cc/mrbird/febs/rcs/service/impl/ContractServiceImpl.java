@@ -125,8 +125,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             BeanUtils.copyProperties(contractDTO, contract);
             contract.setCode(contractDTO.getCode());
             contract.setEnable(contractDTO.isEnable() ? 1 : 0);
-            contract.setCurrent(0D);
-            contract.setConsolidate(0D);
+//            contract.setCurrent(0D);
+//            contract.setConsolidate(0D);
             contract.setCreatedTime(new Date());
             contract.setUpdatedTime(new Date());
             contract.setModified(newDate);

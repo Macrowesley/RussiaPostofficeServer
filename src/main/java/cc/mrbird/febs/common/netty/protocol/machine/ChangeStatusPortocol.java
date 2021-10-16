@@ -155,6 +155,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                                             break;
                                         case LOST:
                                             changeStatusPortocol.serviceManageCenter.lost(deviceDto);
+                                            break;
                                         default:
                                             changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
                                             break;

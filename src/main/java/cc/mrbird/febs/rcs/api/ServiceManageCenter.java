@@ -291,10 +291,10 @@ public class ServiceManageCenter {
         //是否是第一次请求授权
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
-        if (dbCurFmStatus == FMStatusEnum.LOST) {
+        /*if (dbCurFmStatus == FMStatusEnum.LOST) {
             log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
-        }
+        }*/
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.LOST) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.LOST);
@@ -463,7 +463,7 @@ public class ServiceManageCenter {
         //fm信息转ForeseenDTO
         ForeseenDTO foreseenDTO = new ForeseenDTO();
         BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
-        foreseenDTO.setTotalAmmount(fmTotalAmount);
+        foreseenDTO.setTotalAmount(fmTotalAmount);
 
         //处理UserId
         /*String userId = getUserIdByContractCode(foreseenDTO.getContractCode());

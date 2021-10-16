@@ -39,7 +39,7 @@ public class ServiceInvokeRussia {
      * CPU123 FM100002  00001033
      * 端口号：12800
      */
-    private final boolean isTest = false;
+    private final boolean isTest = true;
     /**
      * 发送机器状况
      *
@@ -50,7 +50,7 @@ public class ServiceInvokeRussia {
         if (isTest){
             return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
         }
-
+        log.info("发送机器状况");
         String url = baseUrl + "/frankMachines";
         return doExchange(url, deviceDTO, HttpMethod.PUT, DeviceDTO.class,null);
     }
@@ -171,7 +171,7 @@ public class ServiceInvokeRussia {
         if (isTest){
             return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
         }
-
+        log.info("通过该接口发送机器税率信息 frankMachinesRateTableUpdateEvent");
         String url = baseUrl + "/frankMachines";
         return doExchange(url, deviceDTO, HttpMethod.PUT, DeviceDTO.class,null);
     }

@@ -183,6 +183,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //2. 创建foreseens和ForeseenProduct
         Foreseen foreseen = new Foreseen();
         BeanUtils.copyProperties(foreseenDTO, foreseen);
+        foreseen.setTotalAmmount(foreseenDTO.getTotalAmount());
         foreseen.setForeseenStatus(FlowEnum.FlowEnd.getCode());
         foreseen.setForeseenStatus(1);
         foreseen.setUpdatedTime(new Date());

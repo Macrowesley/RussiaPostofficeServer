@@ -113,7 +113,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             contract.setCode(contractCode);
             contract.setCurrent(serviceBalanceDTO.getCurrent());
             contract.setConsolidate(serviceBalanceDTO.getConsolidate());
-            contract.setUpdatedTime(newDate);
+            contract.setUpdatedTime(new Date());
             contract.setBalanceModified(newDate);
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
@@ -144,7 +144,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             contract.setCode(contractCode);
             contract.setCurrent(managerBalanceDTO.getCurrent());
             contract.setConsolidate(managerBalanceDTO.getConsolidate());
-            contract.setUpdatedTime(DateKit.parseRussiatime(managerBalanceDTO.getTimestamp()));
+            contract.setUpdatedTime(new Date());
             boolean res = contractService.saveOrUpdate(contract);
             log.info("保存balance结束，更新contract金额结果：{}", res);
         } catch (Exception e) {

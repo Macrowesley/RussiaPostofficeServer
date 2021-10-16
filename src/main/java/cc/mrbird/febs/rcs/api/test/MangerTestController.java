@@ -248,7 +248,7 @@ public class MangerTestController {
         foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct});
         foreseenDTO.setFrankMachineId(frankMachineId);
         foreseenDTO.setTaxVersion(taxVersion);
-        foreseenDTO.setTotalAmmount(totalAmount);
+        foreseenDTO.setTotalAmount(totalAmount);
 
         log.info("foreseenId = {}", foreseenId);
         log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
@@ -266,7 +266,7 @@ public class MangerTestController {
 
         ForeseenCancel foreseenCancel = new ForeseenCancel("cancel job");
         log.info("foreseenCancel = {} foreseenId = {}", JSON.toJSONString(foreseenCancel), foreseenId);
-        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.cancel(foreseenId, contractCode, foreseenCancel);
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.cancel("52318191-d98b-4720-b6af-0efaf672746e", "00001010", foreseenCancel);
         log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
 
     }
