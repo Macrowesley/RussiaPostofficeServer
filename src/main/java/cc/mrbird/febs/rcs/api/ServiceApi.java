@@ -8,7 +8,6 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
-import cc.mrbird.febs.rcs.dto.manager.ApiRcsResponse;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
@@ -110,9 +109,7 @@ public class ServiceApi {
 
             //生成publickey，更新数据库，机器开机后，检查是需要改变publickey
             PublicKey dbPublicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-            /*//异步：发送privateKey给机器
-            log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的privateKey给机器");
-            serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, dbPublicKey);*/
+            serviceManageCenter.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
         }
         log.info("【俄罗斯调用服务器api 结束 publicKey】");
 //        return new ApiRcsResponse(200, "ok");

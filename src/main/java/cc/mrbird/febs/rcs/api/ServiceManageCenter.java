@@ -210,7 +210,7 @@ public class ServiceManageCenter {
 
         //如果授权成功，数据库改状态，机器开机会自动检测
         PublicKey publicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-//        serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, publicKey);
+        noticeMachineUpdateKey(frankMachineId, publicKey);
 
         log.info("{} 操作成功",operationName);
     }
@@ -700,4 +700,14 @@ public class ServiceManageCenter {
     }
 
 
+    /**
+     * 通知机器需要更新新的publickey
+     * @param frankMachineId
+     * @param dbPublicKey
+     */
+    public void noticeMachineUpdateKey(String frankMachineId, PublicKey dbPublicKey) {
+        //异步：发送privateKey给机器
+        log.info("得到俄罗斯的公钥请求/机器成功了auth请求，我们服务器创建了publickey对象，然后异步通知机器更新publickey");
+        serviceToMachineProtocol.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
+    }
 }
