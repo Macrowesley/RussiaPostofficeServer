@@ -126,6 +126,7 @@ public class NettyServer {
             certInput = NettyServer.class.getResourceAsStream(serverCrt);
             priKeyInput = NettyServer.class.getResourceAsStream(serverKey);
             caInput = NettyServer.class.getResourceAsStream(caCrt);
+
             return SslContextBuilder.forServer(certInput, priKeyInput)
                     .clientAuth(clientAuth)
                     .trustManager(caInput).build();

@@ -148,7 +148,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //当前任务已经打印的总数量
         int actualCount = 0;
         //当前任务已经打印的总金额
-        double actualAmount = 0.0;
+        int actualAmount = 0;
 
         int firstPos = 29;
         int endPos = 37;
@@ -175,7 +175,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                     //得到一批中：批次开始和批次结束时候的打印次数
                     batchCount = endMsg.getCount() - beginMsg.getCount();
                     actualCount += batchCount;
-                    actualAmount += DoubleKit.sub(endMsg.getAmount(),beginMsg.getAmount());
+                    actualAmount += (endMsg.getAmount() - beginMsg.getAmount());
 
                     //现在是每条dmMsg都不一样，需要找到指定的那个点，按照actualCount累加
                     //!45!01NE6431310001410210000000000050000024002100000100001010
@@ -192,7 +192,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             }
         }
         dmMsgDetail.setActualCount(actualCount);
-        dmMsgDetail.setActualAmount(String.valueOf(MoneyUtils.changeY2F(actualAmount)));
+        dmMsgDetail.setActualAmount(String.valueOf(actualAmount));
         if (needDmMsgList) {
             FrankDTO[] frankDTOArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
             dmMsgDetail.setFranks(frankDTOArray);
@@ -214,12 +214,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     public DmMsgDetail getDmMsgDetailOnFmStart(String transactionId, TransactionMsgFMDTO transactionMsgFMDTO) {
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         if (transactionMsgList.size() % 2 != 0){
-            double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
+            long fmTotalAmount = Long.valueOf(transactionMsgFMDTO.getTotalAmount());
             long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
             TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
             if (lastestMsg!=null) {
-                if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(), fmTotalAmount)) {
+                if (lastestMsg.getCount() > fmTotalCount || (lastestMsg.getAmount() - fmTotalAmount) >= 0) {
                     throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
                 }
             }
@@ -253,7 +253,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //创建transaction
         //dbPrintJob.setTransactionId(transactionDTO.getId());
         int idType = transactionMsgFMDTO.getIdType();
-        double fmTotalAmount = MoneyUtils.changeF2Y(transactionMsgFMDTO.getTotalAmount());
+        long fmTotalAmount = Long.valueOf(transactionMsgFMDTO.getTotalAmount());
         Long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
         //如果最新的消息不为空，且status一样，那么，肯定是上一个批次没有结束
@@ -264,7 +264,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
         if (lastestMsg != null) {
             log.info("lastestMsg={}",lastestMsg.toString());
-            if (lastestMsg.getCount() > fmTotalCount || DoubleKit.isV1BiggerThanV2(lastestMsg.getAmount(), fmTotalAmount)){
+            if (lastestMsg.getCount() > fmTotalCount ||  (lastestMsg.getAmount() - fmTotalAmount) >= 0){
                 throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
             }
 

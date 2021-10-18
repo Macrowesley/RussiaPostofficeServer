@@ -707,7 +707,7 @@ public class ServiceManageCenter {
      */
     public void noticeMachineUpdateKey(String frankMachineId, PublicKey dbPublicKey) {
         //异步：发送privateKey给机器
-        log.info("得到俄罗斯的公钥请求/机器成功了auth请求，我们服务器创建了publickey对象，然后异步通知机器更新publickey");
+        log.info("得到俄罗斯的公钥请求/机器成功了auth请求，我们服务器创建了publickey对象，然后异步通知机器更新publickey然后发给服务器");
         serviceToMachineProtocol.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
     }
 }
