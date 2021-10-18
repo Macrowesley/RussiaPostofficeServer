@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 
@@ -121,21 +122,22 @@ public class NettyServer {
     public SslContext buildSslContext(ClientAuth clientAuth) {
         InputStream certInput = null;
         InputStream priKeyInput = null;
-        InputStream caInput = null;
+        InputStream rootFileInput = null;
         try {
             certInput = NettyServer.class.getResourceAsStream(serverCrt);
             priKeyInput = NettyServer.class.getResourceAsStream(serverKey);
-            caInput = NettyServer.class.getResourceAsStream(caCrt);
+            rootFileInput = NettyServer.class.getResourceAsStream(caCrt);
 
             return SslContextBuilder.forServer(certInput, priKeyInput)
                     .clientAuth(clientAuth)
-                    .trustManager(caInput).build();
+                    .trustManager(rootFileInput)
+                    .build();
         } catch (Throwable e) {
             logger.error("HidsSslContextBuilder", e);
         } finally {
             IOUtils.closeQuietly(certInput);
             IOUtils.closeQuietly(priKeyInput);
-            IOUtils.closeQuietly(caInput);
+            IOUtils.closeQuietly(rootFileInput);
         }
         return null;
     }

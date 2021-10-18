@@ -60,4 +60,4 @@ netty:
   #  ip: localhost
   # ip: 119.37.199.25
   ip: 192.168.30.2
-  ssl: false
+  ssl: true
