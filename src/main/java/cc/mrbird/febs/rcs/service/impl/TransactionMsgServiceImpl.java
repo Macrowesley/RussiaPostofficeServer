@@ -219,7 +219,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
             TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
             if (lastestMsg!=null) {
-                if (lastestMsg.getCount() > fmTotalCount || (lastestMsg.getAmount() - fmTotalAmount) >= 0) {
+                if (lastestMsg.getCount() > fmTotalCount || (lastestMsg.getAmount() - fmTotalAmount) > 0) {
                     throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
                 }
             }
@@ -264,7 +264,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
         if (lastestMsg != null) {
             log.info("lastestMsg={}",lastestMsg.toString());
-            if (lastestMsg.getCount() > fmTotalCount ||  (lastestMsg.getAmount() - fmTotalAmount) >= 0){
+            if (lastestMsg.getCount() > fmTotalCount ||  (lastestMsg.getAmount() - fmTotalAmount) > 0){
                 throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
             }
 

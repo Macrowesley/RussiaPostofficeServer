@@ -100,7 +100,8 @@ public class ServiceInvokeRussia {
 
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
-
+        deviceDTO.setPostOffice(null);
+        deviceDTO.setTaxVersion(null);
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
     }
 
@@ -123,7 +124,8 @@ public class ServiceInvokeRussia {
 
         HashMap<String, String> map = new HashMap<>();
         map.put("frankMachineId", frankMachineId);
-
+        deviceDTO.setPostOffice(null);
+        deviceDTO.setTaxVersion(null);
         return doExchange(url, deviceDTO, HttpMethod.POST, String.class, map);
     }
 
