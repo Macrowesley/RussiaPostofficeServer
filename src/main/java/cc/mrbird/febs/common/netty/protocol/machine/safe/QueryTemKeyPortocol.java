@@ -10,7 +10,6 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
-import cc.mrbird.febs.rcs.common.enums.FMStatusEnum;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
 
 /**
  * 请求临时密钥
@@ -130,7 +128,7 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         2.2 服务器返回临时加密秘钥
 
         typedef  struct{
-            unsigned char length[2];			 //2个字节
+            unsigned char length[4];			 //2个字节
             unsigned char type;				 	 //0xA4
             unsigned char operateID[2];
             unsigned char version[3];            //版本内容 001

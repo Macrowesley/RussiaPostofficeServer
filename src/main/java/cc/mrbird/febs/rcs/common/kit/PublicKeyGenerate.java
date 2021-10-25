@@ -1,6 +1,6 @@
 package cc.mrbird.febs.rcs.common.kit;
 
-import cc.mrbird.febs.common.utils.EcDsaCode;
+import cc.mrbird.febs.common.utils.EcDsa.EcDsaCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 

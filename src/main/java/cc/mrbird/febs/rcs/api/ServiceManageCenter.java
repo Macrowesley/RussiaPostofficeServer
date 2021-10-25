@@ -16,6 +16,7 @@ import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +61,9 @@ public class ServiceManageCenter {
 
     @Autowired
     ITaxService taxService;
+
+    @Autowired
+    ITaxDeviceUnreceivedService taxDeviceUnreceivedService;
 
     @Autowired
     ICustomerService customerService;
@@ -324,12 +328,13 @@ public class ServiceManageCenter {
 
 
     /**
-     * 机器开机发送tax版本信息，如果机器刚刚更新到了最新的版本号，触发这个方法
+     * 机器收到服务器发送的tax，就触发这个方法
      * @param dbDevice
      */
-    public void frankMachinesRateTableUpdateEvent(Device dbDevice) {
+    public void frankMachinesRateTableUpdateEvent(DeviceDTO deviceDTO) {
+        log.info("【机器{}收到了tax版本{}，通知服务器】", deviceDTO.getId(), deviceDTO.getTaxVersion());
         String operationName = "frankMachines rateTableUpdateEvent";
-        String frankMachineId = dbDevice.getFrankMachineId();
+        String frankMachineId = deviceDTO.getId();
 
         /*
             {
@@ -342,14 +347,8 @@ public class ServiceManageCenter {
                  "error": {}
              }
          */
-        DeviceDTO deviceDTO = new DeviceDTO();
-        deviceDTO.setId(frankMachineId);
-        deviceDTO.setStatus(FMStatusEnum.getByCode(dbDevice.getCurFmStatus()));
-        deviceDTO.setPostOffice(dbDevice.getPostOffice());
-        deviceDTO.setTaxVersion(dbDevice.getTaxVersion());
-        deviceDTO.setEvent(EventEnum.RATE_TABLE_UPDATE);
-        deviceDTO.setDateTime(DateKit.createRussiatime());
 
+        // 1.通知俄罗斯tax更新了
         ApiRussiaResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
@@ -364,8 +363,16 @@ public class ServiceManageCenter {
             }
         }
 
-        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
-        deviceService.updateDeviceTaxVersionStatus(dbDevice);
+        //2. 更新device数据库
+        Device device = new Device();
+        device.setFrankMachineId(frankMachineId);
+        device.setTaxVersion(deviceDTO.getTaxVersion());
+        device.setUpdatedTime(new Date());
+        deviceService.updateDeviceTaxVersionStatus(device);
+
+        //3.  从rcs_tax_device_unreceived中删除记录
+        taxDeviceUnreceivedService.delete(frankMachineId, deviceDTO.getTaxVersion());
+
         log.info("{} 操作成功",operationName);
     }
 
@@ -420,7 +427,7 @@ public class ServiceManageCenter {
      * 【机器请求foreseens协议】调用本方法
      * 请求打印任务
      */
-    public Contract foreseens(ForeseenFMDTO foreseenFMDTO) {
+    public Contract foreseens(ForeseenFMDTO foreseenFMDTO, ChannelHandlerContext ctx) {
 
         String operationName = "foreseens";
         String frankMachineId = foreseenFMDTO.getFrankMachineId();
@@ -430,14 +437,15 @@ public class ServiceManageCenter {
         checkUtils.checkFmEnable(frankMachineId);
 
         //判断机器税率表是否更新
-        Tax tax = taxService.getLastestTax();
+        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFMDTO.getTaxVersion(), foreseenFMDTO.getMachineDate());
+        /*Tax tax = taxService.getLastestTax();
         String fmTaxVersion = foreseenFMDTO.getTaxVersion();
         String dbTaxVersion = tax.getVersion();
 
         if (!fmTaxVersion.equals(dbTaxVersion)) {
             log.error("发送版本和最新的版本信息不一致，无法更新，fmTaxVersion={}, dbTaxVersion={} ",fmTaxVersion, dbTaxVersion);
             throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
-        }
+        }*/
 
         //判断publickey是否更新
         if (!publicKeyService.checkFmIsUpdate(frankMachineId)){
@@ -451,7 +459,6 @@ public class ServiceManageCenter {
         Double dbConsolidate = dbContract.getConsolidate();
 
         //判断合同金额是否够用
-        //todo 用哪个判断：dbCurrent 还是 dbConsolidate  申请的时候，用哪个来管钱？
         double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
         if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);

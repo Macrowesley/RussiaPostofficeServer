@@ -81,7 +81,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
         /*
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];				//
+                unsigned char length[4];				//
                 unsigned char type;					//0xB9
                 unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -128,7 +128,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                     log.info("UpdatePrivateKeyResultPortocol密钥更新结果：" + publicKeyFMDTO.toString());
                     /**
                      typedef  struct{
-                     unsigned char length[2];				 //2个字节
+                     unsigned char length[4];				 //2个字节
                      unsigned char type;				 	     //0xB9
                      unsigned char  operateID[2];
                      unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version
@@ -173,7 +173,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
 
                         /**
                          * typedef  struct{
-                         *     unsigned char length[2];				 //2个字节
+                         *     unsigned char length[4];				 //2个字节
                          *     unsigned char type;				 	     //0xB9
                          *     unsigned char  operateID[2];
                          *     unsigned char content;				     //加密内容: result(长度为2 0 失败 1 成功) + version + Key revision(4位，不够用0填充)

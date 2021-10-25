@@ -17,4 +17,5 @@ public class ForeseenFMDTO {
     String taxVersion;
     //金钱单位：分
     String totalAmmount;
+    String machineDate;
 }

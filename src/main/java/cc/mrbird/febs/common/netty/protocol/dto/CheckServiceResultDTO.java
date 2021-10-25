@@ -30,6 +30,7 @@ public class CheckServiceResultDTO {
     //二维码内容（不包含签名）
     String dmMsg;
     String transactionId;
+    String serverDate;
     //ForeseenFMDTO的json
     String foreseenFMDTO;
 }

@@ -13,14 +13,14 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.CheckUtils;
 import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
-import cc.mrbird.febs.rcs.common.enums.TaxUpdateEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
-import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Tax;
@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 
 
 @Slf4j
@@ -85,7 +86,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
         return checkServicePortocol;
     }
 
-
+    @Autowired
+    CheckUtils checkUtils;
     /**
      * 获取协议类型
      *
@@ -114,7 +116,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];			//
+                unsigned char length[4];			//
                 unsigned char type;					//0xB3
                 unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -152,7 +154,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
                     /**
                      typedef  struct{
-                     unsigned char length[2];				 //2个字节
+                     unsigned char length[4];				 //2个字节
                      unsigned char type;				 	 //0xB3
                      unsigned char  operateID[2];
                      unsigned char content;				     //加密内容:
@@ -172,7 +174,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //获取上次打印任务信息
 //                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
-                    log.info(checkServiceDTO.toString());
+                    log.info("checkServiceDTO =" + checkServiceDTO.toString());
                     if (StringUtils.isEmpty(checkServiceDTO.getTaxVersion())
                             || StringUtils.isEmpty(checkServiceDTO.getFrankMachineId())
                             || checkServiceDTO.getDmMsgDto() == null) {
@@ -185,26 +187,31 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     }
                     String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
                     log.info("fmTaxVersion = " + fmTaxVersion);
+                    Date machineDate = DateKit.parseDateYmdhms(checkServiceDTO.getMachineDate());
 
                     //请求服务器返回最新状态
                     Device dbDevice = checkServicePortocol.deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
+                    //判断是否需要通知俄罗斯/rateTables
+                    Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
+                    if (lastestTax != null && lastestTax.getInformRussia().equals(InformRussiaEnum.NO.getCode())){
+                        //服务器没有成功通知俄罗斯/rateTables 再次尝试
+                        log.info("服务器没有成功通知俄罗斯/rateTables 再次尝试");
+                        if(!checkServicePortocol.serviceManageCenter.rateTables(lastestTax.getVersion())){
+                            log.info("rateTables fail");
+                            throw new FmException(FMResultEnum.RateTablesFail.getCode(), "rateTables fail ");
+                        }
+                    }
+
                     /**
                      * 校验机器tax是否需要更新
+                     *
                      */
+                    checkServicePortocol.checkUtils.checkTaxIsOk(frankMachineId, ctx, checkServiceDTO.getTaxVersion(), checkServiceDTO.getMachineDate());
+
                     //机器的税率是否需要更新（0不需要 1需要更新）
-                    int isFmTaxNeedUpdate = 0;
-                    Tax lastestTax = checkServicePortocol.taxService.getLastestTax();
-                    log.info(lastestTax.toString());
+                    /*int isFmTaxNeedUpdate = 0;
                     if (lastestTax != null && fmTaxVersion.equals(lastestTax.getVersion())){
-                        if (lastestTax.getInformRussia().equals(InformRussiaEnum.NO.getCode())){
-                            //服务器没有成功通知俄罗斯/rateTables 再次尝试
-                            log.info("服务器没有成功通知俄罗斯/rateTables 再次尝试");
-                            if(!checkServicePortocol.serviceManageCenter.rateTables(lastestTax.getVersion())){
-                                log.info("rateTables fail");
-                                throw new FmException(FMResultEnum.RateTablesFail.getCode(), "rateTables fail ");
-                            }
-                        }
                         log.info("开始判断是否需要通知俄罗斯");
                         //服务器已经成功通知俄罗斯/rateTables
                         //机器已经更新了tax,需要处理下数据库的状态了
@@ -224,7 +231,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                         //机器没有更新tax，需要更新
                         log.info("机器没有更新tax，需要更新");
                         isFmTaxNeedUpdate = 1;
-                    }
+                    }*/
 
                     //校验数据库的私钥是否完成闭环 机器的私钥是否需要更新（0 不需要更新 1需要更新）
                     int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
@@ -287,10 +294,11 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setIsRussia(String.valueOf(dbDevice.getIsRussia()));
                     resultDto.setIsPrintEnd(String.valueOf(isPrintEnd == true ? 1 : 0));
                     resultDto.setIsFmPrivateNeedUpdate(String.valueOf(isFmPrivateNeedUpdate));
-                    resultDto.setIsFmTaxNeedUpdate(String.valueOf(isFmTaxNeedUpdate));
+//                    resultDto.setIsFmTaxNeedUpdate(String.valueOf(isFmTaxNeedUpdate));
                     resultDto.setActualCount(String.valueOf(actualCount));
                     resultDto.setActualAmount(actualAmount);
 //                    resultDto.setDmMsg(dmMsg);
+                    resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
                     resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
                     String responseData = JSON.toJSONString(resultDto);

@@ -8,6 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -158,5 +161,46 @@ public class FileUtil {
                 zipOut.write(data, 0, count);
             }
         }
+    }
+
+    /**
+     * 读取文件内容
+     * @param filePath
+     * @return
+     */
+    public static String readContent(String filePath) {
+        StringBuilder builder = new StringBuilder();
+        try {
+            File file=new File(filePath);
+            if(file.isFile() && file.exists()){
+                InputStreamReader read = new InputStreamReader(
+                        new FileInputStream(file),"UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(read);
+
+                String lineTxt = null;
+                while((lineTxt = bufferedReader.readLine()) != null){
+                    builder.append(lineTxt);
+                }
+
+                read.close();
+            }else{
+                log.error("找不到指定的文件");
+            }
+        } catch (Exception e) {
+            log.error("读取文件内容出错");
+            return "";
+        }
+        return builder.toString();
+    }
+
+    public static byte[] readBytes(String filePath){
+        return cn.hutool.core.io.FileUtil.readBytes(filePath);
+    }
+
+    public static void main(String[] args) {
+        String s = readContent("C:\\Users\\Administrator\\Desktop\\a.txt");
+        String md5Str = MD5Util.MD5Encode(s);
+        log.info(s);
+        log.info(md5Str);
     }
 }

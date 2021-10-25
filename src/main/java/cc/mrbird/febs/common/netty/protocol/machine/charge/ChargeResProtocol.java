@@ -79,7 +79,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
         try {
             /*typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];				//
+                unsigned char length[4];				//
                 unsigned char type;					//0xA2
                 unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -140,7 +140,7 @@ public class ChargeResProtocol extends MachineToServiceProtocol {
                     //更新状态结果
                     /*
                     typedef  struct{
-                        unsigned char length[2];				 //2个字节
+                        unsigned char length[4];				 //2个字节
                         unsigned char type;				 	 //0xA2
                         unsigned char  operateID[2];
                         unsigned char content[?];            //加密后内容 版本内容(3) + 检验结果（1）+ 机器订单ID（8）+ 注资金额（8）

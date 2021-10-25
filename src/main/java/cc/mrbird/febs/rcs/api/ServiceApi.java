@@ -8,10 +8,10 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,17 +66,6 @@ public class ServiceApi {
     @Qualifier(value = FebsConstant.ASYNC_POOL)
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    @GetMapping("/test")
-    public void test(HttpServletResponse response){
-//        response.setStatus(400);
-//        return new ApiRcsResponse(200, "ok");
-    }
-
-    @GetMapping("/test2")
-    public String test2(){
-        return "ok";
-    }
-
     /**
      * 公钥请求
      * @param frankMachineId
@@ -112,7 +101,6 @@ public class ServiceApi {
             serviceManageCenter.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
         }
         log.info("【俄罗斯调用服务器api 结束 publicKey】");
-//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -141,8 +129,6 @@ public class ServiceApi {
 
         //执行到这就返回给俄罗斯
         log.info("【俄罗斯调用服务器api 结束 changeStatus】");
-//        return new ApiRcsResponse(200, "ok");
-//        return "ok";
     }
 
     /**
@@ -154,17 +140,19 @@ public class ServiceApi {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public void taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
-        log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
-        if (taxService.checkIExist(taxVersionDTO.getVersion())){
+//        log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
+        if (taxService.checkIsExist(taxVersionDTO.getVersion())){
             throw new RcsApiException(RcsApiErrorEnum.TaxVersionExist);
         }
+        String jsonFileName = DateKit.getNowDateToFileName();
         //数据库保存信息
-        if(taxService.saveTaxVersion(taxVersionDTO)){
+        if(taxService.saveTaxVersion(taxVersionDTO, jsonFileName)){
             //告知俄罗斯已经收到 异步
             threadPoolTaskExecutor.submit(new Runnable() {
                 @Override
                 public void run() {
                     serviceManageCenter.rateTables(taxVersionDTO.getVersion());
+                    serviceToMachineProtocol.sendTaxToAllMachine(taxVersionDTO, jsonFileName);
                 }
             });
         }else{
@@ -172,7 +160,6 @@ public class ServiceApi {
         }
 
         log.info("【俄罗斯调用服务器api 结束 taxes】");
-//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -187,7 +174,6 @@ public class ServiceApi {
         log.info("postOfficeDTO={}",postOfficeDTO.toString());
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
         log.info("【俄罗斯调用服务器api 结束 postOffices】");
-//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -202,7 +188,6 @@ public class ServiceApi {
         log.info("contractDTO={}",contractDTO.toString());
         contractService.saveContractDto(contractDTO);
         log.info("【俄罗斯调用服务器api 结束 contracts】");
-//        return new ApiRcsResponse(200, "ok");
     }
 
     /**
@@ -218,7 +203,6 @@ public class ServiceApi {
         log.info("code={}, serviceBalanceDTO={}",code, serviceBalanceDTO.toString());
         balanceService.saveBalance(code, serviceBalanceDTO);
         log.info("【俄罗斯调用服务器api 结束 balance】");
-//        return new ApiRcsResponse(200, "ok");
     }
 
 }

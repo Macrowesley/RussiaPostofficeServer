@@ -82,8 +82,12 @@ public class DateKit {
      * @param date
      * @return
      */
-    public static String formatDateTime(Date date) {
+    public static String formatDateyyyy_MM_dd_HH_mm_ss(Date date) {
         return DatePattern.NORM_DATETIME_FORMAT.format(date);
+    }
+
+    public static String formatDateYmdhms(Date date) {
+        return DatePattern.PURE_DATETIME_FORMAT.format(date);
     }
 
     /**
@@ -91,7 +95,7 @@ public class DateKit {
      * @param date
      * @return
      */
-    public static String formatDate(Date date) {
+    public static String formatDateYmd(Date date) {
         return DatePattern.NORM_DATE_FORMAT.format(date);
     }
 
@@ -113,7 +117,7 @@ public class DateKit {
      */
     public static String createRussiatime(){
         try {
-            return parseBeiJingTimeToUtc(formatDateTime(new Date()));
+            return parseBeiJingTimeToUtc(formatDateyyyy_MM_dd_HH_mm_ss(new Date()));
         } catch (ParseException e) {
             return null;
         }
@@ -121,9 +125,20 @@ public class DateKit {
 
     public static String createRussiatime(Date date){
         try {
-            return parseBeiJingTimeToUtc(formatDateTime(date));
+            return parseBeiJingTimeToUtc(formatDateyyyy_MM_dd_HH_mm_ss(date));
         } catch (ParseException e) {
             return null;
+        }
+    }
+
+
+    public static Date parseDateYmdhms(String dateTime) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = format.parse(dateTime);
+            return date;
+        }catch (Exception e){
+            return new Date();
         }
     }
 
@@ -193,7 +208,7 @@ public class DateKit {
      * @param secondDate
      * @return
      */
-    public static boolean checkApplyDateIsEnable(Date applyDate, Date nowDate){
+    public static boolean checkApplyDateIsEnable(Date nowDate, Date applyDate){
         return nowDate.compareTo(applyDate) >= 0;
     }
 
@@ -219,4 +234,5 @@ public class DateKit {
                 });
         log.info(createRussiatime());
     }
+
 }

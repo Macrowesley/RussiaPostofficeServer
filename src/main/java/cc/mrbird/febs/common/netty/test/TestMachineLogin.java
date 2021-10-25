@@ -105,7 +105,7 @@ public class TestMachineLogin implements Runnable{
 
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];			//
+                unsigned char length[4];			//
                 unsigned char type;					//0xB3
                 unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -243,7 +243,7 @@ public class TestMachineLogin implements Runnable{
          * 机器请求临时秘钥
          * Typedef struct{
             unsigned char head;                 //0xAA
-            unsigned char length[2];
+            unsigned char length[4];
             unsigned char type;                 //0xA4，用来区分协议
             unsigned char operateID[2];
             unsigned char version[3];           //版本内容 001

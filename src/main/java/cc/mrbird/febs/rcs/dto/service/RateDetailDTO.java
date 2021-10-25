@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-@JSONType(orders={"PostalProductDTO","TariffDTO","String"})
+@JSONType(orders={"product","tarif","modified"})
 public class RateDetailDTO {
     PostalProductDTO product;
     TariffDTO tarif;

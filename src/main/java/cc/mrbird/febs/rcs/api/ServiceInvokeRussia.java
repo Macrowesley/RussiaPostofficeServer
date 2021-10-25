@@ -39,14 +39,14 @@ public class ServiceInvokeRussia {
      * CPU123 FM100002  00001033
      * 端口号：12800
      */
-    private final boolean isTest = false;
+    private final boolean isTest = true;
     /**
      * 发送机器状况
      *
      * @PutMapping("frankMachines")
      */
     public ApiRussiaResponse frankMachines(DeviceDTO deviceDTO) {
-        //测试条件下，返回假数据
+        //测试条件下，返回假数记录机器和版本的信息据
         if (isTest){
             return  new ApiRussiaResponse(ResultEnum.SUCCESS.getCode(),deviceDTO);
         }

@@ -329,6 +329,13 @@
             <version>5.6.0</version>
         </dependency>
 
+        <!--ECDSA加密-->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.46</version>
+        </dependency>
+
     </dependencies>
 
 

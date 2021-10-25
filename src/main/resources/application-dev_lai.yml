@@ -55,5 +55,6 @@ websocket:
 
 netty:
   port: 12800
-  ip: 192.168.2.119
+  ip: 192.168.2.122
   ssl: false
+  enable: true

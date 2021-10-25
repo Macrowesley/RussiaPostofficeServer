@@ -138,7 +138,7 @@ public class TestCheckServiceByMacro implements Runnable{
 
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];			//
+                unsigned char length[4];			//
                 unsigned char type;					//0xB3
                 unsigned char  operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -210,7 +210,7 @@ public class TestCheckServiceByMacro implements Runnable{
          * 发送心跳包
             Typedef struct{
                 unsigned char head;                 //0xAA
-                unsigned char length[2];
+                unsigned char length[4];
                 unsigned char type;                 //0xA0
                 unsigned char operateID[2];			//FF FF
                 unsigned char acnum[6];             //机器的表头号

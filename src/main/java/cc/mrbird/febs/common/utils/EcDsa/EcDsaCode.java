@@ -1,10 +1,8 @@
-package cc.mrbird.febs.common.utils;
+package cc.mrbird.febs.common.utils.EcDsa;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import sun.nio.cs.ext.GB18030;
-import sun.nio.cs.ext.GBK;
 import sun.security.ec.ECPrivateKeyImpl;
 import sun.security.ec.ECPublicKeyImpl;
 
@@ -13,10 +11,7 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECFieldFp;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPoint;
-import java.security.spec.EllipticCurve;
+import java.security.spec.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -25,11 +20,13 @@ import java.util.stream.Stream;
 /**
  * EcDsa 获取签名算法
  */
+@Deprecated
 public class EcDsaCode {
     private static final String KEY_ALGORITHM = "EC";
     //    private static final int KEY_SIZE = 256;
 //    private static final String SIGNATURE_ALGORITHM = "SHA512withECDSA";
     private static final int KEY_SIZE = 112;
+    public static final String curveName = "secp192r1";
     /*
     | TEE_ALG_ECDSA_P192*                 | TEE_ALG_ECDSA_SHA1                  |
     | TEE_ALG_ECDSA_P224*                 | TEE_ALG_ECDSA_SHA224                |
@@ -132,6 +129,20 @@ public class EcDsaCode {
         ECPublicKey publicKey = new ECPublicKeyImpl(new ECPoint(PUBKEY_X, PUBKEY_Y), ecParameterSpec);
         ECPrivateKey privateKey = new ECPrivateKeyImpl(D, ecParameterSpec);
         return new KeyPair(publicKey, privateKey);
+    }
+
+    public KeyPair generateKeys(){
+        try {
+            ECGenParameterSpec ecSpec = new ECGenParameterSpec(curveName);
+            KeyPairGenerator generator = null;
+            generator = KeyPairGenerator.getInstance("EC", "BC");
+            SecureRandom rand = new SecureRandom();
+            generator.initialize(ecSpec, rand);
+            return generator.generateKeyPair();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchProviderException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     public static byte[] sign(byte[] data, PrivateKey privateKey) throws Exception {
