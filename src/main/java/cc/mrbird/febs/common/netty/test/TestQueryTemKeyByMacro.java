@@ -125,7 +125,7 @@ public class TestQueryTemKeyByMacro implements Runnable{
          * 机器请求临时秘钥
          * Typedef struct{
             unsigned char head;                 //0xAA
-            unsigned char length[2];
+            unsigned char length[4];
             unsigned char type;                 //0xA4，用来区分协议
             unsigned char operateID[2];
             unsigned char version[3];           //版本内容 001

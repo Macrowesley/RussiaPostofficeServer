@@ -8,11 +8,10 @@ import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
-import cc.mrbird.febs.rcs.dto.manager.ApiResponse;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.*;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.*;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +19,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -66,11 +66,6 @@ public class ServiceApi {
     @Qualifier(value = FebsConstant.ASYNC_POOL)
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    @GetMapping("/test")
-    public ApiResponse publicKey(){
-        return new ApiResponse(200, "ok");
-    }
-
     /**
      * 公钥请求
      * @param frankMachineId
@@ -79,7 +74,7 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
-    public ApiResponse publicKey(@PathVariable @NotBlank String frankMachineId,  boolean regenerate){
+    public void publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 publicKey】");
         regenerate = true;
         log.info("frankMachineId={},regenerate={}",frankMachineId,regenerate);
@@ -103,12 +98,9 @@ public class ServiceApi {
 
             //生成publickey，更新数据库，机器开机后，检查是需要改变publickey
             PublicKey dbPublicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-            /*//异步：发送privateKey给机器
-            log.info("得到俄罗斯的公钥请求，我们服务器更新了publickey，然后异步把最新的privateKey给机器");
-            serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, dbPublicKey);*/
+            serviceManageCenter.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
         }
         log.info("【俄罗斯调用服务器api 结束 publicKey】");
-        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -119,8 +111,8 @@ public class ServiceApi {
      */
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_changeStatus")
-    public ApiResponse changeStatus(@PathVariable @NotBlank String frankMachineId,
-                                    @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO) throws RuntimeException {
+    public void changeStatus(@PathVariable @NotBlank String frankMachineId,
+                                          @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO, HttpServletResponse response) throws RuntimeException {
         log.info("【俄罗斯调用服务器api 开始 changeStatus】");
         log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
 
@@ -137,7 +129,6 @@ public class ServiceApi {
 
         //执行到这就返回给俄罗斯
         log.info("【俄罗斯调用服务器api 结束 changeStatus】");
-        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -147,19 +138,21 @@ public class ServiceApi {
      */
     @PutMapping("/taxes")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
-    public ApiResponse taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO){
+    public void taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 taxes】");
-        log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
-        if (taxService.checkIExist(taxVersionDTO.getVersion())){
+//        log.info("taxVersionDTO={}", JSON.toJSONString(taxVersionDTO));
+        if (taxService.checkIsExist(taxVersionDTO.getVersion())){
             throw new RcsApiException(RcsApiErrorEnum.TaxVersionExist);
         }
+        String jsonFileName = DateKit.getNowDateToFileName();
         //数据库保存信息
-        if(taxService.saveTaxVersion(taxVersionDTO)){
+        if(taxService.saveTaxVersion(taxVersionDTO, jsonFileName)){
             //告知俄罗斯已经收到 异步
             threadPoolTaskExecutor.submit(new Runnable() {
                 @Override
                 public void run() {
                     serviceManageCenter.rateTables(taxVersionDTO.getVersion());
+                    serviceToMachineProtocol.sendTaxToAllMachine(taxVersionDTO, jsonFileName);
                 }
             });
         }else{
@@ -167,7 +160,6 @@ public class ServiceApi {
         }
 
         log.info("【俄罗斯调用服务器api 结束 taxes】");
-        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -177,12 +169,11 @@ public class ServiceApi {
      */
     @PutMapping("/postOffices")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
-    public ApiResponse postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO){
+    public void postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 postOffices】");
         log.info("postOfficeDTO={}",postOfficeDTO.toString());
         postOfficeService.savePostOfficeDTO(postOfficeDTO);
         log.info("【俄罗斯调用服务器api 结束 postOffices】");
-        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -192,12 +183,11 @@ public class ServiceApi {
      */
     @PutMapping("/contracts")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
-    public ApiResponse contracts(@RequestBody @Validated ContractDTO contractDTO){
+    public void contracts(@RequestBody @Validated ContractDTO contractDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 contracts】");
         log.info("contractDTO={}",contractDTO.toString());
         contractService.saveContractDto(contractDTO);
         log.info("【俄罗斯调用服务器api 结束 contracts】");
-        return new ApiResponse(200, "ok");
     }
 
     /**
@@ -208,12 +198,11 @@ public class ServiceApi {
      */
     @PutMapping("/contracts/{code}/balance")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
-    public ApiResponse balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO){
+    public void balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO, HttpServletResponse response){
         log.info("【俄罗斯调用服务器api 开始 balance】");
         log.info("code={}, serviceBalanceDTO={}",code, serviceBalanceDTO.toString());
         balanceService.saveBalance(code, serviceBalanceDTO);
         log.info("【俄罗斯调用服务器api 结束 balance】");
-        return new ApiResponse(200, "ok");
     }
 
 }

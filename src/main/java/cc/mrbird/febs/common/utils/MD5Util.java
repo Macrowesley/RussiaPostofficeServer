@@ -59,4 +59,10 @@ public class MD5Util {
 
     private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+
+    public static void main(String[] args) {
+        String path = "D:\\workspace\\PostmartOfficeServiceFile\\tax\\2021_10_27_15_25_37.json";
+        System.out.println(MD5Encode(FileUtil.readContent(path)).toLowerCase());
+
+    }
 }

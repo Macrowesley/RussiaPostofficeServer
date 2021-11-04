@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.kit;
 
+import cc.mrbird.febs.common.service.RedisService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,9 @@ public class ChannelMapperManager {
 
     @Autowired
     public TempTimeUtils tempTimeUtils;
+
+    @Autowired
+    public RedisService redisService;
 
     public ChannelMapperManager() {
     }

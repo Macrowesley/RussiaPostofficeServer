@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -100,23 +101,35 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void saveContractDto(ContractDTO contractDTO) {
-        if (this.checkIsExist(contractDTO.getCode())){
+        /*if (this.checkIsExist(contractDTO.getCode())){
             throw new RcsApiException(RcsApiErrorEnum.ContractExist);
+        }*/
+        log.info("接收服务器传递过来的合同数据 开始");
+        //判断合同是否存在，如果存在，判断修改日期是否最新
+        Contract contractDto = getByConractCode(contractDTO.getCode());
+        Date newDate = DateKit.parseRussiatime(contractDTO.getModified());
+        if (contractDto != null){
+            Date dbDate = contractDto.getModified();
+            if (newDate.before(dbDate)){
+                log.info("修改时间是旧的，不能改动");
+//                throw new RcsApiException(RcsApiErrorEnum.ModitifyDateIsOld);
+                return;
+            }
         }
 
         try {
-            log.info("接收服务器传递过来的合同数据 开始");
+//            log.info("接收服务器传递过来的合同数据 开始");
 
             //保存合同信息
             Contract contract = new Contract();
             BeanUtils.copyProperties(contractDTO, contract);
             contract.setCode(contractDTO.getCode());
             contract.setEnable(contractDTO.isEnable() ? 1 : 0);
-            contract.setCurrent(0D);
-            contract.setConsolidate(0D);
+//            contract.setCurrent(0D);
+//            contract.setConsolidate(0D);
             contract.setCreatedTime(new Date());
             contract.setUpdatedTime(new Date());
-            contract.setModified(DateKit.parseRussiatime(contractDTO.getModified()));
+            contract.setModified(newDate);
             contract.setUpdatedTime(new Date());
             this.saveOrUpdate(contract);
 

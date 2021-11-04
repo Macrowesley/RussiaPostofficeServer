@@ -74,7 +74,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
 
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length[2];				//
+            unsigned char length[4];				//
             unsigned char type;					//0xB4
             unsigned char  operateID[2];
             unsigned char acnum[6];             //机器表头号
@@ -155,6 +155,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                                             break;
                                         case LOST:
                                             changeStatusPortocol.serviceManageCenter.lost(deviceDto);
+                                            break;
                                         default:
                                             changeStatusPortocol.serviceManageCenter.changeStatusEvent(deviceDto, isMachineActive);
                                             break;
@@ -166,7 +167,7 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
                             break;
                         case RATE_TABLE_UPDATE:
                             //这里应该是作废的，目前是在开机的时候，机器发送版本号给服务器，服务器来判断是否需要发给俄罗斯，代码先留着看看
-//                            changeStatusPortocol.serviceManageCenter.rateTableUpdateEvent(deviceDto);
+                            changeStatusPortocol.serviceManageCenter.frankMachinesRateTableUpdateEvent(deviceDto);
                             break;
                         default:
                             //处理异常

@@ -5,13 +5,12 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+import java.util.stream.Stream;
 
 @Slf4j
 public class DateKit {
@@ -38,6 +37,7 @@ public class DateKit {
 
     /**
      * 获取指定日期之后的日期
+     * @param date
      * @param offsetDay
      * @return
      */
@@ -82,8 +82,12 @@ public class DateKit {
      * @param date
      * @return
      */
-    public static String formatDateTime(Date date) {
+    public static String formatDateyyyy_MM_dd_HH_mm_ss(Date date) {
         return DatePattern.NORM_DATETIME_FORMAT.format(date);
+    }
+
+    public static String formatDateYmdhms(Date date) {
+        return DatePattern.PURE_DATETIME_FORMAT.format(date);
     }
 
     /**
@@ -91,39 +95,8 @@ public class DateKit {
      * @param date
      * @return
      */
-    public static String formatDate(Date date) {
+    public static String formatDateYmd(Date date) {
         return DatePattern.NORM_DATE_FORMAT.format(date);
-    }
-
-    /**
-     * 日期格式转换yyyy-MM-dd'T'HH:mm:ss.SSSXXX  (yyyy-MM-dd'T'HH:mm:ss.SSSZ) TO  yyyy-MM-dd HH:mm:ss
-     * 2020-04-09T23:00:00.000+08:00 TO 2020-04-09 23:00:00
-     * @throws ParseException
-     */
-    public static String dealDateFormatToStr(String oldDateStr) throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
-        Date  date = df.parse(oldDateStr);
-        SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
-        Date date1 =  df1.parse(date.toString());
-        DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return df2.format(date1);
-    }
-
-    /**
-     * 解析指定格式日期，转date
-     * @param oldDateStr
-     * @return
-     * @throws ParseException
-     */
-    public static Date dealDateFormatToDate(String oldDateStr) throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
-        Date  date = df.parse(oldDateStr.trim());
-        System.out.println("date:"+date);
-        SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
-
-        Date date1 =  df1.parse(date.toString());
-        System.out.println("date1:"+date1);
-        return date1;
     }
 
     /**
@@ -131,10 +104,10 @@ public class DateKit {
      * 2020-04-09 23:00:00 TO 2020-04-09T23:00:00.000+08:00
      * @throws ParseException
      */
-    public static String dealDateFormatReverse(String oldDateStr) throws ParseException{
+    public static String parseBeiJingTimeToUtc(String beijinDate) throws ParseException{
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         DateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date1 =  df2.parse(oldDateStr);
+        Date date1 =  df2.parse(beijinDate);
         return df.format(date1);
     }
 
@@ -144,7 +117,7 @@ public class DateKit {
      */
     public static String createRussiatime(){
         try {
-            return dealDateFormatReverse(formatDateTime(new Date()));
+            return parseBeiJingTimeToUtc(formatDateyyyy_MM_dd_HH_mm_ss(new Date()));
         } catch (ParseException e) {
             return null;
         }
@@ -152,9 +125,20 @@ public class DateKit {
 
     public static String createRussiatime(Date date){
         try {
-            return dealDateFormatReverse(formatDateTime(date));
+            return parseBeiJingTimeToUtc(formatDateyyyy_MM_dd_HH_mm_ss(date));
         } catch (ParseException e) {
             return null;
+        }
+    }
+
+
+    public static Date parseDateYmdhms(String dateTime) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = format.parse(dateTime);
+            return date;
+        }catch (Exception e){
+            return new Date();
         }
     }
 
@@ -163,50 +147,92 @@ public class DateKit {
      * @param date
      * @return
      */
-    public static Date parseRussiatime(String date){
+    public static Date parseRussiatime(String dateTime){
+        dateTime = dateTime.replace(" ","");
         try {
-            if (StringUtils.isEmpty(date)){
-                return new Date();
-            }
-            return dealDateFormatToDate(date);
-        } catch (ParseException e) {
-            log.info(e.getMessage());
-            return null;
-        }
-    }
-
-    public static void main(String[] args) {
-//        log.info("时间: " + formatDateTime(new Date()));
-//        log.info(offsetMinuteToDate(120));
-//        log.info(offsetMinuteToDateTime(120));
-//        log.info(getNowDateToFileName());
-        /*String russiatime = createRussiatime();
-        log.info(russiatime);
-        log.info(parseRussiatime(russiatime).toString());*/
-//        String rTime = "2021-01-01T09:00:00.001+03:00";
-//        log.info(parseRussiatime(rTime).toString());
-        //2021-06-22T13:46:57.373Z
-        //String rTime = "2021-01-01T09: 00: 00.001+03: 00";
-        String rTime = "2021-10-12T21:00:00Z";
-        //String rTime = "2021-07-20T11:06:53.214858Z";
-        //去空格
-        for (int i=0;i<rTime.length();i++){
-            rTime = rTime.replace(" ","");
-            //if(rTime.length()==20&&rTime.charAt(i)=='Z'){
-            if(rTime.length()>19){
-                rTime = rTime.substring(0,19);
-                rTime += ".001+03:00";
-                //rTime = rTime.replace("Z",".001+03: 00");
+            if (dateTime.contains("Z")){
+                dateTime = dateTime.replace("Z", " UTC");
+                SimpleDateFormat format = null;
+                switch (dateTime.length()){
+                    case 23:
+                        //2021-10-19T21:00:00Z
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                        break;
+                    case 27:
+                        //2021-10-01T00:00:00.000Z
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                        break;
+                    case 30:
+                        //2021-10-19T05:42:48.472647Z
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+                        break;
+                    default:
+                        dateTime = dateTime.substring(0,19) + " UTC";
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                        break;
+                }
+                Date date = format.parse(dateTime);
+                return date;
             }else{
-                log.info("时间长度不够");
+                SimpleDateFormat format = null;
+                switch (dateTime.length()){
+                    case 28:
+                        //2019-03-22T09:11:52.000+0000
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                        break;
+                    case 29:
+                        //2021-01-01T09:00:00.001+03:00
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                        break;
+                    default:
+                        dateTime = dateTime.substring(0,23);
+                        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                        break;
+                }
+                Date date = format.parse(dateTime);
+                return date;
             }
+        }catch (Exception e){
+            log.error("解析俄罗斯传递来的时间" + e.getMessage());
+            return new Date();
         }
-
-        log.info(rTime);
-        log.info(parseRussiatime(rTime).toString());
     }
-
     public static String getNowDateToFileName() {
         return DateUtil.format(new Date(),"YYYY_MM_dd_HH_mm_ss");
     }
+
+    /**
+     * 判断applyDate是否可用
+     * applyDate比当前时间小，即可用
+     * @param firstDate
+     * @param secondDate
+     * @return
+     */
+    public static boolean checkApplyDateIsEnable(Date nowDate, Date applyDate){
+        return nowDate.compareTo(applyDate) >= 0;
+    }
+
+    public static void main(String[] args) {
+        testParseRussiaTime();
+    }
+
+    private static void testParseRussiaTime() {
+        Stream.of(
+                "2021-01-01T09:00:00.001+03:00",
+                "2019-03-22T09:11:52.000+0000",
+                "2021-10-19T21:00:00Z",
+                "2021-10-19T21:00:00.1Z",
+                "2021-10-01T00:00:00.000Z",
+                "2021-10-19T05:42:48.472647Z")
+                .forEach(time -> {
+                    log.info("开始解析：" + time);
+                    Date date = parseRussiatime(time);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    String format = simpleDateFormat.format(date);
+                    log.info("结果 = " + format);
+                    log.info("");
+                });
+        log.info(createRussiatime());
+    }
+
 }

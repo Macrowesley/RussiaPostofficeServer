@@ -23,9 +23,9 @@ public class TransactionMsg {
 
     @TableField("count")
     private Long count;
-
+    //单位是分，应该改成long类型
     @TableField("amount")
-    private Double amount;
+    private Long amount;
 
     @TableField("dm_msg")
     private String dmMsg;

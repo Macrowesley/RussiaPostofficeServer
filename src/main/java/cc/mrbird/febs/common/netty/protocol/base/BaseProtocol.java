@@ -1,6 +1,5 @@
 package cc.mrbird.febs.common.netty.protocol.base;
 
-import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -12,6 +11,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
@@ -21,10 +21,10 @@ import java.io.ByteArrayOutputStream;
 public abstract class BaseProtocol {
 
     //请求长度：记录整条数据长度数值的长度
-    public static final int REQUEST_LENGTH_LEN = 2;
+    public static final int REQUEST_LENGTH_LEN = 4;
 
     //响应长度：记录整条数据长度数值的长度
-    public static final int RESPONSE_LENGTH_LEN = 2;
+    public static final int RESPONSE_LENGTH_LEN = 4;
 
     //操作id 长度
     public static final int OPERATEID_LEN = 2;
@@ -85,6 +85,7 @@ public abstract class BaseProtocol {
 //        log.info("拼接发送给客户端的数据");
         int protocolLen = getResponseProtocolLen(data);
         byte[] length = BaseTypeUtils.int2ByteArrayCons(protocolLen);
+        //log.info("发给机器数据长度：" + protocolLen + " 长度具体内容=" + BaseTypeUtils.bytesToHexString(length));
         byte[] typeData = new byte[]{type};
         byte[] checkSume = BaseTypeUtils.makeCheckSum(BaseTypeUtils.byteMerger(BaseTypeUtils.byteMerger(typeData, getOperateIdArr()), data));
         byte[] end = {(byte) 0xD0};
@@ -107,6 +108,7 @@ public abstract class BaseProtocol {
         /*if (type != (byte) 0xa0) {
             log.info("最后发送给客户端的数据：" + BaseTypeUtils.bytesToHexString(baos.toByteArray()));
         }*/
+        //log.info("最后发送给客户端的数据：" + BaseTypeUtils.bytesToHexString(baos.toByteArray()));
         return baos.toByteArray();
     }
 

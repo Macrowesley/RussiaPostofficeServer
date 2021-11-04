@@ -76,11 +76,12 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                     Runtime.getRuntime().exec("cmd  /c  start " + url);
                 }
             }
-            //本地环境，暂时关闭netty
-            /*if (!"dev".equals(active)) {
+
+            if (nettyProperties.isEnable()) {
                 startNetty();
-            }*/
-            startNetty();
+            }else{
+                log.info("关闭netty");
+            }
         }
     }
 

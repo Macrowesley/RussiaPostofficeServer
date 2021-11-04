@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiError {
+public class ApiRcsResponse {
     int code;
     String message;
 }

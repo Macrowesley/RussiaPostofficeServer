@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 
@@ -55,7 +56,7 @@ public class NettyServer {
         InetSocketAddress socketAddress = new InetSocketAddress(hostname, port);
 
         ServerBootstrap bootstrap = new ServerBootstrap();
-        ServerBootstrap serverBootstrap = bootstrap.group(bossGroup, workerGroup)
+        bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -78,9 +79,12 @@ public class NettyServer {
                 })
                 .localAddress(socketAddress)
                 //设置队列大小
-                .option(ChannelOption.SO_BACKLOG, 4 * 1024)
+                .option(ChannelOption.SO_BACKLOG, 1024 * 100)
                 //设置接受的缓存大小
-                .option(ChannelOption.SO_RCVBUF, 128 * 1024)
+                .option(ChannelOption.SO_RCVBUF, 1024 * 200)
+                .option(ChannelOption.SO_SNDBUF, 1024 * 200)
+                .childOption(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(64, 1024, 65536 * 10))
+                .childOption(ChannelOption.SO_SNDBUF, 1024 * 200)
                 // 两小时内没有数据的通信时,TCP会自动发送一个活动探测数据报文
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 //socketchannel的设置,关闭延迟发送
@@ -121,20 +125,22 @@ public class NettyServer {
     public SslContext buildSslContext(ClientAuth clientAuth) {
         InputStream certInput = null;
         InputStream priKeyInput = null;
-        InputStream caInput = null;
+        InputStream rootFileInput = null;
         try {
             certInput = NettyServer.class.getResourceAsStream(serverCrt);
             priKeyInput = NettyServer.class.getResourceAsStream(serverKey);
-            caInput = NettyServer.class.getResourceAsStream(caCrt);
+            rootFileInput = NettyServer.class.getResourceAsStream(caCrt);
+
             return SslContextBuilder.forServer(certInput, priKeyInput)
                     .clientAuth(clientAuth)
-                    .trustManager(caInput).build();
+                    .trustManager(rootFileInput)
+                    .build();
         } catch (Throwable e) {
             logger.error("HidsSslContextBuilder", e);
         } finally {
             IOUtils.closeQuietly(certInput);
             IOUtils.closeQuietly(priKeyInput);
-            IOUtils.closeQuietly(caInput);
+            IOUtils.closeQuietly(rootFileInput);
         }
         return null;
     }

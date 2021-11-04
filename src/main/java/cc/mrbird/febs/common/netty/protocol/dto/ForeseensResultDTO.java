@@ -10,5 +10,6 @@ public class ForeseensResultDTO {
     String foreseenId;
     String consolidate;
     String current;
+    String serverDate;
     AddressDTO[] addressList;
 }

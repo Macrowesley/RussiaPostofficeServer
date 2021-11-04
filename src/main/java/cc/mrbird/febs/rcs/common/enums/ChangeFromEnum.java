@@ -2,7 +2,7 @@ package cc.mrbird.febs.rcs.common.enums;
 
 public enum ChangeFromEnum {
     Russia(1,"俄罗斯"),
-    Machine(2,"机器");
+    Machine(0,"机器");
     int code;
     String msg;
 

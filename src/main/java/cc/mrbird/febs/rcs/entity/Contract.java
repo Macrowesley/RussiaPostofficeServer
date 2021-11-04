@@ -65,7 +65,17 @@ public class Contract {
     @TableField("updated_time")
     private Date updatedTime;
 
+    /**
+     * contract的更新时间
+     */
     @TableField("modified")
     private Date modified;
 
+    /**
+     * balance的更新时间
+     * 我们的balance被调用成功后，才更新这个字段
+     * 访问foeseen/transaction后返回的balance不影响这个字段
+     */
+    @TableField("balance_modified")
+    private Date balanceModified;
 }

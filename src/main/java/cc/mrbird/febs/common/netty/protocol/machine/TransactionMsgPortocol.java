@@ -65,7 +65,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
             /*
             typedef  struct{
                 unsigned char head;				    //0xAA
-                unsigned char length[2];
+                unsigned char length[4];
                 unsigned char type;					//0xBA
                 unsigned char operateID[2];
                 unsigned char acnum[6];             //机器表头号
@@ -128,7 +128,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
     private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, String transactionId) throws Exception {
         /**
          typedef  struct{
-             unsigned char length[2];				 //2个字节
+             unsigned char length[4];				 //2个字节
              unsigned char type;				 	     //0xBA
              unsigned char operateID[2];
              unsigned char content;				     //加密内容: result(长度为2 1 成功) + version + transactionId（36）

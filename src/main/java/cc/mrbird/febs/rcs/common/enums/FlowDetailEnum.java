@@ -10,6 +10,7 @@ public enum FlowDetailEnum {
     StatusChangeEndSuccess(11,"闭环：状态修改成功"),
     StatusChangeEndFailUnKnow(13,"闭环：返回4XX或者5XX错误"),
     StatusChangeError4xx(12,"未闭环：未成功发送给俄罗斯"),
+    StatusChangeBegin(14,"未闭环：状态改动中"),
 
     AuthEndSuccess(21, "闭环：服务器收到，发给俄罗斯，收到返回"),
     AuthEndFail(22, "闭环：服务器收到，发给俄罗斯，请求返回4XX或者5XX错误"),

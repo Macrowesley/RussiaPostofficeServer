@@ -13,6 +13,7 @@ import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IContractAddressService;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 
 
 @Slf4j
@@ -84,7 +86,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length[2];			//
+            unsigned char length[4];			//
             unsigned char type;					//0xB5
             unsigned char  operateID[2];
             unsigned char acnum[6];             //机器表头号
@@ -147,6 +149,9 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                     }
 
+                    //机器日期
+                    Date machineDate = DateKit.parseDateYmdhms(foreseenFmDto.getMachineDate());
+
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
                     if (dbPrintJob != null) {
@@ -174,7 +179,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         foreseenFmDto.setId(foreseenId);
                     }
                     //数据库的合同信息
-                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto);
+                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto, ctx);
 
                     return getSuccessResult(version,ctx,foreseenId,dbContract);
                 default:
@@ -214,7 +219,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         foreseensResultDTO.setForeseenId(foreseenId);
         foreseensResultDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(contract.getConsolidate())));
         foreseensResultDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(contract.getCurrent())));
-
+        foreseensResultDTO.setServerDate(DateKit.formatDateYmdhms(new Date()));
         foreseensResultDTO.setAddressList(foreseensPortocol.contractAddressService.selectArrayByConractCode(contract.getCode()));
 
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + version + JSON.toJSONString(foreseensResultDTO);

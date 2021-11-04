@@ -124,12 +124,14 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                                     + machineLoginPortocol.channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
                         }
 
+                    } else {
+                        log.error("发送过来的时间戳无效");
                     }
 
 
                     //返回结果
                     /*typedef  struct{
-                        unsigned char length[2];			 //2个字节
+                        unsigned char length[4];			 //2个字节
                         unsigned char type;				 	 //0xA5
                         unsigned char  operateID[2];
                         unsigned char res;                   //01 正常  00 失败 失败的话，只能重新执行请求密钥，再发送机器信息

@@ -83,7 +83,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
         //解析协议
         /*typedef  struct{
             unsigned char head;				    //0xAA
-            unsigned char length[2];				//
+            unsigned char length[4];				//
             unsigned char type;					//0xA1
             unsigned char  operateID[2];
             unsigned char acnum[6];             //机器表头号
@@ -126,7 +126,7 @@ public class QueryProtocol extends MachineToServiceProtocol {
             switch (version) {
                 case 1:
                 /*typedef  struct{
-                    unsigned char length[2];				 //2个字节
+                    unsigned char length[4];				 //2个字节
                     unsigned char type;				 	 //0xA1
                     unsigned char  operateID[2];
                     unsigned char content[?];            //加密后内容 版本内容（3）+ 结果（1） + 机器订单ID（8）+ 注资金额（8）

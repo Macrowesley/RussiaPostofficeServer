@@ -13,8 +13,11 @@ import cc.mrbird.febs.rcs.dto.service.RateDetailDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.rcs.entity.PostalProduct;
 import cc.mrbird.febs.rcs.entity.Tax;
+import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
+import cc.mrbird.febs.rcs.mapper.TaxDeviceUnreceivedMapper;
 import cc.mrbird.febs.rcs.mapper.TaxMapper;
 import cc.mrbird.febs.rcs.service.IPostalProductService;
+import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
 import cc.mrbird.febs.rcs.service.ITaxRateService;
 import cc.mrbird.febs.rcs.service.ITaxService;
 import cn.hutool.core.io.FileUtil;
@@ -50,10 +53,16 @@ import java.util.stream.Collectors;
 public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxService {
     @Autowired
     IPostalProductService postalProductService;
+
     @Autowired
     ITaxRateService taxRateService;
+
     @Autowired
     TaxMapper taxMapper;
+
+    @Autowired
+    ITaxDeviceUnreceivedService taxDeviceUnreceivedService;
+
     @Autowired
     IDeviceService deviceService;
 
@@ -96,7 +105,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
     }
 
     @Override
-    public boolean checkIExist(String taxVersion) {
+    public boolean checkIsExist(String taxVersion) {
         LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Tax::getVersion, taxVersion);
         return this.baseMapper.selectCount(wrapper) > 0;
@@ -104,18 +113,19 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public boolean saveTaxVersion(TaxVersionDTO taxVersionDTO) {
+    public boolean saveTaxVersion(TaxVersionDTO taxVersionDTO, String jsonFileName) {
 
         try {
             log.info("保存tax开始");
             long t1 = System.currentTimeMillis();
 
-            String savePath = "D:\\PostmartOfficeServiceFile\\tax\\" + DateKit.getNowDateToFileName() + ".json";
+            String savePath = "D:\\workspace\\PostmartOfficeServiceFile\\tax\\" + jsonFileName + ".json";
+            Date applyDate = DateKit.parseRussiatime(taxVersionDTO.getApplyDate());
 
             Tax tax = new Tax();
             BeanUtils.copyProperties(taxVersionDTO, tax);
             tax.setSavePath(savePath);
-            tax.setApplyDate(DateKit.parseRussiatime(taxVersionDTO.getApplyDate()));
+            tax.setApplyDate(applyDate);
             tax.setPublishDate(DateKit.parseRussiatime(taxVersionDTO.getPublishDate()));
             tax.setModified(DateKit.parseRussiatime(taxVersionDTO.getModified()));
             tax.setCreatedDate(new Date());
@@ -123,21 +133,21 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 //            tax.setCreatedDate(DateKit.parseRussiatime(taxVersionDTO.getCreateDate()));
             this.saveOrUpdate(tax);
 
-            RateDetailDTO[] rateDetailDTOS = taxVersionDTO.getDetails();
+            RateDetailDTO[] rateDetailDtoArr = taxVersionDTO.getDetails();
             List<PostalProduct> postalProductList = new ArrayList<>();
-            for (RateDetailDTO item : rateDetailDTOS) {
+            for (RateDetailDTO item : rateDetailDtoArr) {
 
                 //暂时数据库文件只保存postalProduct信息，其他就不存入数据库中了，但是整个文件保存在了D盘中
                 PostalProduct postalProduct = new PostalProduct();
                 BeanUtils.copyProperties(item.getProduct(), postalProduct);
-                postalProduct.setIsPostalMarketOnly(item.getProduct().isPostalMarketOnly() ? "1" : "0");
+                postalProduct.setIsPostalMarketOnly(item.getProduct().getIsPostalMarketOnly() ? "1" : "0");
                 postalProduct.setTaxId(tax.getId());
                 postalProduct.setCreatedTime(new Date());
                 postalProduct.setUpdatedTime(new Date());
                 postalProduct.setModified(DateKit.parseRussiatime(item.getProduct().getModified()));
                 postalProductList.add(postalProduct);
             }
-            postalProductService.saveOrUpdateBatch(postalProductList);
+            postalProductService.saveBatch(postalProductList);
 
             //更新所有device的taxIsUpdate 全都改成0
             deviceService.updateLastestTaxVersionUpdateStatuts();
@@ -168,12 +178,14 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Override
     public String[] getTaxVersionArr() {
-        LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
+        /*LambdaQueryWrapper<Tax> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Tax::getVersion);
         List<String> list = this.baseMapper.selectList(wrapper).stream().map(item -> {
             return item.getVersion();
         }).collect(Collectors.toList());
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[list.size()]);*/
+        String[] taxVersionArr = new String[]{getLastestTax().getVersion()};
+        return taxVersionArr;
     }
 
     /**
@@ -188,4 +200,24 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
         wrapper.eq(Tax::getVersion, taxVersion);
         this.update(tax, wrapper);
     }
+
+    /**
+     * 根据fmId得到没有发送给机器的tax信息
+     *
+     * @param frankMachineId
+     * @return
+     */
+    @Override
+    public List<Tax> selectUnreceivedTaxListByFmId(String frankMachineId) {
+        List<Tax> taxList = taxMapper.selectUnreceivedTaxListByFmId(frankMachineId);
+        return taxList;
+    }
+
+    @Override
+    public Tax findTaxByVersion(String fmTaxVersion) {
+        LambdaQueryWrapper<Tax> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Tax::getVersion, fmTaxVersion);
+        return this.getOne(queryWrapper);
+    }
+
 }

@@ -382,7 +382,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     /**
-     * 改变机器状态：开始
+     * 俄罗斯改变机器状态：开始
      *
      * @param frankMachineId
      * @param changeStatusRequestDTO
@@ -402,6 +402,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
             dbDevice.setPostOffice(changeStatusRequestDTO.getPostOffice());
             //开始修改的话，把流程状态改成进行中
             dbDevice.setFlow(FlowEnum.FlowIng.getCode());
+            dbDevice.setFlowDetail(FlowDetailEnum.StatusChangeBegin.getCode());
+            dbDevice.setIsRussia(ChangeFromEnum.Russia.getCode());
             dbDevice.setUpdatedTime(new Date());
 
             LambdaQueryWrapper<Device> wrapper = new LambdaQueryWrapper<>();
@@ -456,6 +458,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         device.setFutureFmStatus(fmChangeStatus);
         device.setFlowDetail(curFlowDetail.getCode());
+        device.setIsRussia(isMachineActive ? ChangeFromEnum.Machine.getCode() : ChangeFromEnum.Russia.getCode());
         device.setUpdatedTime(new Date());
         device.setFrankMachineId(deviceDTO.getId());
 
@@ -501,6 +504,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         device.setFutureFmStatus(FMStatusEnum.ENABLED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
+        device.setIsRussia(ChangeFromEnum.Machine.getCode());
         device.setUpdatedTime(new Date());
         this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
 
@@ -533,6 +537,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         device.setFutureFmStatus(FMStatusEnum.UNAUTHORIZED.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
+        device.setIsRussia(ChangeFromEnum.Machine.getCode());
         device.setUpdatedTime(new Date());
         this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
 
@@ -565,6 +570,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         device.setFutureFmStatus(FMStatusEnum.LOST.getCode());
         device.setFlowDetail(curFlowDetail.getCode());
+        device.setIsRussia(ChangeFromEnum.Machine.getCode());
         device.setUpdatedTime(new Date());
         this.update(device, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
 
@@ -577,7 +583,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         statusLogService.saveOrUpdate(fmStatusLog);
     }
 
-    @Override
+   /* @Override
     @Transactional(rollbackFor = RcsApiException.class)
     public void changeForeseensStatus(Device dbDevice, FlowDetailEnum curFlowDetail) {
         String frankMachineId = dbDevice.getFrankMachineId();
@@ -594,7 +600,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         dbDevice.setFlowDetail(curFlowDetail.getCode());
         dbDevice.setUpdatedTime(new Date());
         this.update(dbDevice, new LambdaQueryWrapper<Device>().eq(Device::getFrankMachineId, frankMachineId));
-    }
+    }*/
 
     /**
      * 通过frankMachineId得到acnum

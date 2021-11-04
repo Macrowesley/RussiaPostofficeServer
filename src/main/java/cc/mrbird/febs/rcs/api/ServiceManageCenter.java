@@ -16,6 +16,7 @@ import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -62,6 +63,9 @@ public class ServiceManageCenter {
     ITaxService taxService;
 
     @Autowired
+    ITaxDeviceUnreceivedService taxDeviceUnreceivedService;
+
+    @Autowired
     ICustomerService customerService;
 
     @Autowired
@@ -101,10 +105,10 @@ public class ServiceManageCenter {
 */
 
         //访问俄罗斯服务器，改变状态
-        ApiResponse apiResponse = serviceInvokeRussia.frankMachines(deviceDTO);
+        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.frankMachines(deviceDTO);
 
-        if (!apiResponse.isOK()) {
-            if (apiResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
+        if (!apiRussiaResponse.isOK()) {
+            if (apiRussiaResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 deviceService.changeStatusEnd(deviceDTO,  FlowDetailEnum.StatusChangeEndFailUnKnow, isMachineActive);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
@@ -161,10 +165,10 @@ public class ServiceManageCenter {
          * 2. 未闭环，而且要改的状态是如果不是auth，也不通过
          */
         //如果设备已经是授权状态了，再点击授权就直接拒绝
-        if (dbCurFmStatus == FMStatusEnum.ENABLED) {
+        /*if (dbCurFmStatus == FMStatusEnum.ENABLED) {
             log.info("auth 已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(), "auth.isOK() false ");
-        }
+        }*/
         //这个方法就是授权请求，如果是在上一次的授权流程中中断了，那么dbFutureStatus应该是ENABLED，但如果不是，肯定是异常状态
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.ENABLED) {
             log.error("auth 未闭环，但是要改的状态不是 FMStatusEnum.ENABLED dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.ENABLED);
@@ -189,7 +193,7 @@ public class ServiceManageCenter {
         //访问俄罗斯服务器，请求授权
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.AuthErrorUnKnow || curFlowDetail == FlowDetailEnum.AuthEndFail) {
-            ApiResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
+            ApiRussiaResponse authResponse = serviceInvokeRussia.auth(frankMachineId, deviceDTO);
 
             if (!authResponse.isOK()) {
                 if (authResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -210,7 +214,7 @@ public class ServiceManageCenter {
 
         //如果授权成功，数据库改状态，机器开机会自动检测
         PublicKey publicKey = publicKeyService.saveOrUpdatePublicKey(frankMachineId);
-//        serviceToMachineProtocol.sentPrivateKeyInfo(frankMachineId, publicKey);
+        noticeMachineUpdateKey(frankMachineId, publicKey);
 
         log.info("{} 操作成功",operationName);
     }
@@ -238,10 +242,10 @@ public class ServiceManageCenter {
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
 
-        if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
+        /*if (isFirstAuth && curFlowDetail == FlowDetailEnum.UnauthEndSuccess) {
             log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
-        }
+        }*/
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.UNAUTHORIZED) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.UNAUTHORIZED);
@@ -249,7 +253,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.UnAuthEndFail || curFlowDetail == FlowDetailEnum.UnAuthErrorUnkonw) {
-            ApiResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
+            ApiRussiaResponse unauthResponse = serviceInvokeRussia.unauth(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -291,10 +295,10 @@ public class ServiceManageCenter {
         //是否是第一次请求授权
         boolean isFirstAuth = dbFlow == FlowEnum.FlowEnd;
 
-        if (dbCurFmStatus == FMStatusEnum.LOST) {
+        /*if (dbCurFmStatus == FMStatusEnum.LOST) {
             log.info("已经闭环，且已经完成了{}操作的，直接返回结果即可", operationName);
             throw new FmException(FMResultEnum.DonotAgain.getCode(),"机器的状态已经修改结束了，请勿操作");
-        }
+        }*/
 
         if (!isFirstAuth && dbFutureStatus != FMStatusEnum.LOST) {
             log.error("未闭环，但是要改的状态不对 dbFutureStatus={}， 应该是{}", dbFutureStatus, FMStatusEnum.LOST);
@@ -302,7 +306,7 @@ public class ServiceManageCenter {
         }
 
         if (isFirstAuth || curFlowDetail == FlowDetailEnum.LostErrorUnknow || curFlowDetail == FlowDetailEnum.LostEndFail) {
-            ApiResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
+            ApiRussiaResponse unauthResponse = serviceInvokeRussia.lost(deviceDTO.getId(), deviceDTO);
             if (!unauthResponse.isOK()) {
                 if (unauthResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                     //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -324,12 +328,13 @@ public class ServiceManageCenter {
 
 
     /**
-     * 机器开机发送tax版本信息，如果机器刚刚更新到了最新的版本号，触发这个方法
+     * 机器收到服务器发送的tax，就触发这个方法
      * @param dbDevice
      */
-    public void frankMachinesRateTableUpdateEvent(Device dbDevice) {
+    public void frankMachinesRateTableUpdateEvent(DeviceDTO deviceDTO) {
+        log.info("【机器{}收到了tax版本{}，通知服务器】", deviceDTO.getId(), deviceDTO.getTaxVersion());
         String operationName = "frankMachines rateTableUpdateEvent";
-        String frankMachineId = dbDevice.getFrankMachineId();
+        String frankMachineId = deviceDTO.getId();
 
         /*
             {
@@ -342,15 +347,9 @@ public class ServiceManageCenter {
                  "error": {}
              }
          */
-        DeviceDTO deviceDTO = new DeviceDTO();
-        deviceDTO.setId(frankMachineId);
-        deviceDTO.setStatus(FMStatusEnum.getByCode(dbDevice.getCurFmStatus()));
-        deviceDTO.setPostOffice(dbDevice.getPostOffice());
-        deviceDTO.setTaxVersion(dbDevice.getTaxVersion());
-        deviceDTO.setEvent(EventEnum.RATE_TABLE_UPDATE);
-        deviceDTO.setDateTime(DateKit.createRussiatime());
 
-        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
+        // 1.通知俄罗斯tax更新了
+        ApiRussiaResponse changeTaxVersionResponse = serviceInvokeRussia.frankMachinesRateTableUpdateEvent(deviceDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -364,8 +363,16 @@ public class ServiceManageCenter {
             }
         }
 
-        //如果发过来的版本和数据库中最新版本信息一致，则更新状态
-        deviceService.updateDeviceTaxVersionStatus(dbDevice);
+        //2. 更新device数据库
+        Device device = new Device();
+        device.setFrankMachineId(frankMachineId);
+        device.setTaxVersion(deviceDTO.getTaxVersion());
+        device.setUpdatedTime(new Date());
+        deviceService.updateDeviceTaxVersionStatus(device);
+
+        //3.  从rcs_tax_device_unreceived中删除记录
+        taxDeviceUnreceivedService.delete(frankMachineId, deviceDTO.getTaxVersion());
+
         log.info("{} 操作成功",operationName);
     }
 
@@ -392,9 +399,10 @@ public class ServiceManageCenter {
         RateTableFeedbackDTO rateTableFeedbackDTO = new RateTableFeedbackDTO();
         rateTableFeedbackDTO.setTaxVersion(taxVersion);
         rateTableFeedbackDTO.setStatus(true);
-        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
+//        rateTableFeedbackDTO.setRcsVersions(taxService.getTaxVersionArr());
+        rateTableFeedbackDTO.setRcsVersions(new String[]{taxVersion});
         rateTableFeedbackDTO.setTimestamp(DateKit.createRussiatime(new Date()));
-        ApiResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
+        ApiRussiaResponse changeTaxVersionResponse = serviceInvokeRussia.rateTables(rateTableFeedbackDTO);
 
         if (!changeTaxVersionResponse.isOK()) {
             if (changeTaxVersionResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
@@ -419,7 +427,7 @@ public class ServiceManageCenter {
      * 【机器请求foreseens协议】调用本方法
      * 请求打印任务
      */
-    public Contract foreseens(ForeseenFMDTO foreseenFMDTO) {
+    public Contract foreseens(ForeseenFMDTO foreseenFMDTO, ChannelHandlerContext ctx) {
 
         String operationName = "foreseens";
         String frankMachineId = foreseenFMDTO.getFrankMachineId();
@@ -429,14 +437,15 @@ public class ServiceManageCenter {
         checkUtils.checkFmEnable(frankMachineId);
 
         //判断机器税率表是否更新
-        Tax tax = taxService.getLastestTax();
+        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFMDTO.getTaxVersion(), foreseenFMDTO.getMachineDate());
+        /*Tax tax = taxService.getLastestTax();
         String fmTaxVersion = foreseenFMDTO.getTaxVersion();
         String dbTaxVersion = tax.getVersion();
 
         if (!fmTaxVersion.equals(dbTaxVersion)) {
             log.error("发送版本和最新的版本信息不一致，无法更新，fmTaxVersion={}, dbTaxVersion={} ",fmTaxVersion, dbTaxVersion);
             throw new FmException(FMResultEnum.TaxVersionNeedUpdate.getCode(), "发送版本和最新的版本信息不一致，无法更新，fmTaxVersion="+fmTaxVersion+", dbTaxVersion="+ dbTaxVersion);
-        }
+        }*/
 
         //判断publickey是否更新
         if (!publicKeyService.checkFmIsUpdate(frankMachineId)){
@@ -450,7 +459,6 @@ public class ServiceManageCenter {
         Double dbConsolidate = dbContract.getConsolidate();
 
         //判断合同金额是否够用
-        //todo 用哪个判断：dbCurrent 还是 dbConsolidate  申请的时候，用哪个来管钱？
         double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
         if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
@@ -462,13 +470,13 @@ public class ServiceManageCenter {
         //fm信息转ForeseenDTO
         ForeseenDTO foreseenDTO = new ForeseenDTO();
         BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
-        foreseenDTO.setTotalAmmount(fmTotalAmount);
+        foreseenDTO.setTotalAmount(fmTotalAmount);
 
         //处理UserId
         /*String userId = getUserIdByContractCode(foreseenDTO.getContractCode());
         foreseenDTO.setUserId(userId);*/
 
-        ApiResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
+        ApiRussiaResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenDTO);
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -557,7 +565,7 @@ public class ServiceManageCenter {
         //获取需要发送给俄罗斯的数据
         TransactionDTO transactionDTO = getTransactionDTO(transactionFmDto, dbTransaction, dbContract);
 
-        ApiResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
+        ApiRussiaResponse transactionsResponse = serviceInvokeRussia.transactions(transactionDTO);
         if (!transactionsResponse.isOK()) {
             if (transactionsResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -663,7 +671,7 @@ public class ServiceManageCenter {
 
 
         //给俄罗斯发消息
-        ApiResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
+        ApiRussiaResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
         if (!cancelResponse.isOK()) {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
@@ -699,4 +707,14 @@ public class ServiceManageCenter {
     }
 
 
+    /**
+     * 通知机器需要更新新的publickey
+     * @param frankMachineId
+     * @param dbPublicKey
+     */
+    public void noticeMachineUpdateKey(String frankMachineId, PublicKey dbPublicKey) {
+        //异步：发送privateKey给机器
+        log.info("得到俄罗斯的公钥请求/机器成功了auth请求，我们服务器创建了publickey对象，然后异步通知机器更新publickey然后发给服务器");
+        serviceToMachineProtocol.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
+    }
 }

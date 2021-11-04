@@ -11,6 +11,8 @@ public enum FMResultEnum {
     RussiaServerRefused(7,"俄罗斯服务器拒绝"),
     MoneyTooBig(8,"订单金额超过了合同金额"),
     TaxVersionNeedUpdate(9,"税率版本需要更新，机器需要更新税率表，然后通知服务器"),
+    TaxApplyDateNotEnable(20,"未到生效时间，不能通过"),
+    TaxVersionNotExist(21,"tax version不存在"),
     DonotAgain(10,"已闭环，请勿操作"),
     StatusTypeError(11,"未闭环，但是要改的状态不对"),
     PrivateKeyNeedUpdate(12,"机器需要发送公钥和私钥给服务器"),
@@ -37,6 +39,7 @@ public enum FMResultEnum {
     CountOrAmountSmallThenDb(53,"transactionMsg信息中的的总数量或者总金额小于数据库的值"),
     DmmsgIsEmpty(54,"transactionMsg为空"),
     DmmsgLengthError(55,"transactionMsg长度不对，不为60"),
+    DmmsgTotalPieceError(55,"transactionMsg中Total piece count这个值有问题"),
 
 
 

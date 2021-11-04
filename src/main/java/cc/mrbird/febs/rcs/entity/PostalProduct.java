@@ -17,6 +17,12 @@ import java.util.Date;
 @Data
 @TableName("rcs_postal_product")
 public class PostalProduct {
+    /**
+     * 主键uuid
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private String id;
+
     @TableId(value = "code")
     String code;
 

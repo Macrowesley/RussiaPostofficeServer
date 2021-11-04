@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.rcs.entity.Tax;
+import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -53,9 +54,9 @@ public interface ITaxService extends IService<Tax> {
      */
     void deleteTax(Tax tax);
 
-    boolean checkIExist(String taxVersion);
+    boolean checkIsExist(String taxVersion);
 
-    boolean saveTaxVersion(TaxVersionDTO taxVersionDTO);
+    boolean saveTaxVersion(TaxVersionDTO taxVersionDTO, String jsonFileName);
 
     Tax getLastestTax();
 
@@ -66,4 +67,13 @@ public interface ITaxService extends IService<Tax> {
     String[] getTaxVersionArr();
 
     void alreadyInformRussia(String taxVersion);
+
+    /**
+     * 根据fmId得到没有发送给机器的tax信息
+     * @param frankMachineId
+     * @return
+     */
+    List<Tax> selectUnreceivedTaxListByFmId(String frankMachineId);
+
+    Tax findTaxByVersion(String fmTaxVersion);
 }

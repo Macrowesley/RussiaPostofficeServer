@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @ToString
-@JSONType(orders={"id","postOffice","userId","frankMachineId","contractCode","contractId","totalCount","totalAmmount","taxVersion","products"})
+@JSONType(orders={"id","postOffice","userId","frankMachineId","contractCode","contractId","totalCount","totalAmount","taxVersion","products"})
 public class ForeseenDTO {
     /**
      * format: uuid
@@ -42,5 +42,5 @@ public class ForeseenDTO {
      */
     String taxVersion;
 
-    Double totalAmmount;
+    Double totalAmount;
 }
