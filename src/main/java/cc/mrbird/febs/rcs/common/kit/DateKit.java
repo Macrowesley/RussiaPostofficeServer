@@ -38,7 +38,6 @@ public class DateKit {
 
     /**
      * 获取指定日期之后的日期
-     * @param date
      * @param offsetDay
      * @return
      */
@@ -119,8 +118,11 @@ public class DateKit {
     public static Date dealDateFormatToDate(String oldDateStr) throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");  //yyyy-MM-dd'T'HH:mm:ss.SSSZ
         Date  date = df.parse(oldDateStr.trim());
+        System.out.println("date:"+date);
         SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+
         Date date1 =  df1.parse(date.toString());
+        System.out.println("date1:"+date1);
         return date1;
     }
 
@@ -181,12 +183,27 @@ public class DateKit {
         /*String russiatime = createRussiatime();
         log.info(russiatime);
         log.info(parseRussiatime(russiatime).toString());*/
-        String rTime = "2021-01-01T09:00:00.001+03:00";
+//        String rTime = "2021-01-01T09:00:00.001+03:00";
+//        log.info(parseRussiatime(rTime).toString());
+        //2021-06-22T13:46:57.373Z
+        //String rTime = "2021-01-01T09: 00: 00.001+03: 00";
+        String rTime = "2021-10-12T21:00:00Z";
+        //String rTime = "2021-07-20T11:06:53.214858Z";
+        //去空格
+        for (int i=0;i<rTime.length();i++){
+            rTime = rTime.replace(" ","");
+            //if(rTime.length()==20&&rTime.charAt(i)=='Z'){
+            if(rTime.length()>19){
+                rTime = rTime.substring(0,19);
+                rTime += ".001+03:00";
+                //rTime = rTime.replace("Z",".001+03: 00");
+            }else{
+                log.info("时间长度不够");
+            }
+        }
+
+        log.info(rTime);
         log.info(parseRussiatime(rTime).toString());
-
-        String rTime2 = "2021-01-01T09: 00: 00.001+03: 00";
-        log.info(parseRussiatime(rTime2).toString());
-
     }
 
     public static String getNowDateToFileName() {
