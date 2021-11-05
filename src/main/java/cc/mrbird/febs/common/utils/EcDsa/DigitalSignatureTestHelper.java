@@ -43,6 +43,7 @@ public class DigitalSignatureTestHelper {
 
     /**
      * generate signature in base64 string format
+     * liu实现
      */
     public static String signatureForData(String data, PrivateKey privateKey){
         try {
@@ -183,9 +184,9 @@ public class DigitalSignatureTestHelper {
 
 
         boolean res1 = verifyQrContent(qrContent, publicKey);
-        boolean res2 =  verifyQrContent2(qrContent,"C:\\Users\\Administrator\\Desktop\\ecdsa\\act.bin",publicKey);
+        //boolean res2 =  verifyQrContent2(qrContent,"C:\\Users\\Administrator\\Desktop\\ecdsa\\act.bin",publicKey);
         log.info("验证小刘签名结果1：" + res1);
-        log.info("验证小刘签名结果2：" + res2);
+        //log.info("验证小刘签名结果2：" + res2);
 
         //java生成的公钥私钥
         /*publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAE56SouLrKgtOAz4bZfVoKQwsrB5+8ZF8ZEls//SNpFZ1V\n" +
@@ -195,15 +196,15 @@ public class DigitalSignatureTestHelper {
                 "KqoVBNI=";*/
 
         //小刘测试的公钥私钥
-        publicKey = "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE/Bvv7nPayhAnzSKScgHq/67xVDkI\n" +
-                "21ORBKEEDDqAn+Hni3HyqFaQSl+iXrpkKMVL";
-
-        String privateKeyPath = "C:\\Users\\Administrator\\Desktop\\ecdsa\\key-pkcs8.der";
-        String sign = signatureForData(content, getPrivateKeyByFile(privateKeyPath));
-        byte[] signDecodeBytes = Base64.getDecoder().decode(sign.getBytes(CHARSET_NAME));
-        boolean verifyRes = verify(content, getPublicKey(publicKey), signDecodeBytes);
-        log.info("用小刘公钥私钥签名验证：" + verifyRes);
-        FileUtil.writeBytes(signDecodeBytes,"C:\\Users\\Administrator\\Desktop\\ecdsa\\lai");
+//        publicKey = "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE/Bvv7nPayhAnzSKScgHq/67xVDkI\n" +
+//                "21ORBKEEDDqAn+Hni3HyqFaQSl+iXrpkKMVL";
+//
+//        String privateKeyPath = "C:\\Users\\Administrator\\Desktop\\ecdsa\\key-pkcs8.der";
+//        String sign = signatureForData(content, getPrivateKeyByFile(privateKeyPath));
+//        byte[] signDecodeBytes = Base64.getDecoder().decode(sign.getBytes(CHARSET_NAME));
+//        boolean verifyRes = verify(content, getPublicKey(publicKey), signDecodeBytes);
+//        log.info("用小刘公钥私钥签名验证：" + verifyRes);
+//        FileUtil.writeBytes(signDecodeBytes,"C:\\Users\\Administrator\\Desktop\\ecdsa\\lai");
 
 
 //        test2(content);
