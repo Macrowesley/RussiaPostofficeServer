@@ -1,12 +1,16 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.annotation.CheckIpWhiteList;
 import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.configure.IpConfig;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.utils.EcDsa.DigitalSignatureTestHelper;
 import cc.mrbird.febs.common.utils.HttpContextUtil;
 import cc.mrbird.febs.common.utils.IpUtil;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.test.QrCode;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Base64;
 
 /**
  * 被俄罗斯调用的接口
@@ -68,6 +73,35 @@ public class ServiceApi {
     @Autowired
     @Qualifier(value = FebsConstant.ASYNC_POOL)
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+    @Autowired
+    IpConfig ipConfig;
+
+//    @CheckIpWhiteList
+    @PostMapping("/test")
+    public String test(@RequestBody QrCode qrCode) throws Exception {
+
+        /*content = URLEncoder.encode(content,"UTF-8");
+        publicKey = URLEncoder.encode(publicKey,"UTF-8");
+        sign = URLEncoder.encode(sign,"UTF-8");*/
+        String content = qrCode.getContent();
+        String publicKey = qrCode.getPublicKey();
+        String sign = qrCode.getSign();
+
+        log.info("qrContent = {}, publicKey ={} sign={}", content, publicKey, sign);
+
+        /*HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        String ip = IpUtil.getIpAddr(request);
+        log.info("ip="+ip);
+
+        if (!IpUtil.checkIsRussiaIp(ip, ipConfig.getWhiteIps())){
+            log.error("{}不是俄罗斯ip", ip);
+        }*/
+
+        String res = String.valueOf(DigitalSignatureTestHelper.verify(content, DigitalSignatureTestHelper.getPublicKey(publicKey), Base64.getDecoder().decode(sign.getBytes("UTF-8"))));
+        log.info("结果" + res);
+        return res;
+    }
 
     /**
      * 公钥请求
@@ -118,10 +152,6 @@ public class ServiceApi {
                                           @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO, HttpServletResponse response) throws RuntimeException {
         log.info("【俄罗斯调用服务器api 开始 changeStatus】");
         log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
-
-        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
-        String ip = IpUtil.getIpAddr(request);
-        log.info("ip="+ip);
 
         //如果打印任务没有结束，拒绝
         if(!printJobService.checkPrintJobFinish(frankMachineId)){

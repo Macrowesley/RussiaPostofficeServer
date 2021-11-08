@@ -21,6 +21,7 @@ public enum RcsApiErrorEnum {
     CurrentOrConsolidateIsNull(1105,"Current or Consolidate is null"),
     ContractNotSame(1106,"value in path not equal in json"),
     ModitifyDateIsOld(1007,"Modified date is old"),
+    IpIsNotInWhiteList(1001,"ip is not allow"),
     ;
 
     int code;
