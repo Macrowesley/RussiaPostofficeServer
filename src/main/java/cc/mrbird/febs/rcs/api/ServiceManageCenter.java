@@ -148,7 +148,7 @@ public class ServiceManageCenter {
     public void auth(DeviceDTO deviceDTO)  {
         String operationName = "auth";
         String frankMachineId = deviceDTO.getId();
-        log.error("服务器收到了设备{}发送的auth协议", frankMachineId);
+        log.info("服务器收到了设备{}发送的auth协议", frankMachineId);
         Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(frankMachineId);
 
         FlowEnum dbFlow = FlowEnum.getByCode(dbDevice.getFlow());
