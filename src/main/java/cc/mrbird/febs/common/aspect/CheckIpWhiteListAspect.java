@@ -34,11 +34,12 @@ public class CheckIpWhiteListAspect {
         log.info("开始检验ip白名单");
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         String ip = IpUtil.getIpAddr(request);
-        log.info("ip="+ip);
+        log.info("ip = " + ip);
 
         if (!IpUtil.checkIsRussiaIp(ip, ipConfig.getWhiteIps())){
             log.error("{}不是俄罗斯ip", ip);
-            throw new RcsApiException(RcsApiErrorEnum.IpIsNotInWhiteList);
+            //TODO 真正需要开启ip判断的时候，把报错用起来
+//            throw new RcsApiException(RcsApiErrorEnum.IpIsNotInWhiteList);
         }
 
     }

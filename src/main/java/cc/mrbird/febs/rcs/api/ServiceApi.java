@@ -109,6 +109,7 @@ public class ServiceApi {
      * @param regenerate   要求重新创建私钥
      * @return
      */
+    @CheckIpWhiteList
     @PostMapping("/frankMachines/{frankMachineId}/publicKey")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_publickey")
     public void publicKey(@PathVariable @NotBlank String frankMachineId, boolean regenerate, HttpServletResponse response){
@@ -146,6 +147,7 @@ public class ServiceApi {
      * @param changeStatusRequestDTO
      * @return
      */
+    @CheckIpWhiteList
     @PostMapping("/frankMachines/{frankMachineId}/changeStatus")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_changeStatus")
     public void changeStatus(@PathVariable @NotBlank String frankMachineId,
@@ -173,6 +175,7 @@ public class ServiceApi {
      * @param taxVersionDTO
      * @return
      */
+    @CheckIpWhiteList
     @PutMapping("/taxes")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_taxes")
     public void taxes(@RequestBody @Validated TaxVersionDTO taxVersionDTO, HttpServletResponse response){
@@ -204,6 +207,7 @@ public class ServiceApi {
      * @param postOfficeDTO
      * @return
      */
+    @CheckIpWhiteList
     @PutMapping("/postOffices")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_postOffices")
     public void postOffices(@RequestBody @Validated PostOfficeDTO postOfficeDTO, HttpServletResponse response){
@@ -218,6 +222,7 @@ public class ServiceApi {
      * @param contractDTO
      * @return
      */
+    @CheckIpWhiteList
     @PutMapping("/contracts")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_contracts")
     public void contracts(@RequestBody @Validated ContractDTO contractDTO, HttpServletResponse response){
@@ -233,6 +238,7 @@ public class ServiceApi {
      * @param serviceBalanceDTO
      * @return
      */
+    @CheckIpWhiteList
     @PutMapping("/contracts/{code}/balance")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_service_api_balance")
     public void balance(@PathVariable @NotNull String code , @RequestBody @Validated ServiceBalanceDTO serviceBalanceDTO, HttpServletResponse response){
