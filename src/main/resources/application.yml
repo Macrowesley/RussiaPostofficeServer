@@ -15,7 +15,7 @@ server:
 
 spring:
   profiles:
-    active: dev_lai
+    active: test
 
   thymeleaf:
     cache: false

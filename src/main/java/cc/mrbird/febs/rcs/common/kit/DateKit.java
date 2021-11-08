@@ -148,8 +148,8 @@ public class DateKit {
      * @return
      */
     public static Date parseRussiatime(String dateTime){
-        dateTime = dateTime.replace(" ","");
         try {
+            dateTime = dateTime.replace(" ","");
             if (dateTime.contains("Z")){
                 dateTime = dateTime.replace("Z", " UTC");
                 SimpleDateFormat format = null;

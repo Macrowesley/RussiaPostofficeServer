@@ -116,9 +116,21 @@ public class DigitalSignatureTestHelper {
 
 
    public static void main(String[] args) throws Exception {
-        String signFile = "C:\\Users\\Administrator\\Desktop\\test\\act.bin";
-       String base64Sign = getBase64Sign(signFile);
-       log.info("base64Sign.len = " + base64Sign.length() + " base64Sign = " + base64Sign);
+       String content = "01PM64313100026102110020000000143000100021000001000001770003";
+       String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAE5sbBDnUDVmLQcykGcBAscj9CJ8f5OX2D\n" +
+               "+SA6o+DE9XuBwCSeh+CvL60MY29BsLZi";
+       String signContent = "MDQCF0oquAsNJAKEn/FktmeMdkOl/MJA1+U5AhkAilFWyWLC6uQqZSPF1E1uM+7OcB35/OYT";
+
+       boolean verify_lai = verify(content, getPublicKey(publicKey), Base64.getDecoder().decode(signContent.getBytes(CHARSET_NAME)));
+       log.info("lai 验证结果：" + verify_lai);
+
+       publicKey = "MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAE/Bvv7nPayhAnzSKScgHq/67xVDkI\n" +
+               "21ORBKEEDDqAn+Hni3HyqFaQSl+iXrpkKMVL";
+       signContent = "MDQCGEe5m94w2jvOdWJIk48Pmbq4a1FGbqv/0wIYIf5wS57QqriXu1bUgVdWCGoavsLHaSZ3";
+
+       boolean verify_liu = verify(content, getPublicKey(publicKey), Base64.getDecoder().decode(signContent.getBytes(CHARSET_NAME)));
+       log.info("liu 验证结果：" + verify_liu);
+
        /*String qrContent = "!45!01PM64313100026102110020000000143000100021000001000001770003MCACDiGTH8kVQ/2aM9Q3G7ZqAg5+RGDVNAeNiuFaIBEeOQ==";
        log.info("二维码验证结果：" + verifyQrContent(qrContent));
        test1();*/
