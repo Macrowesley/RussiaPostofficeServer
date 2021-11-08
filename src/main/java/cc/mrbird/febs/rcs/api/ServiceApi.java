@@ -4,6 +4,8 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.utils.HttpContextUtil;
+import cc.mrbird.febs.common.utils.IpUtil;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
@@ -19,6 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -115,6 +118,10 @@ public class ServiceApi {
                                           @Validated @RequestBody ChangeStatusRequestDTO changeStatusRequestDTO, HttpServletResponse response) throws RuntimeException {
         log.info("【俄罗斯调用服务器api 开始 changeStatus】");
         log.info("俄罗斯 更改FM状态 frankMachineId = {} changeStatusRequestDTO={}",frankMachineId,changeStatusRequestDTO.toString());
+
+        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        String ip = IpUtil.getIpAddr(request);
+        log.info("ip="+ip);
 
         //如果打印任务没有结束，拒绝
         if(!printJobService.checkPrintJobFinish(frankMachineId)){
