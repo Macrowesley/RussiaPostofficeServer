@@ -22,7 +22,7 @@ spring:
           username: ENC(rWOZKomPOvVkZ9nLeT4F4Q==)
           password: ENC(daDIKa26X0aJlNVXdSEhPNGvOsfE0yLR)
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: ENC(c9XwlfT/OWapLsbP1ZTGjA8mOjbrr6ALOkLMiP1UDet3sSsTN+SBx+eNgJDET9+7Ibwi8iFnY9Rv9uFuw05XZHxVdlk7iDc8WjCwMedE9nWSfUuUD+J0j0wB54KtltMxeVKaes4Yx8XTh1mMWp3myby6fz2/lAtitxI6JeLp5q5cAMkvCLPiin5f/h5C+TxN2vLnykMOXryA1LrsA41iY9SFfasBthoC2ovdTS3TXvO0g0R+1oTGvA==)
+          url: jdbc:mysql://127.0.0.1:9688/gdpt_russia_server?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   redis:
     # Redis数据库索引（默认为 0）

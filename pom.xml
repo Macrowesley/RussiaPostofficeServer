@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>cc.mrbird</groupId>
-    <artifactId>Posmart-office-service</artifactId>
+    <artifactId>RussiaPostofficeServer</artifactId>
     <version>1.0</version>
     <name>febs</name>
-    <description>注资管理服务器</description>
+    <description>俄罗斯邮局服务器</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

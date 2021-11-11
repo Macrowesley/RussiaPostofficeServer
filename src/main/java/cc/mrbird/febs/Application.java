@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableScheduling
 @MapperScan("cc.mrbird.febs.*.mapper")
-public class PostmartOfficeApplication {
+public class Application {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(PostmartOfficeApplication.class)
+        new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.SERVLET)
                 .run(args);
     }

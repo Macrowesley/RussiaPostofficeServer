@@ -61,7 +61,7 @@ public class MD5Util {
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
 
     public static void main(String[] args) {
-        String path = "D:\\workspace\\PostmartOfficeServiceFile\\tax\\2021_10_27_15_25_37.json";
+        String path = "D:\\workspace\\RussiaPostofficeServerFile\\tax\\2021_10_27_15_25_37.json";
         System.out.println(MD5Encode(FileUtil.readContent(path)).toLowerCase());
 
     }

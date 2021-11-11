@@ -238,7 +238,7 @@ public class CheckUtils {
     }
 
     public static void main(String[] args) {
-        String savePath = "D:\\workspace\\\\PostmartOfficeServiceFile\\tax\\2021_10_27_15_25_37.json";
+        String savePath = "D:\\workspace\\\\RussiaPostofficeServerFile\\tax\\2021_10_27_15_25_37.json";
         String jsonFileName = savePath.substring(savePath.lastIndexOf("\\") + 1, savePath.length() - 5);
         log.info(jsonFileName);
     }

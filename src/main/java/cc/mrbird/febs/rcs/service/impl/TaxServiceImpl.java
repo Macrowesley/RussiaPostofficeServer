@@ -119,7 +119,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
             log.info("保存tax开始");
             long t1 = System.currentTimeMillis();
 
-            String savePath = "D:\\workspace\\PostmartOfficeServiceFile\\tax\\" + jsonFileName + ".json";
+            String savePath = "D:\\workspace\\RussiaPostofficeServerFile\\tax\\" + jsonFileName + ".json";
             Date applyDate = DateKit.parseRussiatime(taxVersionDTO.getApplyDate());
 
             Tax tax = new Tax();

@@ -11,11 +11,11 @@ server:
 #    io-threads: 4
 #    worker-threads: 160
   servlet:
-    context-path: /p
+    context-path: /rcs
 
 spring:
   profiles:
-    active: test
+    active: dev_lai
 
   thymeleaf:
     cache: false
