@@ -24,7 +24,7 @@ spring:
           username: ENC(rWOZKomPOvVkZ9nLeT4F4Q==)
           password: ENC(daDIKa26X0aJlNVXdSEhPNGvOsfE0yLR)
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://127.0.0.1:9688/gdpt_posmart_office_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+          url: jdbc:mysql://127.0.0.1:9688/gdpt_russia_server_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   redis:
     # Redis数据库索引（默认为 0）
