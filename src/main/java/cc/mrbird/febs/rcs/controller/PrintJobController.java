@@ -60,7 +60,7 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "新增PrintJob", exceptionMessage = "新增PrintJob失败")
-    @PostMapping("printJob")
+    @PostMapping("printJob/add")
     @ResponseBody
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJob printJob) {

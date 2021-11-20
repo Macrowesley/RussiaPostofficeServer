@@ -28,6 +28,7 @@ public class PublicController {
     /**
      * 添加地址页面
      * http://localhost/p/address
+     * http://localhost:88/rcs/address
      * @return
      */
     @GetMapping("/address")

@@ -130,7 +130,9 @@ public class DigitalSignatureTestHelper {
 
     private static void checkQrSign() throws Exception {
         String content = "01PM64313100026102110020000000143000100021000001000001770003";
-        String signBase64 = "MDQCGQDxfL9Xk+ax6eJ3/gqpu1AYFLUXxUh3irYCF23AkiPnagTNBoZOvNUndxFh8S2k7f88";
+        String signBase64 = "MeZJvfOI42V6q2jNu2ka3/wfAe237GL6gGF1IrApJZ9/cyHSkPRaUSR7TlFC2/uq";
+//        String signBase64 = "obflVzhrEog+JSKnnj16Us8W0C4rlL7qmG8uWSvADHd0gnwVN87SHss9xyzfc0aX";
+
         String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEzdz/kuTttMaBTfAx9l4rSPi+k1H8jaNH\n" +
                 "dPvHxi7zfBYa55wyLqThGccA894fo8qP";
 
