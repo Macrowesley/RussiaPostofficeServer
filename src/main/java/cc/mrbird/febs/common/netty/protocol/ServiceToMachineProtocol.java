@@ -253,6 +253,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             taxDeviceUnreceivedList.add(temp);
         });
         //所有机器都应该收到
+        log.info("taxDeviceUnreceivedList.size() = " + taxDeviceUnreceivedList.size());
         taxDeviceUnreceivedService.saveUniqueBatch(taxDeviceUnreceivedList);
 
         //但是只能给当前在线的机器发送信息
