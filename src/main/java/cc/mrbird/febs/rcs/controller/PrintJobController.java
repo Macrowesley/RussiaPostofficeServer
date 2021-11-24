@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import com.wuwenze.poi.ExcelKit;
@@ -63,8 +64,9 @@ public class PrintJobController extends BaseController {
     @PostMapping("printJob/add")
     @ResponseBody
     @RequiresPermissions("printJob:add")
-    public FebsResponse addPrintJob(@Valid PrintJob printJob) {
-        this.printJobService.createPrintJob(printJob);
+    public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
+        log.info("前端添加订单：" + printJobAddDto.toString());
+//        this.printJobService.createPrintJob(printJob);
         return new FebsResponse().success();
     }
 

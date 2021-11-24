@@ -1,8 +1,11 @@
 package cc.mrbird.febs.common.utils.EcDsa;
 
-import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.rcs.dto.manager.PublicKeyDTO;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import sun.misc.BASE64Decoder;
 
 import java.io.*;
@@ -107,7 +110,7 @@ public class DigitalSignatureTestHelper {
         return keyFactory.generatePrivate(keySpec);
     }
 
-   /* public String publicKeyToPEM(PublicKey pk){
+    public static String publicKeyToPem(PublicKey pk){
         StringWriter sw = new StringWriter();
         PemWriter writer = new PemWriter(sw);
         try {
@@ -119,24 +122,47 @@ public class DigitalSignatureTestHelper {
         }
 
         return sw.toString();
-    }*/
+    }
+
+    public static String publicKeyToPem(String pk){
+        StringWriter sw = new StringWriter();
+        PemWriter writer = new PemWriter(sw);
+        try {
+            writer.writeObject(new PemObject("PUBLIC KEY", getPublicKey(pk).getEncoded()));
+            writer.close();
+        } catch (IOException e) {
+            log.error("error writre public key in PEM format ", e);
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("error writre public key " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return sw.toString();
+    }
 
 
    public static void main(String[] args) throws Exception {
 
        checkQrSign();
 
+
    }
 
     private static void checkQrSign() throws Exception {
-        String content = "01PM64313100026102110020000000143000100021000001000001770003";
-        String signBase64 = "MeZJvfOI42V6q2jNu2ka3/wfAe237GL6gGF1IrApJZ9/cyHSkPRaUSR7TlFC2/uq";
-//        String signBase64 = "obflVzhrEog+JSKnnj16Us8W0C4rlL7qmG8uWSvADHd0gnwVN87SHss9xyzfc0aX";
-
-        String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEzdz/kuTttMaBTfAx9l4rSPi+k1H8jaNH\n" +
-                "dPvHxi7zfBYa55wyLqThGccA894fo8qP";
+        String content = "01PM64313100023112110020000000158000500020110001000001770016";
+        String signBase64 = "MDQCGF5n9xyYqzIF/8m7JDQVqyJhUtzbygcxjgIYbab/19Qy6Tk5Ow/iFwEvzQsWxkiUTzf5";
+        String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEyhO+hgBuVFxz5gpCdGASpykzzGCDFVEB\nNwnz8NjCjwrs++Om8vkDYS5iiWdMiuE3";
 
         boolean res =  verify(content, getPublicKey(publicKey), signBase64);
         log.info("linux 验证结果：" + res);
+       log.info(publicKeyToPem(publicKey));
+        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
+        publicKeyDTO.setKey(publicKeyToPem(publicKey));
+        log.info(JSON.toJSONString(publicKeyDTO));
+        /**
+
+
+         */
     }
 }
