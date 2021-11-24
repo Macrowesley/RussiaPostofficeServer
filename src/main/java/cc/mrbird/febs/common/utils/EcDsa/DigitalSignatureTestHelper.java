@@ -141,6 +141,14 @@ public class DigitalSignatureTestHelper {
         return sw.toString();
     }
 
+    /**
+     * 返回俄罗斯需要的格式
+     * @param publicKey
+     * @return
+     */
+    public static String russiaPublicKey(String publicKey){
+        return JSON.toJSONString(publicKeyToPem(publicKey)).replace("\\r\\n", "&#xA;").replace("\"","");
+    }
 
    public static void main(String[] args) throws Exception {
 
@@ -152,17 +160,12 @@ public class DigitalSignatureTestHelper {
     private static void checkQrSign() throws Exception {
         String content = "01PM64313100023112110020000000158000500020110001000001770016";
         String signBase64 = "MDQCGF5n9xyYqzIF/8m7JDQVqyJhUtzbygcxjgIYbab/19Qy6Tk5Ow/iFwEvzQsWxkiUTzf5";
-        String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEyhO+hgBuVFxz5gpCdGASpykzzGCDFVEB\nNwnz8NjCjwrs++Om8vkDYS5iiWdMiuE3";
+        String publicKey = "MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEyhO+hgBuVFxz5gpCdGASpykzzGCDFVEB\n" +
+                "Nwnz8NjCjwrs++Om8vkDYS5iiWdMiuE3";
 
         boolean res =  verify(content, getPublicKey(publicKey), signBase64);
-        log.info("linux 验证结果：" + res);
-       log.info(publicKeyToPem(publicKey));
-        PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-        publicKeyDTO.setKey(publicKeyToPem(publicKey));
-        log.info(JSON.toJSONString(publicKeyDTO));
-        /**
-
-
-         */
+        log.info("res：" + res);
+        log.info(publicKeyToPem("MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEv1WUnaPQgaU8KOQ+hWzVcjQAbnGlNr65\r\noCPNMAAGOJZQ+HQBEZHosknL9r9FEjtl"));
+        log.info(russiaPublicKey("MEYwEAYHKoZIzj0CAQYFK4EEAB8DMgAEv1WUnaPQgaU8KOQ+hWzVcjQAbnGlNr65\r\noCPNMAAGOJZQ+HQBEZHosknL9r9FEjtl"));
     }
 }

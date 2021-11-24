@@ -97,7 +97,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         Date newDate = DateKit.parseRussiatime(serviceBalanceDTO.getModified());
         Date dbDate = dbContract.getBalanceModified();
         if (dbDate != null && newDate.before(dbDate)){
-            log.info("balance 修改时间是旧的，不能改动");
+            log.info("balance 修改时间是旧的，不能改动 dbDate={}, newDate={}", dbDate, newDate);
             return;
         }
         try {

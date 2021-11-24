@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.PublicKeyFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
+import cc.mrbird.febs.common.utils.EcDsa.DigitalSignatureTestHelper;
 import cc.mrbird.febs.rcs.api.ServiceInvokeRussia;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
@@ -147,10 +148,11 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
                         log.info("没有闭环，开始处理publickey");
                         //返回给俄罗斯
                         PublicKeyDTO publicKeyDTO = new PublicKeyDTO();
-                        publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKeyFMDTO.getPublicKey() + " -----END PUBLIC KEY-----");
+//                        publicKeyDTO.setKey("-----BEGIN PUBLIC KEY----- " + publicKeyFMDTO.getPublicKey() + " -----END PUBLIC KEY-----");
+                        publicKeyDTO.setKey(DigitalSignatureTestHelper.russiaPublicKey(publicKeyFMDTO.getPublicKey()));
                         publicKeyDTO.setRevision(dbPubliceKey.getRevision());
                         publicKeyDTO.setExpireDate(DateKit.createRussiatime(dbPubliceKey.getExpireTime()));
-
+                        log.info("发送给俄罗斯的publickey内容为：" + publicKeyDTO.getKey());
                         ApiRussiaResponse publickeyResponse = updatePrivateKeyResultPortocol.serviceInvokeRussia.publicKey(frankMachineId, publicKeyDTO);
 
                         if (!publickeyResponse.isOK()) {
