@@ -52,7 +52,7 @@ public class ControllerEndpointAspect extends BaseAspectSupport {
             }
             return result;
         } catch (Throwable throwable) {
-            log.error(throwable.getMessage(), throwable);
+            log.error(throwable.getMessage());
             String exceptionMessage = annotation.exceptionMessage();
             String message = throwable.getMessage();
             if (exceptionMessage.contains("{")){

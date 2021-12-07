@@ -8,7 +8,7 @@
                             <div class="layui-col-md10">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.contractCode}"></label>
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.contractCode}+':'" style="width: 100px;"></label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="contractCode" autocomplete="off" class="layui-input">
                                         </div>
@@ -97,9 +97,10 @@
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
     <a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
-    <a lay-event="detail" th:text="#{printJob.detail}"></a>
-    <a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>
-    <a lay-event="operation2" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}"></a>
+    <!--<a lay-event="detail" th:text="#{printJob.detail}"></a>
+    <a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
+    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}"></a>
+    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>
 
     <!--  <a lay-event="del" shiro:hasPermission="printJob:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
@@ -291,8 +292,30 @@
                 if (layEvent === 'operation1'){
                     alert("1")
                 }
-                if (layEvent === 'operation2'){
-                    alert("2")
+                if (layEvent === 'printJob'){
+                    febs.post(ctx + 'printJob/begin' ,  {id:data.id},  function (res) {
+                        let code = res.code
+                        if (code == 200){
+                            febs.alert.success("操作成功")
+                        }else{
+                            febs.alert.error(res.message)
+                        }
+                        console.log(JSON.stringify(res))
+                        // queryTable(0);
+                    })
+                }
+
+                if (layEvent === 'printJobCancel'){
+                    febs.post(ctx + 'printJob/cancel' ,  {id:data.id},  function (res) {
+                        let code = res.code
+                        if (code == 200){
+                            febs.alert.success("操作成功")
+                        }else{
+                            febs.alert.error(res.message)
+                        }
+                        console.log(JSON.stringify(res))
+                        // queryTable(0);
+                    })
                 }
 
             });

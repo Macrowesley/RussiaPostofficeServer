@@ -334,6 +334,20 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
 
 
+    /**
+     * PC发送打印信息给机器
+     */
+    public void doPrintJob() {
+
+    }
+
+    /**
+     * PC主动取消打印任务
+     */
+    public void cancelPrintJob() {
+
+    }
+
      /*
      ***********************************************************
      不确定方法
@@ -348,7 +362,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         /**
          typedef  struct{
              unsigned char length[4];				 //4个字节
-             unsigned char type;				 	 //0xC8
+             unsigned char type;				 	 //
              unsigned char  operateID[2];
              unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractCode(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位

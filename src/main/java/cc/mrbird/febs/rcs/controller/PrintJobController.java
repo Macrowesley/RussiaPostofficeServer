@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -66,7 +67,7 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
         log.info("前端添加订单：" + printJobAddDto.toString());
-//        this.printJobService.createPrintJob(printJob);
+        this.printJobService.createPrintJobDto(printJobAddDto);
         return new FebsResponse().success();
     }
 
@@ -95,5 +96,25 @@ public class PrintJobController extends BaseController {
     public void export(QueryRequest queryRequest, PrintJob printJob, HttpServletResponse response) {
         List<PrintJob> printJobs = this.printJobService.findPrintJobs(queryRequest, printJob).getRecords();
         ExcelKit.$Export(PrintJob.class, response).downXlsx(printJobs, false);
+    }
+
+    @ControllerEndpoint(operation = "打印任务操作", exceptionMessage = "打印任务操作失败")
+    @PostMapping("printJob/begin")
+    @ResponseBody
+    @RequiresPermissions("printJob:update")
+    public FebsResponse doPrintJob(Integer id) {
+        log.info("开始打印任务操作：" + id);
+        this.printJobService.doPrintJob(id);
+        return new FebsResponse().success().data("ok");
+    }
+
+    @ControllerEndpoint(operation = "取消打印任务操作", exceptionMessage = "取消打印任务操作失败")
+    @PostMapping("printJob/cancel")
+    @ResponseBody
+    @RequiresPermissions("printJob:update")
+    public FebsResponse cancelPrintJob(Integer id) {
+        log.info("开始取消打印任务操作：" + id);
+        this.printJobService.cancelPrintJob(id);
+        return new FebsResponse().success().data("ok");
     }
 }

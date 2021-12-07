@@ -54,6 +54,13 @@ public class PrintJob {
     private Integer flowDetail;
 
     /**
+     * 1 机器创建的订单 2 管理页面创建的订单
+     */
+    @TableField("type")
+    private Integer type;
+
+
+    /**
      * 取消原因
      */
     @TableField("cancel_msg_code")

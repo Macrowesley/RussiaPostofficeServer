@@ -19,36 +19,19 @@ public class PrintJobAddDto {
 
     private Integer id;
 
-    private String contractCode;
-
-    private String foreseenId;
-
-    private String transactionId;
-
-    String userId;
-
     /**
      * 机器id
      */
     private String frankMachineId;
 
-    /**
-     * 整个流程状态
-     */
-    private Integer flow;
-
-    private Integer flowDetail;
-
-    /**
-     * 取消原因
-     */
-    private Integer cancelMsgCode;
-
-    private Date updatedTime;
-
-    private Date createdTime;
+    private String contractCode;
 
     int totalCount;
 
     ArrayList<PrintJobProductDto> products;
+
+    private String foreseenId;
+
+    private String transactionId;
+
 }

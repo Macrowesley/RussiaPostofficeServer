@@ -1,6 +1,4 @@
-package cc.mrbird.febs.rcs.common.context.status.enums;
-
-import lombok.ToString;
+package cc.mrbird.febs.rcs.common.context.order.status.enums;
 
 /**
  * @author Administrator

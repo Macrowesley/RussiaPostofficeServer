@@ -154,7 +154,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
-                    if (dbPrintJob != null) {
+                    if (dbPrintJob != null && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
                         /**
                          * 特殊的情况：上次订单过程中，访问俄罗斯transaction接口时，没有访问成功，导致没有闭环，解决方案如下：
                          * 返回给机器一个状态，让机器直接再次发送transaction信息
@@ -162,7 +162,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
                         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
-                        if (curFlowDetail == FlowDetailEnum.JobErrorTransactionUnKnow){
+                        if (curFlowDetail == FlowDetailEnum.JobingErrorTransactionUnKnow){
                             log.error("foreseens TransactionError异常  FrankMachineId = "+ dbPrintJob.getFrankMachineId()+" 的机器 访问俄罗斯transaction接口时，没有访问成功，ForeseenId = " + dbPrintJob.getForeseenId());
                             return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.TransactionError.getCode());
                         }

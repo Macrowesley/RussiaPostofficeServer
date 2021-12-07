@@ -481,7 +481,7 @@ public class ServiceManageCenter {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
-                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobEndFailForeseensUnKnow, null);
+                printJobService.changeForeseensStatus(foreseenDTO, FlowDetailEnum.JobingErrorForeseensUnKnow, null);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "foreseensResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
@@ -570,12 +570,12 @@ public class ServiceManageCenter {
             if (transactionsResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 //todo 要考虑到这种情况，机器打印结束后，俄罗斯有问题，机器再次发送的情况
-                printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobErrorTransactionUnKnow,null);
+                printJobService.changeTransactionStatus(dbPrintJob, dbContract, transactionDTO, FlowDetailEnum.JobingErrorTransactionUnKnow,null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "transactionsResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                printJobService.changeTransactionStatus(dbPrintJob,  dbContract, transactionDTO, FlowDetailEnum.JobErrorTransaction4xx, null);
+                printJobService.changeTransactionStatus(dbPrintJob,  dbContract, transactionDTO, FlowDetailEnum.JobingErrorTransaction4xx, null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "transactionsResponse.isOK() false ");
             }
@@ -661,8 +661,8 @@ public class ServiceManageCenter {
         }
 
         if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess
-                && curFlowDetail != FlowDetailEnum.JobErrorForeseensCancelUnKnow
-                && curFlowDetail != FlowDetailEnum.JobErrorForeseensCancel4xx) {
+                && curFlowDetail != FlowDetailEnum.JobingErrorForeseensCancelUnKnow
+                && curFlowDetail != FlowDetailEnum.JobingErrorForeseensCancel4xx) {
             throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(),"cancelJob 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
 
@@ -675,12 +675,12 @@ public class ServiceManageCenter {
         if (!cancelResponse.isOK()) {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobErrorForeseensCancelUnKnow, null);
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobingErrorForeseensCancelUnKnow, null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(),"cancelResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobErrorForeseensCancel4xx, null);
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobingErrorForeseensCancel4xx, null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(),"cancelResponse.isOK() false ");
             }

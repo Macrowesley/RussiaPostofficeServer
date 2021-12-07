@@ -1,7 +1,6 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.PrintJobProduct;
 import cc.mrbird.febs.rcs.mapper.PrintJobProductMapper;
 import cc.mrbird.febs.rcs.service.IPrintJobProductService;
@@ -10,9 +9,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PrintJobProductServiceImpl extends ServiceImpl<PrintJobProductMapper, PrintJobProduct> implements IPrintJobProductService {
     @Autowired
     PrintJobProductMapper printJobProductMapper;

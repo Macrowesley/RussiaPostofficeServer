@@ -11,7 +11,7 @@ server:
 #    io-threads: 4
 #    worker-threads: 160
   servlet:
-    context-path: /rcs
+    context-path: /PosmartServer
 
 spring:
   profiles:

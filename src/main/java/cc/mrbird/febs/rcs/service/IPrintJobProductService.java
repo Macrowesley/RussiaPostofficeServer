@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.entity.PrintJobProduct;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

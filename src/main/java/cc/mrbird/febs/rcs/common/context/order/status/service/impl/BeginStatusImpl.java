@@ -1,14 +1,12 @@
-package cc.mrbird.febs.rcs.common.context.status.service.impl;
+package cc.mrbird.febs.rcs.common.context.order.status.service.impl;
 
 import cc.mrbird.febs.job.service.IJobService;
-import cc.mrbird.febs.order.service.IOrderService;
-import cc.mrbird.febs.rcs.common.context.status.entity.Result;
-import cc.mrbird.febs.rcs.common.context.status.enums.RcsOrderStatusEnum;
-import cc.mrbird.febs.rcs.common.context.status.service.IRcsOrderStatusService;
+import cc.mrbird.febs.rcs.common.context.order.status.entity.Result;
+import cc.mrbird.febs.rcs.common.context.order.status.enums.RcsOrderStatusEnum;
+import cc.mrbird.febs.rcs.common.context.order.status.service.IRcsOrderStatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Component("begin")

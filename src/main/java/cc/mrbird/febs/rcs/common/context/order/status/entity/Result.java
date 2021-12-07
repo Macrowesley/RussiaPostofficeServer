@@ -1,4 +1,4 @@
-package cc.mrbird.febs.rcs.common.context.status.entity;
+package cc.mrbird.febs.rcs.common.context.order.status.entity;
 
 /**
  * @author Administrator

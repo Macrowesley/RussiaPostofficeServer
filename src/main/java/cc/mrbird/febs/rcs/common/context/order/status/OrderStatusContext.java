@@ -1,14 +1,13 @@
-package cc.mrbird.febs.rcs.common.context.status;
+package cc.mrbird.febs.rcs.common.context.order.status;
 
-import cc.mrbird.febs.rcs.common.context.status.entity.Result;
-import cc.mrbird.febs.rcs.common.context.status.enums.RcsOrderStatusEnum;
-import cc.mrbird.febs.rcs.common.context.status.service.IRcsOrderStatusService;
+import cc.mrbird.febs.rcs.common.context.order.status.entity.Result;
+import cc.mrbird.febs.rcs.common.context.order.status.enums.RcsOrderStatusEnum;
+import cc.mrbird.febs.rcs.common.context.order.status.service.IRcsOrderStatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 管理状态变化

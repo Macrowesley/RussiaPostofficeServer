@@ -2,11 +2,14 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.OrderTypeEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
@@ -14,6 +17,8 @@ import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobProductDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
@@ -47,6 +52,13 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Autowired
     PrintJobMapper printJobMapper;
+
+    @Autowired
+    IPrintJobProductService printJobProductService;
+
+    @Autowired
+    ServiceToMachineProtocol serviceToMachineProtocol;
+
     @Autowired
     IForeseenService foreseenService;
     @Autowired
@@ -64,6 +76,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
+        queryWrapper.orderByDesc(PrintJob::getId);
         Page<PrintJob> page = new Page<>(request.getPageNum(), request.getPageSize());
         return this.page(page, queryWrapper);
     }
@@ -79,6 +92,35 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Transactional(rollbackFor = Exception.class)
     public void createPrintJob(PrintJob printJob) {
         this.save(printJob);
+    }
+
+    /**
+     * 创建前端打印订单
+     *
+     * @param printJobAddDto
+     */
+    @Override
+    public void createPrintJobDto(PrintJobAddDto printJobAddDto) {
+        PrintJob printJob = new PrintJob();
+        BeanUtils.copyProperties(printJobAddDto, printJob);
+        printJob.setFlow(FlowEnum.FlowIng.getCode());
+        printJob.setType(OrderTypeEnum.Web.getCode());
+        printJob.setCreatedTime(new Date());
+        this.save(printJob);
+
+        log.info(printJob.toString());
+
+        ArrayList<PrintJobProductDto> products = printJobAddDto.getProducts();
+        List<PrintJobProduct> dbPrintJobProductList = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            PrintJobProduct printJobProduct = new PrintJobProduct();
+            BeanUtils.copyProperties(products.get(i), printJobProduct);
+            printJobProduct.setPrintJobId(printJob.getId());
+            dbPrintJobProductList.add(printJobProduct);
+            log.info(printJobProduct.toString());
+        }
+
+        printJobProductService.saveBatch(dbPrintJobProductList);
     }
 
     @Override
@@ -157,12 +199,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
          创建job
          创建foreseens和ForeseenProduct
          */
-
-        boolean isForeseensSuccess = curFlowDetail == FlowDetailEnum.JobingForeseensSuccess;
         //创建job
         PrintJob printJob = new PrintJob();
-        if (isForeseensSuccess) {
-            log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess");
+        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess || curFlowDetail == FlowDetailEnum.JobingErrorForeseensUnKnow) {
+            log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess || curFlowDetail == FlowDetailEnum.JobingForeseensUnKnow");
             printJob.setFlow(FlowEnum.FlowIng.getCode());
         } else {
             log.info("curFlowDetail == FlowEnum.FlowEnd.getCode");
@@ -209,17 +249,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
          * 然后取消foreseen后，也需要把那笔金额给退回去
          * transaction以实际消耗金额为主，申请金额也要改成这个
          */
-        if (isForeseensSuccess) {
-            /*Contract dbContract = contractService.getByConractId(foreseenDTO.getContractId());
-            Double consolidate = dbContract.getConsolidate();
-            double newConsolidate = DoubleKit.sub(consolidate, foreseenDTO.getTotalAmmount());
-            dbContract.setConsolidate(newConsolidate);
-            contractService.saveOrUpdate(dbContract);*/
-            /*Contract dbContract = new Contract();
-            dbContract.setId(balanceDTO.getContractCode());
-            dbContract.setCurrent(balanceDTO.getCurrent());
-            dbContract.setConsolidate(balanceDTO.getConsolidate());
-            contractService.saveOrUpdate(dbContract);*/
+        if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess) {
             balanceService.saveReturnBalance(foreseenDTO.getContractCode(), balanceDTO);
         }
     }
@@ -234,9 +264,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Override
     public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         //更新PrintJob
-        if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancelUnKnow) {
+        if (curFlowDetail == FlowDetailEnum.JobingErrorForeseensCancelUnKnow) {
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
-        } else if (curFlowDetail == FlowDetailEnum.JobErrorForeseensCancel4xx) {
+        } else if (curFlowDetail == FlowDetailEnum.JobingErrorForeseensCancel4xx) {
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
         } else {
             dbPrintJob.setFlow(FlowEnum.FlowEnd.getCode());
@@ -364,5 +394,45 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         Integer unFinishCount = this.baseMapper.selectCount(wrapper);
 
         return unFinishCount == 0;
+    }
+
+    /**
+     * 处理打印，可能有多种情况
+     *
+     * @param printJobId
+     */
+    @Override
+    public void doPrintJob(Integer printJobId) {
+        log.info("开始处理打印");
+        //判断现在的进度
+        //是否正在打印中
+        boolean isPrinting = false;
+        if (!isPrinting){
+            throw new FebsException("还没有打印结束，请勿点击");
+        }
+        /**
+         逻辑分析：
+         todo
+         返回订单信息和每个商品的打印进度，并返回当前的flowDetail
+         */
+        serviceToMachineProtocol.doPrintJob();
+
+    }
+
+    /**
+     * 开始取消打印任务
+     *
+     * @param id
+     */
+    @Override
+    public void cancelPrintJob(Integer id) {
+        //判断是否可以取消打印任务
+        boolean enableCancle = false;
+
+        if (!enableCancle){
+            throw new FebsException("当前状态不能取消打印任务，请稍等");
+        }
+
+        serviceToMachineProtocol.cancelPrintJob();
     }
 }
