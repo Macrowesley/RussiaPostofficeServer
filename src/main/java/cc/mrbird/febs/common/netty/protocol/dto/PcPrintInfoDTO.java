@@ -1,9 +1,8 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.ToString;
-
-import java.util.List;
 
 /**
  * PC点击打印按钮后发给机器的信息
@@ -11,7 +10,10 @@ import java.util.List;
 @Data
 @ToString
 public class PcPrintInfoDTO {
+    Integer printJobId;
     String frankMachineId;
+    private String foreseenId;
+    private String transactionId;
     String contractCode;
     Integer flowDetail;
     /**

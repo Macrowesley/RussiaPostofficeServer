@@ -2,6 +2,7 @@ package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -76,6 +77,8 @@ public interface IPrintJobService extends IService<PrintJob> {
 
     PrintJob getLastestJobByFmId(String frankMachineId);
 
+    PrintJob getByPrintJobId(int printJobId);
+
     PrintJob getByForeseenId(String foreseenId);
 
     PrintJob getByTransactionId(String transactionId);
@@ -113,11 +116,18 @@ public interface IPrintJobService extends IService<PrintJob> {
      * 处理打印，可能有多种情况
      * @param printJobId
      */
-    void doPrintJob(Integer printJobId);
+    void doPrintJob(int printJobId);
 
     /**
      * 开始取消打印任务
      * @param id
      */
-    void cancelPrintJob(Integer id);
+    void cancelPrintJob(int id);
+
+    /**
+     * 获取PC上的订单的信息
+     * @param dbPrintJob
+     * @return
+     */
+    PcPrintInfoDTO getPcPrintInfo(PrintJob dbPrintJob);
 }

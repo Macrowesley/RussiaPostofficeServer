@@ -2,6 +2,8 @@ package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintProductDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
@@ -10,14 +12,21 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
+import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.PrintJobProduct;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
+import cc.mrbird.febs.rcs.service.IPrintJobProductService;
+import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
+import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +49,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     @Autowired
     ITaxDeviceUnreceivedService taxDeviceUnreceivedService;
+
+    @Autowired
+    IPrintJobService printJobService;
 
     @Autowired
     ChannelMapperManager channelMapperManager;
@@ -332,20 +344,64 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         }
     }
 
-
-
     /**
      * PC发送打印信息给机器
+     * 订单详情和打印进度
      */
-    public void doPrintJob() {
+    @Async(FebsConstant.NETTY_ASYNC_POOL)
+    public void doPrintJob(PrintJob dbPrintJob) {
+        log.info("【协议开始 发送pc订单给机器】");
+        /**
+         typedef  struct{
+             unsigned char length[4];
+             unsigned char type;				 	 //0xC7
+             unsigned char operateID[2];
+             unsigned char version[3];			 //版本内容(3)
+             unsigned char content[?];            //加密后内容: pcPrintInfoDTO信息
+             unsigned char check;				 //校验位
+             unsigned char tail;					 //0xD0
+         }__attribute__((packed))pcPrintJob, *pcPrintJob;
+         */
 
+        try {
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            //准备数据
+            String version = FebsConstant.FmVersion1;
+
+            String content = JSON.toJSONString(printJobService.getPcPrintInfo(dbPrintJob));
+            String entryctContent = AESUtils.encrypt(content, tempKey);
+            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
+                            (byte) 0xC4));
+
+            log.info("【协议结束 发送pc订单给机器】");
+        } catch (Exception e) {
+            throw new FmException(e.getMessage());
+        }
     }
 
     /**
      * PC主动取消打印任务
      */
     public void cancelPrintJob() {
+        /*typedef  struct{
+            unsigned char length[4];
+            unsigned char type;				 	 //0xC8
+            unsigned char operateID[2];
+            unsigned char version[3];			 //版本内容(3)
+            unsigned char content[?];            //加密后内容: pcCancelInfoDTO信息
+            unsigned char check;				 //校验位
+            unsigned char tail;					 //0xD0
+        }__attribute__((packed))pcPrintJobCancel, *pcPrintJobCancel;
 
+        public class pcCancelInfoDTO {
+            String foreseenId;
+        }*/
     }
 
      /*

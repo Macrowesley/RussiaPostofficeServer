@@ -41,7 +41,9 @@ public class PrintJobProductServiceImpl extends ServiceImpl<PrintJobProductMappe
     @Override
     public List<PrintJobProduct> findPrintJobProducts(PrintJobProduct printJobProduct) {
         LambdaQueryWrapper<PrintJobProduct> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
+        if (printJobProduct.getPrintJobId() != 0){
+            queryWrapper.eq(PrintJobProduct::getPrintJobId, printJobProduct.getPrintJobId());
+        }
         return this.baseMapper.selectList(queryWrapper);
     }
 

@@ -26,20 +26,21 @@ public enum FlowDetailEnum {
 
     //打印任务：结束的各种状态
     JobEndSuccess(61,"闭环：Foreseen和Transaction 都成功了"),
-    JobEndFailForeseens4xx(63,"闭环：Foreseen请求返回4XX或者5XX错误"),
-    JobEndFailForeseensCancelSuccess(64,"闭环：ForeseensCancel请求成功，闭环"),
+    JobEndFailForeseens4xx(62,"闭环：Foreseen请求返回4XX或者5XX错误"),
+    JobEndFailForeseensCancelSuccess(63,"闭环：ForeseensCancel请求成功，闭环"),
     //打印任务：异常的各种状态
-    JobingErrorForeseensCancelUnKnow(65,"未闭环：ForeseensCancel请求，未成功发送给俄罗斯"),
-    JobingErrorForeseensCancel4xx(66,"未闭环：ForeseensCancel请求返回4XX或者5XX错误"),
-    JobingErrorTransactionUnKnow(67,"未闭环：Transaction请求，未成功发送给俄罗斯"),
-    JobingErrorTransaction4xx(68,"未闭环：Transaction请求返回4XX或者5XX错误"),
+    JobingErrorForeseensCancelUnKnow(64,"未闭环：ForeseensCancel请求，未成功发送给俄罗斯"),
+    JobingErrorForeseensCancel4xx(65,"未闭环：ForeseensCancel请求返回4XX或者5XX错误"),
+    JobingErrorTransactionUnKnow(66,"未闭环：Transaction请求，未成功发送给俄罗斯"),
+    JobingErrorTransaction4xx(67,"未闭环：Transaction请求返回4XX或者5XX错误"),
     //打印任务：进行中的状态
-    JobingErrorForeseensUnKnow(62,"未闭环：Foreseen请求，未成功发送给俄罗斯"),
+    JobingErrorForeseensUnKnow(68,"未闭环：Foreseen请求，未成功发送给俄罗斯"),
     JobingForeseensSuccess(69,"未闭环：Foreseen请求成功"),
-    JobingPcPrintBegin(71,"未闭环：点击PC打印按钮"),
+    JobingPcCreatePrint(70,"未闭环：创建了printJob订单"),
+    JobingPcClickBeginPrint(71,"未闭环：创建了printJob订单"),
     JobingPcPrintGetResult(72,"未闭环：点击PC打印按钮，得到了机器返回结果ok"),
-    JobingPcCancelBegin(71,"未闭环：点击PC的取消按钮"),
-    JobingPcCancleGetResult(72,"未闭环：点击PC的取消按钮，得到了机器返回结果ok"),
+    JobingPcCancelBegin(73,"未闭环：点击PC的取消按钮"),
+    JobingPcCancleGetResult(74,"未闭环：点击PC的取消按钮，得到了机器返回结果ok"),
 
     PublicKeyEndSuccess(81,"闭环：publickey流程结束"),
     PublicKeyingBegin(82,"未闭环：publickey创建/更新"),

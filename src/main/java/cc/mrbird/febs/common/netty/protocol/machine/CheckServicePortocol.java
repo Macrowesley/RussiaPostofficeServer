@@ -14,7 +14,6 @@ import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.api.CheckUtils;
-import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
@@ -64,9 +63,6 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
     @Autowired
     IPublicKeyService publicKeyService;
-
-    @Autowired
-    ServiceManageCenter serviceManageCenter;
 
     @Autowired
     ITaxService taxService;

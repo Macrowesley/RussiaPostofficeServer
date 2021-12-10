@@ -2,6 +2,7 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintProductDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.MoneyUtils;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -138,7 +140,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     @Override
-    public DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList) {
+    public DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList, boolean needProductPrintCount) {
         if (msgList.size() % 2 != 0) {
             throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"批次记录为奇数，有没有完成的批次");
         }
@@ -164,6 +166,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         //的msg是批次的结束记录
         TransactionMsg endMsg = null;
         List<FrankDTO> frankDTOList = new ArrayList<>();
+        //订单进度详情
+        HashMap<String, Integer> productPrintCountMap = new HashMap<>();
         for (int i = 0; i < msgList.size(); i++) {
             if (i % 2 == 0) {
                 beginMsg = msgList.get(i);
@@ -188,14 +192,27 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                             frankDTOList.add(new FrankDTO(firstStr + String.format("%08d", (pieceCount + j)) + endStr));
                         }
                     }
+
+                    //判断是否需要获取产品进度
+                    if (needProductPrintCount){
+                        if (productPrintCountMap.containsKey(beginMsg.getCode())){
+                            productPrintCountMap.put(beginMsg.getCode(), (int) (batchCount + productPrintCountMap.get(beginMsg.getCode())));
+                        }else{
+                            productPrintCountMap.put(beginMsg.getCode(), (int) batchCount);
+                        }
+                    }
                 }
             }
         }
         dmMsgDetail.setActualCount(actualCount);
         dmMsgDetail.setActualAmount(String.valueOf(actualAmount));
         if (needDmMsgList) {
-            FrankDTO[] frankDTOArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
-            dmMsgDetail.setFranks(frankDTOArray);
+            FrankDTO[] frankDtoArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
+            dmMsgDetail.setFranks(frankDtoArray);
+        }
+
+        if (needProductPrintCount){
+            dmMsgDetail.setProductCountMap(productPrintCountMap);
         }
 
         return dmMsgDetail;
@@ -228,6 +245,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             //找到没有结束的那个批次，得到dm_msg等信息，保存这个dm_msg到数据库中
             TransactionMsg transactionMsg = new TransactionMsg();
             transactionMsg.setTransactionId(transactionId);
+            transactionMsg.setCode(transactionMsgFMDTO.getCode());
             transactionMsg.setCount(fmTotalCount);
             transactionMsg.setAmount(fmTotalAmount);
             transactionMsg.setDmMsg(transactionMsgList.get(transactionMsgList.size()-1).getDmMsg());
@@ -239,7 +257,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         }
 
         //到了这里，list是偶数的，倒叙相减，累计总金额和数量
-        return this.getDmMsgDetail(transactionMsgList, false);
+        return this.getDmMsgDetail(transactionMsgList, false, false);
     }
 
     /**
@@ -333,6 +351,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
         TransactionMsg transactionMsg = new TransactionMsg();
         transactionMsg.setTransactionId(transactionId);
+        transactionMsg.setCode(transactionMsgFMDTO.getCode());
         transactionMsg.setCount(fmTotalCount);
         transactionMsg.setAmount(fmTotalAmount);
         transactionMsg.setDmMsg(transactionMsgFMDTO.getDmMsg());
@@ -354,8 +373,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
      * @return
      */
     @Override
-    public DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId) {
+    public DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount ) {
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
-        return this.getDmMsgDetail(transactionMsgList, true);
+        return this.getDmMsgDetail(transactionMsgList, true, needProductPrintCount);
     }
 }

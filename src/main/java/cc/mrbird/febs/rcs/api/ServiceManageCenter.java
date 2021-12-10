@@ -14,13 +14,17 @@ import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.*;
-import cc.mrbird.febs.rcs.entity.*;
+import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.PublicKey;
+import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.*;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -41,6 +45,7 @@ public class ServiceManageCenter {
     @Autowired
     ServiceInvokeRussia serviceInvokeRussia;
 
+    @Lazy
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
@@ -599,7 +604,7 @@ public class ServiceManageCenter {
         //机器不让欠钱，暂时为0
         transactionFMDTO.setCreditVal("0");
         //数据库得到具体的dmMsg信息
-        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(dbTransaction.getId());
+        DmMsgDetail dmMsgDetail = dmMsgService.getDmMsgDetailAfterFinishJob(dbTransaction.getId(), false);
         //实际花费的
         transactionFMDTO.setAmount(dmMsgDetail.getActualAmount());
         //预计花费，应该是从foreseen的amount

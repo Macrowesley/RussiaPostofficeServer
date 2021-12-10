@@ -18,4 +18,8 @@ public class ForeseenFMDTO {
     //金钱单位：分
     String totalAmmount;
     String machineDate;
+    /**
+     * 1 机器创建的订单  2 PC创建的订单
+     */
+    Integer printJobType;
 }

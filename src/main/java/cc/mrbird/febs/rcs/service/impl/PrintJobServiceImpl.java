@@ -5,14 +5,17 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintProductDTO;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
-import cc.mrbird.febs.rcs.common.enums.OrderTypeEnum;
+import cc.mrbird.febs.rcs.common.enums.PrintJobTypeEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -22,12 +25,16 @@ import cc.mrbird.febs.rcs.dto.ui.PrintJobProductDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -55,6 +63,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Autowired
     IPrintJobProductService printJobProductService;
+
+    @Autowired
+    ITransactionMsgService transactionMsgService;
 
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
@@ -104,7 +115,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobAddDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
-        printJob.setType(OrderTypeEnum.Web.getCode());
+        printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
+        printJob.setType(PrintJobTypeEnum.Web.getCode());
         printJob.setCreatedTime(new Date());
         this.save(printJob);
 
@@ -161,6 +173,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         wrapper.orderByDesc(PrintJob::getId);
         wrapper.last("limit 1");
         return this.getOne(wrapper);
+    }
+
+    @Override
+    public PrintJob getByPrintJobId(int printJobId) {
+        LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PrintJob::getId, printJobId);
+        PrintJob printJob = this.getOne(wrapper);
+        if (printJob == null) {
+            throw new FmException(FMResultEnum.PrintJobIdNoExist.getCode(), "dbPrintJob == null printJobId = " + printJobId);
+        }
+        return printJob;
     }
 
     @Override
@@ -402,21 +425,28 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @param printJobId
      */
     @Override
-    public void doPrintJob(Integer printJobId) {
+    public void doPrintJob(int printJobId) {
         log.info("开始处理打印");
-        //判断现在的进度
-        //是否正在打印中
-        boolean isPrinting = false;
-        if (!isPrinting){
-            throw new FebsException("还没有打印结束，请勿点击");
-        }
         /**
-         逻辑分析：
-         todo
-         返回订单信息和每个商品的打印进度，并返回当前的flowDetail
-         */
-        serviceToMachineProtocol.doPrintJob();
+         从数据库找到这个printJob
+         判断job的flow是否结束
+            结束
+                返回已经打印完成了，不能再次打印
+            未结束
+                说明是某些原因导致的中断，需要重新发送订单信息和进度给机器
 
+         */
+        //判断现在的进度
+        PrintJob dbPrintJob = getByPrintJobId(printJobId);
+        FlowDetailEnum dbFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
+        FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
+
+        //判断打印是否完成
+        if (dbFlow == FlowEnum.FlowEnd){
+            throw new FebsException("打印已经完成，请勿重复点击");
+        }
+
+        serviceToMachineProtocol.doPrintJob(dbPrintJob);
     }
 
     /**
@@ -425,7 +455,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @param id
      */
     @Override
-    public void cancelPrintJob(Integer id) {
+    public void cancelPrintJob(int id) {
         //判断是否可以取消打印任务
         boolean enableCancle = false;
 
@@ -434,5 +464,63 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
 
         serviceToMachineProtocol.cancelPrintJob();
+    }
+
+    /**
+     * 获取PC上的订单的信息
+     *
+     * @param dbPrintJob
+     * @return
+     */
+    @Override
+    public PcPrintInfoDTO getPcPrintInfo(PrintJob dbPrintJob) {
+        Integer printJobId = dbPrintJob.getId();
+        String frankMachineId = dbPrintJob.getFrankMachineId();
+        String transactionId = dbPrintJob.getTransactionId();
+
+        //构建信息
+        PrintJobProduct printJobProduct = new PrintJobProduct();
+        printJobProduct.setPrintJobId(printJobId);
+        List<PrintJobProduct> printJobProducts = printJobProductService.findPrintJobProducts(printJobProduct);
+
+        //产品信息和进度
+
+        HashMap<String, Integer> productCountMap = null;
+
+        //得到每个产品的进度
+        if (!StringUtils.isEmpty(transactionId)){
+            DmMsgDetail dmMsgDetail = transactionMsgService.getDmMsgDetailAfterFinishJob(transactionId, true);
+            productCountMap = dmMsgDetail.getProductCountMap();
+        }
+
+        //拼接产品进度
+        PcPrintProductDTO[] printProducts = null;
+        PcPrintProductDTO temp = new PcPrintProductDTO();
+
+        for (int i = 0; i < printJobProducts.size(); i++) {
+            BeanUtils.copyProperties(printJobProducts.get(i), temp);
+            if (productCountMap != null && productCountMap.size() > 0){
+                temp.setPrintCount(productCountMap.get(temp.getCode()));
+            }
+            printProducts[i] = temp;
+        }
+
+        //构建产品进度
+        if (dbPrintJob.getFlowDetail() == FlowDetailEnum.JobingPcCreatePrint.getCode()) {
+            dbPrintJob.setFlowDetail(FlowDetailEnum.JobingPcClickBeginPrint.getCode());
+            updatePrintJob(dbPrintJob);
+        }
+
+        PcPrintInfoDTO pcPrintInfoDTO = new PcPrintInfoDTO();
+        pcPrintInfoDTO.setPrintJobId(printJobId);
+        pcPrintInfoDTO.setFrankMachineId(frankMachineId);
+        pcPrintInfoDTO.setForeseenId(dbPrintJob.getForeseenId());
+        pcPrintInfoDTO.setTransactionId(transactionId);
+        pcPrintInfoDTO.setContractCode(dbPrintJob.getContractCode());
+        pcPrintInfoDTO.setFlowDetail(dbPrintJob.getFlowDetail());
+        pcPrintInfoDTO.setPrintJobType(dbPrintJob.getType());
+        pcPrintInfoDTO.setPrintProducts(printProducts);
+
+        return pcPrintInfoDTO;
     }
 }

@@ -245,7 +245,7 @@
                 id: 'printJobTable',
                 url: ctx + 'printJob/list',
                 cols: [[
-                    {type: 'checkbox'},
+                    //{type: 'checkbox'},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},
                     {field: 'foreseenId', title: i18n("printJob.foreseenId"), minWidth: 100},
                     {field: 'transactionId', title: i18n("printJob.transactionId"), minWidth: 100},
@@ -292,6 +292,8 @@
                 if (layEvent === 'operation1'){
                     alert("1")
                 }
+
+                //todo 需要点击后不能再次点击
                 if (layEvent === 'printJob'){
                     febs.post(ctx + 'printJob/begin' ,  {id:data.id},  function (res) {
                         let code = res.code
@@ -305,6 +307,7 @@
                     })
                 }
 
+                //todo 需要点击后不能再次点击
                 if (layEvent === 'printJobCancel'){
                     febs.post(ctx + 'printJob/cancel' ,  {id:data.id},  function (res) {
                         let code = res.code

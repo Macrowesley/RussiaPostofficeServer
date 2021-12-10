@@ -78,7 +78,7 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param msgList
      * @return
      */
-    DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList);
+    DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList, boolean needProductPrintCount);
 
     /**
      * 机器开机的时候获取dmMsgDetail
@@ -102,6 +102,6 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @param transactionId
      * @return
      */
-    DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId);
+    DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount);
 
 }

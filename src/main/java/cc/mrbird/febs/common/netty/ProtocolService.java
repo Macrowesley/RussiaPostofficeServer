@@ -9,9 +9,7 @@ import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.publickey.QueryPrivateKeylPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.publickey.UpdatePrivateKeyResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.BalanceResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.CloseSSHResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.OpenSSHResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.*;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.MachineLoginPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryIDPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol;
@@ -201,6 +199,12 @@ public class ProtocolService {
                 break;
             case TransactionMsgPortocol.PROTOCOL_TYPE:
                 baseProtocol = new TransactionMsgPortocol();
+                break;
+            case ClickPrintResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = new ClickPrintResultPortocol();
+                break;
+            case CacelPrintResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = new CacelPrintResultPortocol();
                 break;
             default:
                 wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
