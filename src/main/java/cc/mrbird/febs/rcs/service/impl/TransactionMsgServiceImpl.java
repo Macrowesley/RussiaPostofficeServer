@@ -2,17 +2,13 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.common.netty.protocol.dto.PcPrintProductDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
-import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.api.CheckUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
-import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.common.kit.DoubleKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
 import cc.mrbird.febs.rcs.entity.PrintJob;

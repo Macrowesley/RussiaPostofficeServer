@@ -432,19 +432,19 @@ public class ServiceManageCenter {
      * 【机器请求foreseens协议】调用本方法
      * 请求打印任务
      */
-    public Contract foreseens(ForeseenFMDTO foreseenFMDTO, ChannelHandlerContext ctx) {
+    public Contract foreseens(ForeseenFMDTO foreseenFmDto, ChannelHandlerContext ctx) {
 
         String operationName = "foreseens";
-        String frankMachineId = foreseenFMDTO.getFrankMachineId();
+        String frankMachineId = foreseenFmDto.getFrankMachineId();
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         //判断机器状态是否正常
         checkUtils.checkFmEnable(frankMachineId);
 
         //判断机器税率表是否更新
-        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFMDTO.getTaxVersion(), foreseenFMDTO.getMachineDate());
+        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFmDto.getTaxVersion(), foreseenFmDto.getMachineDate());
         /*Tax tax = taxService.getLastestTax();
-        String fmTaxVersion = foreseenFMDTO.getTaxVersion();
+        String fmTaxVersion = foreseenFmDto.getTaxVersion();
         String dbTaxVersion = tax.getVersion();
 
         if (!fmTaxVersion.equals(dbTaxVersion)) {
@@ -458,23 +458,23 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "需要发送公钥和私钥给服务器");
         }
 
-        log.info("foreseenFMDTO.getContractCode() = {}", foreseenFMDTO.getContractCode());
-        Contract dbContract = checkUtils.checkContractIsOk(foreseenFMDTO.getContractCode());
+        log.info("foreseenFmDto.getContractCode() = {}", foreseenFmDto.getContractCode());
+        Contract dbContract = checkUtils.checkContractIsOk(foreseenFmDto.getContractCode());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
 
         //判断合同金额是否够用
-        double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFMDTO.getTotalAmmount());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFMDTO.getTotalAmmount()) == 0) {
+        double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount());
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
         //判断postOffice是否存在
-        checkUtils.checkPostOfficeExist(foreseenFMDTO.getPostOffice());
+        checkUtils.checkPostOfficeExist(foreseenFmDto.getPostOffice());
 
         //fm信息转ForeseenDTO
         ForeseenDTO foreseenDTO = new ForeseenDTO();
-        BeanUtils.copyProperties(foreseenFMDTO, foreseenDTO);
+        BeanUtils.copyProperties(foreseenFmDto, foreseenDTO);
         foreseenDTO.setTotalAmount(fmTotalAmount);
 
         //处理UserId

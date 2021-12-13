@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import lombok.Data;
 import lombok.ToString;
 
@@ -23,5 +23,5 @@ public class PcPrintInfoDTO {
     /**
      * 打印商品列表
      */
-    PcPrintProductDTO[] printProducts;
+    ForeseenProductDTO[] printProducts;
 }

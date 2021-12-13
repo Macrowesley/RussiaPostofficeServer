@@ -22,4 +22,8 @@ public class ForeseenFMDTO {
      * 1 机器创建的订单  2 PC创建的订单
      */
     Integer printJobType;
+    /**
+     * printJob的id
+     */
+    Integer printJobId;
 }

@@ -61,7 +61,7 @@ public class ForeseenServiceImpl extends ServiceImpl<ForeseenMapper, Foreseen> i
     @Transactional(rollbackFor = Exception.class)
     public void deleteForeseen(Foreseen foreseen) {
         LambdaQueryWrapper<Foreseen> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
+	    wrapper.eq(Foreseen::getId, foreseen.getId());
 	    this.remove(wrapper);
 	}
 }

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,7 +42,9 @@ public class ForeseenProductServiceImpl extends ServiceImpl<ForeseenProductMappe
     @Override
     public List<ForeseenProduct> findForeseenProducts(ForeseenProduct foreseenProduct) {
 	    LambdaQueryWrapper<ForeseenProduct> queryWrapper = new LambdaQueryWrapper<>();
-		// TODO 设置查询条件
+        if (foreseenProduct.getPrintJobId() != 0){
+            queryWrapper.eq(ForeseenProduct::getPrintJobId, foreseenProduct.getPrintJobId());
+        }
 		return this.baseMapper.selectList(queryWrapper);
     }
 
@@ -61,7 +64,10 @@ public class ForeseenProductServiceImpl extends ServiceImpl<ForeseenProductMappe
     @Transactional(rollbackFor = Exception.class)
     public void deleteForeseenProduct(ForeseenProduct foreseenProduct) {
         LambdaQueryWrapper<ForeseenProduct> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
+        if (!StringUtils.isEmpty(foreseenProduct.getForeseenId())){
+            wrapper.eq(ForeseenProduct::getForeseenId, foreseenProduct.getForeseenId());
+        }
 	    this.remove(wrapper);
 	}
+
 }

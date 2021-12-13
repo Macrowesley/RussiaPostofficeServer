@@ -25,6 +25,12 @@ public class ForeseenProduct {
     private Integer id;
 
     /**
+     * 订单id
+     */
+    @TableField("print_job_id")
+    private Integer printJobId;
+
+    /**
      * 预算订单id
      */
     @TableField("foreseen_id")
@@ -32,15 +38,15 @@ public class ForeseenProduct {
 
 
     /**
-     * 【待定】
+     * 产品code
      */
-    @TableField("product_code")
+    @TableField("code")
     private String productCode;
 
     /**
      * 数量
      */
-    @TableField("p_count")
+    @TableField("count")
     private Integer count;
 
     /**
@@ -54,6 +60,14 @@ public class ForeseenProduct {
      */
     @TableField("amount")
     private Double amount;
+
+    /**
+     * 地址
+     */
+    @TableField("address")
+    String address;
+
+
 
     /**
      * 创建时间

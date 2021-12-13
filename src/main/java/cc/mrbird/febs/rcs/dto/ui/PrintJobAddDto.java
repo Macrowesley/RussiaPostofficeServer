@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.dto.ui;
 
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -28,7 +29,7 @@ public class PrintJobAddDto {
 
     int totalCount;
 
-    ArrayList<PrintJobProductDto> products;
+    ArrayList<ForeseenProductDTO> products;
 
     private String foreseenId;
 

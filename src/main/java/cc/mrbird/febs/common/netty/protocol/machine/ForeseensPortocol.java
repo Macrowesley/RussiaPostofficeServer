@@ -12,6 +12,7 @@ import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
+import cc.mrbird.febs.rcs.common.enums.PrintJobTypeEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.entity.Contract;
@@ -151,6 +152,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
                     //机器日期
                     Date machineDate = DateKit.parseDateYmdhms(foreseenFmDto.getMachineDate());
+
 
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
