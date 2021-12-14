@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.PcCancelInfoDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
@@ -359,6 +360,11 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
         try {
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+
+            if (ctx == null) {
+                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
+            }
+
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 
@@ -403,6 +409,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         try {
             log.info("【协议开始 发送pc 取消订单命令 给机器】");
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+            if (ctx == null) {
+                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
+            }
             //获取临时密钥
             String tempKey = tempKeyUtils.getTempKey(ctx);
 

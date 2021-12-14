@@ -34,7 +34,8 @@ function openSocket(userId, websocketServiceName) {
         //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
         var socketUrl = "http://" + window.location.host + ctx  + websocketServiceName + "/" + userId
         var replaceStr = "ws";
-        replaceStr = "wss";
+        //需要https的时候才能使用这个
+        // replaceStr = "wss";
         socketUrl = socketUrl.replace("https", replaceStr).replace("http", replaceStr);
 
         // console.log("连接地址为：" + socketUrl);
@@ -77,6 +78,18 @@ function openSocket(userId, websocketServiceName) {
                     // console.log("闭环超时报警")
                     document.getElementById("hotDot").style.display = "inline-block";
                     break;
+                case 5:
+                    //点击打印结果
+                    console.log("点击打印结果")
+                    febs.alert.success("点击取消打印结果")
+                    // document.getElementById("hotDot").style.display = "inline-block";
+                    break;
+                case 6:
+                    //点击取消打印结果
+                    console.log("点击取消打印结果")
+                    febs.alert.success("点击取消打印结果")
+                    // document.getElementById("hotDot").style.display = "inline-block";
+                    break;
             }
         };
         //关闭事件
@@ -84,7 +97,8 @@ function openSocket(userId, websocketServiceName) {
             console.log("websocket已关闭");
         };
         //发生了错误事件
-        socket.onerror = function () {
+        socket.onerror = function (res) {
+            console.log(JSON.stringify(res))
             console.log("websocket发生了错误");
         }
 

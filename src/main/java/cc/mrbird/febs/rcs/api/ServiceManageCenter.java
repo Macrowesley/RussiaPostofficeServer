@@ -536,7 +536,7 @@ public class ServiceManageCenter {
      * 交易
      */
     public Contract transactions(TransactionFMDTO transactionFmDto) {
-        //todo 测试修改数据
+        //测试修改数据
 //        transactionFmDto.setPostOffice("131999");
 //        transactionFmDto.setFrankMachineId("PM100501");
 //        transactionFmDto.setContractCode("00001019");
@@ -645,11 +645,11 @@ public class ServiceManageCenter {
      * 【机器请求cancelJob协议】调用本方法
      * 取消任务
      */
-    public Contract cancelJob(CancelJobFMDTO cancelJobFMDTO) {
+    public Contract cancelJob(CancelJobFMDTO cancelJobFmDto) {
         String operationName = "cancelJob";
-        String frankMachineId = cancelJobFMDTO.getFrankMachineId();
-        String foreseenId = cancelJobFMDTO.getForeseenId();
-        String cancelMessage = CancelMsgEnum.getByCode(cancelJobFMDTO.getCancelMsgCode()).getMsg();
+        String frankMachineId = cancelJobFmDto.getFrankMachineId();
+        String foreseenId = cancelJobFmDto.getForeseenId();
+        String cancelMessage = CancelMsgEnum.getByCode(cancelJobFmDto.getCancelMsgCode()).getMsg();
 
         log.info("开始 {}, frankMachineId={}", operationName, frankMachineId);
 
@@ -676,16 +676,16 @@ public class ServiceManageCenter {
 
 
         //给俄罗斯发消息
-        ApiRussiaResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFMDTO.getContractCode(), new ForeseenCancel(cancelMessage));
+        ApiRussiaResponse cancelResponse = serviceInvokeRussia.cancel(foreseenId,  cancelJobFmDto.getContractCode(), new ForeseenCancel(cancelMessage));
         if (!cancelResponse.isOK()) {
             if (cancelResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
-                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobingErrorForeseensCancelUnKnow, null);
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFmDto, FlowDetailEnum.JobingErrorForeseensCancelUnKnow, null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(),"cancelResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
-                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobingErrorForeseensCancel4xx, null);
+                printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFmDto, FlowDetailEnum.JobingErrorForeseensCancel4xx, null);
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(),"cancelResponse.isOK() false ");
             }
@@ -694,7 +694,7 @@ public class ServiceManageCenter {
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) cancelResponse.getObject();
         log.info("transactions 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
 
-        printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFMDTO, FlowDetailEnum.JobEndFailForeseensCancelSuccess, balanceDTO);
+        printJobService.changeForeseensCancelStatus(dbPrintJob, cancelJobFmDto, FlowDetailEnum.JobEndFailForeseensCancelSuccess, balanceDTO);
 
         dbContract.setCurrent(balanceDTO.getCurrent());
         dbContract.setConsolidate(balanceDTO.getConsolidate());
@@ -721,5 +721,9 @@ public class ServiceManageCenter {
         //异步：发送privateKey给机器
         log.info("得到俄罗斯的公钥请求/机器成功了auth请求，我们服务器创建了publickey对象，然后异步通知机器更新publickey然后发给服务器");
         serviceToMachineProtocol.noticeMachineUpdateKey(frankMachineId, dbPublicKey);
+    }
+
+    public void doPrintJob(PrintJob dbPrintJob) {
+        serviceToMachineProtocol.doPrintJob(dbPrintJob);
     }
 }

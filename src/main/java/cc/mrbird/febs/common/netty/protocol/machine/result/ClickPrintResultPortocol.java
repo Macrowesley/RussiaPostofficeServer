@@ -3,10 +3,10 @@ package cc.mrbird.febs.common.netty.protocol.machine.result;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ClickPrintResDto;
-import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.service.INoticeFrontService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,9 @@ import javax.annotation.PostConstruct;
 public class ClickPrintResultPortocol extends MachineToServiceProtocol {
     @Autowired
     IPrintJobService printJobService;
+
+    @Autowired
+    INoticeFrontService noticeFrontService;
 
     public static final byte PROTOCOL_TYPE = (byte) 0xC7;
 
@@ -89,11 +92,18 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
 
         ClickPrintResDto resDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ClickPrintResDto.class);
 
-
         PrintJob printJob = new PrintJob();
         printJob.setId(Integer.valueOf(resDto.getPrintJobId()));
-        printJob.setFlowDetail(FlowDetailEnum.JobingPcPrintGetResult.getCode());
+        if ("1".equals(resDto.getRes())){
+            //如果结果ok
+            printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResOk.getCode());
+        }else{
+            printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResFail.getCode());
+        }
         protocol.printJobService.updatePrintJob(printJob);
+
+        //通知前端
+        protocol.noticeFrontService.notice(5, "1".equals(resDto.getRes()) ? "操作成功" : "操作失败");
 
         log.info("{}PC点击打印，机器返回的结果是：{}", acnum, resDto.toString());
 

@@ -17,6 +17,7 @@ import cc.mrbird.febs.rcs.api.CheckUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
+import cc.mrbird.febs.rcs.common.enums.PrintJobTypeEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
@@ -296,6 +297,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 //                    resultDto.setDmMsg(dmMsg);
                     resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
+                    resultDto.setPrintJobType(String.valueOf(dbPrintJob.getType()));
                     resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
                     String responseData = JSON.toJSONString(resultDto);
 
@@ -310,6 +312,20 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     String tempKey = checkServicePortocol.tempKeyUtils.getTempKey(ctx);
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     log.info(OPERATION_NAME + "协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
+
+                    /**
+                     * 是否打印完成
+                     * 		是
+                     * 			不发送额外协议
+                     * 		否
+                     * 			发送打印信息协议
+                     */
+                    if (!dbPrintJob.getFlow().equals(FlowEnum.FlowEnd.getCode()) && dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()){
+                        log.info("开机校验中 PC订单没有打印完成，发送打印进度");
+                        checkServicePortocol.serviceManageCenter.doPrintJob(dbPrintJob);
+                    }
+
+                    //返回打印协议
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());

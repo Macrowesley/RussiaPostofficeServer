@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.netty.protocol.dto.CancelPrintResDto;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.service.INoticeFrontService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,8 @@ public class CacelPrintResultPortocol extends MachineToServiceProtocol {
     @Autowired
     IPrintJobService printJobService;
 
+    @Autowired
+    INoticeFrontService noticeFrontService;
 
     public static final byte PROTOCOL_TYPE = (byte) 0xC8;
 
@@ -92,11 +95,18 @@ public class CacelPrintResultPortocol extends MachineToServiceProtocol {
 
         PrintJob printJob = new PrintJob();
         printJob.setId(Integer.valueOf(resDto.getPrintJobId()));
-        printJob.setFlowDetail(FlowDetailEnum.JobingPcCancleGetResult.getCode());
+        if ("1".equals(resDto.getRes())){
+            //如果结果ok
+            printJob.setFlowDetail(FlowDetailEnum.JobingPcCancelResOk.getCode());
+        }else{
+            printJob.setFlowDetail(FlowDetailEnum.JobingPcCancleResFail.getCode());
+        }
         protocol.printJobService.updatePrintJob(printJob);
 
         log.info("{}PC点击 取消打印，机器返回的结果是：{}", acnum, resDto.toString());
 
+        //通知前端
+        protocol.noticeFrontService.notice(6, "1".equals(resDto.getRes()) ? "操作成功" : "操作失败");
         //返回
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);

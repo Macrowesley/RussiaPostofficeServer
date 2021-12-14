@@ -359,7 +359,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 //            dbPrintJob.setTransactionId(transactionDTO.getId());
             this.updatePrintJob(dbPrintJob);
         } else {
-            //todo 碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
+            //碰到这种异常，保存进度，不保存transaction 和 frank 不修改金额
             dbPrintJob.setFlow(FlowEnum.FlowIng.getCode());
             dbPrintJob.setUpdatedTime(new Date());
             this.updatePrintJob(dbPrintJob);
@@ -375,44 +375,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         transaction.setUpdatedTime(new Date());
         transactionService.updateTransaction(transaction);
 
-        //废弃，不批量保存了
-        // 添加frank
-        /*List<Frank> frankList = new ArrayList<>();
-        for (FrankDTO frankDTO : transactionDTO.getFranks()) {
-            Frank frank = new Frank();
-            frank.setDmMessage(frankDTO.getDmMessage());
-            frank.setId(AESUtils.createUUID());
-            frank.setStatisticsId("");
-            frank.setTransactionId(transaction.getId());
-            frank.setCreatedTime(new Date());
-            frankList.add(frank);
-        }
-        transactionMsgService.saveBatch(frankList);*/
-
         //如果一切OK
         if (curFlowDetail == FlowDetailEnum.JobEndSuccess) {
-            /*Double dbCurrent = dbContract.getCurrent();
-            Double dbConsolidate = dbContract.getConsolidate();
-
-            //金额： 合同余额减去transaction的金额
-            double newCurrent = DoubleKit.sub(dbCurrent, transaction.getAmount());
-
-            //foreseen的金额
-            Foreseen dbForeseen = foreseenService.getById(dbPrintJob.getForeseenId());
-            Double usedConsolidate = dbForeseen.getTotalAmmount();
-
-            double newConsolidate = DoubleKit.add(dbConsolidate, usedConsolidate);
-            newConsolidate = DoubleKit.sub(newConsolidate, transaction.getCreditVal());
-
-            dbContract.setCurrent(newCurrent);
-            dbContract.setConsolidate(newConsolidate);
-            contractService.saveOrUpdate(dbContract);*/
-
-            /*dbContract.setId(balanceDTO.getContractCode());
-            dbContract.setCurrent(balanceDTO.getCurrent());
-            dbContract.setConsolidate(balanceDTO.getConsolidate());
-
-            contractService.saveOrUpdate(dbContract);*/
             balanceService.saveReturnBalance(balanceDTO.getContractCode(), balanceDTO);
             dbContract.setConsolidate(balanceDTO.getConsolidate());
             dbContract.setCurrent(balanceDTO.getCurrent());
@@ -500,7 +464,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             //哪些情况可以点击取消打印呢？没有开始transaction的时候
             boolean enableCancle = true;
-            if (dbFlowDetail == FlowDetailEnum.JobingErrorTransactionUnKnow || dbFlowDetail == FlowDetailEnum.JobingErrorTransaction4xx){
+            if (dbFlowDetail == FlowDetailEnum.JobingErrorTransactionUnKnow
+                    || dbFlowDetail == FlowDetailEnum.JobingErrorTransaction4xx){
                 enableCancle = false;
             }
 
@@ -552,12 +517,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 temp.setAlreadyPrintCount(productCountMap.get(temp.getProductCode()));
             }
             productArr[i] = temp;
-        }
-
-        //构建产品进度
-        if (dbPrintJob.getFlowDetail() == FlowDetailEnum.JobingPcCreatePrint.getCode()) {
-            dbPrintJob.setFlowDetail(FlowDetailEnum.JobingPcClickBeginPrint.getCode());
-            updatePrintJob(dbPrintJob);
         }
 
         PcPrintInfoDTO pcPrintInfoDTO = new PcPrintInfoDTO();
