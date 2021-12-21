@@ -1,22 +1,30 @@
 package cc.mrbird.febs.common.netty.protocol;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.PcCancelInfoDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.netty.protocol.machine.result.CancelPrintResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.ClickPrintResultPortocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
+import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
+import cc.mrbird.febs.rcs.service.IMsgService;
+import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,7 +50,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     ITaxDeviceUnreceivedService taxDeviceUnreceivedService;
 
     @Autowired
+    IPrintJobService printJobService;
+
+    @Autowired
     ChannelMapperManager channelMapperManager;
+
+    @Autowired
+    IMsgService msgService;
 
     public ServiceToMachineProtocol() {
     }
@@ -253,6 +267,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             taxDeviceUnreceivedList.add(temp);
         });
         //所有机器都应该收到
+        log.info("taxDeviceUnreceivedList.size() = " + taxDeviceUnreceivedList.size());
         taxDeviceUnreceivedService.saveUniqueBatch(taxDeviceUnreceivedList);
 
         //但是只能给当前在线的机器发送信息
@@ -331,7 +346,101 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         }
     }
 
+    /**
+     * PC发送打印信息给机器
+     * 订单详情和打印进度
+     */
+//    @Async(FebsConstant.NETTY_ASYNC_POOL)
+    public void doPrintJob(PrintJob dbPrintJob) {
+        log.info("【协议开始 发送pc订单给机器】");
+        /**
+         typedef  struct{
+             unsigned char length[4];
+             unsigned char type;				 	 //0xC7
+             unsigned char operateID[2];
+             unsigned char version[3];			 //版本内容(3)
+             unsigned char content[?];            //加密后内容: pcPrintInfoDTO信息
+             unsigned char check;				 //校验位
+             unsigned char tail;					 //0xD0
+         }__attribute__((packed))pcPrintJob, *pcPrintJob;
+         */
+        msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
 
+        try {
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+
+            if (ctx == null) {
+                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
+            }
+
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            //准备数据
+            String version = FebsConstant.FmVersion1;
+
+            String content = JSON.toJSONString(printJobService.getPcPrintInfo(dbPrintJob));
+            String entryctContent = AESUtils.encrypt(content, tempKey);
+            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
+                            ClickPrintResultPortocol.PROTOCOL_TYPE));
+
+            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
+            log.info("【协议结束 发送pc订单给机器】");
+        } catch (Exception e) {
+            throw new FmException(e.getMessage());
+        }
+    }
+
+    /**
+     * PC主动取消打印任务
+     */
+    public void cancelPrintJob(PrintJob dbPrintJob) {
+        /*typedef  struct{
+            unsigned char length[4];
+            unsigned char type;				 	 //0xC8
+            unsigned char operateID[2];
+            unsigned char version[3];			 //版本内容(3)
+            unsigned char content[?];            //加密后内容: pcCancelInfoDTO信息
+            unsigned char check;				 //校验位
+            unsigned char tail;					 //0xD0
+        }__attribute__((packed))pcPrintJobCancel, *pcPrintJobCancel;
+
+        public class pcCancelInfoDTO {
+            String foreseenId;
+        }*/
+
+        /**
+         * 发送给机器，告知取消打印
+         */
+        try {
+            log.info("【协议开始 发送pc 取消订单命令 给机器】");
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+            if (ctx == null) {
+                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
+            }
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            //准备数据
+            String version = FebsConstant.FmVersion1;
+
+            String content = JSON.toJSONString(new PcCancelInfoDTO(dbPrintJob.getForeseenId()));
+            String entryctContent = AESUtils.encrypt(content, tempKey);
+            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
+                            CancelPrintResultPortocol.PROTOCOL_TYPE));
+
+            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.CancelPrintRes.getCode(), dbPrintJob.getId()),"");
+            log.info("【协议结束 发送pc 取消订单命令 给机器】");
+        } catch (Exception e) {
+            throw new FmException(e.getMessage());
+        }
+    }
 
      /*
      ***********************************************************
@@ -347,7 +456,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         /**
          typedef  struct{
              unsigned char length[4];				 //4个字节
-             unsigned char type;				 	 //0xC8
+             unsigned char type;				 	 //
              unsigned char  operateID[2];
              unsigned char content[?];            //加密后内容 版本内容(3) + frankMachineId() + balanceId(?) + contractCode(?) + contractNum(?) + current(?) + consolidate(?)
              unsigned char check;				 //校验位

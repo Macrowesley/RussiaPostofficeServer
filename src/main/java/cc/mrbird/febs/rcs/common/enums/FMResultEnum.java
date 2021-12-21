@@ -29,8 +29,9 @@ public enum FMResultEnum {
     TransactionExist(32,"transaction已经存在，不能新建"),
     TransactionIdNoExist(33,"Transaction Id 不存在"),
     ForeseenIdNoExist(34,"foreseen Id 不存在"),
-    ContractCodeInCoutomeNoExist(35,"customer中contractCode不存在"),
-    ContractNotExist(36,"contract is not exist"),
+    PrintJobIdNoExist(35,"printJob Id 不存在"),
+    ContractCodeInCoutomeNoExist(36,"customer中contractCode不存在"),
+    ContractNotExist(37,"contract is not exist"),
     //privateKey异常
     PrivateKeyNotExist(41,"privatekey不存在"),
 

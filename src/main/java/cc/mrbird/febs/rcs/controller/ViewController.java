@@ -57,6 +57,20 @@ public class ViewController extends BaseController{
         return FebsUtil.view("rcs/contract/update");
     }
 
+    @GetMapping("/printJob")
+//    @RequiresPermissions("printJob:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String printJob(Model model) {
+        return FebsUtil.view("rcs/printJob/printJob");
+    }
+
+
+    @GetMapping("/printJob/add")
+//    @RequiresPermissions("printJob:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String printJobAdd(Model model) {
+        return FebsUtil.view("rcs/printJob/printJobAdd");
+    }
 
 
 

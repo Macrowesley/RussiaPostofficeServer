@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.ToString;
 
@@ -10,6 +11,8 @@ public class TransactionMsgFMDTO {
     String id;
     //id类型
     int idType;
+    //产品code
+    String code;
     //累加总数量
     String totalCount;
     //累加总金额，单位是分

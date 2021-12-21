@@ -43,4 +43,14 @@ public class ForeseenDTO {
     String taxVersion;
 
     Double totalAmount;
+
+    /**
+     * 1 机器创建的订单  2 PC创建的订单
+     */
+    Integer printJobType;
+
+    /**
+     * printJob的id
+     */
+    Integer printJobId;
 }

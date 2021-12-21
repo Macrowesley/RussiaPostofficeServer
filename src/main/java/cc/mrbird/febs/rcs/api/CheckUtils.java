@@ -112,7 +112,7 @@ public class CheckUtils {
 
     /**
      * 判断订单状态是否符合条件：
-     * 只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow
+     * 只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow JobingErrorTransaction4xx
      * @param foreseenId
      * @return
      */
@@ -123,8 +123,8 @@ public class CheckUtils {
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
         if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
-                curFlowDetail != FlowDetailEnum.JobErrorTransactionUnKnow
-                && curFlowDetail != FlowDetailEnum.JobErrorTransaction4xx) {
+                curFlowDetail != FlowDetailEnum.JobingErrorTransactionUnKnow
+                && curFlowDetail != FlowDetailEnum.JobingErrorTransaction4xx) {
             throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(), "transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
         return dbPrintJob;

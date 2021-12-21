@@ -21,6 +21,12 @@ public class TransactionMsg {
     @TableField("transaction_id")
     private String transactionId;
 
+    /**
+     * 产品code
+     */
+    @TableField("code")
+    private String code;
+
     @TableField("count")
     private Long count;
     //单位是分，应该改成long类型

@@ -10,7 +10,7 @@
                                     <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label" th:text="#{contract.id}"></label>
                                         <div class="layui-input-inline">
-                                            <input type="text" name="id" autocomplete="off" class="layui-input">
+                                            <input type="text" name="code" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                     <!--<div class="layui-inline">
@@ -49,10 +49,10 @@
                                     <i class="layui-icon">&#xe79b;</i>
                                 </div>
 
-                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                <!--<div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
                                      shiro:hasAnyPermissions="contract:update,contract:export">
                                     <i class="layui-icon">&#xe875;</i>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
                     </form>
@@ -215,8 +215,8 @@
                 id: 'contractTable',
                 url: ctx + 'contract/list',
                 cols: [[
-                    {type: 'checkbox'},
-                    {field: 'id', title: i18n("contract.id"), minWidth: 300},
+                    // {type: 'checkbox'},
+                    {field: 'code', title: i18n("contract.id"), minWidth: 300},
                     {field: 'current', title: i18n("contract.current")},
                     {field: 'consolidate', title: i18n("contract.consolidate")},
                     {title: i18n("contract.enable"), templet: '#contract-status'},
@@ -286,7 +286,7 @@
             return {
                 // createTimeFrom: createTimeFrom,
                 // createTimeTo: createTimeTo,
-                id: $searchForm.find('input[name="id"]').val().trim(),
+                code: $searchForm.find('input[name="code"]').val().trim(),
                 // nickname: $searchForm.find('input[name="nickname"]').val().trim(),
                 // curFmStatus: $searchForm.find("select[name='contractStatus']").val(),
                 invalidate_ie_cache: new Date()

@@ -66,24 +66,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = FebsException.class)
-    public FebsResponse handleFebsException(FebsException e, HttpServletResponse response) {
-        response.setStatus(400);
-        log.error("系统错误 {}", e.getMessage());
+    public FebsResponse handleFebsException(FebsException e) {
+        log.error("Febs系统错误 {}", e.getMessage());
         return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage());
     }
 
 
-    /**
-     * 处理俄罗斯访问我们接口时发生的异常
-     * @param e
-     * @return
-     */
-   /* @ExceptionHandler(value = RcsApiException.class)
-    public ApiRcsResponse handleRcsApiException(RcsApiException e, HttpServletResponse response) {
-        response.setStatus(400);
-        log.error("RCS api 错误 {}", e.getMessage());
-        return new ApiRcsResponse(e.getCode(), e.getMessage());
-    }*/
 
     @ExceptionHandler(value = RcsApiException.class)
     public ResponseEntity handleRcsApiException(RcsApiException e) {

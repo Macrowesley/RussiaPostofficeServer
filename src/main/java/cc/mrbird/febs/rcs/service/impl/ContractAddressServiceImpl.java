@@ -138,7 +138,7 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     public void saveAddressList(List<String> addressList, String contractCode) {
         List<ContractAddress> list = new ArrayList<>();
         addressList.forEach(item ->{
-            if (item.length() > 10) {
+            if (item.length() > 3) {
                 ContractAddress bean = new ContractAddress();
                 bean.setContractCode(contractCode);
                 bean.setAddress(item);

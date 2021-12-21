@@ -1,0 +1,42 @@
+package cc.mrbird.febs.rcs.common.context.order.status.service.impl;
+
+import cc.mrbird.febs.job.service.IJobService;
+import cc.mrbird.febs.rcs.common.context.order.status.entity.Result;
+import cc.mrbird.febs.rcs.common.context.order.status.enums.RcsOrderStatusEnum;
+import cc.mrbird.febs.rcs.common.context.order.status.service.IRcsOrderStatusService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component("begin")
+public class BeginStatusImpl implements IRcsOrderStatusService {
+    @Autowired
+    IJobService jobService;
+
+    /**
+     * @param currentStatus
+     */
+    @Override
+    public Result doBegin(String orderId, RcsOrderStatusEnum currentStatus) {
+        log.info("创建订单后，当前状态是{}，然后要做这些事情", currentStatus.getStatus());
+//        jobService.changeStatus(orderId, currentStatus, RcsOrderStatusEnum.Begin);
+        return null;
+    }
+
+    /**
+     * @param currentStatus
+     */
+    @Override
+    public Result doForeseen(RcsOrderStatusEnum currentStatus) {
+        return null;
+    }
+
+    /**
+     * @param currentStatus
+     */
+    @Override
+    public Result doTransaction(RcsOrderStatusEnum currentStatus) {
+        return null;
+    }
+}

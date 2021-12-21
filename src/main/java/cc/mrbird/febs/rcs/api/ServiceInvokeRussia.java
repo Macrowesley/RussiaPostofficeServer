@@ -39,7 +39,7 @@ public class ServiceInvokeRussia {
      * CPU123 FM100002  00001033
      * 端口号：12800
      */
-    private final boolean isTest = true;
+    private final boolean isTest = false;
     /**
      * 发送机器状况
      *

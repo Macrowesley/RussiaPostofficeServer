@@ -5,7 +5,9 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
+import cc.mrbird.febs.common.utils.EcDsa.DigitalSignatureTestHelper;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.test.QrCode;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Base64;
 
 /**
  * 被俄罗斯调用的接口
@@ -66,6 +69,20 @@ public class ServiceApi {
     @Autowired
     @Qualifier(value = FebsConstant.ASYNC_POOL)
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+    @PostMapping("/test")
+    public String test(@RequestBody QrCode qrCode) throws Exception {
+
+        String content = qrCode.getContent();
+        String publicKey = qrCode.getPublicKey();
+        String sign = qrCode.getSign();
+
+        log.info("qrContent = {}, publicKey ={} sign={}", content, publicKey, sign);
+
+        String res = String.valueOf(DigitalSignatureTestHelper.verify(content, DigitalSignatureTestHelper.getPublicKey(publicKey), sign));
+        log.info("结果" + res);
+        return res;
+    }
 
     /**
      * 公钥请求

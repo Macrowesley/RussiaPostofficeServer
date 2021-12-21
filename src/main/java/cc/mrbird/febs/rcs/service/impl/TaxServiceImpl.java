@@ -2,19 +2,14 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.service.RedisService;
-import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
-import cc.mrbird.febs.rcs.api.ServiceManageCenter;
 import cc.mrbird.febs.rcs.common.enums.InformRussiaEnum;
-import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.service.RateDetailDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.rcs.entity.PostalProduct;
 import cc.mrbird.febs.rcs.entity.Tax;
-import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
-import cc.mrbird.febs.rcs.mapper.TaxDeviceUnreceivedMapper;
 import cc.mrbird.febs.rcs.mapper.TaxMapper;
 import cc.mrbird.febs.rcs.service.IPostalProductService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
@@ -38,7 +33,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 税率表 Service实现

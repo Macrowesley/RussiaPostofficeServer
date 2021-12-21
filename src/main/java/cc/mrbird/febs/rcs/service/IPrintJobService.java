@@ -2,10 +2,12 @@ package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
@@ -47,6 +49,12 @@ public interface IPrintJobService extends IService<PrintJob> {
     void createPrintJob(PrintJob printJob);
 
     /**
+     * 创建前端打印订单
+     * @param printJobAddDto
+     */
+    void createPrintJobDto(PrintJobAddDto printJobAddDto);
+
+    /**
      * 修改
      *
      * @param printJob printJob
@@ -68,6 +76,8 @@ public interface IPrintJobService extends IService<PrintJob> {
     PrintJob getUnFinishJobByFmId(String frankMachineId);
 
     PrintJob getLastestJobByFmId(String frankMachineId);
+
+    PrintJob getByPrintJobId(int printJobId);
 
     PrintJob getByForeseenId(String foreseenId);
 
@@ -100,4 +110,24 @@ public interface IPrintJobService extends IService<PrintJob> {
 
 
     boolean checkPrintJobFinish(String frankMachineId);
+
+
+    /**
+     * 处理打印，可能有多种情况
+     * @param printJobId
+     */
+    void doPrintJob(int printJobId);
+
+    /**
+     * 开始取消打印任务
+     * @param id
+     */
+    void cancelPrintJob(int id);
+
+    /**
+     * 获取PC上的订单的信息
+     * @param dbPrintJob
+     * @return
+     */
+    PcPrintInfoDTO getPcPrintInfo(PrintJob dbPrintJob);
 }

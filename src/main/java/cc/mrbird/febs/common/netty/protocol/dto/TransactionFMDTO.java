@@ -30,4 +30,9 @@ public class TransactionFMDTO {
     FrankDTO[] franks;
     //具体什么数字代表什么原因，以后扩展，目前默认为1，理由：得想一个
     int cancelMsgCode;
+
+    /**
+     * 1 机器创建的订单  2 PC创建的订单
+     */
+    Integer printJobType;
 }

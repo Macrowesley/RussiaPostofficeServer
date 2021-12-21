@@ -31,6 +31,10 @@ public class CheckServiceResultDTO {
     String dmMsg;
     String transactionId;
     String serverDate;
+    /**
+     * 1 机器创建的订单  2 PC创建的订单
+     */
+    String printJobType;
     //ForeseenFMDTO的json
     String foreseenFMDTO;
 }

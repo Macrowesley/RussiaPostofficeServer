@@ -22,6 +22,7 @@
         <mybatis.plus.version>3.3.1</mybatis.plus.version>
         <swagger.ui>2.9.2</swagger.ui>
         <tomcat.version>9.0.31</tomcat.version>
+        <log4j2.version>2.15.0</log4j2.version>
     </properties>
 
     <dependencies>
