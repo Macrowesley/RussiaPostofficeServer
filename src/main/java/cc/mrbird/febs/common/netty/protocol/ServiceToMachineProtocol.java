@@ -7,11 +7,14 @@ import cc.mrbird.febs.common.netty.protocol.dto.PcCancelInfoDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
+import cc.mrbird.febs.common.netty.protocol.machine.result.CancelPrintResultPortocol;
+import cc.mrbird.febs.common.netty.protocol.machine.result.ClickPrintResultPortocol;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -20,6 +23,7 @@ import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
+import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
 import com.alibaba.fastjson.JSON;
@@ -50,6 +54,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     @Autowired
     ChannelMapperManager channelMapperManager;
+
+    @Autowired
+    IMsgService msgService;
 
     public ServiceToMachineProtocol() {
     }
@@ -343,7 +350,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      * PC发送打印信息给机器
      * 订单详情和打印进度
      */
-    @Async(FebsConstant.NETTY_ASYNC_POOL)
+//    @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void doPrintJob(PrintJob dbPrintJob) {
         log.info("【协议开始 发送pc订单给机器】");
         /**
@@ -357,6 +364,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              unsigned char tail;					 //0xD0
          }__attribute__((packed))pcPrintJob, *pcPrintJob;
          */
+        msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
 
         try {
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
@@ -377,8 +385,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             wrieteToCustomer(
                     ctx,
                     getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
-                            (byte) 0xC7));
+                            ClickPrintResultPortocol.PROTOCOL_TYPE));
 
+            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
             log.info("【协议结束 发送pc订单给机器】");
         } catch (Exception e) {
             throw new FmException(e.getMessage());
@@ -424,8 +433,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             wrieteToCustomer(
                     ctx,
                     getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
-                            (byte) 0xC8));
+                            CancelPrintResultPortocol.PROTOCOL_TYPE));
 
+            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.CancelPrintRes.getCode(), dbPrintJob.getId()),"");
             log.info("【协议结束 发送pc 取消订单命令 给机器】");
         } catch (Exception e) {
             throw new FmException(e.getMessage());

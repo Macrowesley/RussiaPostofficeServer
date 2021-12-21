@@ -376,7 +376,7 @@ layui.extend({
             'background:#fff;border:none;font-weight:500;font-size:14px;color:#08132b;margin-bottom:-50px;padding:16px;height:45px;line-height:14px;padding-bottom:0;'
         ];
         params.offset = '40px';
-        params.area = [windowWidth <= 750 ? '80%' : '400px'];
+        params.area = [windowWidth <= 750 ? '80%' : '600px'];
     }
 
     self.alert.success = function (msg, params) {

@@ -5,8 +5,9 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelPrintResDto;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.service.INoticeFrontService;
+import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
@@ -19,12 +20,12 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @NoArgsConstructor
 @Component
-public class CacelPrintResultPortocol extends MachineToServiceProtocol {
+public class CancelPrintResultPortocol extends MachineToServiceProtocol {
     @Autowired
     IPrintJobService printJobService;
 
     @Autowired
-    INoticeFrontService noticeFrontService;
+    IMsgService msgService;
 
     public static final byte PROTOCOL_TYPE = (byte) 0xC8;
 
@@ -34,7 +35,7 @@ public class CacelPrintResultPortocol extends MachineToServiceProtocol {
     //SSH结果长度
     private static final int REQ_SSH_RES_LEN = 1;
 
-    public static CacelPrintResultPortocol protocol;
+    public static CancelPrintResultPortocol protocol;
 
     @PostConstruct
     public void init(){
@@ -105,8 +106,7 @@ public class CacelPrintResultPortocol extends MachineToServiceProtocol {
 
         log.info("{}PC点击 取消打印，机器返回的结果是：{}", acnum, resDto.toString());
 
-        //通知前端
-        protocol.noticeFrontService.notice(6, "1".equals(resDto.getRes()) ? "操作成功" : "操作失败");
+        protocol.msgService.receviceMsg(WebSocketEnum.CancelPrintRes.getCode(), Integer.valueOf(resDto.getPrintJobId()), resDto.getRes());
         //返回
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);

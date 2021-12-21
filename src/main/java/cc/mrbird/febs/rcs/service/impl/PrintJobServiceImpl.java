@@ -440,6 +440,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 throw new FebsException("打印已经完成，请勿重复点击");
             }
 
+
+
             serviceToMachineProtocol.doPrintJob(dbPrintJob);
         } catch (FebsException e) {
             throw new FebsException(e.getMessage());

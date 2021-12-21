@@ -112,7 +112,7 @@ public class CheckUtils {
 
     /**
      * 判断订单状态是否符合条件：
-     * 只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow
+     * 只有以下2种情况才能执行transaction： JobingForeseensSuccess 或者 JobErrorTransactionUnKnow JobingErrorTransaction4xx
      * @param foreseenId
      * @return
      */

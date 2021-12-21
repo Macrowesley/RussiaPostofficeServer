@@ -5,7 +5,9 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.ClickPrintResDto;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.INoticeFrontService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,6 +27,9 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
 
     @Autowired
     INoticeFrontService noticeFrontService;
+
+    @Autowired
+    IMsgService msgService;
 
     public static final byte PROTOCOL_TYPE = (byte) 0xC7;
 
@@ -102,8 +107,7 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
         }
         protocol.printJobService.updatePrintJob(printJob);
 
-        //通知前端
-        protocol.noticeFrontService.notice(5, "1".equals(resDto.getRes()) ? "操作成功" : "操作失败");
+        protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), Integer.valueOf(resDto.getPrintJobId()), resDto.getRes());
 
         log.info("{}PC点击打印，机器返回的结果是：{}", acnum, resDto.toString());
 

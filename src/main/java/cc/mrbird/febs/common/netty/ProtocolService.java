@@ -203,8 +203,8 @@ public class ProtocolService {
             case ClickPrintResultPortocol.PROTOCOL_TYPE:
                 baseProtocol = new ClickPrintResultPortocol();
                 break;
-            case CacelPrintResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new CacelPrintResultPortocol();
+            case CancelPrintResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = new CancelPrintResultPortocol();
                 break;
             default:
                 wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));

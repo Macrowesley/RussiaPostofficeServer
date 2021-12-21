@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
@@ -17,14 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 打印任务表 Controller
@@ -40,6 +42,9 @@ public class PrintJobController extends BaseController {
 
     @Autowired
     IPrintJobService printJobService;
+
+    @Autowired
+    RedisService redisService;
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "printJob")
     public String printJobIndex(){
@@ -104,6 +109,7 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:update")
     public FebsResponse doPrintJob(Integer id) {
         log.info("开始打印任务操作：" + id);
+        log.info("userinfo = " + String.valueOf(FebsUtil.getCurrentUser().getUserId()));
         this.printJobService.doPrintJob(id);
         return new FebsResponse().success().data("ok");
     }
