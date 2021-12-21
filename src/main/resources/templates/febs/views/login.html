@@ -114,6 +114,7 @@
 <script th:src="@{i18n/jquery-3.5.1.min.js}"></script>
 <script th:src="@{i18n/jquery.i18n.properties-min-1.0.9.js}"></script>
 <script th:inline="javascript">
+    //jquery得到项目路径
     var ctx = [[@{/}]];
     //获取默认语言
     var LANG_COUNTRY = [[${#locale.language+'_'+#locale.country}]];

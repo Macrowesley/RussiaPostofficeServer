@@ -1,4 +1,5 @@
-<div class="layui-fluid layui-anim febs-anim" id="febs-user" th:lay-title="#{user.manage}">
+<div class="layui-fluid layui-anim febs-anim" id="febs-user" th:lay-title="#{user.manage}"
+     xmlns:th="http://www.w3.org/1999/xhtml" xmlns:shiro="http://www.w3.org/1999/xhtml">
     <div class="layui-row febs-container">
         <div class="layui-col-md12">
             <div class="layui-card">
@@ -102,6 +103,7 @@
     <span>{{ sex.title }}</span>
 </script>
 <script type="text/html" id="user-option">
+    <!--当只有view权限,没有update和device权限，显示未授予权body体内容；若没有view权限，未授权状态下不显示内容-->
     <span shiro:lacksPermission="user:view,user:update,user:device">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
@@ -220,7 +222,8 @@
             search: true
         });
 
-        table.on('tool(userTable)', function (obj) {
+        //监听工具条
+        table.on('tool(userTable)', function (obj) {//tool是工具条事件名，userTable是table原始容器的属性lay-filter的对应值
             var data = obj.data,
                 layEvent = obj.event;
             if (layEvent === 'detail') {

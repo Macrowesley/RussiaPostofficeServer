@@ -53,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (username.equals(Constant.USERNAME)) {
             //查特殊账户
             user.setRoleId("1");
-            User myUser = this.baseMapper.findByName(user);;
+            User myUser = this.baseMapper.findByName(user);
             myUser.setUsername(Constant.USERNAME);
             return myUser;
         }

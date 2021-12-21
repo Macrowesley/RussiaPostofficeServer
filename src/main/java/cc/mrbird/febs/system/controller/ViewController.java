@@ -138,6 +138,13 @@ public class ViewController extends BaseController {
         return FebsUtil.view("system/user/user");
     }
 
+    @GetMapping(FebsConstant.VIEW_PREFIX + "system/test")
+    @RequiresPermissions("user:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
+    public String systemTest() {
+        return FebsUtil.view("system/test/user");
+    }
+
     @GetMapping("changeLaunage")
     @ResponseBody
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
