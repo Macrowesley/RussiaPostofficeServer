@@ -1,0 +1,177 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+
+    #user-update .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+    #user-update #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+
+</style>
+<div class="layui-fluid" id="user-update">
+    <form class="layui-form" action="" lay-filter="user-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require" th:text="#{user.id}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="userId" data-th-value="${user.userId}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{username.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="username" minlength="4" maxlength="10" data-th-id="${user.userId}"
+                       lay-verify="range|username" autocomplete="off" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{realname.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="realname"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{phone.colon}"></label>
+            <div class="layui-input-block">
+                <input type="tel" name="mobile" lay-verify="phone" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{email.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="email" lay-verify="email" maxlength="50" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <!--只有机构管理员才能修改下级的内容-->
+        <!--<div class="layui-form-item" th:if="${roleId} eq 2">
+            <label class="layui-form-label febs-form-item-require" th:text="#{role.colon}"></label>
+            <div class="layui-input-block">
+                <select name="roleId" id="roleId" lay-verify="">
+                </select>
+            </div>
+        </div>-->
+        <!--只有系统管理员才能修改下级的内容-->
+        <div class="layui-form-item"   th:if="${roleId} eq 1">
+            <label class="layui-form-label" th:text="#{dept.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{status.colon}"></label>
+            <div class="layui-input-block">
+                <input type="radio" name="status" value="1" th:title="#{user.enable}">
+                <input type="radio" name="status" value="0" th:title="#{user.disable}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{sex.colon}"></label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="0" th:title="#{man}">
+                <input type="radio" name="sex" value="1" th:title="#{woman}">
+                <input type="radio" name="sex" value="2" th:title="#{secrecy}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" th:text="#{remark.colon}"></label>
+            <div class="layui-input-block">
+                <textarea name="description" maxlength="100" class="layui-textarea">
+                </textarea>
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="user-update-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            treeSelect = layui.treeSelect,
+            form = layui.form,
+            eleTree = layui.eleTree,
+            user = [[${user}]],
+            curRoleId = [[${roleId}]],//当前登录用户的roldId
+            $view = $('#user-update'),
+            validate = layui.validate,
+            _deptTree;
+
+        form.verify(validate);
+        form.render();
+        initUserValue();
+
+        //处理下拉框
+        initRoleSelect();
+
+        treeSelect.render({
+            elem: $view.find('#user-update-dept'),
+            type: 'get',
+            data: ctx + 'dept/select/tree',
+            placeholder: i18n("select"),
+            search: false,
+            success: function () {
+                treeSelect.checkNode('user-update-dept', user.deptId);
+            }
+        });
+
+        function initRoleSelect(){
+            $.ajax({
+                url: ctx + "role/selectRole",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        if (user.roleId == item.roleId) {
+                            $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
+                        }else{
+                            $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
+                        }
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
+        function initUserValue() {
+            form.val("user-update-form", {
+                "username": user.username,
+                "realname": user.realname,
+                "mobile": user.mobile,
+                "email": user.email,
+                "status": user.status,
+                "sex": user.sex,
+                "description": user.description
+            });
+        }
+
+        form.on('submit(user-update-form-submit)', function (data) {
+            if (febs.nativeEqual(data.field, user)) {
+                febs.alert.warn(i18n("noEdit"));
+                return false;
+            }
+
+            if(curRoleId == 1 || curRoleId == 2){
+                data.field.roleId = 0;
+            }
+
+            febs.post(ctx + 'user/update', data.field, function () {
+                layer.closeAll();
+
+                febs.alert.success(user.username + i18n("userDevice.editSuccess"));
+                $('#febs-user').find('#refreshQuery').click();
+            });
+            return false;
+        });
+    });
+</script>

@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
@@ -16,11 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -123,4 +123,13 @@ public class PrintJobController extends BaseController {
         this.printJobService.cancelPrintJob(id);
         return new FebsResponse().success().data("ok");
     }
+
+//    @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/update/{username}")
+//    @RequiresPermissions("user:update")
+//    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
+//    public String systemUserUpdate(@PathVariable String username, Model model) {
+//        //resolveUserModel(username, model, false);
+//        model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
+//        return FebsUtil.view("system/user/userUpdate");
+//    }
 }

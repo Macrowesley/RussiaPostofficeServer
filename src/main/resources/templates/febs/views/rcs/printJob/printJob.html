@@ -14,19 +14,13 @@
                                         </div>
                                     </div>
                                     <!--<div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.nickname}"></label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="nickname" autocomplete="off" class="layui-input">
-                                        </div>
-                                    </div>-->
-                                    <!--<div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm">创建时间</label>
                                         <div class="layui-input-inline">
                                             <input type="text" name="createdTime" id="printJob-createTime"
                                                    class="layui-input">
                                         </div>
                                     </div>-->
-                                    <!--<div class="layui-inline">
+                                    <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="printJobStatus">
@@ -35,7 +29,14 @@
                                                 <option value="1" th:text="#{printJob.normal}"></option>
                                             </select>
                                         </div>
-                                    </div>-->
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.foreseenId}+':'" style="width: 100px;"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="contractCode" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
@@ -54,8 +55,6 @@
                                      id="add">
                                     <i class="layui-icon">&#xe891;</i>
                                 </div>
-
-
                                 <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
                                      shiro:hasAnyPermissions="printJob:add,printJob:update,printJob:delete,printJob:export">
                                     <i class="layui-icon">&#xe875;</i>
@@ -100,8 +99,9 @@
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
     <!--<a lay-event="detail" th:text="#{printJob.detail}"></a>
     <a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
-    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}"></a>
+    <a lay-event="printJob" shiro:hasPermission="printJob:view" th:text="#{printJob.operation2}"></a>
     <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>
+    <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}"></a>
 
     <!--  <a lay-event="del" shiro:hasPermission="printJob:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
@@ -277,9 +277,10 @@
                         area: $(window).width() <= 750 ? '95%' : '660px'
                     });
                 }
-                if (layEvent === 'edit') {
-                    febs.modal.open(i18n("printJob.editprintJob"), 'printJob/update/' + data.printJobId, {
-                        area: $(window).width() <= 750 ?  ['90%', '90%'] : ['60%', '90%'],
+                if (layEvent === 'printEdit') {
+                    alert(data.id)
+                    febs.modal.open(i18n("printJob.editprintJob"), 'job/update/' + data.id, {
+                        area: $(window).width() <= 750 ?  '90%' : '50%',
                         offset: '30px',
                         btn: [i18n("submit"), i18n("cancel")],
                         yes: function (index, layero) {
@@ -290,6 +291,7 @@
                         }
                     });
                 }
+
                 if (layEvent === 'operation1'){
                     alert("1")
                 }
