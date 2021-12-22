@@ -103,6 +103,7 @@
     <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}"></a>
 
+
     <!--  <a lay-event="del" shiro:hasPermission="printJob:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
 </script>
@@ -119,7 +120,7 @@
             $query = $view.find('#query'),
             $refreshQuery = $view.find('#refreshQuery'),
             $reset = $view.find('#reset'),
-                $add = $view.find('#add'),
+            $add = $view.find('#add'),
             $searchForm = $view.find('form'),
             sortObject = {field: 'createdTime', type: null},
             tableIns,
@@ -131,7 +132,6 @@
         initSearchView();
         initTable();
         initTableTool();
-
 
         /**
          * 查询表单数据
@@ -179,6 +179,7 @@
                     btn: [i18n("submit"), i18n("reset")],
                     area: $(window).width() <= 750 ?  ['95%', '95%'] : ['80%', '95%'],
                     offset: '30px',
+                    btn: [i18n("submit"), i18n("cancel")],
                     yes: function (index, layero) {
                         $('#printJob-add').find('#submit').trigger('click');
                     },
@@ -278,8 +279,7 @@
                     });
                 }
                 if (layEvent === 'printEdit') {
-                    alert(data.id)
-                    febs.modal.open(i18n("printJob.editprintJob"), 'job/update/' + data.id, {
+                    febs.modal.open(i18n("printJob.editprintJob"), 'rcs/printJob/update/' + data.id, {
                         area: $(window).width() <= 750 ?  '90%' : '50%',
                         offset: '30px',
                         btn: [i18n("submit"), i18n("cancel")],

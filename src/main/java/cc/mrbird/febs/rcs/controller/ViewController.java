@@ -4,9 +4,15 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IContractService;
+import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.vo.ContractVO;
+import cc.mrbird.febs.system.entity.User;
+import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -30,7 +36,8 @@ public class ViewController extends BaseController{
     @Autowired
     IContractService contractService;
 
-
+    @Autowired
+    IPrintJobService iPrintJobService;
 
     @GetMapping("/contract")
     @RequiresPermissions("contract:view")
@@ -73,5 +80,14 @@ public class ViewController extends BaseController{
     }
 
 
+    @GetMapping("/printJob/update/{id}")
+    @RequiresPermissions("printJob:update")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String printJobUpdate(@PathVariable int id, Model model) {
+        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
+        System.out.println(JSON.toJSONString(printJob));
+        model.addAttribute("printJob",printJob);
 
+        return FebsUtil.view("rcs/printJob/printJobUpdate");
+    }
 }

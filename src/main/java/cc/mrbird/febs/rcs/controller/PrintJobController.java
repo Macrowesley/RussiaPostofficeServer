@@ -4,14 +4,17 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
+import cc.mrbird.febs.common.entity.DeptTree;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
+import cc.mrbird.febs.system.entity.Dept;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +48,12 @@ public class PrintJobController extends BaseController {
 
     @Autowired
     RedisService redisService;
+
+//    @GetMapping("select/tree")
+//    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
+//    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
+//        return this.printJobService.findFlow();
+//    }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "printJob")
     public String printJobIndex(){
