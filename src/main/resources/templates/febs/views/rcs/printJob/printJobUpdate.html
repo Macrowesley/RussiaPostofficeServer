@@ -119,13 +119,15 @@ alert("printJob:"+JSON.stringify(printJob))
 
         function initprintJobValue() {
             form.val("printJob-update-form", {
-                "printJobName": printJob.printJobName,
-                "realname": printJob.realname,
+
+
+                "contractCode": printJob.contractCode,
+                "foreseenId": printJob.foreseenId,
                 "mobile": printJob.mobile,
-                "email": printJob.email,
-                "status": printJob.status,
-                "sex": printJob.sex,
-                "description": printJob.description
+                "transactionId": printJob.transactionId,
+                "frankMachineId": printJob.frankMachineId,
+                "printJob.flow": printJob.flow,
+                "createdTime": printJob.createdTime
             });
         }
 

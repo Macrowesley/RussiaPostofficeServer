@@ -92,7 +92,7 @@
             febs = layui.febs,
             layer = layui.layer,
             formSelects = layui.formSelects,
-            treeSelect = layui.treeSelect,
+            // treeSelect = layui.treeSelect,
             form = layui.form,
             eleTree = layui.eleTree,
             $view = $('#user-add'),
@@ -114,13 +114,13 @@
             }
         });
 
-        treeSelect.render({
-            elem: $view.find('#user-add-dept'),
-            type: 'get',
-            data: ctx + 'dept/select/tree',
-            placeholder: i18n("select"),
-            search: false
-        });
+        // treeSelect.render({
+        //     elem: $view.find('#user-add-dept'),
+        //     type: 'get',
+        //     data: ctx + 'dept/select/tree',
+        //     placeholder: i18n("select"),
+        //     search: false
+        // });
 
 
         form.on('submit(user-add-form-submit)', function (data) {
