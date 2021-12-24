@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.INoticeFrontService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,23 +23,18 @@ public class MsgServiceImpl implements IMsgService {
     @Value("${msg.ttl}")
     int overtime;
 
-    /**
-     * key作用？
-     * 1. 能区分具体协议
-     * 2. 包含具体printJobId
-     * 3. 能通知前端，需要传递printJobId
-     */
     @Override
     public String createWebsocketKey(int type, int id) {
         log.info("创建key type = " + type + " id = " + id);
-        return "expire-websocket:" + FebsUtil.getCurrentUser().getUserId() + ":" + type + ":" + id;
+        return "expire-websocket:" + ":" + type + ":" + id;
     }
 
-
     @Override
-    public void sendMsg(String key, String value) {
-        log.info("发送消息 key={}" + key);
-        redisService.set(key, value, (long) overtime);
+    public void sendMsg(int type, int printJobId, String value) {
+        if (FebsUtil.isLogin()) {
+            log.info("发送消息 key={}" + createWebsocketKey(type, printJobId));
+            redisService.set(createWebsocketKey(type, printJobId), value, (long) overtime);
+        }
     }
 
     @Override
@@ -46,8 +42,10 @@ public class MsgServiceImpl implements IMsgService {
         log.info("接收消息：key={}, printJobId={}, res={}", createWebsocketKey(type, printJobId), printJobId, res);
         redisService.del(createWebsocketKey(type, printJobId));
 
-        //通知前端
-        noticeFrontService.notice(type, "receive-" + printJobId + "-" + res, FebsUtil.getCurrentUser().getUserId());
+        if (FebsUtil.isLogin()) {
+            //通知前端
+            noticeFrontService.notice(type, "receive-" + printJobId + "-" + res, FebsUtil.getCurrentUser().getUserId());
+        }
     }
 
     @Override
@@ -60,8 +58,10 @@ public class MsgServiceImpl implements IMsgService {
             int type = Integer.parseInt(split[2]);
             String printJobId = split[3];
 
-            //通知前端
-            noticeFrontService.notice(type, "overtime-" + printJobId, userId);
+            if (FebsUtil.isLogin()) {
+                //通知前端
+                noticeFrontService.notice(type, "overtime-" + printJobId, userId);
+            }
         }
     }
 }

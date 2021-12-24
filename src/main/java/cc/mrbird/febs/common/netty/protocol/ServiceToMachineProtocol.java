@@ -352,7 +352,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
      */
 //    @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void doPrintJob(PrintJob dbPrintJob) {
-        log.info("【协议开始 发送pc订单给机器】");
+        log.info("【协议开始 发送pc订单给机器】 dbPrintJob =" + dbPrintJob.toString());
         /**
          typedef  struct{
              unsigned char length[4];
@@ -364,8 +364,6 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              unsigned char tail;					 //0xD0
          }__attribute__((packed))pcPrintJob, *pcPrintJob;
          */
-        msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
-
         try {
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
 
@@ -381,15 +379,16 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
             String content = JSON.toJSONString(printJobService.getPcPrintInfo(dbPrintJob));
             String entryctContent = AESUtils.encrypt(content, tempKey);
-            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
+            log.info("服务器发送tax给机器 加密后长度={}  content={}, entryctContent={}", entryctContent.length(), content, entryctContent);
             wrieteToCustomer(
                     ctx,
-                    getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
-                            ClickPrintResultPortocol.PROTOCOL_TYPE));
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xC7));
 
-            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId()),"");
+            msgService.sendMsg(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId(),"");
             log.info("【协议结束 发送pc订单给机器】");
         } catch (Exception e) {
+//            e.printStackTrace();
             throw new FmException(e.getMessage());
         }
     }
@@ -427,15 +426,15 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             //准备数据
             String version = FebsConstant.FmVersion1;
 
-            String content = JSON.toJSONString(new PcCancelInfoDTO(dbPrintJob.getForeseenId()));
+            String content = JSON.toJSONString(new PcCancelInfoDTO(String.valueOf(dbPrintJob.getId()), dbPrintJob.getForeseenId() == null ? "" : dbPrintJob.getForeseenId()));
             String entryctContent = AESUtils.encrypt(content, tempKey);
-            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
+            log.info("服务器 发送pc 取消订单命令 给机器 content={},加密后entryctContent={}", content, entryctContent);
             wrieteToCustomer(
                     ctx,
-                    getWriteContent(BaseTypeUtils.stringToByte(version + content, BaseTypeUtils.UTF8),
-                            CancelPrintResultPortocol.PROTOCOL_TYPE));
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xC8));
 
-            msgService.sendMsg(msgService.createWebsocketKey(WebSocketEnum.CancelPrintRes.getCode(), dbPrintJob.getId()),"");
+            msgService.sendMsg(WebSocketEnum.CancelPrintRes.getCode(), dbPrintJob.getId(),"");
             log.info("【协议结束 发送pc 取消订单命令 给机器】");
         } catch (Exception e) {
             throw new FmException(e.getMessage());

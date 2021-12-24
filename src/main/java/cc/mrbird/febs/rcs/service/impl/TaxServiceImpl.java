@@ -148,7 +148,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
             //redis保存版本内容  https://www.sojson.com/可以恢复
             String jsonStr = JSON.toJSONString(taxVersionDTO);
-            redisService.set(taxVersionDTO.getVersion(), jsonStr);
+//            redisService.set("taxVersioin:" + taxVersionDTO.getVersion().replace(".","-"), jsonStr);
             try {
                 //保险起见保存到文件中
                 FileUtil.writeBytes(jsonStr.getBytes("UTF-8"), savePath);

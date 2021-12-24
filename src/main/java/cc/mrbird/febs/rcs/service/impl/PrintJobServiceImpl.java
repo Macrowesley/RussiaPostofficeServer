@@ -79,6 +79,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
+        queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
         queryWrapper.orderByDesc(PrintJob::getId);
         Page<PrintJob> page = new Page<>(request.getPageNum(), request.getPageSize());
         return this.page(page, queryWrapper);
@@ -104,6 +105,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     public void createPrintJobDto(PrintJobAddDto printJobAddDto) {
+        //确定上一个订单是否闭环
+        PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId());
+        if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
+            throw new FebsException("上一个订单没有结束，请勿创建新订单");
+        }
+
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobAddDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
@@ -163,6 +170,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public PrintJob getLastestJobByFmId(String frankMachineId) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
+//        wrapper.eq(PrintJob::getType, PrintJobTypeEnum.Machine.getCode());
         wrapper.orderByDesc(PrintJob::getId);
         wrapper.last("limit 1");
         return this.getOne(wrapper);
@@ -219,9 +227,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         PrintJobTypeEnum jobType = PrintJobTypeEnum.getByCode(foreseenDTO.getPrintJobType());
 
         Integer printJobId = foreseenDTO.getPrintJobId();
+        String dbForeseenId = "";
         PrintJob dbPrintJob = null;
         if (printJobId != null && jobType == PrintJobTypeEnum.Web){
             dbPrintJob = getByPrintJobId(printJobId);
+            dbForeseenId = dbPrintJob.getForeseenId();
         }
 
 
@@ -241,7 +251,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //判断是否是机器订单
         boolean isMachineOrder = jobType == PrintJobTypeEnum.Machine;
-        String dbForeseenId = dbPrintJob.getForeseenId();
+
         if (!isMachineOrder && !StringUtils.isEmpty(dbForeseenId)){
             //不是第一次创建Foreseen，先删除旧的，再新建
             Foreseen deleteForeseen = new Foreseen();
@@ -440,8 +450,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 throw new FebsException("打印已经完成，请勿重复点击");
             }
 
-
-
             serviceToMachineProtocol.doPrintJob(dbPrintJob);
         } catch (FebsException e) {
             throw new FebsException(e.getMessage());
@@ -510,14 +518,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
 
         //拼接产品进度
-        ForeseenProductDTO[] productArr = null;
+        ForeseenProductDTO[] productArr = new ForeseenProductDTO[productList.size()];
         ForeseenProductDTO temp = new ForeseenProductDTO();
 
         for (int i = 0; i < productList.size(); i++) {
             BeanUtils.copyProperties(productList.get(i), temp);
             if (productCountMap != null && productCountMap.size() > 0){
                 temp.setAlreadyPrintCount(productCountMap.get(temp.getProductCode()));
+            }else{
+                temp.setAlreadyPrintCount(0);
             }
+            temp.setPrintJobId(null);
             productArr[i] = temp;
         }
 

@@ -133,6 +133,7 @@ public class TransactionsPortocol extends MachineToServiceProtocol {
                         cancelJobFmDto.setForeseenId(transactionFmDto.getForeseenId());
                         cancelJobFmDto.setCancelMsgCode(transactionFmDto.getCancelMsgCode());
                         cancelJobFmDto.setContractCode(transactionFmDto.getContractCode());
+                        log.info("开始结束任务 cancelJobFmDto = " + cancelJobFmDto.toString());
                         dbContract = transactionsPortocol.serviceManageCenter.cancelJob(cancelJobFmDto);
                     } else {
                         if (StringUtils.isEmpty(transactionFmDto.getId())

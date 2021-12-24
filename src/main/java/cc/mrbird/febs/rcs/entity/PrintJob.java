@@ -53,6 +53,8 @@ public class PrintJob {
     @TableField("flow_detail")
     private Integer flowDetail;
 
+    @TableField("total_count")
+    int totalCount;
     /**
      * 1 机器创建的订单 2 管理页面创建的订单
      */

@@ -15,8 +15,8 @@ server:
 
 spring:
   profiles:
-    active: dev_wang
-    #active: test
+#    active: prod
+    active: test
 
   thymeleaf:
     cache: false
