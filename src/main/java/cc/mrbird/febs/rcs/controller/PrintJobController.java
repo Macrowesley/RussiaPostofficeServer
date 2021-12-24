@@ -12,9 +12,11 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.system.entity.Dept;
+import com.alibaba.fastjson.JSON;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +82,10 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
+
+        //临时数据
+        printJobAddDto.setForeseenId("37431eec-194f-4706-bf56-e8e36c9aca2e");
+        printJobAddDto.setTransactionId("c05a9a95-44a8-455f-bd5e-27962826b527");
         log.info("前端添加订单：" + printJobAddDto.toString());
         this.printJobService.createPrintJobDto(printJobAddDto);
         return new FebsResponse().success();
@@ -98,8 +104,9 @@ public class PrintJobController extends BaseController {
     @PostMapping("printJob/update")
     @ResponseBody
     @RequiresPermissions("printJob:update")
-    public FebsResponse updatePrintJob(PrintJob printJob) {
-        this.printJobService.updatePrintJob(printJob);
+    public FebsResponse updatePrintJob(PrintJobUpdateDto printJobUpdateDto) {
+        System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
+        this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }
 

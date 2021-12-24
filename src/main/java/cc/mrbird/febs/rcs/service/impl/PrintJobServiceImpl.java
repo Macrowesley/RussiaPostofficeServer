@@ -20,6 +20,7 @@ import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
@@ -136,6 +137,32 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void editPrintJob(PrintJobUpdateDto printJobUpdateDto) {
+        PrintJob printJob = new PrintJob();
+        BeanUtils.copyProperties(printJobUpdateDto, printJob);
+        printJob.setFlow(FlowEnum.FlowIng.getCode());
+        printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
+        printJob.setType(PrintJobTypeEnum.Web.getCode());
+        printJob.setCreatedTime(new Date());
+        this.save(printJob);
+        log.info(printJob.toString());
+
+        ArrayList<ForeseenProductDTO> products = printJobUpdateDto.getProducts();
+        List<ForeseenProduct> productList = new ArrayList<>();
+        for (int i = 0; i < products.size(); i++) {
+            ForeseenProduct product = new ForeseenProduct();
+            BeanUtils.copyProperties(products.get(i), product);
+            product.setPrintJobId(printJob.getId());
+            product.setCreatedTime(new Date());
+            productList.add(product);
+            log.info(product.toString());
+        }
+
+        foreseenProductService.saveBatch(productList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deletePrintJob(PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         // TODO 设置删除条件
@@ -201,12 +228,13 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         return printJob;
     }
 
-    /**
+     /**
      * job流程中，foreseens的进度更新
      *   foreseen的balance改变current的值
      *   transaction成功后，改变consolidate的值
-     * @param dbDevice
-     * @param flowDetailEnum
+     * @param foreseenDTO
+     * @param curFlowDetail
+     * @param balanceDTO
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)

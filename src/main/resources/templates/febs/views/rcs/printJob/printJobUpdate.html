@@ -15,61 +15,72 @@
 </style>
 <div class="layui-fluid" id="printJob-update">
     <form class="layui-form" action="" lay-filter="printJob-update-form">
+        <div class="layui-form-item ">
+            <label class="layui-form-label left-label" th:text="#{printJob.frankMachineId}+':'"></label>
+            <div class="layui-input-block">
+                <input type="text" name="frankMachineId" autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.contractCode}+':'"></label>
+            <div class="layui-input-block">
+                <input type="text" name="contractCode" autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.totalCount}+':'"></label>
+            <div class="layui-input-block">
+                <input type="number" name="totalCount" autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+
+        <!--购物车-->
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.products}+':'"></label>
+            <div id="products">
+                <div style="margin-left: 21%;" class="layui-card-body layui-row layui-col-space12">
+                    <div class="layui-col-md2">
+                        <input type="text" name="productCode" autocomplete="off"
+                               class="layui-input rigth-view">
+                    </div>
+                    <div class="layui-col-md2">
+                        <input type="number" name="count" lay-verify="required|number" autocomplete="off"
+                               class="layui-input rigth-view">
+                    </div>
+                    <div class="layui-col-md2">
+                        <input type="text" name="weight" lay-verify="required" autocomplete="off"
+                               class="layui-input rigth-view">
+                    </div>
+                    <div class="layui-col-md3">
+                        <input type="text" name="address" autocomplete="off"
+                               class="layui-input rigth-view">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--添加按钮-->
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label"></label>
+            <div class="layui-inline">
+                <button class="layui-btn" id="addProduct" th:text="#{foreseenProduct.add}"></button>
+            </div>
+
+        </div>
+
         <div class="layui-form-item febs-hide">
-            <label class="layui-form-label febs-form-item-require">id</label>
-            <div class="layui-input-block">
-                <input type="text" name="printJobId" data-th-value="${printJob.id}">
-            </div>
+            <button class="layui-btn" lay-submit="" lay-filter="printJob-update-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label febs-form-item-require" th:text="#{printJob.contractCode}"></label>
-            <div class="layui-input-block">
-                <input type="text" name="contractCode" minlength="4" maxlength="10" data-th-id="${printJob.id}"
-                       lay-verify="range|contractCode" autocomplete="off" class="layui-input" readonly>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" th:text="#{printJob.foreseenId}"></label>
-            <div class="layui-input-block">
-                <input type="text" name="foreseenId" minlength="2" maxlength="10" lay-verify="foreseenId"
-                       autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" th:text="#{printJob.transactionId}"></label>
-            <div class="layui-input-block">
-                <input type="text" name="mobile" lay-verify="transactionId" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label" th:text="#{printJob.frankMachineId}"></label>
-            <div class="layui-input-block">
-                <input type="text" name="email" lay-verify="frankMachineId" maxlength="50" autocomplete="off"
-                       class="layui-input">
-            </div>
-        </div>
-<!--        <div class="layui-form-item">-->
-<!--            <label class="layui-form-label febs-form-item-require" th:text="#{flow.colon}"></label>-->
-<!--            <div class="layui-input-block">-->
-<!--                <input type="radio" name="status" value="1" th:title="#{printJob.enable}">-->
-<!--                <input type="radio" name="status" value="0" th:title="#{printJob.disable}">-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-form-item layui-form-text">-->
-<!--            <label class="layui-form-label" th:text="#{createdTime}"></label>-->
-<!--            <div class="layui-input-block">-->
-<!--                <textarea name="description" maxlength="100" class="layui-textarea">-->
-<!--                </textarea>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-form-item febs-hide">-->
-<!--            <button class="layui-btn" lay-submit="" lay-filter="printJob-update-form-submit" id="submit"></button>-->
-<!--        </div>-->
     </form>
 </div>
 
 <script data-th-inline="javascript">
     layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree'], function () {
+
         var $ = layui.$,
             febs = layui.febs,
             layer = layui.layer,
@@ -78,58 +89,117 @@
             form = layui.form,
             eleTree = layui.eleTree,
             printJob = [[${printJob}]],
+            foreseenProduct = [[${foreseenProduct}]],
             curRoleId = [[${roleId}]],//当前登录用户的roldId
             $view = $('#printJob-update'),
             validate = layui.validate,
             _deptTree;
+            productIdex = 0;
         form.verify(validate);
         form.render();
         initprintJobValue();
-alert("printJob:"+JSON.stringify(printJob))
         //处理下拉框
-        initRoleSelect();
+        //initRoleSelect();
 
-        treeSelect.render({
-            elem: $view.find('#printJob-update-status'),
-            type: 'get',
-            data: ctx + 'dept/select/tree',
-            placeholder: i18n("select"),
-            search: false,
-            success: function () {
-                treeSelect.checkNode('printJob-update-dept', printJob.deptId);
-            }
-        });
+        /**
+         * 添加产品事件
+         */
+        $('#addProduct').on('click', function () {
+            productIdex = productIdex + 1
+            $('#products').append(
+                '<div style="margin-left: 21%;" id="productItem' + productIdex + '" class="layui-card-body layui-row layui-col-space12 new-product">' +
+                '<div class="layui-col-md2">\n' +
+                '          <input type="text" name="products[' + productIdex + '].productCode" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+                '                 placeholder="' + i18n('foreseenProduct.productCode') + '">\n' +
+                '        </div>\n' +
+                '        <div class="layui-col-md2">\n' +
+                '          <input type="number" name="products[' + productIdex + '].count" lay-verify="required|number" autocomplete="off" class="layui-input"\n' +
+                '                 placeholder="' + i18n('foreseenProduct.count') + '">\n' +
+                '        </div>\n' +
+                '        <div class="layui-col-md2">\n' +
+                '          <input type="text" name="products[' + productIdex + '].weight" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+                '                 placeholder="' + i18n('foreseenProduct.weight') + '">\n' +
+                '        </div>\n' +
+                '        <div class="layui-col-md2">\n' +
+                '          <input type="text" name="products[' + productIdex + '].address" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+                '                 placeholder="' + i18n('foreseenProduct.address') + '">\n' +
+                '        </div>' +
+                '        <div class="layui-col-md1">\n' +
+                '          <button class="layui-btn" onclick="removeNode(' + productIdex + ')">' + i18n('rcs.delete') + '</button>' +
+                '        </div>' +
+                '</div>')
+            return false
+        })
 
-        function initRoleSelect(){
-            $.ajax({
-                url: ctx + "role/selectRole",
-                type: 'get',
-                success: function (data) {
-                    $.each(data.data, function (index, item) {
-                        if (printJob.roleId == item.roleId) {
-                            $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
-                        }else{
-                            $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
-                        }
-                    });
-                    layui.form.render("select");
-                }
-            });
-        }
+        // treeSelect.render({
+        //     elem: $view.find('#printJob-update-status'),
+        //     type: 'get',
+        //     data: ctx + 'dept/select/tree',
+        //     placeholder: i18n("select"),
+        //     search: false,
+        //     success: function () {
+        //         treeSelect.checkNode('printJob-update-status', printJob.deptId);
+        //     }
+        // });
+
+        // function initRoleSelect(){
+        //     $.ajax({
+        //         url: ctx + "role/selectRole",
+        //         type: 'get',
+        //         success: function (data) {
+        //             $.each(data.data, function (index, item) {
+        //                 if (printJob.roleId == item.roleId) {
+        //                     $('#roleId').append("<option value="+item.roleId+" selected >"+item.roleName+"</option>");
+        //                 }else{
+        //                     $('#roleId').append("<option value="+item.roleId+">"+item.roleName+"</option>");
+        //                 }
+        //             });
+        //             layui.form.render("select");
+        //         }
+        //     });
+        // }
 
         function initprintJobValue() {
+            alert(JSON.stringify(foreseenProduct));
+            for(var i=0;i<foreseenProduct.length;i++){
+                form.val("printJob-update-form", {
+                    "contractCode": printJob.contractCode,
+                    "mobile": printJob.mobile,
+                    "frankMachineId": printJob.frankMachineId,
+                    "totalCount": printJob.totalCount,
+
+
+                    "productCode": foreseenProduct[i].productCode,
+                    "count": foreseenProduct[i].count,
+                    "weight": foreseenProduct[i].weight,
+                    "address": foreseenProduct[i].address
+                    //未实现显示多行数据
+
+                });
+            }
+
             form.val("printJob-update-form", {
-
-
                 "contractCode": printJob.contractCode,
-                "foreseenId": printJob.foreseenId,
                 "mobile": printJob.mobile,
-                "transactionId": printJob.transactionId,
                 "frankMachineId": printJob.frankMachineId,
-                "printJob.flow": printJob.flow,
-                "createdTime": printJob.createdTime
+                "totalCount": printJob.totalCount,
+                "productCode": foreseenProduct[0].productCode,
+            //     for(let j = 0; j<foreseenProduct.length;j++){
+            //     "productCode": foreseenProduct[j].productCode,
+            //         "count": foreseenProduct[j].count,
+            //         "weight": foreseenProduct[j].weight,
+            //         "address": foreseenProduct[j].address
+            // }
             });
+
+
         }
+
+        // function initforeseenProductValue(){
+        //     form.val("printJob-update-form",{
+        //
+        //     })
+        // }
 
         form.on('submit(printJob-update-form-submit)', function (data) {
             if (febs.nativeEqual(data.field, printJob)) {
@@ -141,10 +211,11 @@ alert("printJob:"+JSON.stringify(printJob))
                 data.field.roleId = 0;
             }
 
+            console.log("更新数据："+JSON.stringify(data.field));
             febs.post(ctx + 'printJob/update', data.field, function () {
                 layer.closeAll();
 
-                febs.alert.success(printJob.printJobname + i18n("printJobDevice.editSuccess"));
+                febs.alert.success(printJob.contractCode + i18n("printJob.editSuccess"));
                 $('#febs-printJob').find('#refreshQuery').click();
             });
             return false;

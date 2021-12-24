@@ -5,6 +5,7 @@ import cc.mrbird.febs.rcs.entity.ForeseenProduct;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,4 +52,6 @@ public interface IForeseenProductService extends IService<ForeseenProduct> {
      * @param foreseenProduct foreseenProduct
      */
     void deleteForeseenProduct(ForeseenProduct foreseenProduct);
+
+    ArrayList<ForeseenProduct> getByPrintJobId(int id);
 }

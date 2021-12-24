@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,4 +71,12 @@ public class ForeseenProductServiceImpl extends ServiceImpl<ForeseenProductMappe
 	    this.remove(wrapper);
 	}
 
+    @Override
+    public ArrayList<ForeseenProduct> getByPrintJobId(int id) {
+        LambdaQueryWrapper<ForeseenProduct> queryWrapper = new LambdaQueryWrapper<>();
+
+            queryWrapper.eq(ForeseenProduct::getPrintJobId, id);
+
+        return (ArrayList<ForeseenProduct>) this.baseMapper.selectList(queryWrapper);
+    }
 }
