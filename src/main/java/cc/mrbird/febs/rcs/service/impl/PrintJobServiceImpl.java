@@ -144,8 +144,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
         printJob.setType(PrintJobTypeEnum.Web.getCode());
         printJob.setCreatedTime(new Date());
-        this.save(printJob);
-        log.info(printJob.toString());
+        this.updatePrintJob(printJob);
+        //this.save(printJob);
+        //log.info(printJob.toString());
 
         ArrayList<ForeseenProductDTO> products = printJobUpdateDto.getProducts();
         List<ForeseenProduct> productList = new ArrayList<>();
@@ -155,10 +156,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             product.setPrintJobId(printJob.getId());
             product.setCreatedTime(new Date());
             productList.add(product);
-            log.info(product.toString());
+            //log.info(product.toString());
         }
 
-        foreseenProductService.saveBatch(productList);
+        foreseenProductService.saveOrUpdateBatch(productList);
+        //foreseenProductService.saveBatch(productList);
     }
 
     @Override
@@ -338,7 +340,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * foreseen的balance改变current的值
      * transaction成功后，改变consolidate的值
      * @param cancelJobFMDTO
-     * @param flowDetailEnum
      */
     @Override
     public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
