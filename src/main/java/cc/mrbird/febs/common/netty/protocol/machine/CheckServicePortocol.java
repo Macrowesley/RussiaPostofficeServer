@@ -29,6 +29,7 @@ import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import cc.mrbird.febs.rcs.service.ITaxService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -235,11 +236,13 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
                     //数据库的合同信息
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
-                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
+                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId, PrintJobTypeEnum.Machine.getCode());
                     String transactionId = "";
+                    String printJobType = "";
                     boolean isPrintEnd = true;
                     if (dbPrintJob != null) {
                         transactionId = dbPrintJob.getTransactionId();
+                        printJobType = String.valueOf(dbPrintJob.getType());
                         //订单是否结束（1 结束 0 未结束）
                         isPrintEnd = dbPrintJob.getFlow() == FlowEnum.FlowEnd.getCode();
                         String foreseenId = dbPrintJob.getForeseenId();
@@ -251,6 +254,19 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                                 foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
                             }
                         }
+
+                        /**
+                         * 是否打印完成
+                         * 		是
+                         * 			不发送额外协议
+                         * 		否
+                         * 			发送打印信息协议
+                         */
+                        /*if (!dbPrintJob.getFlow().equals(FlowEnum.FlowEnd.getCode()) && dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()){
+                            log.info("开机校验中 PC订单没有打印完成，发送打印进度");
+                            checkServicePortocol.serviceManageCenter.doPrintJob(dbPrintJob);
+                        }
+*/
                     }
                     log.info("构建foreseenFMDTO信息");
 
@@ -270,8 +286,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     //二维码内容（不包含签名）
 //                    String dmMsg = "";
                     //如果没有打印结束而且，transactionid已经创建了，就不处理
-                    if (!isPrintEnd && !StringUtils.isEmpty(dbPrintJob.getTransactionId())){
-                        DmMsgDetail dmMsgDetail = checkServicePortocol.dmMsgService.getDmMsgDetailOnFmStart(dbPrintJob.getTransactionId(), transactionMsgFMDTO);
+                    if (!isPrintEnd && !StringUtils.isEmpty(transactionId)){
+                        DmMsgDetail dmMsgDetail = checkServicePortocol.dmMsgService.getDmMsgDetailOnFmStart(transactionId, transactionMsgFMDTO);
                         if (dmMsgDetail != null){
                             actualCount = dmMsgDetail.getActualCount();
                             actualAmount = dmMsgDetail.getActualAmount();
@@ -297,9 +313,9 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 //                    resultDto.setDmMsg(dmMsg);
                     resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
-                    resultDto.setPrintJobType(String.valueOf(dbPrintJob.getType()));
-                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
-                    String responseData = JSON.toJSONString(resultDto);
+                    resultDto.setPrintJobType(printJobType);
+                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+                    String responseData = JSON.toJSONString(resultDto, SerializerFeature.DisableCircularReferenceDetect);
 
                     /*String responseData =
                             FMResultEnum.SUCCESS.getSuccessCode()
@@ -313,17 +329,6 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
                     log.info(OPERATION_NAME + "协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
 
-                    /**
-                     * 是否打印完成
-                     * 		是
-                     * 			不发送额外协议
-                     * 		否
-                     * 			发送打印信息协议
-                     */
-                    if (!dbPrintJob.getFlow().equals(FlowEnum.FlowEnd.getCode()) && dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()){
-                        log.info("开机校验中 PC订单没有打印完成，发送打印进度");
-                        checkServicePortocol.serviceManageCenter.doPrintJob(dbPrintJob);
-                    }
 
                     //返回打印协议
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));

@@ -33,6 +33,11 @@ public class DateUtil {
         return formatFullTime(localDateTime, FULL_TIME_PATTERN);
     }
 
+    public static String getCurTime() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FULL_TIME_SPLIT_PATTERN, LocaleContextHolder.getLocale());
+        return simpleDateFormat.format(new Date());
+    }
+
     public static String formatFullTime(LocalDateTime localDateTime, String pattern) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
         return localDateTime.format(dateTimeFormatter);

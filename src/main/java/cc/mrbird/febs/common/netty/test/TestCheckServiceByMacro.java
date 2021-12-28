@@ -2,12 +2,9 @@ package cc.mrbird.febs.common.netty.test;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
 import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;

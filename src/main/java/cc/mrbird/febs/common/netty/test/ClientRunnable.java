@@ -7,7 +7,7 @@ import cc.mrbird.febs.common.netty.protocol.dto.TransactionFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -166,11 +166,11 @@ public class ClientRunnable implements Runnable{
         }__attribute__((packed))Foreseens, *Foreseens;
          */
         log.info("开始foreseen");
-        ForeseenProductDTO foreseenProductDTO = new ForeseenProductDTO();
-        foreseenProductDTO.setProductCode(productCode);
-        foreseenProductDTO.setCount(totalCount);
-        foreseenProductDTO.setWeight(10D);
-        foreseenProductDTO.setAmount(Double.valueOf(totalAmmount));
+        ForeseenProductFmDto foreseenProductFmDto = new ForeseenProductFmDto();
+        foreseenProductFmDto.setProductCode(productCode);
+        foreseenProductFmDto.setCount(totalCount);
+        foreseenProductFmDto.setWeight(10D);
+        foreseenProductFmDto.setAmount(Double.valueOf(totalAmmount));
 
         ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
         foreseenFMDTO.setId(foreseenId);
@@ -179,7 +179,7 @@ public class ClientRunnable implements Runnable{
         foreseenFMDTO.setUserId(userId);
         foreseenFMDTO.setPostOffice(postOffice);
         foreseenFMDTO.setTotalCount(totalCount);
-        foreseenFMDTO.setProducts(new ForeseenProductDTO[]{foreseenProductDTO});
+        foreseenFMDTO.setProducts(new ForeseenProductFmDto[]{foreseenProductFmDto});
         foreseenFMDTO.setTaxVersion(taxVersion);
         foreseenFMDTO.setTotalAmmount(totalAmmount);
 

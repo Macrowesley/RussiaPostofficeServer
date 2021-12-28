@@ -17,6 +17,7 @@ import cc.mrbird.febs.rcs.service.ITaxRateService;
 import cc.mrbird.febs.rcs.service.ITaxService;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -147,8 +148,8 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
             deviceService.updateLastestTaxVersionUpdateStatuts();
 
             //redis保存版本内容  https://www.sojson.com/可以恢复
-            String jsonStr = JSON.toJSONString(taxVersionDTO);
-            redisService.set(taxVersionDTO.getVersion(), jsonStr);
+            String jsonStr = JSON.toJSONString(taxVersionDTO, SerializerFeature.DisableCircularReferenceDetect);
+//            redisService.set("taxVersioin:" + taxVersionDTO.getVersion().replace(".","-"), jsonStr);
             try {
                 //保险起见保存到文件中
                 FileUtil.writeBytes(jsonStr.getBytes("UTF-8"), savePath);

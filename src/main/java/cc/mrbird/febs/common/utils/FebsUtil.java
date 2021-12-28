@@ -96,6 +96,15 @@ public class FebsUtil {
         return (User) SecurityUtils.getSubject().getPrincipal();
     }
 
+    public static boolean isLogin() {
+        try {
+            return SecurityUtils.getSubject().isAuthenticated();
+        }catch (Exception e){
+//            e.printStackTrace();
+            return false;
+        }
+    }
+
     /**
      * 判断是否包含中文
      *

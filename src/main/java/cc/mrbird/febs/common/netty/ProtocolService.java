@@ -207,7 +207,9 @@ public class ProtocolService {
                 baseProtocol = new CancelPrintResultPortocol();
                 break;
             default:
+                log.error("protocolType 格式不对： " + BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));
                 wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
+                return;
         }
 
         try {
@@ -244,6 +246,7 @@ public class ProtocolService {
                             wrieteToCustomer(ctx, asyncProtocol.parseContentAndRspone(data, ctx));
                             log.info("【处理协议 结束】");
                         } catch (Exception e) {
+                            e.printStackTrace();
                             log.error("返回结果出错：" + e.getMessage());
                         }
                     }

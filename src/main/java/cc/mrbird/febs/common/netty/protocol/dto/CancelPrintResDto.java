@@ -6,6 +6,8 @@ import lombok.ToString;
 @Data
 @ToString
 public class CancelPrintResDto {
+    //pc用户ID
+    String pcUserId = "0";
     String printJobId;
     // 0 失败 1 成功
     String res;

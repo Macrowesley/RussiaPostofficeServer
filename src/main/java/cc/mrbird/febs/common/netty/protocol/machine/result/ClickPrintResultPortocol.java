@@ -31,7 +31,7 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
     @Autowired
     IMsgService msgService;
 
-    public static final byte PROTOCOL_TYPE = (byte) 0xC7;
+    public static final byte PROTOCOL_TYPE = (byte) 0xBB;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
@@ -70,6 +70,7 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
      */
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+        try {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA
@@ -84,32 +85,38 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
         }__attribute__((packed))pcPrintJobRes, *pcPrintJobRes;
 
          */
-        log.info("机器返回点击打印事件结果");
-        int pos = getBeginPos();
+            log.info("机器返回点击打印事件结果");
+            int pos = getBeginPos();
 
-        //表头号
-        String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
-        pos += REQ_ACNUM_LEN;
+            //表头号
+            String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);
+            pos += REQ_ACNUM_LEN;
 
-        //版本号
-        String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
-        pos += VERSION_LEN;
+            //版本号
+            String version = BaseTypeUtils.byteToString(bytes, pos, VERSION_LEN, BaseTypeUtils.UTF8);
+            pos += VERSION_LEN;
 
-        ClickPrintResDto resDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ClickPrintResDto.class);
+            ClickPrintResDto resDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ClickPrintResDto.class);
 
-        PrintJob printJob = new PrintJob();
-        printJob.setId(Integer.valueOf(resDto.getPrintJobId()));
-        if ("1".equals(resDto.getRes())){
-            //如果结果ok
-            printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResOk.getCode());
-        }else{
-            printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResFail.getCode());
+            PrintJob printJob = new PrintJob();
+            int printJobId = Integer.valueOf(resDto.getPrintJobId());
+            if (printJobId != 0){
+                printJob.setId(printJobId);
+                if ("1".equals(resDto.getRes())){
+                    //如果结果ok
+                    printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResOk.getCode());
+                }else{
+                    printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResFail.getCode());
+                }
+                protocol.printJobService.updatePrintJob(printJob);
+            }
+
+            protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), printJobId, resDto.getRes(), Integer.valueOf(resDto.getPcUserId()));
+
+            log.info("{}PC点击打印，机器返回的结果是：{}", acnum, resDto.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        protocol.printJobService.updatePrintJob(printJob);
-
-        protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), Integer.valueOf(resDto.getPrintJobId()), resDto.getRes());
-
-        log.info("{}PC点击打印，机器返回的结果是：{}", acnum, resDto.toString());
 
         //返回
         byte[] data = new byte[]{(byte) 0x01};

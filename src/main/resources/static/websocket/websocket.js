@@ -11,7 +11,7 @@ function openSocket (userId, websocketServiceName, febs) {
 
     // 心跳检测, 每隔一段时间检测连接状态，如果处于连接中，就向server端主动发送消息，来重置server端与客户端的最大连接时间，如果已经断开了，发起重连。
     heartCheck = {
-      timeout: 500000,        // 500s发一次心跳，比server端设置的连接时间稍微小一点，在接近断开的情况下以通信的方式去重置连接时间。
+      timeout: 55000,        // 30s发一次心跳，比server端设置的连接时间稍微小一点，在接近断开的情况下以通信的方式去重置连接时间。
       serverTimeoutObj: null,
       reset: function () {
         clearTimeout(this.serverTimeoutObj)
@@ -26,6 +26,7 @@ function openSocket (userId, websocketServiceName, febs) {
             heartCheck.reset().start()    // 如果获取到消息，说明连接是正常的，重置心跳检测
           } else {
             console.log('断开状态，尝试重连')
+            heartCheck.reset()
             openSocket(userId, websocketServiceName, febs)
           }
         }, this.timeout)
@@ -58,7 +59,9 @@ function openSocket (userId, websocketServiceName, febs) {
       heartCheck.reset().start()    // 如果获取到消息，说明连接是正常的，重置心跳检测
       var type = JSON.parse(msg.data).type
       var data = JSON.parse(msg.data).data
-      console.log('web收到消息：' + data)
+      if(data != "ping"){
+        console.log('web收到消息：' + data)
+      }
       switch (type) {
         case 1:
           //1 发送成功
@@ -124,8 +127,8 @@ function openSocket (userId, websocketServiceName, febs) {
       }
     }
     //关闭事件
-    socket.onclose = function () {
-      console.log('websocket已关闭')
+    socket.onclose = function (e) {
+      console.log('websocket已关闭 onclose' + e.code + ' ' + e.reason + ' ' + e.wasClean)
     }
     //发生了错误事件
     socket.onerror = function (res) {
@@ -135,6 +138,7 @@ function openSocket (userId, websocketServiceName, febs) {
 
     // 监听窗口事件，当窗口关闭时，主动断开websocket连接，防止连接没断开就关闭窗口，server端报错
     window.onbeforeunload = function () {
+      console.log('websocket已关闭 onbeforeunload')
       socket.close()
     }
   }

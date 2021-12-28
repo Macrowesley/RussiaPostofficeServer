@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelPrintResDto;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.common.enums.FlowEnum;
 import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IMsgService;
@@ -27,7 +28,7 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
     @Autowired
     IMsgService msgService;
 
-    public static final byte PROTOCOL_TYPE = (byte) 0xC8;
+    public static final byte PROTOCOL_TYPE = (byte) 0xBC;
 
     //表头号长度
     private static final int REQ_ACNUM_LEN = 6;
@@ -95,18 +96,21 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
 
 
         PrintJob printJob = new PrintJob();
-        printJob.setId(Integer.valueOf(resDto.getPrintJobId()));
-        if ("1".equals(resDto.getRes())){
-            //如果结果ok
-            printJob.setFlowDetail(FlowDetailEnum.JobingPcCancelResOk.getCode());
-        }else{
-            printJob.setFlowDetail(FlowDetailEnum.JobingPcCancleResFail.getCode());
-        }
-        protocol.printJobService.updatePrintJob(printJob);
+        int printJobId = Integer.valueOf(resDto.getPrintJobId());
+        /*if (printJobId != 0) {
+            printJob.setId(printJobId);
+            if ("1".equals(resDto.getRes())) {
+                //如果结果ok
+                printJob.setFlowDetail(FlowDetailEnum.JobingPcCancelResOk.getCode());
+                printJob.setFlow(FlowEnum.FlowEnd.getCode());
+            } else {
+                printJob.setFlowDetail(FlowDetailEnum.JobingPcCancleResFail.getCode());
+            }
+            protocol.printJobService.updatePrintJob(printJob);
+        }*/
+        log.info("{} PC点击 取消打印，机器返回的结果是：{}", acnum, resDto.toString());
 
-        log.info("{}PC点击 取消打印，机器返回的结果是：{}", acnum, resDto.toString());
-
-        protocol.msgService.receviceMsg(WebSocketEnum.CancelPrintRes.getCode(), Integer.valueOf(resDto.getPrintJobId()), resDto.getRes());
+        protocol.msgService.receviceMsg(WebSocketEnum.CancelPrintRes.getCode(), printJobId, resDto.getRes(), Integer.valueOf(resDto.getPcUserId()));
         //返回
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);

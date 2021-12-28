@@ -84,10 +84,15 @@ public class WebSocketServer {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session) throws IOException {
 //        logger.info("用户消息:" + userId + ",报文:" + message);
         //消息保存到数据库、redis
-
+        if(message.equals("ping")){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", 0);
+            jsonObject.put("data", "ping");
+            session.getBasicRemote().sendText(jsonObject.toJSONString());
+        }
     }
 
     /**

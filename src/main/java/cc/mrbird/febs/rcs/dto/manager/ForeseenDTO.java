@@ -33,7 +33,7 @@ public class ForeseenDTO {
     Integer totalCount;
 
     @NotNull
-    ForeseenProductDTO[] products;
+    ForeseenProductRussiaDto[] products;
 
     String frankMachineId;
 

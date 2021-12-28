@@ -1,15 +1,10 @@
 package cc.mrbird.febs.rcs.dto.ui;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import lombok.Data;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Administrator
@@ -27,9 +22,10 @@ public class PrintJobAddDto {
 
     private String contractCode;
 
+    double totalAmount;
     int totalCount;
 
-    ArrayList<ForeseenProductDTO> products;
+    ArrayList<ForeseenProductFmDto> products;
 
     private String foreseenId;
 

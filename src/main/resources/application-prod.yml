@@ -1,5 +1,5 @@
 server:
-  port: 88
+  port: 80
   address: 192.168.30.60
 
 spring:

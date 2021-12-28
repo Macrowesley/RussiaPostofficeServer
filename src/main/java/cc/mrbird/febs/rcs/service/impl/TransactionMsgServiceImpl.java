@@ -230,7 +230,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             long fmTotalAmount = Long.valueOf(transactionMsgFMDTO.getTotalAmount());
             long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
-            TransactionMsg lastestMsg = getLastestMsg(transactionMsgFMDTO.getId());
+            TransactionMsg lastestMsg = getLastestMsg(transactionId);
             if (lastestMsg!=null) {
                 if (lastestMsg.getCount() > fmTotalCount || (lastestMsg.getAmount() - fmTotalAmount) > 0) {
                     throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
@@ -241,7 +241,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             //找到没有结束的那个批次，得到dm_msg等信息，保存这个dm_msg到数据库中
             TransactionMsg transactionMsg = new TransactionMsg();
             transactionMsg.setTransactionId(transactionId);
-            transactionMsg.setCode(transactionMsgFMDTO.getCode());
+            transactionMsg.setCode(lastestMsg.getCode());
             transactionMsg.setCount(fmTotalCount);
             transactionMsg.setAmount(fmTotalAmount);
             transactionMsg.setDmMsg(transactionMsgList.get(transactionMsgList.size()-1).getDmMsg());
