@@ -54,15 +54,10 @@ public class PrintJob {
     private Integer flowDetail;
 
     @TableField("total_count")
-<<<<<<< HEAD
-    private Integer totalCount;
-
-=======
     int totalCount;
 
     @TableField("total_amount")
     Double totalAmount;
->>>>>>> ad86bc0e131ba4ea89d3ab1e8df837a04281cf1e
     /**
      * 1 机器创建的订单 2 管理页面创建的订单
      */

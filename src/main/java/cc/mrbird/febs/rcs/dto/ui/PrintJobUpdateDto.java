@@ -1,6 +1,6 @@
 package cc.mrbird.febs.rcs.dto.ui;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import lombok.Data;
 import lombok.ToString;
 import org.apache.poi.ss.formula.functions.Count;
@@ -24,7 +24,7 @@ public class PrintJobUpdateDto {
 
     int totalCount;
 
-    ArrayList<ForeseenProductDTO> products;
+    ArrayList<ForeseenProductFmDto> products;
 
     private String foreseenId;
 

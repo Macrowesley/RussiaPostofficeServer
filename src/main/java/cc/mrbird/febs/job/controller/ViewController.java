@@ -44,8 +44,7 @@ public class ViewController {
     public String jobUpdate(@NotBlank(message = "{required}") @PathVariable Long jobId, Model model) {
         Job job = jobService.findJob(jobId);
         model.addAttribute("job", job);
-        System.out.println(JSON.toJSONString(job));
-        return FebsUtil.view("printJob/update");
+        return FebsUtil.view("job/jobUpdate");
     }
 
     @GetMapping("log")

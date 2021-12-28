@@ -163,7 +163,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //this.save(printJob);
         //log.info(printJob.toString());
 
-        ArrayList<ForeseenProductDTO> products = printJobUpdateDto.getProducts();
+        ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
         List<ForeseenProduct> productList = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
             ForeseenProduct product = new ForeseenProduct();
@@ -250,7 +250,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * job流程中，foreseens的进度更新
      *   foreseen的balance改变current的值
      *   transaction成功后，改变consolidate的值
-     * @param foreseenDTO
      * @param curFlowDetail
      * @param balanceDTO
      */
