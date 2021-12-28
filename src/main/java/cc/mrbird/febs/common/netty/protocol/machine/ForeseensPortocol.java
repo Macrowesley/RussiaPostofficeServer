@@ -48,8 +48,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
     @Autowired
     IPrintJobService printJobService;
 
-    @Autowired
-    IContractAddressService contractAddressService;
 
     public static ForeseensPortocol foreseensPortocol;
 
@@ -156,7 +154,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
-                    if (dbPrintJob != null && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
+                    if (dbPrintJob != null && dbPrintJob.getType() == PrintJobTypeEnum.Machine.getCode() && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
                         /**
                          * 特殊的情况：上次订单过程中，访问俄罗斯transaction接口时，没有访问成功，导致没有闭环，解决方案如下：
                          * 返回给机器一个状态，让机器直接再次发送transaction信息
@@ -173,17 +171,9 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.NotFinish.getCode());
                     }
 
-                    String foreseenId = "";
-                    if (FebsConstant.IS_TEST_NETTY) {
-                        foreseenId = foreseenFmDto.getId();
-                    }else{
-                        foreseenId = AESUtils.createUUID();
-                        foreseenFmDto.setId(foreseenId);
-                    }
-                    //数据库的合同信息
-                    Contract dbContract = foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto, ctx);
+                    return getWriteContent(foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob,  ctx));
 
-                    return getSuccessResult(version,ctx,foreseenId,dbContract);
+//                    return getSuccessResult(version,ctx,foreseenId,dbContract);
                 default:
                     return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }
@@ -203,9 +193,9 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             log.info("机器结束 Foreseens 耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
-
+/*
     private byte[] getSuccessResult(String version, ChannelHandlerContext ctx, String foreseenId, Contract contract) throws Exception{
-        /**
+        *//**
          typedef  struct{
          unsigned char length;				     //一个字节
          unsigned char type;				 	 //0xB5
@@ -214,7 +204,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
          unsigned char check;				     //校验位
          unsigned char tail;					 //0xD0
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
-         */
+         *//*
 
         ForeseensResultDTO foreseensResultDTO = new ForeseensResultDTO();
         foreseensResultDTO.setContractCode(contract.getCode());
@@ -229,7 +219,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         log.info("foreseens协议：原始数据：" + responseData + " 密钥：" + tempKey + " 加密后数据：" + resEntryctContent);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
-    }
+    }*/
 
     @Override
     protected void finalize() throws Throwable {

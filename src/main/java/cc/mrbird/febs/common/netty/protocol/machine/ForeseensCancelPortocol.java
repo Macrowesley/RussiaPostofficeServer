@@ -107,9 +107,10 @@ public class ForeseensCancelPortocol extends MachineToServiceProtocol {
                     CancelJobFMDTO cancelJobFMDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CancelJobFMDTO.class);
                     log.info("解析得到的对象：cancelJobFMDTO={}", cancelJobFMDTO.toString());
 
-                    Contract dbContract = foreseensCancelPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
-
-                    return getSuccessResult(version, ctx, cancelJobFMDTO, dbContract);
+                    //暂时不用这个协议了
+//                    Contract dbContract = foreseensCancelPortocol.serviceManageCenter.cancelJob(cancelJobFMDTO);
+//                    return getSuccessResult(version, ctx, cancelJobFMDTO, dbContract);
+                    return null;
                 default:
                     return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.VersionError.getCode());
             }

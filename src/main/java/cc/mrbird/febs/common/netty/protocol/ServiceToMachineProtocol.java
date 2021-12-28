@@ -3,23 +3,25 @@ package cc.mrbird.febs.common.netty.protocol;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.PcCancelInfoDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
-import cc.mrbird.febs.common.netty.protocol.machine.result.CancelPrintResultPortocol;
-import cc.mrbird.febs.common.netty.protocol.machine.result.ClickPrintResultPortocol;
-import cc.mrbird.febs.common.utils.AESUtils;
-import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.common.utils.MD5Util;
+import cc.mrbird.febs.common.netty.protocol.machine.ForeseensPortocol;
+import cc.mrbird.febs.common.utils.*;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
+import cc.mrbird.febs.rcs.api.CheckUtils;
+import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
+import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
@@ -57,6 +59,10 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     @Autowired
     IMsgService msgService;
+
+    @Autowired
+    CheckUtils checkUtils;
+
 
     public ServiceToMachineProtocol() {
     }
@@ -346,24 +352,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
         }
     }
 
+
+
     /**
-     * PC发送打印信息给机器
+     * PC发送打印信息给机器,接入foreseen
      * 订单详情和打印进度
      */
-//    @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void doPrintJob(PrintJob dbPrintJob) {
-        log.info("【协议开始 发送pc订单给机器】 dbPrintJob =" + dbPrintJob.toString());
-        /**
-         typedef  struct{
-             unsigned char length[4];
-             unsigned char type;				 	 //0xC7
-             unsigned char operateID[2];
-             unsigned char version[3];			 //版本内容(3)
-             unsigned char content[?];            //加密后内容: pcPrintInfoDTO信息
-             unsigned char check;				 //校验位
-             unsigned char tail;					 //0xD0
-         }__attribute__((packed))pcPrintJob, *pcPrintJob;
-         */
         try {
             ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
 
@@ -371,19 +366,38 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                 throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
             }
 
-            //获取临时密钥
-            String tempKey = tempKeyUtils.getTempKey(ctx);
 
-            //准备数据
-            String version = FebsConstant.FmVersion1;
+            FlowDetailEnum dbFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
+            byte[] data = null;
+            PrintProgressInfo productPrintProgress = printJobService.getProductPrintProgress(dbPrintJob);
+            //判断foreseen是否结束
+            if (dbFlowDetail == FlowDetailEnum.JobingPcCreatePrint || dbFlowDetail == FlowDetailEnum.JobingErrorForeseensUnKnow){
+                //如果是第一次创建网络订单或者foreseen网络错误，服务器自己拼接Foreseen给俄罗斯，俄罗斯通过后，拼接地址，进度等信息给机器
+                Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(dbPrintJob.getFrankMachineId());
 
-            String content = JSON.toJSONString(printJobService.getPcPrintInfo(dbPrintJob));
-            String entryctContent = AESUtils.encrypt(content, tempKey);
-            log.info("服务器发送tax给机器 加密后长度={}  content={}, entryctContent={}", entryctContent.length(), content, entryctContent);
-            wrieteToCustomer(
-                    ctx,
-                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
-                            (byte) 0xC7));
+                ForeseenFMDTO foreseenFmDto = new ForeseenFMDTO();
+                foreseenFmDto.setContractCode(dbPrintJob.getContractCode());
+                foreseenFmDto.setFrankMachineId(dbPrintJob.getFrankMachineId());
+                foreseenFmDto.setUserId(FebsUtil.getCurrentUser().getUsername());
+                foreseenFmDto.setPostOffice(dbDevice.getPostOffice());
+                foreseenFmDto.setTotalCount(dbPrintJob.getTotalCount());
+
+                foreseenFmDto.setProducts(productPrintProgress.getProductArr());
+
+                foreseenFmDto.setTaxVersion(FebsConstant.FmVersion1);
+                foreseenFmDto.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
+                foreseenFmDto.setMachineDate(DateUtil.getCurTime());
+                foreseenFmDto.setPrintJobType(dbPrintJob.getType());
+                foreseenFmDto.setPrintJobId(dbPrintJob.getId());
+
+                data = serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob, ctx);
+            }else{
+                //如果已经走通了foreseen,但是transaction没有成功，则发送消息，进度给机器，让机器继续打印
+                Contract dbContract = checkUtils.checkContractIsOk(dbPrintJob.getContractCode());
+                data = serviceManageCenter.buildForeseenResultBytes(dbPrintJob,ctx, dbPrintJob.getForeseenId(), dbContract, productPrintProgress);
+            }
+
+            wrieteToCustomer(ctx, getWriteContent(data, ForeseensPortocol.PROTOCOL_TYPE));
 
             msgService.sendMsg(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId(),"");
             log.info("【协议结束 发送pc订单给机器】");
@@ -392,6 +406,64 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             throw new FmException(e.getMessage());
         }
     }
+
+
+//    @Async(FebsConstant.NETTY_ASYNC_POOL)
+//    @Deprecated
+//    public void doPrintJobOld(PrintJob dbPrintJob) {
+//        log.info("【协议开始 发送pc订单给机器】 dbPrintJob =" + dbPrintJob.toString());
+//        /**
+//         typedef  struct{
+//             unsigned char length[4];
+//             unsigned char type;				 	 //0xC7
+//             unsigned char operateID[2];
+//             unsigned char version[3];			 //版本内容(3)
+//             unsigned char content[?];            //加密后内容: pcPrintInfoDTO信息
+//             unsigned char check;				 //校验位
+//             unsigned char tail;					 //0xD0
+//         }__attribute__((packed))pcPrintJob, *pcPrintJob;
+//         */
+//        try {
+//            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
+//
+//            if (ctx == null) {
+//                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
+//            }
+//
+//            //获取临时密钥
+//            String tempKey = tempKeyUtils.getTempKey(ctx);
+//
+//            //准备数据
+//            String version = FebsConstant.FmVersion1;
+//
+//            ForeseenProductDTO[] productPrintProgress = printJobService.getProductPrintProgress(dbPrintJob);
+//
+//            PcPrintInfoDTO pcPrintInfoDTO = new PcPrintInfoDTO();
+//            pcPrintInfoDTO.setPrintJobId(dbPrintJob.getId());
+//            pcPrintInfoDTO.setFrankMachineId(dbPrintJob.getFrankMachineId());
+//            pcPrintInfoDTO.setForeseenId(dbPrintJob.getForeseenId());
+//            pcPrintInfoDTO.setTransactionId(dbPrintJob.getTransactionId());
+//            pcPrintInfoDTO.setContractCode(dbPrintJob.getContractCode());
+//            pcPrintInfoDTO.setFlowDetail(dbPrintJob.getFlowDetail());
+//            pcPrintInfoDTO.setPrintJobType(dbPrintJob.getType());
+//            pcPrintInfoDTO.setPrintProducts(productPrintProgress);
+//
+//            String content = JSON.toJSONString(pcPrintInfoDTO);
+//
+//            String entryctContent = AESUtils.encrypt(content, tempKey);
+//            log.info("服务器发送tax给机器 加密后长度={}  content={}, entryctContent={}", entryctContent.length(), content, entryctContent);
+//            wrieteToCustomer(
+//                    ctx,
+//                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+//                            (byte) 0xC7));
+//
+//            msgService.sendMsg(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId(),"");
+//            log.info("【协议结束 发送pc订单给机器】");
+//        } catch (Exception e) {
+////            e.printStackTrace();
+//            throw new FmException(e.getMessage());
+//        }
+//    }
 
     /**
      * PC主动取消打印任务
@@ -407,9 +479,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             unsigned char tail;					 //0xD0
         }__attribute__((packed))pcPrintJobCancel, *pcPrintJobCancel;
 
-        public class pcCancelInfoDTO {
-            String foreseenId;
-        }*/
+        */
 
         /**
          * 发送给机器，告知取消打印
@@ -426,7 +496,11 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             //准备数据
             String version = FebsConstant.FmVersion1;
 
-            String content = JSON.toJSONString(new PcCancelInfoDTO(String.valueOf(dbPrintJob.getId()), dbPrintJob.getForeseenId() == null ? "" : dbPrintJob.getForeseenId()));
+            String content = JSON.toJSONString(
+                    new PcCancelInfoDTO(
+                            String.valueOf(FebsUtil.getCurrentUser().getUserId()),
+                            String.valueOf(dbPrintJob.getId()),
+                            dbPrintJob.getForeseenId() == null ? "" : dbPrintJob.getForeseenId()));
             String entryctContent = AESUtils.encrypt(content, tempKey);
             log.info("服务器 发送pc 取消订单命令 给机器 content={},加密后entryctContent={}", content, entryctContent);
             wrieteToCustomer(

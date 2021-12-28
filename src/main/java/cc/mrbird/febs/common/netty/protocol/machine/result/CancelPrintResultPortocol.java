@@ -97,7 +97,7 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
 
         PrintJob printJob = new PrintJob();
         int printJobId = Integer.valueOf(resDto.getPrintJobId());
-        if (printJobId != 0) {
+        /*if (printJobId != 0) {
             printJob.setId(printJobId);
             if ("1".equals(resDto.getRes())) {
                 //如果结果ok
@@ -107,10 +107,10 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
                 printJob.setFlowDetail(FlowDetailEnum.JobingPcCancleResFail.getCode());
             }
             protocol.printJobService.updatePrintJob(printJob);
-        }
+        }*/
         log.info("{} PC点击 取消打印，机器返回的结果是：{}", acnum, resDto.toString());
 
-        protocol.msgService.receviceMsg(WebSocketEnum.CancelPrintRes.getCode(), printJobId, resDto.getRes());
+        protocol.msgService.receviceMsg(WebSocketEnum.CancelPrintRes.getCode(), printJobId, resDto.getRes(), Integer.valueOf(resDto.getPcUserId()));
         //返回
         byte[] data = new byte[]{(byte) 0x01};
         return getWriteContent(data);

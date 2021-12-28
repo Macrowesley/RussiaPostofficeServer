@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,7 +13,7 @@ public class ForeseenFMDTO {
     String userId;
     String postOffice;
     Integer totalCount;
-    ForeseenProductDTO[] products;
+    ForeseenProductFmDto[] products;
     String taxVersion;
     //金钱单位：分
     String totalAmmount;

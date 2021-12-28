@@ -29,6 +29,7 @@ import cc.mrbird.febs.rcs.service.IPublicKeyService;
 import cc.mrbird.febs.rcs.service.ITaxService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -235,7 +236,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 
                     //数据库的合同信息
                     ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
-                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId);
+                    PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId, PrintJobTypeEnum.Machine.getCode());
                     String transactionId = "";
                     String printJobType = "";
                     boolean isPrintEnd = true;
@@ -313,8 +314,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
                     resultDto.setPrintJobType(printJobType);
-                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO));
-                    String responseData = JSON.toJSONString(resultDto);
+                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+                    String responseData = JSON.toJSONString(resultDto, SerializerFeature.DisableCircularReferenceDetect);
 
                     /*String responseData =
                             FMResultEnum.SUCCESS.getSuccessCode()

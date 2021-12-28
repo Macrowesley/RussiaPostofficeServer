@@ -13,6 +13,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PcCancelInfoDTO {
+    //pc用户ID
+    String pcUserId;
     String printJobId;
     String foreseenId;
 }

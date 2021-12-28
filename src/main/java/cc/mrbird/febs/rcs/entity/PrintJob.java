@@ -55,6 +55,9 @@ public class PrintJob {
 
     @TableField("total_count")
     int totalCount;
+
+    @TableField("total_amount")
+    Double totalAmount;
     /**
      * 1 机器创建的订单 2 管理页面创建的订单
      */

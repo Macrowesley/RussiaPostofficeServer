@@ -111,7 +111,7 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
                 protocol.printJobService.updatePrintJob(printJob);
             }
 
-            protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), printJobId, resDto.getRes());
+            protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), printJobId, resDto.getRes(), Integer.valueOf(resDto.getPcUserId()));
 
             log.info("{}PC点击打印，机器返回的结果是：{}", acnum, resDto.toString());
         } catch (Exception e) {

@@ -2,8 +2,9 @@ package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
+import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
@@ -75,7 +76,7 @@ public interface IPrintJobService extends IService<PrintJob> {
      */
     PrintJob getUnFinishJobByFmId(String frankMachineId);
 
-    PrintJob getLastestJobByFmId(String frankMachineId);
+    PrintJob getLastestJobByFmId(String frankMachineId, int type);
 
     PrintJob getByPrintJobId(int printJobId);
 
@@ -86,7 +87,7 @@ public interface IPrintJobService extends IService<PrintJob> {
     /**
      * job流程中，foreseens的进度更新
      */
-    void changeForeseensStatus(ForeseenDTO foreseenDTO,  FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
+    PrintJob changeForeseensStatus(ForeseenFMDTO foreseenFmDto, PrintJob dbPrintJob, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
 
     /**
      * job流程中，foreseensCancel的进度更新
@@ -125,9 +126,9 @@ public interface IPrintJobService extends IService<PrintJob> {
     void cancelPrintJob(int id);
 
     /**
-     * 获取PC上的订单的信息
+     * 获取PC上的订单打印进度
      * @param dbPrintJob
      * @return
      */
-    PcPrintInfoDTO getPcPrintInfo(PrintJob dbPrintJob);
+    PrintProgressInfo getProductPrintProgress(PrintJob dbPrintJob);
 }

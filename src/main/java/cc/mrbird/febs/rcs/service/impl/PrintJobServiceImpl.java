@@ -5,7 +5,8 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.PcPrintInfoDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
@@ -15,8 +16,9 @@ import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
+import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
@@ -105,8 +107,14 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     public void createPrintJobDto(PrintJobAddDto printJobAddDto) {
+        ArrayList<ForeseenProductFmDto> products = printJobAddDto.getProducts();
+
+        if (products.size() == 0){
+            throw new FebsException("请填写产品信息");
+        }
+
         //确定上一个订单是否闭环
-        PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId());
+        PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
         if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
             throw new FebsException("上一个订单没有结束，请勿创建新订单");
         }
@@ -121,7 +129,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         log.info(printJob.toString());
 
-        ArrayList<ForeseenProductDTO> products = printJobAddDto.getProducts();
+
         List<ForeseenProduct> productList = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
             ForeseenProduct product = new ForeseenProduct();
@@ -167,10 +175,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     }
 
     @Override
-    public PrintJob getLastestJobByFmId(String frankMachineId) {
+    public PrintJob getLastestJobByFmId(String frankMachineId, int type) {
         LambdaQueryWrapper<PrintJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PrintJob::getFrankMachineId, frankMachineId);
-//        wrapper.eq(PrintJob::getType, PrintJobTypeEnum.Machine.getCode());
+//        wrapper.eq(PrintJob::getType, type);
         wrapper.orderByDesc(PrintJob::getId);
         wrapper.last("limit 1");
         return this.getOne(wrapper);
@@ -218,19 +226,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     @Transactional(rollbackFor = RcsApiException.class)
-    public void changeForeseensStatus(ForeseenDTO foreseenDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
+    public PrintJob changeForeseensStatus(ForeseenFMDTO foreseenFmDto, PrintJob dbPrintJob, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         /**
          创建job
          创建foreseens和ForeseenProduct
          */
         //判断订单类型
-        PrintJobTypeEnum jobType = PrintJobTypeEnum.getByCode(foreseenDTO.getPrintJobType());
+        PrintJobTypeEnum jobType = PrintJobTypeEnum.getByCode(foreseenFmDto.getPrintJobType());
 
-        Integer printJobId = foreseenDTO.getPrintJobId();
+        Integer printJobId = dbPrintJob.getId();
         String dbForeseenId = "";
-        PrintJob dbPrintJob = null;
         if (printJobId != null && jobType == PrintJobTypeEnum.Web){
-            dbPrintJob = getByPrintJobId(printJobId);
             dbForeseenId = dbPrintJob.getForeseenId();
         }
 
@@ -242,8 +248,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //创建foreseens和ForeseenProduct
         Foreseen foreseen = new Foreseen();
-        BeanUtils.copyProperties(foreseenDTO, foreseen);
-        foreseen.setTotalAmmount(foreseenDTO.getTotalAmount());
+        BeanUtils.copyProperties(foreseenFmDto, foreseen);
+        foreseen.setTotalAmmount(MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
         foreseen.setForeseenStatus(FlowEnum.FlowEnd.getCode());
         foreseen.setForeseenStatus(1);
         foreseen.setUpdatedTime(new Date());
@@ -252,14 +258,15 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //判断是否是机器订单
         boolean isMachineOrder = jobType == PrintJobTypeEnum.Machine;
 
-        if (!isMachineOrder && !StringUtils.isEmpty(dbForeseenId)){
+        if (!isMachineOrder){
             //不是第一次创建Foreseen，先删除旧的，再新建
-            Foreseen deleteForeseen = new Foreseen();
-            deleteForeseen.setId(dbForeseenId);
-            foreseenService.deleteForeseen(deleteForeseen);
-
+            if (!StringUtils.isEmpty(dbForeseenId)) {
+                Foreseen deleteForeseen = new Foreseen();
+                deleteForeseen.setId(dbForeseenId);
+                foreseenService.deleteForeseen(deleteForeseen);
+            }
             ForeseenProduct deleteProduct = new ForeseenProduct();
-            deleteProduct.setForeseenId(dbForeseenId);
+            deleteProduct.setPrintJobId(printJobId);
             foreseenProductService.deleteForeseenProduct(deleteProduct);
         }
 
@@ -267,8 +274,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //添加订单产品信息
         List<ForeseenProduct> foreseenProductList = new ArrayList<>();
-        if (foreseenDTO.getProducts() != null) {
-            for (ForeseenProductDTO productDto : foreseenDTO.getProducts()) {
+        if (foreseenFmDto.getProducts() != null) {
+            for (ForeseenProductFmDto productDto : foreseenFmDto.getProducts()) {
                 ForeseenProduct foreseenProduct = new ForeseenProduct();
                 BeanUtils.copyProperties(productDto, foreseenProduct);
                 foreseenProduct.setForeseenId(foreseen.getId());
@@ -279,7 +286,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
 
         //创建job
-        PrintJob printJob = new PrintJob();
+        PrintJob printJob = dbPrintJob == null ? new PrintJob() : dbPrintJob;
         if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess || curFlowDetail == FlowDetailEnum.JobingErrorForeseensUnKnow) {
             log.info("curFlowDetail == FlowDetailEnum.JobingForeseensSuccess || curFlowDetail == FlowDetailEnum.JobingForeseensUnKnow");
             printJob.setFlow(FlowEnum.FlowIng.getCode());
@@ -288,18 +295,21 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             printJob.setFlow(FlowEnum.FlowEnd.getCode());
         }
 
-        printJob.setContractCode(foreseenDTO.getContractCode());
-        printJob.setForeseenId(foreseenDTO.getId());
+        printJob.setContractCode(foreseenFmDto.getContractCode());
+        printJob.setForeseenId(foreseenFmDto.getId());
         printJob.setTransactionId("");//暂无
-        printJob.setUserId(foreseenDTO.getUserId());
-        printJob.setFrankMachineId(foreseenDTO.getFrankMachineId());
+        printJob.setUserId(foreseenFmDto.getUserId());
+        printJob.setFrankMachineId(foreseenFmDto.getFrankMachineId());
         printJob.setFlowDetail(curFlowDetail.getCode());
         printJob.setUpdatedTime(new Date());
-        printJob.setCreatedTime(new Date());
+
 
         if (isMachineOrder){
+            printJob.setCreatedTime(new Date());
+            printJob.setType(PrintJobTypeEnum.Machine.getCode());
             this.createPrintJob(printJob);
         }else{
+            printJob.setType(PrintJobTypeEnum.Web.getCode());
             printJob.setId(printJobId);
             this.updateById(printJob);
         }
@@ -311,8 +321,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
          * transaction以实际消耗金额为主，申请金额也要改成这个
          */
         if (curFlowDetail == FlowDetailEnum.JobingForeseensSuccess) {
-            balanceService.saveReturnBalance(foreseenDTO.getContractCode(), balanceDTO);
+            balanceService.saveReturnBalance(foreseenFmDto.getContractCode(), balanceDTO);
         }
+
+        log.info("printJob = " + printJob.toString());
+        return printJob;
     }
 
     /**
@@ -323,6 +336,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @param flowDetailEnum
      */
     @Override
+    @Transactional(rollbackFor = RcsApiException.class)
     public void changeForeseensCancelStatus(PrintJob dbPrintJob, CancelJobFMDTO cancelJobFMDTO, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO) {
         //更新PrintJob
         if (curFlowDetail == FlowDetailEnum.JobingErrorForeseensCancelUnKnow) {
@@ -429,31 +443,20 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Override
     public void doPrintJob(int printJobId) {
         log.info("开始处理打印");
-        /**
-         从数据库找到这个printJob
-         判断job的flow是否结束
-            结束
-                返回已经打印完成了，不能再次打印
-            未结束
-                说明是某些原因导致的中断，需要重新发送订单信息和进度给机器
 
-         */
-        //判断现在的进度
-        try {
-            PrintJob dbPrintJob = getByPrintJobId(printJobId);
+        PrintJob dbPrintJob = getByPrintJobId(printJobId);
 
-            FlowDetailEnum dbFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
-            FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
+        FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
 
-            //判断打印是否完成
-            if (dbFlow == FlowEnum.FlowEnd){
-                throw new FebsException("打印已经完成，请勿重复点击");
-            }
-
-            serviceToMachineProtocol.doPrintJob(dbPrintJob);
-        } catch (FebsException e) {
-            throw new FebsException(e.getMessage());
+        //判断打印是否完成
+        if (dbFlow == FlowEnum.FlowEnd){
+            throw new FebsException("打印已经完成，请勿重复点击");
         }
+
+        //todo 判断机器是否是在打印中，从redis中查询
+        //todo
+
+        serviceToMachineProtocol.doPrintJob(dbPrintJob);
     }
 
     /**
@@ -497,10 +500,14 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @return
      */
     @Override
-    public PcPrintInfoDTO getPcPrintInfo(PrintJob dbPrintJob) {
+    public PrintProgressInfo getProductPrintProgress(PrintJob dbPrintJob) {
         Integer printJobId = dbPrintJob.getId();
         String frankMachineId = dbPrintJob.getFrankMachineId();
         String transactionId = dbPrintJob.getTransactionId();
+
+        PrintProgressInfo printProgressInfo = new PrintProgressInfo();
+        printProgressInfo.setActualAmount("0");
+        printProgressInfo.setActualCount(0);
 
         //构建信息
         ForeseenProduct product = new ForeseenProduct();
@@ -508,18 +515,19 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         List<ForeseenProduct> productList = foreseenProductService.findForeseenProducts(product);
 
         //产品信息和进度
-
         HashMap<String, Integer> productCountMap = null;
 
         //得到每个产品的进度
         if (!StringUtils.isEmpty(transactionId)){
             DmMsgDetail dmMsgDetail = transactionMsgService.getDmMsgDetailAfterFinishJob(transactionId, true);
             productCountMap = dmMsgDetail.getProductCountMap();
+            printProgressInfo.setActualAmount(dmMsgDetail.getActualAmount());
+            printProgressInfo.setActualCount(dmMsgDetail.getActualCount());
         }
 
         //拼接产品进度
-        ForeseenProductDTO[] productArr = new ForeseenProductDTO[productList.size()];
-        ForeseenProductDTO temp = new ForeseenProductDTO();
+        ForeseenProductFmDto[] productArr = new ForeseenProductFmDto[productList.size()];
+        ForeseenProductFmDto temp = new ForeseenProductFmDto();
 
         for (int i = 0; i < productList.size(); i++) {
             BeanUtils.copyProperties(productList.get(i), temp);
@@ -528,20 +536,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             }else{
                 temp.setAlreadyPrintCount(0);
             }
-            temp.setPrintJobId(null);
+//            temp.setPrintJobId(null);
             productArr[i] = temp;
         }
+        printProgressInfo.setProductArr(productArr);
 
-        PcPrintInfoDTO pcPrintInfoDTO = new PcPrintInfoDTO();
-        pcPrintInfoDTO.setPrintJobId(printJobId);
-        pcPrintInfoDTO.setFrankMachineId(frankMachineId);
-        pcPrintInfoDTO.setForeseenId(dbPrintJob.getForeseenId());
-        pcPrintInfoDTO.setTransactionId(transactionId);
-        pcPrintInfoDTO.setContractCode(dbPrintJob.getContractCode());
-        pcPrintInfoDTO.setFlowDetail(dbPrintJob.getFlowDetail());
-        pcPrintInfoDTO.setPrintJobType(dbPrintJob.getType());
-        pcPrintInfoDTO.setPrintProducts(productArr);
-
-        return pcPrintInfoDTO;
+        return printProgressInfo;
     }
 }

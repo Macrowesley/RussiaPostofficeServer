@@ -223,7 +223,7 @@ public class MangerTestController {
         this.foreseenId = foreseenId;
 
 
-        ForeseenProductDTO foreseenProduct = new ForeseenProductDTO();
+        ForeseenProductFmDto foreseenProduct = new ForeseenProductFmDto();
         foreseenProduct.setProductCode(productCode1);
         foreseenProduct.setCount(count1);
         foreseenProduct.setWeight(weight1);
@@ -245,7 +245,7 @@ public class MangerTestController {
         foreseenDTO.setContractId(contractCode);
         foreseenDTO.setTotalCount(totalCount);
 //        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
-        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct});
+//        foreseenDTO.setProducts(new ForeseenProductFmDto[]{foreseenProduct});
         foreseenDTO.setFrankMachineId(frankMachineId);
         foreseenDTO.setTaxVersion(taxVersion);
         foreseenDTO.setTotalAmount(totalAmount);
@@ -253,8 +253,8 @@ public class MangerTestController {
         log.info("foreseenId = {}", foreseenId);
         log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
 
-        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.foreseens(foreseenDTO);
-        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
+//        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.foreseens(foreseenDTO);
+//        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());
     }
 
     /**

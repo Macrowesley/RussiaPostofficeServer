@@ -67,6 +67,9 @@ public class ForeseenProductServiceImpl extends ServiceImpl<ForeseenProductMappe
         if (!StringUtils.isEmpty(foreseenProduct.getForeseenId())){
             wrapper.eq(ForeseenProduct::getForeseenId, foreseenProduct.getForeseenId());
         }
+        if (foreseenProduct.getPrintJobId() != null && foreseenProduct.getPrintJobId() != 0){
+            wrapper.eq(ForeseenProduct::getPrintJobId, foreseenProduct.getPrintJobId());
+        }
 	    this.remove(wrapper);
 	}
 

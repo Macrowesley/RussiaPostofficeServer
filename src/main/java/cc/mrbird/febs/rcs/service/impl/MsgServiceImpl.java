@@ -24,27 +24,27 @@ public class MsgServiceImpl implements IMsgService {
     int overtime;
 
     @Override
-    public String createWebsocketKey(int type, int id) {
-        log.info("创建key type = " + type + " id = " + id);
-        return "expire-websocket:" + ":" + type + ":" + id;
+    public String createWebsocketKey(int type, int printJobId, int userId) {
+        log.info("创建key type = " + type + " printJobId = " + printJobId + " userId = " + userId + " key = " + "expire-websocket:" + userId + ":" + type + ":" + printJobId);
+        return "expire-websocket:" + userId + ":" + type + ":" + printJobId;
     }
 
     @Override
     public void sendMsg(int type, int printJobId, String value) {
         if (FebsUtil.isLogin()) {
-            log.info("发送消息 key={}" + createWebsocketKey(type, printJobId));
-            redisService.set(createWebsocketKey(type, printJobId), value, (long) overtime);
+            log.info("发送消息");
+            redisService.set(createWebsocketKey(type, printJobId, FebsUtil.getCurrentUser().getUserId().intValue()), value, (long) overtime);
         }
     }
 
     @Override
-    public void receviceMsg(int type, int printJobId, String res) {
-        log.info("接收消息：key={}, printJobId={}, res={}", createWebsocketKey(type, printJobId), printJobId, res);
-        redisService.del(createWebsocketKey(type, printJobId));
+    public void receviceMsg(int type, int printJobId, String res, int userId) {
+        log.info("接收消息： printJobId={}, res={}", printJobId, res);
+        redisService.del(createWebsocketKey(type, printJobId,userId));
 
         if (FebsUtil.isLogin()) {
             //通知前端
-            noticeFrontService.notice(type, "receive-" + printJobId + "-" + res, FebsUtil.getCurrentUser().getUserId());
+            noticeFrontService.notice(type, "receive-" + printJobId + "-" + res, userId);
         }
     }
 
@@ -52,9 +52,9 @@ public class MsgServiceImpl implements IMsgService {
     public void overtimeMsg(String key) {
         if (key.contains("expire-websocket")) {
             log.info("超时消息key={}", key);
-            //拿到过期key ,处理业务逻辑
+            //todo 拿到过期key ,处理业务逻辑
             String[] split = key.split(":");
-            long userId = Long.parseLong(split[1]);
+            int userId = Integer.parseInt(split[1]);
             int type = Integer.parseInt(split[2]);
             String printJobId = split[3];
 

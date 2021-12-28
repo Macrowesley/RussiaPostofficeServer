@@ -1,10 +1,13 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -205,7 +208,7 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/foreseens")
      */
-    public ApiRussiaResponse foreseens(ForeseenDTO foreseenDTO) {
+    public ApiRussiaResponse foreseens(ForeseenFMDTO foreseenFmDto) {
         //测试条件下，返回假数据
         if (isTest){
             try {
@@ -214,10 +217,25 @@ public class ServiceInvokeRussia {
                 e.printStackTrace();
             }
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
-            balanceDTO.setContractCode(foreseenDTO.getContractCode());
+            balanceDTO.setContractCode(foreseenFmDto.getContractCode());
             balanceDTO.setCurrent(100000D);
             balanceDTO.setConsolidate(100000D);
             return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
+        }
+        //fm信息转ForeseenDTO
+        ForeseenDTO foreseenDTO = new ForeseenDTO();
+        BeanUtils.copyProperties(foreseenFmDto, foreseenDTO);
+        foreseenDTO.setTotalAmount(MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
+        ForeseenProductFmDto[] fmProducts = foreseenFmDto.getProducts();
+        if (fmProducts != null && fmProducts.length > 0){
+            int length = fmProducts.length;
+            ForeseenProductRussiaDto[] products = new ForeseenProductRussiaDto[length];
+            ForeseenProductRussiaDto temp = new ForeseenProductRussiaDto();
+            for (int i = 0; i < length; i++) {
+                BeanUtils.copyProperties(fmProducts[i], temp);
+                products[i] = temp;
+            }
+            foreseenDTO.setProducts(products);
         }
 
         String url = baseUrl + "/foreseens";
