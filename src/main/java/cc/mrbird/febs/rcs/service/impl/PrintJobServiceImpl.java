@@ -26,6 +26,8 @@ import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -152,28 +154,51 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void editAndUpdatePrintJob(PrintJob printJob) {
+        LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PrintJob::getId,printJob.getId());
+
+        boolean result = this.update(printJob,queryWrapper);
+        //System.out.println("编辑结果："+result);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void editPrintJob(PrintJobUpdateDto printJobUpdateDto) {
+        if(null==printJobUpdateDto.getProducts()){
+            //待实现删除逻辑
+            //根据业务不能删除所有product
+            System.out.println("删除本条记录");
+        }
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobUpdateDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
         printJob.setType(PrintJobTypeEnum.Web.getCode());
         printJob.setCreatedTime(new Date());
-        this.updatePrintJob(printJob);
-        //this.save(printJob);
-        //log.info(printJob.toString());
+        //通过printJobId更新PrintJob
+        this.editAndUpdatePrintJob(printJob);
+        System.out.println("printJob更新成功");
 
+        //此编辑通过删除原有数据，新增新数据实现，会导致编辑后的唯一id改变
         ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
+        //删除库中的products
+        LambdaQueryWrapper<ForeseenProduct> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ForeseenProduct::getPrintJobId,printJob.getId());
+        Boolean delete = foreseenProductService.remove(queryWrapper);
+        //System.out.println("delete:"+delete);
+        //处理前端获取的products
         List<ForeseenProduct> productList = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
             ForeseenProduct product = new ForeseenProduct();
-            BeanUtils.copyProperties(products.get(i), product);
-            product.setPrintJobId(printJob.getId());
-            product.setCreatedTime(new Date());
-            productList.add(product);
-            //log.info(product.toString());
+            if(null!=products.get(i).getProductCode()) {
+                BeanUtils.copyProperties(products.get(i), product);
+                product.setPrintJobId(printJob.getId());
+                product.setCreatedTime(new Date());
+                productList.add(product);
+            }
         }
-
+        //System.out.println("productList"+productList);
         foreseenProductService.saveOrUpdateBatch(productList);
         //foreseenProductService.saveBatch(productList);
     }

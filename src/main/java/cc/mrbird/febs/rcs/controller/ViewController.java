@@ -96,11 +96,11 @@ public class ViewController extends BaseController{
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String printJobUpdate(@PathVariable int id, Model model) {
         PrintJob printJob = iPrintJobService.getByPrintJobId(id);
-        System.out.println(JSON.toJSONString(printJob));
+        //System.out.println(JSON.toJSONString(printJob));
 
 
         ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
-        System.out.println(JSON.toJSONString(foreseenProduct));
+        //System.out.println(JSON.toJSONString(foreseenProduct));
 
         PrintJobAddDto printJobAddDto = null;
 

@@ -186,7 +186,9 @@
         }
 
         form.on('submit(printJob-update-form-submit)', function (data) {
-            if (febs.nativeEqual(data.field, printJob)) {
+            if(Object.keys(data.field).length<4){
+                febs.alert.warn(i18n("deletePrintJob"));
+            }else if (febs.nativeEqual(data.field, printJob)) {
                 febs.alert.warn(i18n("noEdit"));
                 return false;
             }
@@ -196,7 +198,7 @@
             }
 
             console.log("更新数据："+JSON.stringify(data.field));
-            febs.post(ctx + 'printJob/update', data.field, function () {
+            febs.post(ctx + 'printJob/update/'+printJob.id, data.field, function () {
                 layer.closeAll();
 
                 febs.alert.success(printJob.contractCode + i18n("printJob.editSuccess"));

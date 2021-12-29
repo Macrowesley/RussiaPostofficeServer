@@ -34,7 +34,7 @@
                                     <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.foreseenId}+':'" style="width: 100px;"></label>
                                         <div class="layui-input-inline">
-                                            <input type="text" name="contractCode" autocomplete="off" class="layui-input">
+                                            <input type="text" name="foreseenId" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                 </div>
@@ -103,10 +103,6 @@
     <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}"></a>
 
-<!--    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}"></a>-->
-<!--
-    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>
--->
 
     <!--  <a lay-event="del" shiro:hasPermission="printJob:delete"><i
             class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
@@ -252,6 +248,7 @@
                 url: ctx + 'printJob/list',
                 cols: [[
                     //{type: 'checkbox'},
+                    {field: 'id', title: i18n("printJob.id"), minWidth: 100},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},
                     {field: 'foreseenId', title: i18n("printJob.foreseenId"), minWidth: 100},
                     {field: 'transactionId', title: i18n("printJob.transactionId"), minWidth: 100},
@@ -282,7 +279,7 @@
                         area: $(window).width() <= 750 ? '95%' : '660px'
                     });
                 }
-                if (layEvent === 'printEdit') {
+                if (layEvent === 'printEdit' && 0==data.flow) {
                     febs.modal.open(i18n("printJob.editprintJob"), 'rcs/printJob/update/' + data.id, {
                         area: $(window).width() <= 750 ?  '90%' : '50%',
                         offset: '30px',
@@ -312,6 +309,8 @@
                         console.log(JSON.stringify(res))
                         // queryTable(0);
                     })
+
+                    noMoreClick();
                 }
 
                 //todo 需要点击后不能再次点击
@@ -331,6 +330,7 @@
             });
 
             table.on('sort(printJobTable)', function (obj) {
+                alert(121)
                 sortObject = obj;
                 tableIns.reload({
                     initSort: obj,
@@ -341,6 +341,28 @@
                 });
             });
         }
+        //监听单元格事件,点击显示交易明细弹窗
+        table.on('tool(printJob-table-form)',function (obj) {
+
+            var data = obj.table;
+
+            if(obj.event==='setSign'){
+                layer.prompt({
+                    formType:2,
+                    title:'修改ID为'+data.id+'用户',
+                    value:data.sign
+                },function (value,index) {
+                    layer.close(index);
+
+                    //发送ajax请求
+
+                    //同步更新表格和缓存对应的值
+                    obj.update({
+                        sign:value
+                    });
+                });
+            }
+        })
 
 
         /**
@@ -360,6 +382,30 @@
                 // curFmStatus: $searchForm.find("select[name='printJobStatus']").val(),
                 invalidate_ie_cache: new Date()
             };
+        }
+
+        function noMoreClick(){
+            //防止多次点击提交...
+            // if($("div a").hasClass('disabled')) return;
+            // $("div a").addClass('disabled');
+            // $("div a.layui-layer-btn0").text("提交中...");
+            // $("div a.layui-layer-btn0").css("color","#333");
+            // $("div a.layui-layer-btn0").css("background-color","#f1f1f1");
+            // $("div a.layui-layer-btn0").css("border","1px solid #dedede");
+
+            $("a").one("click",function(){
+                $(this).click(function (){return false;});
+            });
+
+            var timer=setTimeout(turnBack,3000);
+
+        }
+
+        function turnBack() {
+            alert("恢复打印")
+            $("a").one("click",function(){
+                $(this).click(function (){return true;});
+            });
         }
 
     })

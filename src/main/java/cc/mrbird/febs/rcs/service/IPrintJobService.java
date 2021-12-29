@@ -68,6 +68,8 @@ public interface IPrintJobService extends IService<PrintJob> {
      */
     void updatePrintJob(PrintJob printJob);
 
+    void editAndUpdatePrintJob(PrintJob printJob);
+
     /**
      * 删除
      *

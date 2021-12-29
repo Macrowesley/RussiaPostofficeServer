@@ -101,10 +101,10 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "修改PrintJob失败")
-    @PostMapping("printJob/update")
+    @PostMapping("printJob/update/{id}")
     @ResponseBody
     @RequiresPermissions("printJob:update")
-    public FebsResponse updatePrintJob(PrintJobUpdateDto printJobUpdateDto) {
+    public FebsResponse updatePrintJob(@PathVariable int id,PrintJobUpdateDto printJobUpdateDto) {
         System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
@@ -126,7 +126,7 @@ public class PrintJobController extends BaseController {
     public FebsResponse doPrintJob(Integer id) {
         log.info("开始打印任务操作：" + id);
         log.info("userinfo = " + String.valueOf(FebsUtil.getCurrentUser().getUserId()));
-        this.printJobService.doPrintJob(id);
+        //this.printJobService.doPrintJob(id);
         return new FebsResponse().success().data("ok");
     }
 
