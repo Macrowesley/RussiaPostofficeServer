@@ -52,7 +52,6 @@ mybatis-plus:
 websocket:
   service: websocket
 
-
 netty:
   port: 12800
   ip: 192.168.2.119

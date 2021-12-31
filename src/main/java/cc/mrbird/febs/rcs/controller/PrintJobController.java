@@ -1,26 +1,31 @@
 package cc.mrbird.febs.rcs.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
+import cc.mrbird.febs.common.annotation.Limit;
+import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
+import cc.mrbird.febs.common.entity.DeptTree;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
+import cc.mrbird.febs.system.entity.Dept;
+import com.alibaba.fastjson.JSON;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -45,6 +50,12 @@ public class PrintJobController extends BaseController {
 
     @Autowired
     RedisService redisService;
+
+//    @GetMapping("select/tree")
+//    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
+//    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
+//        return this.printJobService.findFlow();
+//    }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "printJob")
     public String printJobIndex(){
@@ -71,6 +82,10 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
+
+        //临时数据
+        printJobAddDto.setForeseenId("37431eec-194f-4706-bf56-e8e36c9aca2e");
+        printJobAddDto.setTransactionId("c05a9a95-44a8-455f-bd5e-27962826b527");
         log.info("前端添加订单：" + printJobAddDto.toString());
         this.printJobService.createPrintJobDto(printJobAddDto);
         return new FebsResponse().success();
@@ -86,11 +101,12 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "修改PrintJob失败")
-    @PostMapping("printJob/update")
+    @PostMapping("printJob/update/{id}")
     @ResponseBody
     @RequiresPermissions("printJob:update")
-    public FebsResponse updatePrintJob(PrintJob printJob) {
-        this.printJobService.updatePrintJob(printJob);
+    public FebsResponse updatePrintJob(@PathVariable int id,PrintJobUpdateDto printJobUpdateDto) {
+        System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
+        this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }
 
@@ -110,7 +126,7 @@ public class PrintJobController extends BaseController {
     public FebsResponse doPrintJob(Integer id) {
         log.info("开始打印任务操作：" + id);
         log.info("userinfo = " + String.valueOf(FebsUtil.getCurrentUser().getUserId()));
-        this.printJobService.doPrintJob(id);
+        //this.printJobService.doPrintJob(id);
         return new FebsResponse().success().data("ok");
     }
 
@@ -123,4 +139,13 @@ public class PrintJobController extends BaseController {
         this.printJobService.cancelPrintJob(id);
         return new FebsResponse().success().data("ok");
     }
+
+//    @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/update/{username}")
+//    @RequiresPermissions("user:update")
+//    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
+//    public String systemUserUpdate(@PathVariable String username, Model model) {
+//        //resolveUserModel(username, model, false);
+//        model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
+//        return FebsUtil.view("system/user/userUpdate");
+//    }
 }

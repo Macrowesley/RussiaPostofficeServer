@@ -9,6 +9,7 @@ import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
@@ -56,11 +57,18 @@ public interface IPrintJobService extends IService<PrintJob> {
     void createPrintJobDto(PrintJobAddDto printJobAddDto);
 
     /**
+     * 编辑
+     * @param printJobUpdateDto
+     */
+    void editPrintJob(PrintJobUpdateDto printJobUpdateDto);
+
+    /**
      * 修改
-     *
-     * @param printJob printJob
+     * @param printJob
      */
     void updatePrintJob(PrintJob printJob);
+
+    void editAndUpdatePrintJob(PrintJob printJob);
 
     /**
      * 删除
