@@ -6,7 +6,9 @@ import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.notice.service.INoticeService;
@@ -53,6 +55,9 @@ public class ViewController extends BaseController {
     @Value("${websocket.service}")
     String websocketServiceName;
 
+    @Autowired
+    LicenseVerifyUtils verifyUtils;
+
     @GetMapping("login")
 //    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
     @ResponseBody
@@ -81,6 +86,10 @@ public class ViewController extends BaseController {
 
     @GetMapping("index")
     public String index(Model model) {
+        if(!verifyUtils.verify()){
+           throw new FebsException("许可证到期");
+        }
+
         AuthorizationInfo authorizationInfo = shiroHelper.getCurrentUserAuthorizationInfo();
         User user = super.getCurrentUser();
         User currentUserDetail = userService.findByName(user.getUsername());
@@ -95,6 +104,7 @@ public class ViewController extends BaseController {
 
         //网站地址
         model.addAttribute("websocketServiceName", websocketServiceName);
+
 
 /*        log.error("获取权限 user = " + currentUserDetail.toString());
         log.error("获取权限 permissions = " + authorizationInfo.getStringPermissions());
@@ -226,6 +236,11 @@ public class ViewController extends BaseController {
     @GetMapping(FebsConstant.VIEW_PREFIX + "403")
     public String error403() {
         return FebsUtil.view("error/403");
+    }
+
+    @GetMapping(FebsConstant.VIEW_PREFIX + "444")
+    public String error444() {
+        return FebsUtil.view("error/444");
     }
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "500")

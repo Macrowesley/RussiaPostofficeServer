@@ -15,6 +15,7 @@ public class FebsProperties {
     private ShiroProperties shiro = new ShiroProperties();
     private boolean autoOpenBrowser = true;
     private SwaggerProperties swagger = new SwaggerProperties();
+    private LicenseProperties license = new LicenseProperties();
 
     private int maxBatchInsertNum = 1000;
 

@@ -4,8 +4,8 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
-import cc.mrbird.febs.common.i18n.MessageUtils;
-import cc.mrbird.febs.common.utils.DateUtil;
+import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.entity.ForeseenProduct;
@@ -14,12 +14,9 @@ import cc.mrbird.febs.rcs.service.IContractService;
 import cc.mrbird.febs.rcs.service.IForeseenProductService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.vo.ContractVO;
-import cc.mrbird.febs.system.entity.User;
-import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,7 +27,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Controller("RcsView")

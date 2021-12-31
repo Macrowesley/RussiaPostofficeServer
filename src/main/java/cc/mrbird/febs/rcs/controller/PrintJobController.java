@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
@@ -51,6 +52,9 @@ public class PrintJobController extends BaseController {
     @Autowired
     RedisService redisService;
 
+    @Autowired
+    LicenseVerifyUtils verifyUtils;
+
 //    @GetMapping("select/tree")
 //    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
 //    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
@@ -82,7 +86,9 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
-
+        if(!verifyUtils.verify()){
+            throw new FebsException("软件许可证到期");
+        }
         //临时数据
         printJobAddDto.setForeseenId("37431eec-194f-4706-bf56-e8e36c9aca2e");
         printJobAddDto.setTransactionId("c05a9a95-44a8-455f-bd5e-27962826b527");

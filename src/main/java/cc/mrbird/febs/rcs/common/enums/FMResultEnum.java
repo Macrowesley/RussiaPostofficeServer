@@ -44,7 +44,7 @@ public enum FMResultEnum {
 
 
 
-
+    LicenseExpiry(99, "软件许可证过期"),
     DefaultError(0,"其他异常导致的失败");
 
     int code;

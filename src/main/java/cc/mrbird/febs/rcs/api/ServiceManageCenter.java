@@ -462,6 +462,11 @@ public class ServiceManageCenter {
         String frankMachineId = foreseenFmDto.getFrankMachineId();
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
+        //判断软件许可证书是否过期
+        if(!checkUtils.checkLicense()){
+            throw new FmException(FMResultEnum.LicenseExpiry);
+        }
+
         //判断机器状态是否正常
         checkUtils.checkFmEnable(frankMachineId);
 

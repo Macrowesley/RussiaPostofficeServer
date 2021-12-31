@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.api;
 
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FileUtil;
@@ -60,6 +61,9 @@ public class CheckUtils {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    LicenseVerifyUtils verifyUtils;
 
     /**
      * 校验机器是否可用
@@ -242,5 +246,12 @@ public class CheckUtils {
         String savePath = "D:\\workspace\\\\RussiaPostofficeServerFile\\tax\\2021_10_27_15_25_37.json";
         String jsonFileName = savePath.substring(savePath.lastIndexOf("\\") + 1, savePath.length() - 5);
         log.info(jsonFileName);
+    }
+
+    /**
+     * 判断软件许可证是否过期
+     */
+    public boolean checkLicense() {
+       return verifyUtils.verify();
     }
 }
