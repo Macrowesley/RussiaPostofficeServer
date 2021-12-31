@@ -80,14 +80,16 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                 }
             }
 
+            //校验证书安装
+            verifyUtils.install();
+
             if (nettyProperties.isEnable()) {
                 startNetty();
             }else{
                 log.info("关闭netty");
             }
 
-            //校验证书安装
-            verifyUtils.install();
+
         }
     }
 
