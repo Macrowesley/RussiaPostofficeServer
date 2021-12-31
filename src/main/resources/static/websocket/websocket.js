@@ -124,6 +124,12 @@ function openSocket (userId, websocketServiceName, febs) {
 
           // document.getElementById("hotDot").style.display = "inline-block";
           break
+        case 7:
+          break
+        case 8:
+            febs.alert.success(msg)
+          location.reload()
+          break
       }
     }
     //关闭事件

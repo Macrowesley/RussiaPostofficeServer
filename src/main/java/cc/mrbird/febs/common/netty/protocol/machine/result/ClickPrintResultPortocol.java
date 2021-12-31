@@ -98,17 +98,19 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
 
             ClickPrintResDto resDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ClickPrintResDto.class);
 
-            PrintJob printJob = new PrintJob();
             int printJobId = Integer.valueOf(resDto.getPrintJobId());
-            if (printJobId != 0){
-                printJob.setId(printJobId);
-                if ("1".equals(resDto.getRes())){
-                    //如果结果ok
-                    printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResOk.getCode());
-                }else{
-                    printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResFail.getCode());
+            if (printJobId != 0) {
+                PrintJob printJob = protocol.printJobService.getByPrintJobId(printJobId);
+                if (printJob != null && printJob.getFlowDetail() == FlowDetailEnum.JobingPcCreatePrint.getCode()) {
+                    printJob.setId(printJobId);
+                    if ("1".equals(resDto.getRes())) {
+                        //如果结果ok
+                        printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResOk.getCode());
+                    } else {
+                        printJob.setFlowDetail(FlowDetailEnum.JobingPcClickPrintResFail.getCode());
+                    }
+                    protocol.printJobService.updatePrintJob(printJob);
                 }
-                protocol.printJobService.updatePrintJob(printJob);
             }
 
             protocol.msgService.receviceMsg(WebSocketEnum.ClickPrintRes.getCode(), printJobId, resDto.getRes(), Integer.valueOf(resDto.getPcUserId()));

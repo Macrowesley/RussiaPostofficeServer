@@ -122,9 +122,10 @@ public class CheckUtils {
         FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
         FlowDetailEnum curFlowDetail = FlowDetailEnum.getByCode(dbPrintJob.getFlowDetail());
 
-        if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess &&
-                curFlowDetail != FlowDetailEnum.JobingErrorTransactionUnKnow
-                && curFlowDetail != FlowDetailEnum.JobingErrorTransaction4xx) {
+        if (curFlowDetail != FlowDetailEnum.JobingForeseensSuccess
+                && curFlowDetail != FlowDetailEnum.JobingErrorTransactionUnKnow
+                && curFlowDetail != FlowDetailEnum.JobingErrorTransaction4xx
+                && curFlowDetail != FlowDetailEnum.JobingPcCancleResFail) {
             throw new FmException(FMResultEnum.OrderProcessIsNotRight.getCode(), "transactions 订单进度不符合条件，frankMachineId = " + frankMachineId + ", foreseenId = " + foreseenId + ", 当前进度为：" + curFlowDetail.getMsg());
         }
         return dbPrintJob;

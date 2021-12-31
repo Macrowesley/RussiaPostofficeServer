@@ -192,9 +192,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                     //判断是否需要获取产品进度
                     if (needProductPrintCount){
                         if (productPrintCountMap.containsKey(beginMsg.getCode())){
+//                            log.info("包含" + beginMsg.getCode() + " getCode = " + productPrintCountMap.get(beginMsg.getCode()));
                             productPrintCountMap.put(beginMsg.getCode(), (int) (batchCount + productPrintCountMap.get(beginMsg.getCode())));
                         }else{
                             productPrintCountMap.put(beginMsg.getCode(), (int) batchCount);
+//                            log.info("不包含" + beginMsg.getCode() + " getCode = " + productPrintCountMap.get(beginMsg.getCode()));
                         }
                     }
                 }

@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -553,7 +554,6 @@ public class ServiceManageCenter {
         foreseensResultDTO.setPrintJobId(dbPrintJob.getId());
         foreseensResultDTO.setTotalAmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
         foreseensResultDTO.setTotalCount(String.valueOf(dbPrintJob.getTotalCount()));
-        foreseensResultDTO.setPcUserId(String.valueOf(FebsUtil.getCurrentUser().getUserId()));
 
         //决定给机器发送什么内容
         if (printJobType == PrintJobTypeEnum.Machine.getCode()) {
@@ -562,12 +562,16 @@ public class ServiceManageCenter {
             if (printProgressInfo == null){
                 printProgressInfo = printJobService.getProductPrintProgress(dbPrintJob);
             }
-
+            foreseensResultDTO.setPcUserId(String.valueOf(FebsUtil.getCurrentUser().getUserId()));
             foreseensResultDTO.setProducts(printProgressInfo.getProductArr());
             foreseensResultDTO.setActualAmount(printProgressInfo.getActualAmount());
             foreseensResultDTO.setActualCount(printProgressInfo.getActualCount());
             foreseensResultDTO.setHasTranaction(StringUtils.isNotBlank(dbPrintJob.getTransactionId()) == true ? "1" : "0");
         }
+//        log.info(JSON.toJSONString(printProgressInfo.getProductArr()));
+        /*Arrays.stream(printProgressInfo.getProductArr()).forEach(item -> {
+            log.info(item.toString());
+        });*/
         String responseData = FMResultEnum.SUCCESS.getSuccessCode() + FebsConstant.FmVersion1 + JSON.toJSONString(foreseensResultDTO,  SerializerFeature.DisableCircularReferenceDetect);
         String tempKey = null;
         try {

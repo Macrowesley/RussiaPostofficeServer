@@ -37,6 +37,9 @@ public class PrintJob {
     @TableField("user_id")
     String userId;
 
+    @TableField("pc_user_id")
+    Integer pcUserId;
+
     /**
      * 机器id
      */

@@ -122,6 +122,8 @@ public class WebSocketServer {
      * 4 闭环超时报警
      * 5 点击打印结果
      * 6 点击取消结果
+     * 7 foreseen结果
+     * 8 transaction结果
      */
     public static void sendInfo(int type, String message, String userId)  {
         logger.info("发送消息到:" + userId + "，报文:" + message);
