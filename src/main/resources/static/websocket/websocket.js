@@ -100,7 +100,7 @@ function openSocket (userId, websocketServiceName, febs) {
           } else if (eventType === 'overtime') {
               febs.alert.warn('机器返回结果超时')
           }
-
+          $('#febs-printJob').find('#refreshQuery').click()
           // document.getElementById("hotDot").style.display = "inline-block";
           break
         case 6:
@@ -121,13 +121,15 @@ function openSocket (userId, websocketServiceName, febs) {
           } else if (eventType === 'overtime') {
             febs.alert.warn('机器返回结果超时')
           }
-
+          $('#febs-printJob').find('#refreshQuery').click()
           // document.getElementById("hotDot").style.display = "inline-block";
           break
         case 7:
+          $('#febs-printJob').find('#refreshQuery').click()
           break
         case 8:
             febs.alert.success(msg)
+          $('#febs-printJob').find('#refreshQuery').click()
           location.reload()
           break
       }
