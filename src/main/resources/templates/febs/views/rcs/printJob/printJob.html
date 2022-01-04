@@ -154,7 +154,7 @@
         function queryTable(isFirstQuery){
             var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
             if (isFirstQuery == 1){
-                alert(JSON.stringify(params))
+                // alert(JSON.stringify(params))
                 tableIns.reload({where: params, page: {curr: 1}});
             }else{
                 var pageNum = $view.find(".layui-laypage-em").next().html();
@@ -335,14 +335,15 @@
                             // }
                             $('#printLabal').attr('disabled', 'disabled');
                             febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
+
                                 let code = res.code
-                                if (code == 200) {
+                                if (res.message == "ok") {
                                     febs.alert.success("操作成功")
                                 } else {
-                                    febs.alert.error(res.message)
+                                    febs.alert.error("操作失败")
                                 }
                                 //console.log(JSON.stringify(res))
-                                // queryTable(0);
+                                queryTable(1);
                             })
                             //noMoreClick();
 
