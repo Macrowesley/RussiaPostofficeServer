@@ -1,6 +1,7 @@
 package cc.mrbird.febs.common.runner;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.netty.NettyServer;
 import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.properties.NettyProperties;
@@ -42,6 +43,9 @@ public class FebsStartedUpRunner implements ApplicationRunner {
     @Autowired
     NettyProperties nettyProperties;
 
+    @Autowired
+    LicenseVerifyUtils verifyUtils;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         try {
@@ -76,11 +80,16 @@ public class FebsStartedUpRunner implements ApplicationRunner {
                 }
             }
 
+            //校验证书安装
+            verifyUtils.install();
+
             if (nettyProperties.isEnable()) {
                 startNetty();
             }else{
                 log.info("关闭netty");
             }
+
+
         }
     }
 

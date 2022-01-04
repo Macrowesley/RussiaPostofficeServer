@@ -80,10 +80,21 @@
 
 <script type="text/html" id="printJob-flow">
     {{#
+        var cur_status = 0;
+        var flow = d.flow;
+        var flow_detail = d.flowDetail;
+
+        if(flow_detail == 70){
+            cur_status = 2;
+        }else{
+            cur_status = flow;
+        }
+
         var status = {
+            2: {title: i18n("printJob.notBegin"), color: 'none'},
             1: {title: i18n("printJob.flowed"), color: 'none'},
             0: {title: i18n("printJob.flowing"), color: 'none'}
-        }[d.flow];
+        }[cur_status];
     }}
     <!--<span  class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
     <span>{{ status.title }}</span>

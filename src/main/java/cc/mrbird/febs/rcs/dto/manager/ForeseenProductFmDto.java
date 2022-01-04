@@ -31,5 +31,5 @@ public class ForeseenProductFmDto {
     /**
      * 已经打印数量
      */
-    Integer alreadyPrintCount;
+    Integer alreadyPrintCount = 0;
 }

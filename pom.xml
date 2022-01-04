@@ -23,6 +23,8 @@
         <swagger.ui>2.9.2</swagger.ui>
         <tomcat.version>9.0.31</tomcat.version>
         <log4j2.version>2.15.0</log4j2.version>
+        <!-- License -->
+        <truelicense>1.33</truelicense>
     </properties>
 
     <dependencies>
@@ -335,6 +337,19 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
             <version>1.46</version>
+        </dependency>
+
+        <!-- License -->
+        <dependency>
+            <groupId>de.schlichtherle.truelicense</groupId>
+            <artifactId>truelicense-core</artifactId>
+            <version>${truelicense}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>1.9.22</version>
         </dependency>
 
     </dependencies>

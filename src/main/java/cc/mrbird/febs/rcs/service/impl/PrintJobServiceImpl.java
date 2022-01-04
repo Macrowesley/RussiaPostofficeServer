@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
@@ -80,6 +81,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Autowired
     IBalanceService balanceService;
 
+    @Autowired
+    INoticeFrontService noticeFrontService;
+
     @Override
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
@@ -124,6 +128,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobAddDto, printJob);
+        printJob.setPcUserId(FebsUtil.getCurrentUser().getUserId().intValue());
         printJob.setFlow(FlowEnum.FlowIng.getCode());
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
         printJob.setType(PrintJobTypeEnum.Web.getCode());
@@ -288,12 +293,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //判断订单类型
         PrintJobTypeEnum jobType = PrintJobTypeEnum.getByCode(foreseenFmDto.getPrintJobType());
 
-        Integer printJobId = dbPrintJob.getId();
-        String dbForeseenId = "";
-        if (printJobId != null && jobType == PrintJobTypeEnum.Web){
-            dbForeseenId = dbPrintJob.getForeseenId();
-        }
-
 
         /**
          1. 第一次创建和第二次创建Foreseen不一样，第一次创建，都是新建
@@ -312,7 +311,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //判断是否是机器订单
         boolean isMachineOrder = jobType == PrintJobTypeEnum.Machine;
 
+        String dbForeseenId = "";
+        Integer printJobId = 0;
         if (!isMachineOrder){
+            printJobId = dbPrintJob.getId();
+            dbForeseenId = dbPrintJob.getForeseenId();
             //不是第一次创建Foreseen，先删除旧的，再新建
             if (!StringUtils.isEmpty(dbForeseenId)) {
                 Foreseen deleteForeseen = new Foreseen();
@@ -359,6 +362,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
 
         if (isMachineOrder){
+            printJob.setTotalCount(foreseen.getTotalCount());
+            printJob.setTotalAmount(foreseen.getTotalAmmount());
             printJob.setCreatedTime(new Date());
             printJob.setType(PrintJobTypeEnum.Machine.getCode());
             this.createPrintJob(printJob);
@@ -457,6 +462,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             balanceService.saveReturnBalance(balanceDTO.getContractCode(), balanceDTO);
             dbContract.setConsolidate(balanceDTO.getConsolidate());
             dbContract.setCurrent(balanceDTO.getCurrent());
+
+            if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
+                noticeFrontService.notice(8, "订单打印成功", dbPrintJob.getPcUserId());
+            }
+        }else{
+            noticeFrontService.notice(8,"订单打印异常", dbPrintJob.getPcUserId());
         }
 
         //返回最新的contract
@@ -580,16 +591,17 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //拼接产品进度
         ForeseenProductFmDto[] productArr = new ForeseenProductFmDto[productList.size()];
-        ForeseenProductFmDto temp = new ForeseenProductFmDto();
+
 
         for (int i = 0; i < productList.size(); i++) {
+            ForeseenProductFmDto temp = new ForeseenProductFmDto();
             BeanUtils.copyProperties(productList.get(i), temp);
+            temp.setAlreadyPrintCount(0);
             if (productCountMap != null && productCountMap.size() > 0){
-                temp.setAlreadyPrintCount(productCountMap.get(temp.getProductCode()));
-            }else{
-                temp.setAlreadyPrintCount(0);
+                Integer alreadyPrintCount = productCountMap.get(temp.getProductCode());
+                temp.setAlreadyPrintCount(alreadyPrintCount == null ? 0 : alreadyPrintCount);
             }
-//            temp.setPrintJobId(null);
+//            log.info("temp = " + temp.toString());
             productArr[i] = temp;
         }
         printProgressInfo.setProductArr(productArr);
