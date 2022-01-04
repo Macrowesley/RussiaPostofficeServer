@@ -27,6 +27,7 @@
                                                 <option value=""></option>
                                                 <option value="0" th:text="#{printJob.freeze}"></option>
                                                 <option value="1" th:text="#{printJob.normal}"></option>
+                                                <option value="2" th:text="#{printJob.notBegin}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -78,6 +79,7 @@
     <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
 </script>-->
 
+<!--//查询条件=70时status等于2-->
 <script type="text/html" id="printJob-flow">
     {{#
         var cur_status = 0;
@@ -265,8 +267,8 @@
                     //{type: 'checkbox'},
                     {field: 'id', title: i18n("printJob.code"), minWidth: 100},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},
-                    {field: 'foreseenId', title: i18n("printJob.foreseenId"), event:'foreseenInfo', minWidth: 100},
-                    {field: 'transactionId', title: i18n("printJob.transactionId"), event:'transactionInfo', minWidth: 100},
+                    {field: 'foreseenId', title: i18n("printJob.foreseenId"), event:'foreseenInfo', minWidth: 100,id: 'transactionIdColor', style: 'color:#2db7f5'},
+                    {field: 'transactionId', title: i18n("printJob.transactionId"), event:'transactionInfo', minWidth: 100,id: 'transactionIdColor', style: 'color:#2db7f5'},
                     {field: 'frankMachineId', title: i18n("printJob.frankMachineId"), minWidth: 100},
                     {title: i18n("printJob.flow"), templet: '#printJob-flow'},
                     {field: 'createdTime', title: i18n("createTime"), minWidth: 180, sort: false},
@@ -355,7 +357,6 @@
                         }
 
                         //todo 需要点击后不能再次点击
-
 
                         //todo 需要点击后不能再次点击
                         if (layEvent === 'printJobCancel') {
@@ -459,17 +460,17 @@
          * 获取查询信息
          */
         function getQueryParams() {
-            /*var createTime = $searchForm.find('input[name="createdTime"]').val();
+            var createTime = $searchForm.find('input[name="createdTime"]').val();
             if (createTime) {
                 createTimeFrom = createTime.split(' - ')[0];
                 createTimeTo = createTime.split(' - ')[1];
-            }*/
+            }
             return {
-                // createTimeFrom: createTimeFrom,
-                // createTimeTo: createTimeTo,
+                createTimeFrom: createTimeFrom,
+                createTimeTo: createTimeTo,
                 contractCode: $searchForm.find('input[name="contractCode"]').val().trim(),
-                // nickname: $searchForm.find('input[name="nickname"]').val().trim(),
-                // curFmStatus: $searchForm.find("select[name='printJobStatus']").val(),
+                printJobStatus: $searchForm.find("select[name='printJobStatus']").val(),
+                foreseenId: $searchForm.find('input[name="foreseenId"]').val().trim(),
                 invalidate_ie_cache: new Date()
             };
         }

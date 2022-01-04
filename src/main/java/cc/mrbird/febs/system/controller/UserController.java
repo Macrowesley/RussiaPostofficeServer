@@ -12,6 +12,7 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.MD5Util;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,7 @@ public class UserController extends BaseController {
     @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     public FebsResponse userList(User user, QueryRequest request) {
+        System.out.println("userList:"+JSON.toJSONString(user));
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
     }
