@@ -132,7 +132,11 @@ public class PrintJobController extends BaseController {
     public FebsResponse doPrintJob(Integer id) {
         log.info("开始打印任务操作：" + id);
         log.info("userinfo = " + String.valueOf(FebsUtil.getCurrentUser().getUserId()));
-        this.printJobService.doPrintJob(id);
+        try {
+            this.printJobService.doPrintJob(id);
+        } catch (Exception e) {
+            return new FebsResponse().success().data(e.getMessage());
+        }
         return new FebsResponse().success().data("ok");
     }
 
