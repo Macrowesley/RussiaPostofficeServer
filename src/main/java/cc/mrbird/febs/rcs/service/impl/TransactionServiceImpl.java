@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
+import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.mapper.TransactionMapper;
 import cc.mrbird.febs.rcs.service.ITransactionService;
@@ -66,4 +67,11 @@ public class TransactionServiceImpl extends ServiceImpl<TransactionMapper, Trans
 	    // TODO 设置删除条件
 	    this.remove(wrapper);
 	}
+
+    @Override
+    public Transaction getTransactionDetail(String transactionId) {
+        LambdaQueryWrapper<Transaction> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Transaction::getId,transactionId);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
 }

@@ -2,6 +2,7 @@ package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.entity.Foreseen;
+import cc.mrbird.febs.rcs.vo.ForeseenVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -51,4 +52,10 @@ public interface IForeseenService extends IService<Foreseen> {
      * @param foreseen foreseen
      */
     void deleteForeseen(Foreseen foreseen);
+
+    /**
+     *
+     *
+     */
+    Foreseen getForeseenDetail(String foreseenId);
 }

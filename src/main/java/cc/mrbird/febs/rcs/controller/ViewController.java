@@ -8,12 +8,13 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.ForeseenProduct;
 import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.service.IContractService;
-import cc.mrbird.febs.rcs.service.IForeseenProductService;
-import cc.mrbird.febs.rcs.service.IPrintJobService;
+import cc.mrbird.febs.rcs.entity.Transaction;
+import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
+import cc.mrbird.febs.rcs.vo.ForeseenVO;
 import cc.mrbird.febs.system.entity.User;
 import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,12 @@ public class ViewController extends BaseController{
 
     @Autowired
     IForeseenProductService iForeseenProductService;
+
+    @Autowired
+    IForeseenService foreseenService;
+
+    @Autowired
+    ITransactionService transactionService;
 
     @GetMapping("/contract")
     @RequiresPermissions("contract:view")
@@ -97,20 +104,33 @@ public class ViewController extends BaseController{
     public String printJobUpdate(@PathVariable int id, Model model) {
         PrintJob printJob = iPrintJobService.getByPrintJobId(id);
         //System.out.println(JSON.toJSONString(printJob));
-
-
         ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
         //System.out.println(JSON.toJSONString(foreseenProduct));
-
         PrintJobAddDto printJobAddDto = null;
-
 //        PrintJob printJob1=null;
 //        BeanUtils.copyProperties(printJob,printJob1);
-
         model.addAttribute("printJob",printJob);
         model.addAttribute("foreseenProduct",foreseenProduct);
         //printJobAddDto.setProducts(foreseenProduct);
         //System.out.println("printJobAddDto:"+JSON.toJSONString(printJobAddDto));
         return FebsUtil.view("rcs/printJob/printJobUpdate");
+    }
+
+    @GetMapping("/foreseen/detail/{foreseenId}")
+    public String foreseenInfo(@PathVariable String foreseenId, Model model) {
+        log.info("得到的foreseenid={}",foreseenId);
+        Foreseen foreseen = foreseenService.getForeseenDetail(foreseenId);
+        log.info("详情 foreseen = " + foreseen.toString());
+        model.addAttribute("foreseen", foreseen);
+        return FebsUtil.view("rcs/foreseen/foreseenDetail");
+    }
+
+    @GetMapping("/transaction/detail/{transactionId}")
+    public String transactionInfo(@PathVariable String transactionId, Model model) {
+        log.info("得到的transactionId={}",transactionId);
+        Transaction transaction= transactionService.getTransactionDetail(transactionId);
+        log.info("详情 foreseen = " + transaction.toString());
+        model.addAttribute("transaction", transaction);
+        return FebsUtil.view("rcs/transaction/transactionDetail");
     }
 }

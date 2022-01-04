@@ -4,6 +4,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.mapper.ForeseenMapper;
 import cc.mrbird.febs.rcs.service.IForeseenService;
+import cc.mrbird.febs.rcs.vo.ForeseenVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -64,4 +65,12 @@ public class ForeseenServiceImpl extends ServiceImpl<ForeseenMapper, Foreseen> i
 	    wrapper.eq(Foreseen::getId, foreseen.getId());
 	    this.remove(wrapper);
 	}
+
+    @Override
+    public Foreseen getForeseenDetail(String foreseenId) {
+        LambdaQueryWrapper<Foreseen> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Foreseen::getId,foreseenId);
+        //return this.baseMapper.selectById(queryWrapper);
+        return this.baseMapper.selectOne(queryWrapper);
+    }
 }

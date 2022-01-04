@@ -51,4 +51,6 @@ public interface ITransactionService extends IService<Transaction> {
      * @param transaction transaction
      */
     void deleteTransaction(Transaction transaction);
+
+    Transaction getTransactionDetail(String transactionId);
 }

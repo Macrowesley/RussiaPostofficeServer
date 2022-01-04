@@ -178,7 +178,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         printJob.setCreatedTime(new Date());
         //通过printJobId更新PrintJob
         this.editAndUpdatePrintJob(printJob);
-        System.out.println("printJob更新成功");
+        //System.out.println("printJob更新成功");
 
         //此编辑通过删除原有数据，新增新数据实现，会导致编辑后的唯一id改变
         ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();

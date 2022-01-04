@@ -197,7 +197,7 @@
                 data.field.roleId = 0;
             }
 
-            console.log("更新数据："+JSON.stringify(data.field));
+            //console.log("更新数据："+JSON.stringify(data.field));
             febs.post(ctx + 'printJob/update/'+printJob.id, data.field, function () {
                 layer.closeAll();
 
