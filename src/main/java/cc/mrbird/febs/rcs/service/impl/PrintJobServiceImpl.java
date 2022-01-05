@@ -89,8 +89,35 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
         queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
+        System.out.println(JSON.toJSONString(printJob));
+        if(StringUtils.isNotBlank(printJob.getContractCode())){
+            queryWrapper.eq(PrintJob::getContractCode,printJob.getContractCode());
+        }
+
+        //printJob.getFlow()可能为0、1、2、3
+        //0为notBegin,1为flowing,2为successFlowed,3为failFlowed
+        System.out.println(printJob.getFlow());
+        if(null!=printJob.getFlow()) {
+            if (0 == printJob.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 70);
+            }else if (2 == printJob.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 11);
+            } else if (3 == printJob.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 13);
+            } else if (1 == printJob.getFlow()) {
+                queryWrapper.notIn(PrintJob::getFlowDetail, 70,11,13);
+            }
+        }
+        if(StringUtils.isNotBlank(printJob.getForeseenId())){
+            queryWrapper.eq(PrintJob::getForeseenId,printJob.getForeseenId());
+        }
         queryWrapper.orderByDesc(PrintJob::getId);
+
+
+
         Page<PrintJob> page = new Page<>(request.getPageNum(), request.getPageSize());
+//        page = this.page(page, queryWrapper);
+//        System.out.println("page:"+JSON.toJSONString(page));
         return this.page(page, queryWrapper);
     }
 

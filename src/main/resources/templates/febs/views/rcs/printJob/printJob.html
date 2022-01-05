@@ -23,11 +23,12 @@
                                     <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.status}"></label>
                                         <div class="layui-input-inline">
-                                            <select name="printJobStatus">
+                                            <select name="flow">
                                                 <option value=""></option>
-                                                <option value="0" th:text="#{printJob.freeze}"></option>
-                                                <option value="1" th:text="#{printJob.normal}"></option>
-                                                <option value="2" th:text="#{printJob.notBegin}"></option>
+                                                <option value="0" th:text="#{printJob.notBegin}"></option>
+                                                <option value="1" th:text="#{printJob.flowing}"></option>
+                                                <option value="2" th:text="#{printJob.successFlowed}"></option>
+                                                <option value="3" th:text="#{printJob.failFlowed}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -69,15 +70,6 @@
         </div>
     </div>
 </div>
-<!--<script type="text/html" id="printJob-status">
-    {{#
-    var status = {
-    1: {title: i18n("printJob.normal"), color: 'green'},
-    0: {title: i18n("printJob.freeze"), color: 'volcano'}
-    }[d.curFmStatus];
-    }}
-    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
-</script>-->
 
 <!--//查询条件=70时status等于2-->
 <script type="text/html" id="printJob-flow">
@@ -87,19 +79,20 @@
         var flow_detail = d.flowDetail;
 
         if(flow_detail == 70){
-            cur_status = 2;
+            cur_status = 0;
         }else{
             cur_status = flow;
         }
 
         var status = {
-            2: {title: i18n("printJob.notBegin"), color: 'none'},
-            1: {title: i18n("printJob.flowed"), color: 'none'},
-            0: {title: i18n("printJob.flowing"), color: 'none'}
+            0: {title: i18n("printJob.notBegin"), color: 'none'},
+            1: {title: i18n("printJob.flowing"), color: 'none'},
+            2: {title: i18n("printJob.successFlowed"), color: 'green'},
+            3: {title: i18n("printJob.failFlowed"), color: 'volcano'}
         }[cur_status];
     }}
-    <!--<span  class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
-    <span>{{ status.title }}</span>
+    <span  class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+<!--    <span>{{ status.title }}</span>-->
     <!--<div><span id="machine-  + {{d.id}}" ></span>666</div>-->
 </script>
 <script type="text/html" id="printJob-option">
@@ -110,14 +103,12 @@
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
     <a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
-    <!--<a lay-event="detail" th:text="#{printJob.detail}"></a>
-    <a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
+    <a lay-event="detail" th:text="#{printJob.detail}" id="printDetail"></a>
+    <!--<a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
     <a lay-event="printJob" shiro:hasPermission="printJob:view" th:text="#{printJob.operation2}" id="printLabal"></a>
 <!--    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>-->
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}" id="editLablal"></a>
-
-    <!--  <a lay-event="del" shiro:hasPermission="printJob:delete"><i
-            class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
+<!--    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.check}" id="checkLablal"></a>-->
 </script>
 <script data-th-inline="none" type="text/javascript">
     let flag = true;
@@ -153,6 +144,7 @@
          */
         function queryTable(isFirstQuery){
             var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            //alert(JSON.stringify(params))
             if (isFirstQuery == 1){
                 // alert(JSON.stringify(params))
                 tableIns.reload({where: params, page: {curr: 1}});
@@ -295,7 +287,7 @@
                     }*/
 
                         if (layEvent === 'detail') {
-                            febs.modal.view(i18n("printJob.detail"), 'printJob/detail/' + data.id, {
+                            febs.modal.view(i18n("printJob.detail"), 'rcs/printJob/detail/' + data.id, {
                                 area: $(window).width() <= 750 ? '95%' : '660px'
                             });
                         }
@@ -357,7 +349,9 @@
                             //console.log("flag:" + flag)
                         }
 
-                        //todo 需要点击后不能再次点击
+                        if(layEvent === 'printCheck'){
+
+                        }
 
                         //todo 需要点击后不能再次点击
                         if (layEvent === 'printJobCancel') {
@@ -470,7 +464,7 @@
                 createTimeFrom: createTimeFrom,
                 createTimeTo: createTimeTo,
                 contractCode: $searchForm.find('input[name="contractCode"]').val().trim(),
-                printJobStatus: $searchForm.find("select[name='printJobStatus']").val(),
+                flow: $searchForm.find("select[name='flow']").val(),
                 foreseenId: $searchForm.find('input[name="foreseenId"]').val().trim(),
                 invalidate_ie_cache: new Date()
             };
