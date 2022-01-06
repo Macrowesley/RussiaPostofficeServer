@@ -1,9 +1,11 @@
 package cc.mrbird.febs.rcs.common.enums;
 
 
+import cc.mrbird.febs.common.i18n.MessageUtils;
+
 public enum FlowEnum {
-    FlowIng(0,"未闭环"),
-    FlowEnd(1,"闭环结束");
+    FlowIng(0, MessageUtils.getMessage("printJob.noClosedLoop")),
+    FlowEnd(1,MessageUtils.getMessage("printJob.closedFinished"));
     int code;
     String msg;
 

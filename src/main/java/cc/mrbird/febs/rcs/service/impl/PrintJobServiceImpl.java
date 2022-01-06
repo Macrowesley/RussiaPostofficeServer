@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
@@ -89,23 +90,26 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
         queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
-        System.out.println(JSON.toJSONString(printJob));
+        //System.out.println(JSON.toJSONString(printJob));
         if(StringUtils.isNotBlank(printJob.getContractCode())){
             queryWrapper.eq(PrintJob::getContractCode,printJob.getContractCode());
         }
 
         //printJob.getFlow()可能为0、1、2、3
         //0为notBegin,1为flowing,2为successFlowed,3为failFlowed
-        System.out.println(printJob.getFlow());
         if(null!=printJob.getFlow()) {
             if (0 == printJob.getFlow()) {
                 queryWrapper.eq(PrintJob::getFlowDetail, 70);
+                queryWrapper.eq(PrintJob::getFlow, 0);
             }else if (2 == printJob.getFlow()) {
                 queryWrapper.eq(PrintJob::getFlowDetail, 11);
+                queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (3 == printJob.getFlow()) {
                 queryWrapper.eq(PrintJob::getFlowDetail, 13);
+                queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (1 == printJob.getFlow()) {
                 queryWrapper.notIn(PrintJob::getFlowDetail, 70,11,13);
+                queryWrapper.eq(PrintJob::getFlow, 0);
             }
         }
         if(StringUtils.isNotBlank(printJob.getForeseenId())){
@@ -144,13 +148,13 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         ArrayList<ForeseenProductFmDto> products = printJobAddDto.getProducts();
 
         if (products.size() == 0){
-            throw new FebsException("请填写产品信息");
+            throw new FebsException(MessageUtils.getMessage("printJob.fillProductInfo"));
         }
 
         //确定上一个订单是否闭环
         PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
         if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
-            throw new FebsException("上一个订单没有结束，请勿创建新订单");
+            throw new FebsException(MessageUtils.getMessage("printJob.waitLastOrderFinish"));
         }
 
         PrintJob printJob = new PrintJob();
@@ -491,10 +495,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             dbContract.setCurrent(balanceDTO.getCurrent());
 
             if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
-                noticeFrontService.notice(8, "订单打印成功", dbPrintJob.getPcUserId());
+                noticeFrontService.notice(8, MessageUtils.getMessage("printJob.printSuccess"), dbPrintJob.getPcUserId());
             }
         }else{
-            noticeFrontService.notice(8,"订单打印异常", dbPrintJob.getPcUserId());
+            noticeFrontService.notice(8,MessageUtils.getMessage("printJob.printAbnormal"), dbPrintJob.getPcUserId());
         }
 
         //返回最新的contract
@@ -541,7 +545,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //判断打印是否完成
         if (dbFlow == FlowEnum.FlowEnd){
-            throw new FebsException("打印已经完成，请勿重复点击");
+            throw new FebsException(MessageUtils.getMessage("printJob.noRepeatClick"));
         }
 
         //todo 判断机器是否是在打印中，从redis中查询
@@ -563,7 +567,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
 
             if (dbFlow == FlowEnum.FlowEnd){
-                throw new FebsException("打印已经完成，不能取消打印任务");
+                throw new FebsException(MessageUtils.getMessage("printJob.noCancelPrintJob"));
             }
 
             //哪些情况可以点击取消打印呢？没有开始transaction的时候
@@ -575,7 +579,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             //判断是否可以取消打印任务
             if (!enableCancle){
-                throw new FebsException("当前状态不能取消打印任务，请稍等");
+                throw new FebsException(MessageUtils.getMessage("printJob.waitCancelPrintJob"));
             }
 
             serviceToMachineProtocol.cancelPrintJob(dbPrintJob);

@@ -242,7 +242,7 @@
                 }*/
 
                 if (layEvent === 'detail') {
-                    febs.modal.view('详情', 'rcs/contract/detail/' + data.id, {
+                    febs.modal.view(i18n("contract.detail"), 'rcs/contract/detail/' + data.id, {
                         area: $(window).width() <= 750 ? '95%' : '660px'
                     });
                 }

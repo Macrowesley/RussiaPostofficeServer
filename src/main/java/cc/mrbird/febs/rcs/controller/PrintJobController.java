@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
+import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
@@ -80,6 +81,7 @@ public class PrintJobController extends BaseController {
         System.out.println("request:"+JSON.toJSONString(request));
         System.out.println("printJob:"+JSON.toJSONString(printJob));
         Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJob));
+        System.out.println(JSON.toJSONString(dataTable));
         return new FebsResponse().success().data(dataTable);
     }
 
@@ -89,12 +91,12 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
         if(!verifyUtils.verify()){
-            throw new FebsException("软件许可证到期");
+            throw new FebsException(MessageUtils.getMessage("printJob.expiredLicense"));
         }
         //临时数据
         printJobAddDto.setForeseenId("37431eec-194f-4706-bf56-e8e36c9aca2e");
         printJobAddDto.setTransactionId("c05a9a95-44a8-455f-bd5e-27962826b527");
-        log.info("前端添加订单：" + printJobAddDto.toString());
+        //log.info("前端添加订单：" + printJobAddDto.toString());
         this.printJobService.createPrintJobDto(printJobAddDto);
         return new FebsResponse().success();
     }
@@ -113,7 +115,7 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:update")
     public FebsResponse updatePrintJob(@PathVariable int id,PrintJobUpdateDto printJobUpdateDto) {
-        System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
+        //System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }
