@@ -166,9 +166,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         printJob.setCreatedTime(new Date());
         this.save(printJob);
 
-        log.info(printJob.toString());
-
-
+        //log.info(printJob.toString());
         List<ForeseenProduct> productList = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
             ForeseenProduct product = new ForeseenProduct();

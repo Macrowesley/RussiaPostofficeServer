@@ -376,7 +376,7 @@
 
                     if (layEvent === 'foreseenInfo') {
                     //alert(JSON.stringify(data))
-                        if(null != data.foreseenId){
+                        if(null != data.foreseenId && 0 != data.foreseenId.length){
                             febs.modal.view(i18n("foreseen.detail"), 'rcs/foreseen/detail/' + data.foreseenId, {
                                 area: $(window).width() <= 750 ? '95%' : '660px'
                             });
@@ -387,8 +387,7 @@
                     }
 
                     if (layEvent === 'transactionInfo') {
-                        //alert(JSON.stringify(data))
-                        if(null != data.transactionId){
+                        if(null != data.transactionId && 0 != data.transactionId.length){
                             febs.modal.view(i18n("transaction.detail"), 'rcs/transaction/detail/' + data.transactionId, {
                                 area: $(window).width() <= 750 ? '95%' : '660px'
                             });
@@ -399,7 +398,6 @@
                 });
 
             table.on('sort(printJobTable)', function (obj) {
-                alert(121)
                 sortObject = obj;
                 tableIns.reload({
                     initSort: obj,

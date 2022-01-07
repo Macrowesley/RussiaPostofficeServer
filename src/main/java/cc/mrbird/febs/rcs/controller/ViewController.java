@@ -88,7 +88,7 @@ public class ViewController extends BaseController{
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String printJobAdd(Model model) {
 
-        System.out.println("执行printjob的add方法");
+        //System.out.println("执行printjob的add方法");
         return FebsUtil.view("rcs/printJob/printJobAdd");
     }
 
