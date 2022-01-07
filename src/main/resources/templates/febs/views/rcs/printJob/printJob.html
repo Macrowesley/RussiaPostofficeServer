@@ -71,7 +71,8 @@
     </div>
 </div>
 
-<!--//从后端数据库查到的是0/1状态Flow和detail,查询条件detail=70时status等于0;detail=11时status=2;detail=13;-->
+<!--//从后端数据库查到的是0/1状态Flow和detail,查询条件detail=70时status等于0;detail=61时status=2;detail=62/63,status等于3;-->
+<!--//0为notBegin,1为flowing,2为successFlowed,3为failFlowed-->
 <script type="text/html" id="printJob-flow">
     {{#
         var cur_status = 0;
@@ -79,9 +80,9 @@
         var flow_detail = d.flowDetail;
         if(flow == 0 && flow_detail == 70){
             cur_status = 0;
-        }else if(flow == 1 && flow_detail == 11){
+        }else if(flow == 1 && flow_detail == 61){
             cur_status = 2;
-        }else if(flow == 1 && flow_detail == 13){
+        }else if(flow == 1 && (flow_detail == 62||flow_detail == 63)){
             cur_status = 3;
         }else{
             cur_status = 1;

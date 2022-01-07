@@ -102,13 +102,13 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 queryWrapper.eq(PrintJob::getFlowDetail, 70);
                 queryWrapper.eq(PrintJob::getFlow, 0);
             }else if (2 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 11);
+                queryWrapper.eq(PrintJob::getFlowDetail, 61);
                 queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (3 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 13);
+                queryWrapper.in(PrintJob::getFlowDetail, 62,63);
                 queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (1 == printJob.getFlow()) {
-                queryWrapper.notIn(PrintJob::getFlowDetail, 70,11,13);
+                queryWrapper.notIn(PrintJob::getFlowDetail, 70,61,62,63);
                 queryWrapper.eq(PrintJob::getFlow, 0);
             }
         }
