@@ -6,6 +6,7 @@ import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -333,7 +334,7 @@ public class ServiceInvokeRussia {
      * @return
      */
     private <T, E> ApiRussiaResponse doExchange(String url, E requestBody, HttpMethod method, Class<T> responseObjectClass, Map<String, ?> uriVariables) {
-        log.info("给manager服务器发送消息：url = {}, 内容={}", url, JSON.toJSONString(requestBody));
+        log.info("给manager服务器发送消息：url = {}, 内容={}", url, JSON.toJSONString(requestBody, SerializerFeature.DisableCircularReferenceDetect));
         try {
             HttpEntity<E> requestEntity = new HttpEntity<>(requestBody, getHttpHeaders());
 //            HttpEntity<E> requestEntity = new HttpEntity<>(requestBody);

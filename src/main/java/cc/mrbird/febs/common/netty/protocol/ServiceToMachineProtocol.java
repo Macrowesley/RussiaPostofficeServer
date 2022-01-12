@@ -384,7 +384,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
                 foreseenFmDto.setProducts(productPrintProgress.getProductArr());
 
-                foreseenFmDto.setTaxVersion(FebsConstant.FmVersion1);
+                foreseenFmDto.setTaxVersion(dbDevice.getTaxVersion());
                 foreseenFmDto.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
                 foreseenFmDto.setMachineDate(DateUtil.getCurTime());
                 foreseenFmDto.setPrintJobType(dbPrintJob.getType());
