@@ -98,19 +98,19 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              *         unsigned char length[4];				 //4个字节
              *         unsigned char type;				 	 //0xC1
              *         unsigned char  operateID[2];
-             *         unsigned char content[?];             //加密后内容 版本内容(3) + 域名(17) + 域名端口(4) + ssh端口(2) + 密码(11)
+             *         unsigned char content[?];             //加密后内容 版本内容(3)
              *         unsigned char check;				     //校验位
              *         unsigned char tail;					 //0xD0
              *     }__attribute__((packed))ssh, *ssh;
              */
             //准备数据
             String version = FebsConstant.FmVersion1;
-            String domain = "device.uprins.com";
+   /*         String domain = "device.uprins.com";
             String domainPort = "9091";
             String sshPort = "22";
             String sshPwd = "GDPT2020lai";
-            String content = version + domain + domainPort + sshPort + sshPwd;
-            String entryctContent = AESUtils.encrypt(content, tempKey);
+            String content = version + domain + domainPort + sshPort + sshPwd;*/
+            String entryctContent = AESUtils.encrypt(version, tempKey);
 
             //发送数据
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC1));
