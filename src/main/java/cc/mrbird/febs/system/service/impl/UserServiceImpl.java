@@ -133,7 +133,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         long parentId = 0;
         if (curUser.getRoleId().equals(RoleType.organizationManager)){
             parentId = curUser.getUserId();
-            user.setDeptId(curUser.getDeptId());
+//            user.setDeptId(curUser.getDeptId());
         }
         user.setParentId(parentId);
         save(user);
