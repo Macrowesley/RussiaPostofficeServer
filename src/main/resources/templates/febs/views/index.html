@@ -85,9 +85,9 @@
                                         <div class="random-message">
                                             <span id="welcome-message" style="display: block"></span>
                                         </div>
-                                        <div class="user-dept">
+                                        <!--<div class="user-dept">
                                             <span id="user-dept"></span> | <span id="user-role"></span>
-                                        </div>
+                                        </div>-->
                                         <div class="user-login-info">
                                             <span th:text="#{index.lastLoginTime}"></span><span id="last-login-time">2019-05-23 18:45:12</span>
                                         </div>
@@ -163,8 +163,8 @@
             $view.find('#today-ip').text(data.todayIp).end()
                 .find('#today-visit-count').text(data.todayVisitCount).end()
                 .find('#total-visit-count').text(data.totalVisitCount).end()
-                .find('#user-dept').text(currentUser.deptName ? currentUser.deptName : i18n("index.emptyDeptName")).end()
-                .find('#user-role').text(currentUser.roleName ? currentUser.roleName : i18n("index.emptyRoleName")).end()
+                // .find('#user-dept').text(currentUser.deptName ? currentUser.deptName : i18n("index.emptyDeptName")).end()
+                // .find('#user-role').text(currentUser.roleName ? currentUser.roleName : i18n("index.emptyRoleName")).end()
                 .find('#last-login-time').text(currentUser.lastLoginTime ? currentUser.lastLoginTime : i18n("index.firstVisit")).end()
                 .find('#welcome-message').html(welcomeMessage).end()
                 .find('#user-avatar').attr('src', ctx + "febs/images/avatar/" + currentUser.avatar);

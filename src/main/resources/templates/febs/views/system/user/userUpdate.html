@@ -57,13 +57,13 @@
             </div>
         </div>-->
         <!--只有系统管理员才能修改下级的内容-->
-        <div class="layui-form-item"   th:if="${roleId} eq 1">
+        <!--<div class="layui-form-item"   th:if="${roleId} eq 1">
             <label class="layui-form-label" th:text="#{dept.colon}"></label>
             <div class="layui-input-block">
                 <input type="text" name="deptId" id="user-update-dept" lay-filter="user-update-dept"
                        class="layui-input">
             </div>
-        </div>
+        </div>-->
 
         <div class="layui-form-item">
             <label class="layui-form-label febs-form-item-require" th:text="#{status.colon}"></label>
@@ -113,7 +113,7 @@
         initUserValue();
 
         //处理下拉框
-        initRoleSelect();
+        // initRoleSelect();
 
         treeSelect.render({
             elem: $view.find('#user-update-dept'),

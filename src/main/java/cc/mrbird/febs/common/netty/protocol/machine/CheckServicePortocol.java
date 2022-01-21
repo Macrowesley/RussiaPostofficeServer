@@ -314,7 +314,10 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
                     resultDto.setPrintJobType(printJobType);
-                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+//                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+                    BeanUtils.copyProperties(foreseenFMDTO, resultDto);
+                    resultDto.setForeseenId(foreseenFMDTO.getId());
+
                     String responseData = JSON.toJSONString(resultDto, SerializerFeature.DisableCircularReferenceDetect);
 
                     /*String responseData =

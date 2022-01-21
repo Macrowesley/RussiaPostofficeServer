@@ -36,6 +36,13 @@
                        class="layui-input rigth-view" readonly="true">
             </div>
         </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.totalAmount}+':'"></label>
+            <div class="layui-input-block">
+                <input type="number" name="totalAmount" autocomplete="off"
+                       class="layui-input rigth-view"  readonly="true">
+            </div>
+        </div>
 
         <!--购物车-->
         <div class="layui-form-item">
@@ -58,7 +65,7 @@
                     </div>
                     <div class="layui-col-md2">
                         <input type="text" name="products[0].address" lay-verify="" autocomplete="off" class="layui-input"
-                               th:placeholder="#{printJob.products.address}" readonly="true">
+                               th:placeholder="#{printJob.products.address}" readonly="true" style="width: 200%">
                     </div>
                 </div>
             </div>
@@ -122,7 +129,7 @@
                     '        </div>\n' +
                     '        <div class="layui-col-md2">\n' +
                     '          <input type="text" name="products[' + productIdex + '].address" lay-verify="required" autocomplete="off" class="layui-input"\n' +
-                    '                 value="'+aForeseenProduct.address+'">\n' +
+                    '                 value="'+aForeseenProduct.address+'" style="width: 200%">\n' +
                     '        </div>' +
                     '</div>')
             }
@@ -132,6 +139,7 @@
                 "contractCode": printJob.contractCode,
                 "frankMachineId": printJob.frankMachineId,
                 "totalCount": printJob.totalCount,
+                "totalAmount": printJob.totalAmount,
                 "products[0].productCode":foreseenProduct[0].productCode,
                 "products[0].count": foreseenProduct[0].count,
                 "products[0].weight": foreseenProduct[0].weight,

@@ -285,12 +285,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             }
 
             //判断是否有和上一个msg一样
-            if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+            /*if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
                     && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
                     && lastestMsg.getCount().equals(fmTotalCount)
                     && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
                 throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
-            }
+            }*/
 
             //判断批次是否完成
             if (lastestMsg.getStatus().equals(status)){

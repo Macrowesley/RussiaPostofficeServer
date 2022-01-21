@@ -37,6 +37,14 @@
             </div>
         </div>
 
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.totalAmount}+':'"></label>
+            <div class="layui-input-block">
+                <input type="number" name="totalAmount" autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+
         <!--购物车-->
         <div class="layui-form-item">
             <label class="layui-form-label left-label" th:text="#{printJob.products}+':'"></label>
@@ -178,6 +186,7 @@
                 "contractCode": printJob.contractCode,
                 "frankMachineId": printJob.frankMachineId,
                 "totalCount": printJob.totalCount,
+                "totalAmount": printJob.totalAmount,
                 "products[0].productCode":foreseenProduct[0].productCode,
                 "products[0].count": foreseenProduct[0].count,
                 "products[0].weight": foreseenProduct[0].weight,
