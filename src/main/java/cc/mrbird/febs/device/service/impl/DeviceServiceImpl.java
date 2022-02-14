@@ -214,18 +214,18 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                     device.setNickname(acnum);
                     device.setSecretKey(AESUtils.generateUUID16Len());
                     device.setCreatedTime(new Date());
-                    editMoney(device);
+//                    editMoney(device);
 
                     this.baseMapper.insert(device);
 
-                    UserDevice userDevice = new UserDevice();
+                    /*UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
                     userDevice.setUserId(addDeviceDTO.getBindUserId());
-                    userDeviceList.add(userDevice);
+                    userDeviceList.add(userDevice);*/
                 }
         );
 
-        userDeviceService.saveBatch(userDeviceList);
+//        userDeviceService.saveBatch(userDeviceList);
     }
 
     /**

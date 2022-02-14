@@ -89,8 +89,8 @@
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
     <a lay-event="edit" shiro:hasPermission="device:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
-    <a lay-event="detail"><i class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
-    <a lay-event="edit" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe642;</i></a>
+<!--    <a lay-event="detail"><i class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
+    <a lay-event="edit" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe642;</i></a>-->
 
     <!--todo-->
     <a lay-event="openSSH" shiro:hasPermission="device:update"><i class="layui-icon febs-edit-area febs-blue">&#xe841;</i></a>
@@ -235,11 +235,15 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'acnum', title: i18n("acnum"), minWidth: 100},
-                    {field: 'nickname', title: i18n("device.nickname"), minWidth: 100},
+                    {field: 'frankMachineId', title: i18n("printJob.frankMachineId"), minWidth: 100},
+                    {field: 'postOffice', title: i18n("foreseen.postOffice"), minWidth: 100},
                     {title: i18n("device.isOnline"), templet: '#device-isOnline'},
-                    {field: 'warnAmount', title: i18n("device.warnAmount")},
-                    {field: 'maxAmount', title: i18n("device.maxAmount"), minWidth: 165},
-                    {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
+                    {field: 'taxVersion', title: i18n("foreseen.taxVersion")},
+                    {field: 'flow', title: "flow"},
+                    {field: 'flowDetail', title: "flowDetail"},
+                    {field: 'taxIsUpdate', title: i18n("taxIsUpdate")},
+
+                    // {field: 'validDays', title: i18n("device.validDays"), minWidth: 180},
                     // {title: i18n("device.status"), templet: '#device-status'},
                     {field: 'createdTime', title: i18n("createTime"), minWidth: 180, sort: false},
                     {title: i18n("operation"), toolbar: '#device-option', minWidth: 140}
