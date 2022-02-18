@@ -220,10 +220,10 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
                     this.baseMapper.insert(device);
 
-                    UserDevice userDevice = new UserDevice();
+                    /*UserDevice userDevice = new UserDevice();
                     userDevice.setDeviceId(device.getDeviceId());
                     userDevice.setUserId(addDeviceDTO.getBindUserId());
-                    userDeviceList.add(userDevice);
+                    userDeviceList.add(userDevice);*/
                 }
         );
 

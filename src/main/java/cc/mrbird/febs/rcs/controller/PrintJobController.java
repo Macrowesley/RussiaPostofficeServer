@@ -79,7 +79,7 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:list")
     public FebsResponse printJobList(QueryRequest request, PrintJob printJob) {
         Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJob));
-        System.out.println(JSON.toJSONString(dataTable));
+//        System.out.println(JSON.toJSONString(dataTable));
         return new FebsResponse().success().data(dataTable);
     }
 

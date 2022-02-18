@@ -98,7 +98,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              *         unsigned char length[4];				 //4个字节
              *         unsigned char type;				 	 //0xC1
              *         unsigned char  operateID[2];
-             *         unsigned char content[?];             //加密后内容 版本内容(3) + 域名(17) + 域名端口(4) + ssh端口(2) + 密码(11)
+             *         unsigned char content[?];             //加密后内容 版本内容(3)
              *         unsigned char check;				     //校验位
              *         unsigned char tail;					 //0xD0
              *     }__attribute__((packed))ssh, *ssh;
