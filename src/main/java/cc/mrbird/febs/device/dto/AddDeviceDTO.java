@@ -12,24 +12,24 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class AddDeviceDTO {
 
-    @NotBlank
+//    @NotBlank
     String warnAmount;
 
-    @NotBlank
+//    @NotBlank
     String maxAmount;
 
-    @NotNull
-    @Min(1)
+//    @NotNull
+//    @Min(1)
     Integer validDays;
 
-    @NotBlank
+//    @NotBlank
     String deviceStatus;
 
     @NotBlank
     @Length(min = 6)
     String acnumList;
 
-    @NotNull
-    @Min(1)
+//    @NotNull
+//    @Min(1)
     Long bindUserId;
 }

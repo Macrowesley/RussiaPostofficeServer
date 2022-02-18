@@ -493,6 +493,7 @@ public class ServiceManageCenter {
         //判断postOffice是否存在
         checkUtils.checkPostOfficeExist(foreseenFmDto.getPostOffice());
 
+        //给俄罗斯发送预处理订单信息并返回
         ApiRussiaResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenFmDto);
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {

@@ -52,7 +52,6 @@ public class MyDecoder extends ByteToMessageDecoder {
 
             //开始读的位置
             int beginReaderIndex = buffer.readerIndex();
-
             byte headByte = buffer.readByte();
 //            log.info("解析头部字节内容" + BaseTypeUtils.bytesToHexString(new byte[]{headByte}));
             if(headByte != HEAD_BYTE){

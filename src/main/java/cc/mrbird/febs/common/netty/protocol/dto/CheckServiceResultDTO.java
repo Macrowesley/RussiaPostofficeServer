@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import lombok.Data;
 import lombok.ToString;
 
@@ -36,5 +37,22 @@ public class CheckServiceResultDTO {
      */
     String printJobType;
     //ForeseenFMDTO的json
-    String foreseenFMDTO;
+//    String foreseenFMDTO;
+
+    //foreseen信息
+    String foreseenId;
+    String contractCode;
+    String frankMachineId;
+    String userId;
+    String postOffice;
+    Integer totalCount;
+    ForeseenProductFmDto[] products;
+    String taxVersion;
+    //金钱单位：分
+    String totalAmmount;
+    String machineDate;
+    /**
+     * printJob的id
+     */
+    Integer printJobId;
 }

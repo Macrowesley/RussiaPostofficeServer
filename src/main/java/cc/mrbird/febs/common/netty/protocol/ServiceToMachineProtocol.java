@@ -105,12 +105,12 @@ public class ServiceToMachineProtocol extends BaseProtocol {
              */
             //准备数据
             String version = FebsConstant.FmVersion1;
-            String domain = "device.uprins.com";
+   /*         String domain = "device.uprins.com";
             String domainPort = "9091";
             String sshPort = "22";
             String sshPwd = "GDPT2020lai";
-            String content = version + domain + domainPort + sshPort + sshPwd;
-            String entryctContent = AESUtils.encrypt(content, tempKey);
+            String content = version + domain + domainPort + sshPort + sshPwd;*/
+            String entryctContent = AESUtils.encrypt(version, tempKey);
 
             //发送数据
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC1));
@@ -384,12 +384,13 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
                 foreseenFmDto.setProducts(productPrintProgress.getProductArr());
 
-                foreseenFmDto.setTaxVersion(FebsConstant.FmVersion1);
+                foreseenFmDto.setTaxVersion(dbDevice.getTaxVersion());
                 foreseenFmDto.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
                 foreseenFmDto.setMachineDate(DateUtil.getCurTime());
                 foreseenFmDto.setPrintJobType(dbPrintJob.getType());
                 foreseenFmDto.setPrintJobId(dbPrintJob.getId());
 
+                //发送给客户端的数据
                 data = serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob, ctx);
             }else{
                 //如果已经走通了foreseen,但是transaction没有成功，则发送消息，进度给机器，让机器继续打印

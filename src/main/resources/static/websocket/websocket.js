@@ -128,9 +128,9 @@ function openSocket (userId, websocketServiceName, febs) {
           $('#febs-printJob').find('#refreshQuery').click()
           break
         case 8:
-            febs.alert.success(msg)
+            // febs.alert.success(msg)
           $('#febs-printJob').find('#refreshQuery').click()
-          location.reload()
+          // location.reload()
           break
       }
     }

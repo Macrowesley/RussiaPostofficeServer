@@ -106,4 +106,6 @@ public interface IOrderService extends IService<Order> {
      * 把过期订单信息，和创建者信息，插入到提醒表中
      */
     void selectAllExpireOrderAndUpdateAndNoticeUser();
+
+    Boolean insert(Order order);
 }

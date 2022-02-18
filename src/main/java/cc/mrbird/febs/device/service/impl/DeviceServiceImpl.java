@@ -29,6 +29,7 @@ import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.entity.UserRole;
 import cc.mrbird.febs.system.service.IUserRoleService;
 import cc.mrbird.febs.system.service.IUserService;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -214,7 +216,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                     device.setNickname(acnum);
                     device.setSecretKey(AESUtils.generateUUID16Len());
                     device.setCreatedTime(new Date());
-                    editMoney(device);
+//                    editMoney(device);
 
                     this.baseMapper.insert(device);
 
@@ -225,7 +227,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 }
         );
 
-        userDeviceService.saveBatch(userDeviceList);
+//        userDeviceService.saveBatch(userDeviceList);
     }
 
     /**
@@ -675,6 +677,75 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         device.setTaxIsUpdate(TaxUpdateEnum.UPDATE.getCode());
         this.update(device, wrapper);
+
+    }
+
+    /**
+     * 批量插入1000条记录
+     */
+    @Override
+    public void testInsert() {
+
+        log.info("批量插入");
+        Boolean b = null;
+        //创建1000条订单/装备10000个FMID数据
+        String FMHead = "PM";
+        //得到一个NumberFormat的实例
+        NumberFormat nf = NumberFormat.getInstance();
+        //设置是否使用分组
+        nf.setGroupingUsed(false);
+        //设置最大整数位数
+        nf.setMaximumIntegerDigits(6);
+        //设置最小整数位数
+        nf.setMinimumIntegerDigits(6);
+
+        //生成1000表头号
+        String acnumHead = "S0";
+        //得到一个NumberFormat的实例
+        NumberFormat nf1 = NumberFormat.getInstance();
+        //设置是否使用分组
+        nf1.setGroupingUsed(false);
+        //设置最大整数位数
+        nf1.setMaximumIntegerDigits(4);
+        //设置最小整数位数
+        nf1.setMinimumIntegerDigits(4);
+
+        ArrayList<Device> deviceArrayList = new ArrayList<>();
+        for(Long i = 1L;i<2;i++){
+            //for(Long i = 1L;i<1001;i++){
+            String frankMachineId = FMHead+nf.format(i);
+            System.out.println(frankMachineId);
+
+            String acnum = acnumHead + nf1.format(i);
+            System.out.println(acnum);
+            //Object order = orderMapper.selectById(i);
+            Device device = new Device();
+            device.setDeviceId(i);
+            device.setAcnum(acnum);
+            device.setNickname(acnum);
+            device.setWarnAmount("10000.00");
+            device.setMaxAmount("100000.00");
+            device.setSecretKey("b4b9d97816a46b25");
+            device.setValidDays(7);
+            device.setUseLock("0");
+            device.setLockInfo("");
+            device.setCreatedTime(new DateTime());
+            device.setCurFmStatus(1);
+            device.setFlow(1);
+            device.setFlowDetail(21);
+            device.setIsRussia(0);
+            device.setErrorCode("");
+            device.setErrorMessage("");
+            device.setFmEvent(1);
+            device.setFrankMachineId(frankMachineId);
+            device.setPostOffice("131000");
+            device.setTaxVersion("11.0.7");
+            device.setTaxIsUpdate(1);
+            device.setUpdatedTime(new DateTime());
+            device.setUserId("");
+            deviceArrayList.add(device);
+        }
+        this.saveBatch(deviceArrayList);
 
     }
 }

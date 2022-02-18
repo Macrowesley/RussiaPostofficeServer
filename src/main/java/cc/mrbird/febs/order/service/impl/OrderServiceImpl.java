@@ -22,6 +22,7 @@ import cc.mrbird.febs.order.mapper.OrderMapper;
 import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.order.utils.StatusUtils;
 import cc.mrbird.febs.system.entity.User;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,6 +59,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     INoticeService noticeService;
     @Autowired
     AlarmThreadPool alarmThreadPool;
+    @Autowired
+    IOrderService orderService;
 
     @Override
     public IPage<OrderVo> findPageOrders(QueryRequest request, OrderVo orderVo) {
@@ -527,5 +530,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         userIdList.stream().forEach(userId ->{
             WebSocketServer.sendInfo(4,MessageUtils.getMessage("notice.overtimeMessage"), String.valueOf(userId));
         });
+    }
+
+    @Override
+    public Boolean insert(Order order) {
+        System.out.println(JSON.toJSONString(order));
+        return orderService.save(order);
     }
 }

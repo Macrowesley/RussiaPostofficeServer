@@ -173,7 +173,9 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
 //                    String decryptContent = getDecryptContent(bytes, ctx, pos, REQ_ACNUM_LEN);
                     CheckServiceDTO checkServiceDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, CheckServiceDTO.class);
                     log.info("checkServiceDTO =" + checkServiceDTO.toString());
-                    if (StringUtils.isEmpty(checkServiceDTO.getTaxVersion())
+                    String taxVersion = checkServiceDTO.getTaxVersion().trim();
+                    log.info("fmTaxVersion = " + taxVersion);
+                    if (StringUtils.isEmpty(taxVersion)
                             || StringUtils.isEmpty(checkServiceDTO.getFrankMachineId())
                             || checkServiceDTO.getDmMsgDto() == null) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
@@ -183,8 +185,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     if (!checkServicePortocol.deviceService.checkExistByFmId(frankMachineId)) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DeviceNotFind.getCode());
                     }
-                    String fmTaxVersion = checkServiceDTO.getTaxVersion().trim();
-                    log.info("fmTaxVersion = " + fmTaxVersion);
+
                     Date machineDate = DateKit.parseDateYmdhms(checkServiceDTO.getMachineDate());
 
                     //请求服务器返回最新状态
@@ -205,7 +206,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                      * 校验机器tax是否需要更新
                      *
                      */
-                    checkServicePortocol.checkUtils.checkTaxIsOk(frankMachineId, ctx, checkServiceDTO.getTaxVersion(), checkServiceDTO.getMachineDate());
+                    checkServicePortocol.checkUtils.checkTaxIsOk(frankMachineId, ctx, taxVersion, checkServiceDTO.getMachineDate());
 
                     //机器的税率是否需要更新（0不需要 1需要更新）
                     /*int isFmTaxNeedUpdate = 0;
@@ -314,7 +315,10 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
                     resultDto.setTransactionId(transactionId);
                     resultDto.setPrintJobType(printJobType);
-                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+//                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
+                    BeanUtils.copyProperties(foreseenFMDTO, resultDto);
+                    resultDto.setForeseenId(foreseenFMDTO.getId());
+
                     String responseData = JSON.toJSONString(resultDto, SerializerFeature.DisableCircularReferenceDetect);
 
                     /*String responseData =

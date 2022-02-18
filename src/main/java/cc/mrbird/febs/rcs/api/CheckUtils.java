@@ -89,7 +89,7 @@ public class CheckUtils {
      * @param postOffice
      */
     public void checkPostOfficeExist(String postOffice) {
-        log.info("postOffice:"+postOffice);
+        //log.info("postOffice:"+postOffice);
         if(!postOfficeService.checkPostOfficeExist(postOffice)){
             throw new FmException(FMResultEnum.PostOfficeNoExist.getCode(),"PostOffice is not exist");
         }

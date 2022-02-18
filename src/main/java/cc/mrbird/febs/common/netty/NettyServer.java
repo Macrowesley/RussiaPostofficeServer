@@ -31,7 +31,7 @@ public class NettyServer {
     private final static String serverCrt = "/static/keys/server.crt";
     private final static String serverKey = "/static/keys/pkcs8_server.key";
     private final static String caCrt = "/static/keys/ca.crt";
-    private final static String keyPassword = "123456";
+    private final static String keyPassword = "Gdpt2022!@#$";
 
    /* @Autowired
     NettyServerHandler nettyServerHandler;*/

@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
+import cc.mrbird.febs.rcs.common.kit.DateKit;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 
 /**
  * 机器登录校验协议
@@ -111,15 +113,16 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                     String timestamp = dectryptContent.trim();
 
                     //验证时间是否正常
-                    byte[] res = new byte[]{0x00};
+//                    byte[] res = new byte[]{0x00};
+                    String res = "0";
                     if(machineLoginPortocol.tempTimeUtils.isValidTime(ctx, Long.valueOf(timestamp))){
-                        res[0] = 0x01;
+                        res = "1";
 
                         //保存到缓存
                         if (!machineLoginPortocol.channelMapperManager.containsKeyAcnum(acnum)) {
                             machineLoginPortocol.channelMapperManager.addChannel(acnum, ctx);
                         }else{
-                            res[0] = 0x00;
+                            res = "0";
                             log.info("有问题：服务器中保存的表头号为"+acnum + " ChannelMapperUtils.getChannelByAcnum(acnum) = "
                                     + machineLoginPortocol.channelMapperManager.getChannelByAcnum(acnum) + " 当前ctx = " + ctx );
                         }
@@ -134,14 +137,15 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                         unsigned char length[4];			 //2个字节
                         unsigned char type;				 	 //0xA5
                         unsigned char  operateID[2];
-                        unsigned char res;                   //01 正常  00 失败 失败的话，只能重新执行请求密钥，再发送机器信息
+                        unsigned char res;                   //加密内容： 1 正常  0 失败 (失败的话，只能重新执行请求密钥，再发送机器信息) + 机器时间（14）
                         unsigned char check;				 //校验位
                         unsigned char tail;					 //0xD0
                     }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
 
-
+                    String content = res + DateKit.formatDateYmdhms(new Date());
+                    String resEntryctContent = AESUtils.encrypt(content, tempKey);
                     log.info("机器登录校验协议 结束");
-                    return getWriteContent(res);
+                    return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     throw new Exception("获取唯一id：版本不存在");
             }

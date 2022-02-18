@@ -177,5 +177,5 @@ public interface IDeviceService extends IService<Device> {
      */
     void updateDeviceTaxVersionStatus(Device device);
 
-
+    void testInsert();
 }

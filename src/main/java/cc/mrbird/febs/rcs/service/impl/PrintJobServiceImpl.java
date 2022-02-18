@@ -2,6 +2,7 @@ package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
@@ -28,6 +29,7 @@ import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
+import cc.mrbird.febs.system.entity.User;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -115,6 +117,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         if(StringUtils.isNotBlank(printJob.getForeseenId())){
             queryWrapper.eq(PrintJob::getForeseenId,printJob.getForeseenId());
         }
+        User currentUser = FebsUtil.getCurrentUser();
+        if (currentUser != null && !currentUser.getRoleId().equals(RoleType.systemManager)){
+            queryWrapper.eq(PrintJob::getPcUserId, currentUser);
+        }
+
         queryWrapper.orderByDesc(PrintJob::getId);
 
 

@@ -175,7 +175,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                     //得到一批中：批次开始和批次结束时候的打印次数
                     batchCount = endMsg.getCount() - beginMsg.getCount();
                     actualCount += batchCount;
-                    actualAmount += (endMsg.getAmount() - beginMsg.getAmount());
+                    long tempAmount = endMsg.getAmount() - beginMsg.getAmount();
+                    //如果后面的金额比前面的小，说明重置了，需要特殊计算
+                    actualAmount += tempAmount > 0 ? tempAmount : (4294967295L - beginMsg.getAmount() + endMsg.getAmount());
 
                     //现在是每条dmMsg都不一样，需要找到指定的那个点，按照actualCount累加
                     //!45!01NE6431310001410210000000000050000024002100000100001010
@@ -234,7 +236,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
             TransactionMsg lastestMsg = getLastestMsg(transactionId);
             if (lastestMsg!=null) {
-                if (lastestMsg.getCount() > fmTotalCount || (lastestMsg.getAmount() - fmTotalAmount) > 0) {
+                if (lastestMsg.getCount() > fmTotalCount) {
                     throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
                 }
             }
@@ -280,17 +282,17 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
         if (lastestMsg != null) {
             log.info("lastestMsg={}",lastestMsg.toString());
-            if (lastestMsg.getCount() > fmTotalCount ||  (lastestMsg.getAmount() - fmTotalAmount) > 0){
+            if (lastestMsg.getCount() > fmTotalCount){
                 throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
             }
 
             //判断是否有和上一个msg一样
-            if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
+            /*if (lastestMsg.getStatus().equals(transactionMsgFMDTO.getStatus())
                     && String.valueOf(lastestMsg.getAmount()).equals(transactionMsgFMDTO.getTotalAmount())
                     && lastestMsg.getCount().equals(fmTotalCount)
                     && lastestMsg.getFrankMachineId().equals(transactionMsgFMDTO.getFrankMachineId())) {
                 throw new FmException(FMResultEnum.TransactionMsgExist.getCode(),"transactionMsg已经存在，不能新建");
-            }
+            }*/
 
             //判断批次是否完成
             if (lastestMsg.getStatus().equals(status)){

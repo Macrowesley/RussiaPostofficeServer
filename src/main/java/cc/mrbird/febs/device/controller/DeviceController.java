@@ -159,4 +159,10 @@ public class DeviceController extends BaseController {
         channelMapperManager.removeCache(acnum);
         return new FebsResponse().success().data("ok");
     }
+
+    @PostMapping("test")
+    public void test(Device device) {
+        log.info("批量新增device");
+        this.deviceService.testInsert();
+    }
 }
