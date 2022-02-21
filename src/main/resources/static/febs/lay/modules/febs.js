@@ -539,6 +539,7 @@ layui.extend({
                     "code": res.code === 200 ? 0 : res.code,
                     "count": res.data === undefined ? undefined : res.data.total,
                     "data": res.data === undefined ? undefined : res.data.rows,
+                    "msg": res.message
                 }
             },
             done: function (res, curr, count) {
