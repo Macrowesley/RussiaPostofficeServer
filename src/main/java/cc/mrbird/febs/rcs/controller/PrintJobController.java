@@ -91,9 +91,6 @@ public class PrintJobController extends BaseController {
         if(!verifyUtils.verify()){
             throw new FebsException(MessageUtils.getMessage("printJob.expiredLicense"));
         }
-        //临时数据
-        printJobAddDto.setForeseenId("37431eec-194f-4706-bf56-e8e36c9aca2e");
-        printJobAddDto.setTransactionId("c05a9a95-44a8-455f-bd5e-27962826b527");
         //log.info("前端添加订单：" + printJobAddDto.toString());
         this.printJobService.createPrintJobDto(printJobAddDto);
         return new FebsResponse().success();
