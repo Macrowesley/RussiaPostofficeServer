@@ -175,10 +175,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                     //得到一批中：批次开始和批次结束时候的打印次数
                     batchCount = endMsg.getCount() - beginMsg.getCount();
                     actualCount += batchCount;
+//                    log.info("i={}, code = {}, endMsg.getCount()={},  beginMsg.getAmount()={}, batchCount={},actualCount = {}", i,  beginMsg.getCode(), endMsg.getCount(), beginMsg.getCount(), batchCount, actualCount);
+
                     long tempAmount = endMsg.getAmount() - beginMsg.getAmount();
                     //如果后面的金额比前面的小，说明重置了，需要特殊计算
-                    actualAmount += tempAmount > 0 ? tempAmount : (4294967295L - beginMsg.getAmount() + endMsg.getAmount());
-
+                    actualAmount += tempAmount >= 0 ? tempAmount : (4294967295L - beginMsg.getAmount() + endMsg.getAmount() + 1);
+                    //log.info("i={}, code = {}, endMsg.getAmount()={},  beginMsg.getAmount()={}, tempAmount={},actualAmount = {}", i, beginMsg.getCode(), endMsg.getAmount(), beginMsg.getAmount(), tempAmount, actualAmount);
                     //现在是每条dmMsg都不一样，需要找到指定的那个点，按照actualCount累加
                     //!45!01NE6431310001410210000000000050000024002100000100001010
                     if (needDmMsgList) {
@@ -206,6 +208,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         }
         dmMsgDetail.setActualCount(actualCount);
         dmMsgDetail.setActualAmount(String.valueOf(actualAmount));
+        log.info("String.valueOf(actualAmount) = " + String.valueOf(actualAmount));
         if (needDmMsgList) {
             FrankDTO[] frankDtoArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
             dmMsgDetail.setFranks(frankDtoArray);
