@@ -13,12 +13,21 @@
             </ul>
 
             <ul class="layui-nav layui-layout-right" lay-filter="febs-header">
-                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+<!--                <li class="layui-nav-item layui-hide-xs" lay-unselect>
                     <a class="btn btn-sm" th:href="@{/index?lang=zh_CN}" th:text="#{layout.china}"></a>
                 </li>
                 <li class="layui-nav-item layui-hide-xs" lay-unselect>
                     <a class="btn btn-sm" th:href="@{/index?lang=en_US}" th:text="#{layout.english}"></a>
+               </li>-->
+                <li class="layui-nav-item layui-user" lay-unselect>
+                    <a class="btn btn-sm" th:text="#{layout.language}"></a>
+                    <dl class="layui-nav-child">
+                        <dd><a class="btn btn-sm" th:href="@{/index?lang=zh_CN}" th:text="#{layout.china}"></a></dd>
+                        <dd><a class="btn btn-sm" th:href="@{/index?lang=ru_RUS}" th:text="#{layout.russia}"></a></dd>
+                        <dd><a class="btn btn-sm" th:href="@{/index?lang=en_US}" th:text="#{layout.english}"></a></dd>
+                    </dl>
                 </li>
+
                 <li class="layui-nav-item layui-hide-xs" id="noticeList" lay-unselect>
                     <a th:title="#{layout.notice}">
                         <i class="layui-icon layui-icon-notice">

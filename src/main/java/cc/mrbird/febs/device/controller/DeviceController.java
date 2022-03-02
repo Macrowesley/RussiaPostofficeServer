@@ -160,9 +160,9 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success().data("ok");
     }
 
-    @PostMapping("test")
-    public void test(Device device) {
-        log.info("批量新增device");
-        this.deviceService.testInsert();
-    }
+//    @PostMapping("test")
+//    public void test(Device device) {
+//        log.info("批量新增device");
+//        this.deviceService.testInsert();
+//    }
 }

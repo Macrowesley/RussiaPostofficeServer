@@ -4,7 +4,9 @@
     <resultMap id="menu" type="cc.mrbird.febs.system.entity.Menu">
         <id column="MENU_ID" jdbcType="DECIMAL" property="menuId" />
         <result column="PARENT_ID" jdbcType="DECIMAL" property="parentId" />
-        <result column="MENU_NAME" jdbcType="VARCHAR" property="menuName" />
+        <result column="menu_chinese_name" jdbcType="VARCHAR" property="menuChineseName" />
+        <result column="menu_Russian_name" jdbcType="VARCHAR" property="menuRussianName" />
+        <result column="menu_english_name" jdbcType="VARCHAR" property="menuEnglishName" />
         <result column="URL" jdbcType="VARCHAR" property="url" />
         <result column="PERMS" jdbcType="VARCHAR" property="perms" />
         <result column="ICON" jdbcType="VARCHAR" property="icon" />

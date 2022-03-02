@@ -51,9 +51,23 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label febs-form-item-require" th:text="#{name.colon}"></label>
+                            <label class="layui-form-label febs-form-item-require" th:text="#{name_zh.colon}"></label>
                             <div class="layui-input-block">
-                                <input type="text" name="menuName" autocomplete="off" class="layui-input"
+                                <input type="text" name="menuChineseName" autocomplete="off" class="layui-input"
+                                       minlength="2" maxlength="10" lay-verify="range">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label febs-form-item-require" th:text="#{name_ru.colon}"></label>
+                            <div class="layui-input-block">
+                                <input type="text" name="menuRussianName" autocomplete="off" class="layui-input"
+                                       minlength="2" maxlength="10" lay-verify="range">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label febs-form-item-require" th:text="#{name_en.colon}"></label>
+                            <div class="layui-input-block">
+                                <input type="text" name="menuEnglishName" autocomplete="off" class="layui-input"
                                        minlength="2" maxlength="10" lay-verify="range">
                             </div>
                         </div>
@@ -118,7 +132,10 @@
             $reset = $view.find('#reset'),
             $submit = $view.find('#submit'),
             $searchForm = $view.find('#menu-table-form'),
-            $menuName = $searchForm.find('input[name="menuName"]'),
+            //$menuName = $searchForm.find('input[name="menuName"]'),
+             $menuChineseName = $searchForm.find('input[name="menuName"]'),
+             $menuRussianName = $searchForm.find('input[name="menuName"]'),
+             $menuEnglishName = $searchForm.find('input[name="menuName"]'),
             $type = $view.find('input[type="radio"][name="type"]'),
             $icon = $view.find('input[name="icon"]'),
             $icon_parent = $icon.parents('.layui-form-item'),
@@ -196,6 +213,7 @@
 
         eleTree.on("nodeClick(menuTree)", function (d) {
             var data = d.data.currentData.data;
+            console.log("data1："+JSON.stringify(data))
             _currentMenuData = data;
             $type.attr("disabled", true);
             var type = data.type;
@@ -210,7 +228,9 @@
                 "url": data.url,
                 "orderNum": data.orderNum,
                 "type": data.type,
-                "menuName": data.menuName,
+                "menuChineseName":data.menuChineseName,
+                "menuRussianName":data.menuRussianName,
+                "menuEnglishName":data.menuEnglishName,
                 "perms": data.perms,
                 "parentId": data.parentId,
                 "menuId": data.menuId
@@ -222,7 +242,9 @@
         });
 
         $reset.on('click', function () {
-            $menuName.val('');
+            $menuChineseName.val('');
+            $menuEnglishName.val('');
+            $menuRussianName.val('');
             reloadMenuTree();
             reset();
         });
@@ -266,7 +288,10 @@
                 elem: '.menuTree',
                 url: ctx + 'menu/tree',
                 where: {
-                    "menuName": $menuName.val().trim(),
+                    "menuEnglishName": $menuEnglishName.val().trim(),
+                    "menuChineseName": $menuChineseName.val().trim(),
+                    "menuRussianName": $menuRussianName.val().trim(),
+                    //"menuName": $menuName.val().trim(),
                     "invalidate_ie_cache": new Date()
                 },
                 accordion: true,

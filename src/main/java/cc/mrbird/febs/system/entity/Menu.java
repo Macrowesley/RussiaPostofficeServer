@@ -45,14 +45,42 @@ public class Menu implements Serializable {
     @TableField("PARENT_ID")
     private Long parentId;
 
+//    /**
+//     * 菜单/按钮名称
+//     */
+//    @TableField("MENU_NAME")
+//    @NotBlank(message = "{required}")
+//    @Size(max = 10, message = "{noMoreThan}")
+//    @ExcelField(value = "名称")
+//    private String menuEnglishName;
+
+
     /**
      * 菜单/按钮名称
      */
-    @TableField("MENU_NAME")
+    @TableField("MENU_CHINESE_NAME")
     @NotBlank(message = "{required}")
     @Size(max = 10, message = "{noMoreThan}")
-    @ExcelField(value = "名称")
-    private String menuName;
+    @ExcelField(value = "中文名称")
+    private String menuChineseName;
+
+    /**
+     * 菜单/按钮名称
+     */
+    @TableField("MENU_RUSSIAN_NAME")
+    @NotBlank(message = "{required}")
+    @Size(max = 10, message = "{noMoreThan}")
+    @ExcelField(value = "俄文名称")
+    private String menuRussianName;
+
+    /**
+     * 菜单/按钮名称
+     */
+    @TableField("MENU_ENGLISH_NAME")
+    @NotBlank(message = "{required}")
+    @Size(max = 10, message = "{noMoreThan}")
+    @ExcelField(value = "英文名称")
+    private String menuEnglishName;
 
     /**
      * 菜单URL

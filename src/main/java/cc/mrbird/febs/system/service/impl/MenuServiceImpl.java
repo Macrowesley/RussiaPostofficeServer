@@ -11,6 +11,7 @@ import cc.mrbird.febs.system.mapper.MenuMapper;
 import cc.mrbird.febs.system.service.IMenuService;
 import cc.mrbird.febs.system.service.IRoleMenuService;
 import cc.mrbird.febs.system.service.IUserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -22,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,6 +43,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     ShiroRealm shiroRealm;
     @Autowired
     IUserService userService;
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public List<Menu> findUserPermissions(String username) {
@@ -60,8 +65,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     @Override
     public MenuTree<Menu> findMenus(Menu menu) {
         QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(menu.getMenuName())) {
-            queryWrapper.lambda().like(Menu::getMenuName, menu.getMenuName());
+        //国际化选择语言，给title赋值
+        if (StringUtils.isNotBlank(menu.getMenuEnglishName())) {
+            if("zh_CN".equals(RequestContextUtils.getLocale(request).toString())){
+                queryWrapper.lambda().like(Menu::getMenuChineseName, menu.getMenuChineseName());
+            }else if("ru_RUS".equals(RequestContextUtils.getLocale(request).toString())){
+                queryWrapper.lambda().like(Menu::getMenuRussianName, menu.getMenuRussianName());
+            }else{
+                queryWrapper.lambda().like(Menu::getMenuEnglishName, menu.getMenuEnglishName());
+            }
         }
         queryWrapper.lambda().orderByAsc(Menu::getOrderNum);
         List<Menu> menus = this.baseMapper.selectList(queryWrapper);
@@ -73,8 +85,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     @Override
     public List<Menu> findMenuList(Menu menu) {
         QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(menu.getMenuName())) {
-            queryWrapper.lambda().like(Menu::getMenuName, menu.getMenuName());
+        if (StringUtils.isNotBlank(menu.getMenuEnglishName())) {
+            if("zh_CN".equals(RequestContextUtils.getLocale(request).toString())){
+                queryWrapper.lambda().like(Menu::getMenuChineseName, menu.getMenuChineseName());
+            }else if("ru_RUS".equals(RequestContextUtils.getLocale(request).toString())){
+                queryWrapper.lambda().like(Menu::getMenuRussianName, menu.getMenuRussianName());
+            }else{
+                queryWrapper.lambda().like(Menu::getMenuEnglishName, menu.getMenuEnglishName());
+            }
         }
         queryWrapper.lambda().orderByAsc(Menu::getMenuId);
         return this.baseMapper.selectList(queryWrapper);
@@ -114,7 +132,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
             MenuTree<Menu> tree = new MenuTree<>();
             tree.setId(String.valueOf(menu.getMenuId()));
             tree.setParentId(String.valueOf(menu.getParentId()));
-            tree.setTitle(menu.getMenuName());
+
+            //国际化选择语言，给title赋值
+            if("zh_CN".equals(RequestContextUtils.getLocale(request).toString())){
+                tree.setTitle(menu.getMenuChineseName());
+            }else if("ru_RUS".equals(RequestContextUtils.getLocale(request).toString())){
+                tree.setTitle(menu.getMenuRussianName());
+            }else{
+                tree.setTitle(menu.getMenuEnglishName());
+            }
             tree.setIcon(menu.getIcon());
             tree.setHref(menu.getUrl());
             tree.setData(menu);

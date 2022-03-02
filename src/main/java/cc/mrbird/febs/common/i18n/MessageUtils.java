@@ -1,5 +1,6 @@
 package cc.mrbird.febs.common.i18n;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,13 +27,15 @@ public class MessageUtils {
      * 获取单个国际化翻译值
      */
     public static String getMessage(String messageKey) {
-
         //根据应用部署的服务器系统来决定国际化
         String message = messageSource.getMessage(messageKey, null,  LocaleContextHolder.getLocale());
-
         //根据Request请求的语言来决定国际化
-//        String message = messageSource.getMessage(messageKey, null, RequestContextUtils.getLocale(request));
-
+        //String message = messageSource.getMessage(messageKey, null, RequestContextUtils.getLocale(request));
         return message;
     }
+
+//    public String getMessage(String msgKey, Object[] args) {
+//        return messageSource.getMessage(msgKey, args, LocaleUtils.getCurrentLocale());
+//    }
+
 }
