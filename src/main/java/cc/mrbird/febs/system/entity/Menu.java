@@ -69,7 +69,7 @@ public class Menu implements Serializable {
      */
     @TableField("MENU_RUSSIAN_NAME")
     @NotBlank(message = "{required}")
-    @Size(max = 10, message = "{noMoreThan}")
+    @Size(max = 50, message = "{noMoreThan}")
     @ExcelField(value = "俄文名称")
     private String menuRussianName;
 
@@ -78,7 +78,7 @@ public class Menu implements Serializable {
      */
     @TableField("MENU_ENGLISH_NAME")
     @NotBlank(message = "{required}")
-    @Size(max = 10, message = "{noMoreThan}")
+    @Size(max = 50, message = "{noMoreThan}")
     @ExcelField(value = "英文名称")
     private String menuEnglishName;
 
