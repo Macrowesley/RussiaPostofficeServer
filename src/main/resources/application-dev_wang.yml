@@ -57,3 +57,7 @@ netty:
   ip: 192.168.2.119
   ssl: false
   enable: true
+
+info:
+  download-base-url: http://russia.uprins.com:90/russia/file/
+  base-path: D:\workspace\RussiaPostofficeServerFile\

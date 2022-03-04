@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.service.impl;
 
+import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.device.service.IDeviceService;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +65,9 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
 
     @Autowired
     RedisService redisService;
+
+    @Value("${info.base-path}")
+    private String basePath;
 
     @Override
     public IPage<Tax> findTaxs(QueryRequest request, Tax tax) {
@@ -114,7 +119,7 @@ public class TaxServiceImpl extends ServiceImpl<TaxMapper, Tax> implements ITaxS
             log.info("保存tax开始");
             long t1 = System.currentTimeMillis();
 
-            String savePath = "D:\\workspace\\RussiaPostofficeServerFile\\tax\\" + jsonFileName + ".json";
+            String savePath = basePath + "tax\\" + jsonFileName + ".json";
             Date applyDate = DateKit.parseRussiatime(taxVersionDTO.getApplyDate());
 
             Tax tax = new Tax();

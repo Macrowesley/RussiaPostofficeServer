@@ -33,6 +33,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +63,9 @@ public class ServiceToMachineProtocol extends BaseProtocol {
 
     @Autowired
     CheckUtils checkUtils;
+
+    @Value("${info.download-base-url}")
+    private String downLoadBaseUrl;
 
 
     public ServiceToMachineProtocol() {
@@ -328,7 +332,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             String version = FebsConstant.FmVersion1;
 
             String md5Str = MD5Util.MD5Encode(taxJson).toLowerCase();
-            String url = "http://russia.uprins.com:90/tax/" + jsonFileName + ".json";
+            String url = downLoadBaseUrl + "tax/" + jsonFileName + ".json";
             String content = applyDateStr + md5Str + url;
 //            String entryctContent = AESUtils.encrypt(content, tempKey);
 //            log.info("服务器发送tax给机器 content={},加密后entryctContent={}", content, entryctContent);
