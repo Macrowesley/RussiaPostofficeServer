@@ -71,9 +71,9 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         //ssh结果
-        String sshRes = BaseTypeUtils.byteToString(bytes, pos, REQ_SSH_RES_LEN, BaseTypeUtils.UTF8);
+        String res = bytes[pos] == 0x01 ?"成功":"失败";
 
-        log.info("{}机器的ssh打开结果：{}", acnum, sshRes.equals("1")? "成功":"失败");
+        log.info("{}机器的ssh打开结果：{}", acnum, res);
 
         //返回
         byte[] data = new byte[]{(byte) 0x01};
