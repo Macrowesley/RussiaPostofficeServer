@@ -71,9 +71,9 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
         pos += REQ_ACNUM_LEN;
 
         //结果
-        String res = BaseTypeUtils.byteToString(bytes, pos, REQ_UPDATE_TAXES_RES_LEN, BaseTypeUtils.UTF8);
+        String res = bytes[pos] == 0x01 ?"成功":"失败";
 
-        log.info("{}机器同步金额结果：{}", acnum, res.equals("1")? "成功":"失败");
+        log.info("{}机器同步金额结果：{}", acnum, res);
 
 
         //返回 todo 返回需要写清楚点
