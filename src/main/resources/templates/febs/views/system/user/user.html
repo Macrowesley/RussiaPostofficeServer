@@ -107,11 +107,11 @@
     <span shiro:lacksPermission="user:view,user:update,user:device">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
-    <a lay-event="detail" shiro:hasPermission="user:view"><i
+    <a lay-event="detail" shiro:hasPermission="user:view" th:title="#{general.detail}"><i
             class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
-    <a lay-event="edit" shiro:hasPermission="user:update"><i
+    <a lay-event="edit" shiro:hasPermission="user:update" th:title="#{general.modify}"><i
             class="layui-icon febs-edit-area febs-blue">&#xe642;</i></a>
-    <a lay-event="device" shiro:hasPermission="user:device"><i
+    <a lay-event="device" shiro:hasPermission="user:device" th:title="#{device.device}"><i
             class="layui-icon febs-edit-area febs-blue">&#xe691;</i></a>
     <!--<a lay-event="del" shiro:hasPermission="user:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
 </script>
