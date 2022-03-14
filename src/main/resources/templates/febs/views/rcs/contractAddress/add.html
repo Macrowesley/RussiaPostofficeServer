@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>邮寄地址管理</title>
+    <title th:text="#{contractAddress.addressManage}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -15,36 +15,36 @@
 </head>
 <body>
 
-<div class="febs-container layui-anim febs-anim layui-col-xs12 layui-col-lg4 layui-col-lg-offset4" lay-title="邮寄地址管理">
+<div class="febs-container layui-anim febs-anim layui-col-xs12 layui-col-lg4 layui-col-lg-offset4" th:lay-title="#{contractAddress.addressManage}">
     <div class="layui-card ">
         <div class="layui-card-header" style="line-height:120px;height: 120px;margin:auto;text-align: center;    font-size: 27px;"><b th:text="#{contractAddress.addressManage}"></b></div>
         <div class="layui-card-body">
             <form class="layui-form" action="" lay-filter="febs-form-elements">
                 <div class="layui-row layui-col-space10 layui-form-item">
                     <div class="layui-form-item">
-                        <label class="layui-form-label layui-icon">合同ID：</label>
+                        <label class="layui-form-label layui-icon" th:text="#{contractAddress.id}"></label>
                         <div class="layui-input-block">
                             <input type="text" name="contractCode" lay-verify="required" placeholder=""
                                    autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label layui-icon">机器ID：</label>
+                        <label class="layui-form-label layui-icon" th:text="#{machine.id}"></label>
                         <div class="layui-input-block">
                             <input type="text" name="FMid" lay-verify="required" placeholder=""
                                    autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label layui-icon">邮寄地址：</label>
+                        <label class="layui-form-label layui-icon" th:text="#{mailing.address}"></label>
                         <div class="layui-input-block">
-                                        <textarea name="addressList" placeholder="每个地址用;分隔开"
+                                        <textarea name="addressList" th:placeholder="#{separatedAddress}"
                                                   class="layui-textarea " lay-verify="required" style="height: 300px;"></textarea>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <div class="layui-input-block">
-                            <button class="layui-btn" lay-submit lay-filter="febs-form-elements">立即提交
+                            <button class="layui-btn" lay-submit lay-filter="febs-form-elements" th:text="#{submitImmediately}">
                             </button>
 <!--
                             <button type="reset" class="layui-btn layui-btn-primary layui-icon">重置</button>
@@ -86,7 +86,7 @@
             loading.show();
             $.post(ctx + 'address/add', data.field, function (r) {
                 if (r.code === 200) {
-                    layer.msg("操作成功")
+                    layer.msg(i18n("operationSuccess"))
                 } else {
                     layer.msg(r.message);
                     loading.hide();
