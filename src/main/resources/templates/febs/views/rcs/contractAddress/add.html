@@ -31,7 +31,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label layui-icon" th:text="#{machine.id}"></label>
                         <div class="layui-input-block">
-                            <input type="text" name="FMid" lay-verify="required" placeholder=""
+                            <input type="text" name="fmId" lay-verify="required" placeholder=""
                                    autocomplete="off" class="layui-input">
                         </div>
                     </div>
@@ -84,14 +84,23 @@
             var loading = $(this).find('.layui-icon');
             if (loading.is(":visible")) return;
             loading.show();
-            $.post(ctx + 'address/add', data.field, function (r) {
-                if (r.code === 200) {
-                    layer.msg(i18n("operationSuccess"))
-                } else {
-                    layer.msg(r.message);
-                    loading.hide();
-                    // initCode();
+
+            $.ajax({
+                url: ctx + 'address/add',
+                type: "post",
+                contentType: "application/json",
+                datatype: "json",
+                data: JSON.stringify(data.field),
+                success: function (r) {
+                    if (r.code === 200) {
+                        layer.msg(i18n("operationSuccess"))
+                    } else {
+                        layer.msg(r.message);
+                        loading.hide();
+                        // initCode();
+                    }
                 }
+
             });
             return false;
         });

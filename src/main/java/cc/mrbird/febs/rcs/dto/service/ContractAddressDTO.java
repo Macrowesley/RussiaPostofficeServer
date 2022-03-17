@@ -9,6 +9,6 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class ContractAddressDTO {
     String contractCode;
-    String FMid;
+    String fmId;
     String addressList;
 }

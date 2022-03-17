@@ -41,7 +41,7 @@ public class PublicController {
     @PostMapping("/address/add")
     @ResponseBody
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
-    public FebsResponse addContractAddress(ContractAddressDTO contractAddressDTO){
+    public FebsResponse addContractAddress(@RequestBody ContractAddressDTO contractAddressDTO){
         log.info("接收到了添加地址信息" + contractAddressDTO.toString());
         return contractAddressService.addAddressList(contractAddressDTO);
     }

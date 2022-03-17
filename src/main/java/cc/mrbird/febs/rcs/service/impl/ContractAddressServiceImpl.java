@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -159,7 +158,7 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     @Transactional(rollbackFor = FebsException.class)
     public FebsResponse addAddressList(ContractAddressDTO contractAddressDTO) {
         try {
-            String frankMachineId = contractAddressDTO.getFMid();
+            String frankMachineId = contractAddressDTO.getFmId();
             String contractCode = contractAddressDTO.getContractCode();
             String addressListStr = contractAddressDTO.getAddressList().trim();
             String split = ";";
