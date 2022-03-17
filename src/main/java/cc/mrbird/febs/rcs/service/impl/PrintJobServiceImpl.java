@@ -119,7 +119,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
         User currentUser = FebsUtil.getCurrentUser();
         if (currentUser != null && !currentUser.getRoleId().equals(RoleType.systemManager)){
-            queryWrapper.eq(PrintJob::getPcUserId, currentUser);
+            queryWrapper.eq(PrintJob::getPcUserId, currentUser.getUserId());
         }
 
         queryWrapper.orderByDesc(PrintJob::getId);
