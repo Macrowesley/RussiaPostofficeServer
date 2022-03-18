@@ -307,7 +307,10 @@
                                     layer.closeAll();
                                 }
                             });
+                        }else if(layEvent === 'printEdit'){
+                            febs.alert.success(i18n("printJob.cannotEdit"))
                         }
+
 
                         if (layEvent === 'operation1') {
                             // alert("1")
