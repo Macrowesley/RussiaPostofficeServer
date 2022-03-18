@@ -13,13 +13,6 @@
                                             <input type="text" name="contractCode" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
-                                    <!--<div class="layui-inline">
-                                        <label class="layui-form-label layui-form-label-sm">创建时间</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="createdTime" id="printJob-createTime"
-                                                   class="layui-input">
-                                        </div>
-                                    </div>-->
                                     <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.status}"></label>
                                         <div class="layui-input-inline">
@@ -114,7 +107,8 @@
 <!--    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.check}" id="checkLablal"></a>-->
 </script>
 <script data-th-inline="none" type="text/javascript">
-    let flag = true;
+    let flag1 = true;
+    let flag2 = true;
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
         var $ = layui.jquery,
             laydate = layui.laydate,
@@ -139,8 +133,6 @@
         initSearchView();
         initTable();
         initTableTool();
-
-
 
         /**
          * 查询表单数据
@@ -276,10 +268,8 @@
          * 初始化表格工具栏
          */
         function initTableTool(){
-            //alert("init中的"+flag)
             table.on('tool(printJobTable)', function (obj) {
-                    //alert("监听中的"+flag)
-                    if(flag==true) {
+
                         var data = obj.data,
                             layEvent = obj.event;
                         /*
@@ -296,17 +286,23 @@
                         }
                         //70未闭环，创建订单状态
                         if (layEvent === 'printEdit' && 70 == data.flowDetail) {
-                            febs.modal.open(i18n("printJob.editprintJob"), 'rcs/printJob/update/' + data.id, {
-                                area: $(window).width() <= 750 ? '90%' : '50%',
-                                offset: '30px',
-                                btn: [i18n("submit"), i18n("cancel")],
-                                yes: function (index, layero) {
-                                    $('#printJob-update').find('#submit').trigger('click');
-                                },
-                                btn2: function () {
-                                    layer.closeAll();
-                                }
-                            });
+                            if(flag2==true) {
+                                febs.modal.open(i18n("printJob.editprintJob"), 'rcs/printJob/update/' + data.id, {
+                                    area: $(window).width() <= 750 ? '90%' : '50%',
+                                    offset: '30px',
+                                    btn: [i18n("submit"), i18n("cancel")],
+                                    yes: function (index, layero) {
+                                        $('#printJob-update').find('#submit').trigger('click');
+                                    },
+                                    btn2: function () {
+                                        layer.closeAll();
+                                    }
+                                });
+                                //var timer = setTimeout(turnBack, 5000);
+                                flag2 = false;
+                            }else{
+                                febs.alert.success(i18n("printJob.holdon"))
+                            }
                         }else if(layEvent === 'printEdit'){
                             febs.alert.success(i18n("printJob.cannotEdit"))
                         }
@@ -319,40 +315,45 @@
                         //document.getElementById("a").onclick = "alert(1)";
                         //$('a span').click();
                         //点击第二次才执行
+
                         if (layEvent === 'printJob') {
-                            //console.log(11)
-                            //$(this).css("color", "#CCC");
-                            //$("#editLablal").css("color","#CCC");
-                            var timer = setTimeout(turnBack, 5000);
-                            flag = false;
+                            if(flag1==true) {
+                                //console.log(11)
+                                //$(this).css("color", "#CCC");
+                                //$("#editLablal").css("color","#CCC");
+                                var timer = setTimeout(turnBack, 5000);
+                                flag1 = false;
 
-                            //$("#printLabal").attr("disabled",true);
+                                //$("#printLabal").attr("disabled",true);
 
-                            // if(this.color=="#CCC"){
-                            //     console.log(33)
-                            // }
-                            $('#printLabal').attr('disabled', 'disabled');
-                            febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
+                                // if(this.color=="#CCC"){
+                                //     console.log(33)
+                                // }
+                                $('#printLabal').attr('disabled', 'disabled');
+                                febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
 
-                                let code = res.code
-                                if (res.message == "ok") {
-                                    febs.alert.success(i18n("operationSuccess"))
-                                } else {
-                                    // febs.alert.error(i18n("febs.operationFail"))
-                                }
-                                //console.log(JSON.stringify(res))
-                                queryTable(1);
-                            })
-                            //noMoreClick();
+                                    let code = res.code
+                                    if (res.message == "ok") {
+                                        febs.alert.success(i18n("operationSuccess"))
+                                    } else {
+                                        // febs.alert.error(i18n("febs.operationFail"))
+                                    }
+                                    //console.log(JSON.stringify(res))
+                                    queryTable(1);
+                                })
+                                //noMoreClick();
 
-                            // $("a").one("click",function(){
-                            //     $(this).click(function (){
-                            //         console.log("1禁止处理中")
-                            //         return false;
-                            //     });
-                            //     console.log("禁止完成")
-                            // });
-                            //console.log("flag:" + flag)
+                                // $("a").one("click",function(){
+                                //     $(this).click(function (){
+                                //         console.log("1禁止处理中")
+                                //         return false;
+                                //     });
+                                //     console.log("禁止完成")
+                                // });
+                                //console.log("flag:" + flag)
+                            }else{
+                                febs.alert.success(i18n("printJob.holdon"))
+                            }
                         }
 
                         if(layEvent === 'printCheck'){
@@ -372,10 +373,6 @@
                                 // queryTable(0);
                             })
                         }
-                    }else{
-                        //alert("再次点击请间隔10s");
-                        febs.alert.success(i18n("printJob.holdon"))
-                    }
 
                     if (layEvent === 'foreseenInfo') {
                     //alert(JSON.stringify(data))
@@ -452,7 +449,8 @@
             $("#editLablal").css("color","#2db7f5");
             //$(this).click(function (){return true;});
             //定时恢复flag为true
-            flag = true;
+            flag1 = true;
+            flag2 = true;
         }
 
         /**
