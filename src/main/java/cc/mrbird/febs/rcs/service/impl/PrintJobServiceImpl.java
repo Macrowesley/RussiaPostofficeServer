@@ -107,7 +107,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 queryWrapper.eq(PrintJob::getFlowDetail, 61);
                 queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (3 == printJob.getFlow()) {
-                queryWrapper.in(PrintJob::getFlowDetail, 62,63);
+                queryWrapper.eq(PrintJob::getFlowDetail, 62);
+                queryWrapper.eq(PrintJob::getFlow, 1);
+            } else if (4 == printJob.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 63);
                 queryWrapper.eq(PrintJob::getFlow, 1);
             } else if (1 == printJob.getFlow()) {
                 queryWrapper.notIn(PrintJob::getFlowDetail, 70,61,62,63);
@@ -446,6 +449,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         dbPrintJob.setFlowDetail(curFlowDetail.getCode());
         dbPrintJob.setCancelMsgCode(cancelJobFMDTO.getCancelMsgCode());
         this.updatePrintJob(dbPrintJob);
+
+        noticeFrontService.notice(7, MessageUtils.getMessage("printJob.machineCancel"), dbPrintJob.getPcUserId());
+
     }
 
     /**

@@ -29,6 +29,7 @@
                                                 <option value="1" th:text="#{printJob.flowing}"></option>
                                                 <option value="2" th:text="#{printJob.successFlowed}"></option>
                                                 <option value="3" th:text="#{printJob.failFlowed}"></option>
+                                                <option value="4" th:text="#{printJob.machineCancel}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -82,8 +83,10 @@
             cur_status = 0;
         }else if(flow == 1 && flow_detail == 61){
             cur_status = 2;
-        }else if(flow == 1 && (flow_detail == 62||flow_detail == 63)){
+        }else if(flow == 1 && (flow_detail == 62)){
             cur_status = 3;
+        }else if(flow == 1 && (flow_detail == 63)){
+            cur_status = 4;
         }else{
             cur_status = 1;
         }
@@ -91,7 +94,8 @@
             0: {title: i18n("printJob.notBegin"), class: ''},
             1: {title: i18n("printJob.flowing"), class: ''},
             2: {title: i18n("printJob.successFlowed"), class: 'layui-badge febs-bg-green'},
-            3: {title: i18n("printJob.failFlowed"), class: 'layui-badge febs-bg-red'}
+            3: {title: i18n("printJob.failFlowed"), class: 'layui-badge febs-bg-red'},
+            4: {title: i18n("printJob.machineCancel"), class: 'layui-badge febs-bg-red'}
         }[cur_status];
     }}
     <span  class="{{status.class}}">{{ status.title }}</span>
@@ -332,10 +336,11 @@
                             febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
 
                                 let code = res.code
-                                if (res.message == "ok") {
+                                if (res.data == "ok") {
                                     febs.alert.success(i18n("operationSuccess"))
                                 } else {
                                     // febs.alert.error(i18n("febs.operationFail"))
+                                    febs.alert.error(res.data)
                                 }
                                 //console.log(JSON.stringify(res))
                                 queryTable(1);
