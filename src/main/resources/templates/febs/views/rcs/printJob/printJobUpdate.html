@@ -48,6 +48,23 @@
         <!--购物车-->
         <div class="layui-form-item">
             <label class="layui-form-label left-label" th:text="#{printJob.products}+':'"></label>
+            <div>
+                <div style="margin-left: 18%;" id="" class="layui-card-body layui-row layui-col-space12">
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label left-label" th:text="#{printJob.products.productCode}"></label>
+                    </div>
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label left-label" th:text="#{printJob.products.count}"></label>
+                    </div>
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label left-label" th:text="#{printJob.products.weight}"></label>
+                    </div>
+                    <div class="layui-col-md2">
+                        <label class="layui-form-label left-label" th:text="#{printJob.products.address}"></label>
+                    </div>
+                </div>
+            </div>
+
             <div id="products">
                 <div style="margin-left: 21%;" id="productItem0" class="layui-card-body layui-row layui-col-space12">
                     <div class="layui-col-md2">
