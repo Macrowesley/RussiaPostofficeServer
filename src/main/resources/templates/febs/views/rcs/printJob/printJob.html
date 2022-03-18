@@ -110,7 +110,8 @@
 <!--    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.check}" id="checkLablal"></a>-->
 </script>
 <script data-th-inline="none" type="text/javascript">
-    let flag = true;
+    let flag1 = true;
+    let flag2 = true;
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
         var $ = layui.jquery,
             laydate = layui.laydate,
@@ -342,7 +343,7 @@
                                     febs.alert.error(res.data)
                                 }
                                 //console.log(JSON.stringify(res))
-                                queryTable(1);
+                                // queryTable(1);
                             })
                             //noMoreClick();
 
