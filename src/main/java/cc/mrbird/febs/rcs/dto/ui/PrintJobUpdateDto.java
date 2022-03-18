@@ -24,6 +24,8 @@ public class PrintJobUpdateDto {
 
     int totalCount;
 
+    Double totalAmount;
+
     ArrayList<ForeseenProductFmDto> products;
 
     private String foreseenId;

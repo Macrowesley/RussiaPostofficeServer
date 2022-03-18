@@ -18,6 +18,7 @@ import cc.mrbird.febs.rcs.mapper.TransactionMsgMapper;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import cc.mrbird.febs.rcs.service.ITransactionService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -77,6 +78,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
+        System.out.println("transactionMsg:"+ JSON.toJSONString(transactionMsg));
         this.save(transactionMsg);
     }
 

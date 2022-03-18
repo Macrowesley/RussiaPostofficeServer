@@ -12,12 +12,17 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Transaction;
+import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
+import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import cc.mrbird.febs.system.entity.Dept;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +36,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +118,6 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:update")
     public FebsResponse updatePrintJob(@PathVariable int id,PrintJobUpdateDto printJobUpdateDto) {
-        //System.out.println("开始更新："+ JSON.toJSONString(printJobUpdateDto));
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }

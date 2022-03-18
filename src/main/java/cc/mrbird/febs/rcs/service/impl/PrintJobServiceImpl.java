@@ -198,28 +198,21 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public void editAndUpdatePrintJob(PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PrintJob::getId,printJob.getId());
-
         boolean result = this.update(printJob,queryWrapper);
-        //System.out.println("编辑结果："+result);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void editPrintJob(PrintJobUpdateDto printJobUpdateDto) {
-        if(null==printJobUpdateDto.getProducts()){
-            //待实现删除逻辑
-            //根据业务不能删除所有product
-            System.out.println("删除本条记录");
-        }
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobUpdateDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
         printJob.setType(PrintJobTypeEnum.Web.getCode());
         printJob.setCreatedTime(new Date());
+        //根据业务不能删除所有product
         //通过printJobId更新PrintJob
         this.editAndUpdatePrintJob(printJob);
-        //System.out.println("printJob更新成功");
 
         //此编辑通过删除原有数据，新增新数据实现，会导致编辑后的唯一id改变
         ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
@@ -227,7 +220,6 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         LambdaQueryWrapper<ForeseenProduct> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ForeseenProduct::getPrintJobId,printJob.getId());
         Boolean delete = foreseenProductService.remove(queryWrapper);
-        //System.out.println("delete:"+delete);
         //处理前端获取的products
         List<ForeseenProduct> productList = new ArrayList<>();
         for (int i = 0; i < products.size(); i++) {
@@ -239,9 +231,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 productList.add(product);
             }
         }
-        //System.out.println("productList"+productList);
         foreseenProductService.saveOrUpdateBatch(productList);
-        //foreseenProductService.saveBatch(productList);
     }
 
     @Override
