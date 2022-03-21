@@ -450,8 +450,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         dbPrintJob.setCancelMsgCode(cancelJobFMDTO.getCancelMsgCode());
         this.updatePrintJob(dbPrintJob);
 
-        noticeFrontService.notice(7, MessageUtils.getMessage("printJob.machineCancel"), dbPrintJob.getPcUserId());
-
+        if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
+            noticeFrontService.notice(7, MessageUtils.getMessage("printJob.machineCancel"), dbPrintJob.getPcUserId());
+        }
     }
 
     /**
@@ -499,7 +500,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 noticeFrontService.notice(8, MessageUtils.getMessage("printJob.printSuccess"), dbPrintJob.getPcUserId());
             }
         }else{
-            noticeFrontService.notice(8,MessageUtils.getMessage("printJob.printAbnormal"), dbPrintJob.getPcUserId());
+            if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
+                noticeFrontService.notice(8, MessageUtils.getMessage("printJob.printAbnormal"), dbPrintJob.getPcUserId());
+            }
         }
 
         //返回最新的contract
