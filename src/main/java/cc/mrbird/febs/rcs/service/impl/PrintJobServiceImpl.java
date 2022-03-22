@@ -161,6 +161,13 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             throw new FebsException(MessageUtils.getMessage("printJob.fillProductInfo"));
         }
 
+        //判断字符长度
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getAddress().length() <=1 ){
+                throw new FebsException("address length is too short");
+            }
+        }
+
 
         //确定合同号是否正常
         if(!contractService.checkIsExist(printJobAddDto.getContractCode())){
