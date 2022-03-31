@@ -559,4 +559,19 @@ public class RedisService {
             return 0L;
         }
     }
+
+    /**
+     * @Description: 获取自增长值
+     * @param key key
+     * @return
+     */
+    public synchronized Long getIncr(String key) {
+        Long increment = incr(key, 1L);
+
+        if (increment == 0){
+            set(key,1);
+            return 1L;
+        }
+        return increment;
+    }
 }
