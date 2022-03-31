@@ -94,7 +94,7 @@ public class ProtocolService {
 
 
 //    @Async(FebsConstant.NETTY_ASYNC_POOL)
-    public synchronized void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
+    public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
         byte[] data = msg.getContent();
         try {
             //验证校验位 测试情况除外

@@ -69,7 +69,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
     }
 
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
 
         /*
          * 发送机器表头号和时间戳，为了服务器能够通过表头号找到机器
