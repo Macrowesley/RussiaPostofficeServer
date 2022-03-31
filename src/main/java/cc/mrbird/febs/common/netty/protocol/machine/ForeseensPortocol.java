@@ -70,6 +70,11 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
     /**
      * 解析并返回结果流
      *
@@ -96,7 +101,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         }__attribute__((packed))Foreseens, *Foreseens;
          */
 
-            log.info("机器开始 Foreseens");
 
 
             //测试代码
@@ -192,7 +196,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
-            log.info("机器结束 Foreseens 耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
 /*

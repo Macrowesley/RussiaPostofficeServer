@@ -4,8 +4,6 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.machine.*;
-import cc.mrbird.febs.common.netty.protocol.machine.charge.ChargeResProtocol;
-import cc.mrbird.febs.common.netty.protocol.machine.charge.QueryProtocol;
 import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.publickey.QueryPrivateKeylPortocol;
 import cc.mrbird.febs.common.netty.protocol.machine.publickey.UpdatePrivateKeyResultPortocol;
@@ -21,6 +19,7 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -36,11 +35,6 @@ public class ProtocolService {
     @Autowired
     HeartPortocol heartPortocol;
 
-    /*@Autowired
-    QueryProtocol queryProtocol;
-
-    @Autowired
-    ChargeResProtocol chargeResProtocol;
 
     @Autowired
     QueryIDPortocol queryIDPortocol;
@@ -69,14 +63,26 @@ public class ProtocolService {
     @Autowired
     ForeseensPortocol foreseensPortocol;
 
-    @Autowired
-    ForeseensCancelPortocol foreseensCancelPortocol;
+   /* @Autowired
+    ForeseensCancelPortocol foreseensCancelPortocol;*/
 
     @Autowired
     TransactionsPortocol transactionsPortocol;
 
     @Autowired
-    MachineLoginPortocol machineLoginPortocol;*/
+    MachineLoginPortocol machineLoginPortocol;
+
+    @Autowired
+    CheckServicePortocol checkServicePortocol;
+
+    @Autowired
+    TransactionMsgPortocol transactionMsgPortocol;
+
+    @Autowired
+    ClickPrintResultPortocol clickPrintResultPortocol;
+
+    @Autowired
+    CancelPrintResultPortocol cancelPrintResultPortocol;
 
 
     @Autowired
@@ -87,14 +93,31 @@ public class ProtocolService {
     private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
 
 
-    //    @Async(FebsConstant.NETTY_ASYNC_POOL)
-    public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
+//    @Async(FebsConstant.NETTY_ASYNC_POOL)
+    public synchronized void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
+        byte[] data = msg.getContent();
         try {
-            parseContentAndWrite(msg.getContent(), ctx);
+            //验证校验位 测试情况除外
+            if (!BaseTypeUtils.checkChkSum(data, data.length - 2) && !FebsConstant.IS_TEST_NETTY) {
+                log.error("校验位验证错误");
+                wrieteToCustomer(ctx, emptyResBytes);
+            }
+            //解析类型
+            byte protocolType = MachineToServiceProtocol.parseType(data);
+
+            if (protocolType == HeartPortocol.PROTOCOL_TYPE){
+                byte[] operateIdArr = new byte[]{data[1],data[2]};
+                heartPortocol.setOperateIdArr(operateIdArr);
+                wrieteToCustomer(ctx, heartPortocol.parseContentAndRspone(data, ctx));
+            }else{
+                parseContentAndWrite(data,protocolType, ctx);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             ReferenceCountUtil.release(msg);
+            data = null;
         }
     }
 
@@ -125,86 +148,78 @@ public class ProtocolService {
      * @param data
      * @return
      */
-    public synchronized void parseContentAndWrite(byte[] data, ChannelHandlerContext ctx) throws Exception {
-        //验证校验位 测试情况除外
-        if (!BaseTypeUtils.checkChkSum(data, data.length - 2) && !FebsConstant.IS_TEST_NETTY) {
-            log.error("校验位验证错误");
-            wrieteToCustomer(ctx, emptyResBytes);
-        }
-        //解析类型
-        byte protocolType = MachineToServiceProtocol.parseType(data);
+    @Async(FebsConstant.NETTY_ASYNC_POOL)
+    public void parseContentAndWrite(byte[] data, byte protocolType,  ChannelHandlerContext ctx) throws Exception {
         //解析操作id字节数组
         byte[] operateIdArr = new byte[]{data[1],data[2]};
         MachineToServiceProtocol baseProtocol = null;
 
         boolean isNeedLogin = true;
         Boolean isNeedAsync = true;
+        boolean isNewObject = false;
         switch (protocolType) {
-            case HeartPortocol.PROTOCOL_TYPE:
+            /*case HeartPortocol.PROTOCOL_TYPE:
                 baseProtocol = heartPortocol;
-//                baseProtocol = new HeartPortocol();
                 isNeedLogin = false;
                 isNeedAsync = false;
-                break;
+                break;*/
             case QueryIDPortocol.PROTOCOL_TYPE:
-                baseProtocol = new QueryIDPortocol();
+                baseProtocol = isNewObject ? new QueryIDPortocol() : queryIDPortocol;
                 isNeedLogin = false;
                 break;
             case QueryTemKeyPortocol.PROTOCOL_TYPE:
-                baseProtocol = new QueryTemKeyPortocol();
+                baseProtocol = isNewObject ? new QueryTemKeyPortocol() : queryTemKeyPortocol;
                 isNeedLogin = false;
                 break;
             case MachineLoginPortocol.PROTOCOL_TYPE:
-                baseProtocol = new MachineLoginPortocol();
+                baseProtocol = isNewObject ? new MachineLoginPortocol() : machineLoginPortocol;
                 isNeedLogin = false;
                 break;
             //下面所有的操作必须登录了才能执行
             case CheckServicePortocol.PROTOCOL_TYPE:
-                baseProtocol = new CheckServicePortocol();
+                baseProtocol = isNewObject ? new CheckServicePortocol() : checkServicePortocol;
                 break;
-            case QueryProtocol.PROTOCOL_TYPE:
-                baseProtocol = new QueryProtocol();
-                break;
-            case ChargeResProtocol.PROTOCOL_TYPE:
-                baseProtocol = new ChargeResProtocol();
-                break;
-            case OpenSSHResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new OpenSSHResultPortocol();
-                break;
-            case CloseSSHResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new CloseSSHResultPortocol();
-                break;
+            /*
             case BalanceResultPortocol.PROTOCOL_TYPE:
                 baseProtocol = new BalanceResultPortocol();
+                break;*/
+            case OpenSSHResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = isNewObject ? new OpenSSHResultPortocol() : openSSHResultPortocol;
                 break;
+            case CloseSSHResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = isNewObject ? new CloseSSHResultPortocol() : closeSSHResultPortocol;
+                break;
+
             case UpdatePrivateKeyResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new UpdatePrivateKeyResultPortocol();
+                baseProtocol = isNewObject ? new UpdatePrivateKeyResultPortocol() : updatePrivateKeyResultPortocol;
                 break;
             case QueryPrivateKeylPortocol.PROTOCOL_TYPE:
-                baseProtocol = new QueryPrivateKeylPortocol();
+                baseProtocol = isNewObject ? new QueryPrivateKeylPortocol() : queryPrivateKeylPortocol;
                 break;
             case ChangeStatusPortocol.PROTOCOL_TYPE:
-                baseProtocol = new ChangeStatusPortocol();
+                baseProtocol = isNewObject ? new ChangeStatusPortocol() : changeStatusPortocol;
                 break;
             case ForeseensPortocol.PROTOCOL_TYPE:
-                baseProtocol = new ForeseensPortocol();
-                //todo 临时测试
-//                isNeedLogin = false;
+                baseProtocol = isNewObject ? new ForeseensPortocol() : foreseensPortocol;
+                //临时测试
+                if (FebsConstant.IS_TEST_NETTY){
+                    isNeedLogin = false;
+                }
                 break;
-            case ForeseensCancelPortocol.PROTOCOL_TYPE:
-                baseProtocol = new ForeseensCancelPortocol();
-                break;
+            /*case ForeseensCancelPortocol.PROTOCOL_TYPE:
+                baseProtocol = isNewObject ? new ForeseensCancelPortocol() : foreseensCancelPortocol;
+                break;*/
             case TransactionsPortocol.PROTOCOL_TYPE:
-                baseProtocol = new TransactionsPortocol();
+                baseProtocol = isNewObject ? new TransactionsPortocol() : transactionsPortocol;
                 break;
             case TransactionMsgPortocol.PROTOCOL_TYPE:
-                baseProtocol = new TransactionMsgPortocol();
+                baseProtocol = isNewObject ? new TransactionMsgPortocol() : transactionMsgPortocol;
                 break;
             case ClickPrintResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new ClickPrintResultPortocol();
+                baseProtocol = isNewObject ? new ClickPrintResultPortocol() : clickPrintResultPortocol;
                 break;
             case CancelPrintResultPortocol.PROTOCOL_TYPE:
-                baseProtocol = new CancelPrintResultPortocol();
+                baseProtocol = isNewObject ? new CancelPrintResultPortocol() : cancelPrintResultPortocol;
                 break;
             default:
                 log.error("protocolType 格式不对： " + BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));
@@ -234,17 +249,17 @@ public class ProtocolService {
                     wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
                 }
             }
-            if (isNeedAsync){
-
+            /*if (isNeedAsync){
                 MachineToServiceProtocol asyncProtocol = baseProtocol;
-                threadPoolTaskExecutor.submit(new Runnable() {
+                threadPoolTaskExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             log.info("【处理协议 开始】");
+                            long t1 = System.currentTimeMillis();
                             asyncProtocol.setOperateIdArr(operateIdArr);
                             wrieteToCustomer(ctx, asyncProtocol.parseContentAndRspone(data, ctx));
-                            log.info("【处理协议 结束】");
+                            log.info("【处理协议{} 结束 耗时：{}】",BaseTypeUtils.bytesToHexString(new byte[]{protocolType}), (System.currentTimeMillis() - t1));
                         } catch (Exception e) {
                             e.printStackTrace();
                             log.error("返回结果出错：" + e.getMessage());
@@ -254,12 +269,19 @@ public class ProtocolService {
             }else{
                 baseProtocol.setOperateIdArr(operateIdArr);
                 wrieteToCustomer(ctx, baseProtocol.parseContentAndRspone(data, ctx));
-            }
+            }*/
+            log.info("【处理协议{} 开始】", baseProtocol.getProtocolName());
+            long t1 = System.currentTimeMillis();
+            baseProtocol.setOperateIdArr(operateIdArr);
+            wrieteToCustomer(ctx, baseProtocol.parseContentAndRspone(data, ctx));
+            log.info("【处理协议{} 结束 耗时：{}】", baseProtocol.getProtocolName(), (System.currentTimeMillis() - t1));
 
         } catch (Exception e) {
             e.printStackTrace();
             log.error("返回结果出错：" + e.getMessage());
             wrieteToCustomer(ctx, getErrorRes(protocolType, operateIdArr));
+        } finally {
+
         }
 
     }

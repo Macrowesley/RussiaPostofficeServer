@@ -43,6 +43,12 @@ public class BalanceResultPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return "BalanceResultPortocol";
+    }
+
+
     /**
      * 解析并返回结果流
      *

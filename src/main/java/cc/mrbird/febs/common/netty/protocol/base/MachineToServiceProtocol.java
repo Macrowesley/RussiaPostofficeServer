@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 public abstract class MachineToServiceProtocol extends BaseProtocol {
 
 
+
     //预计一次操作的最长等待时间
     public static final long WAIT_TIME = 5L;
 
@@ -26,6 +27,12 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
      * @return
      */
     public abstract byte getProtocolType();
+
+    /**
+     * 获取协议名
+     * @return
+     */
+    public abstract String getProtocolName();
 
     /**
      * 解析并返回结果流 注意判断通道是否在缓存中
@@ -113,5 +120,7 @@ public abstract class MachineToServiceProtocol extends BaseProtocol {
         String resEntryctContent = AESUtils.encrypt(responseData, tempKey);
         return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
     }
+
+
 
 }

@@ -27,6 +27,10 @@ public class HeartPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return "HeartPortocol";
+    }
     /**
      * 解析并返回结果流
      * 测试使用：AA080001010101010106D0

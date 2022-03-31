@@ -20,7 +20,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @NoArgsConstructor
 @Component
-@Deprecated
+//@Deprecated
 public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
 
     @Autowired
@@ -53,6 +53,11 @@ public class QueryPrivateKeylPortocol extends MachineToServiceProtocol {
     @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
+    }
+
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
     }
 
     /**

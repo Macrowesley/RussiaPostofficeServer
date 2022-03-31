@@ -22,6 +22,8 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
     //SSH结果长度
     private static final int REQ_SSH_RES_LEN = 1;
 
+    private static final String OPERATION_NAME = "CloseSSHResultPortocol";
+
     public static CloseSSHResultPortocol closeSSHResultPortocol;
 
     @PostConstruct
@@ -42,6 +44,11 @@ public class CloseSSHResultPortocol extends MachineToServiceProtocol {
     @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
+    }
+
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
     }
 
     /**

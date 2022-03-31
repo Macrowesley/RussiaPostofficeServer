@@ -53,6 +53,10 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
     /**
      * 解析并返回结果流
      *
@@ -84,7 +88,6 @@ public class ChangeStatusPortocol extends MachineToServiceProtocol {
             unsigned char tail;					//0xD0
         }__attribute__((packed))status, *status;
          */
-        log.info("机器开始改变状态");
         String version = null;
         String res;
         try {

@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static cc.mrbird.febs.common.netty.protocol.machine.safe.QueryTemKeyPortocol.OPERATION_NAME;
+
 @Slf4j
 @NoArgsConstructor
 @Component
@@ -37,6 +39,7 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
     private static final int REQ_SSH_RES_LEN = 1;
 
     public static CancelPrintResultPortocol protocol;
+    private String OPERATION_NAME = "CancelPrintResultPortocol";
 
     @PostConstruct
     public void init(){
@@ -58,6 +61,10 @@ public class CancelPrintResultPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
     /**
      * 解析并返回结果流
      *

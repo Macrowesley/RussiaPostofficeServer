@@ -148,12 +148,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
             return;
         }
 
-        nettyServerHandler.taskExecutor.execute(new Runnable() {
+        nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
+        /*nettyServerHandler.taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
             }
-        });
+        });*/
     }
 
 

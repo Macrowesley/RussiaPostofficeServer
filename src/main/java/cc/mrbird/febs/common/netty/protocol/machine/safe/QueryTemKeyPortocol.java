@@ -44,6 +44,8 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
 
     public static QueryTemKeyPortocol queryTemKeyPortocol;
 
+    public static String OPERATION_NAME = "QueryTemKeyPortocol";
+
     @PostConstruct
     public void init(){
         queryTemKeyPortocol = this;
@@ -59,7 +61,12 @@ public class QueryTemKeyPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
-    public static String OPERATION_NAME = "QueryTemKeyPortocol";
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
+
 
     @Override
     public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {

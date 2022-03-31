@@ -29,6 +29,8 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
     //唯一id长度
     private static final int RES_UUID_LEN = 16;
 
+    public static String OPERATION_NAME = "QueryIDPortocol";
+
     @Autowired
     IDeviceService deviceService;
 
@@ -47,6 +49,11 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
     @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
+    }
+
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
     }
 
     @Override

@@ -24,6 +24,8 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
 
     public static OpenSSHResultPortocol openSSHResultPortocol;
 
+    private static final String OPERATION_NAME = "OpenSSHResultPortocol";
+
     @PostConstruct
     public void init(){
         openSSHResultPortocol = this;
@@ -41,6 +43,11 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
     @Override
     public byte getProtocolType() {
         return PROTOCOL_TYPE;
+    }
+
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
     }
 
     /**
