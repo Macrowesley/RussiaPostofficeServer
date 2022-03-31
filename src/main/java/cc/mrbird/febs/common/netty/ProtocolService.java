@@ -15,7 +15,6 @@ import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -90,10 +89,10 @@ public class ProtocolService {
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     //出问题了返回该结果
-    private byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
+    public byte[] emptyResBytes = new byte[]{(byte) 0xA0, (byte) 0xFF, (byte) 0xD0};
 
 
-//    @Async(FebsConstant.NETTY_ASYNC_POOL)
+ /*   @Async(FebsConstant.NETTY_ASYNC_POOL)
     public void parseAndResponse(SocketData msg, ChannelHandlerContext ctx) {
         byte[] data = msg.getContent();
         try {
@@ -119,7 +118,7 @@ public class ProtocolService {
             ReferenceCountUtil.release(msg);
             data = null;
         }
-    }
+    }*/
 
     /**
      * 服务端给客户端发送消息

@@ -2,7 +2,10 @@ package cc.mrbird.febs.common.netty;
 
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
+import cc.mrbird.febs.common.netty.protocol.machine.heart.HeartPortocol;
+import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
@@ -10,6 +13,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
 
     @Autowired
     ProtocolService protocolService;
+
+    @Autowired
+    HeartPortocol heartPortocol;
 
     @Autowired
     ChannelMapperManager channelMapperManager;
@@ -148,7 +155,31 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
             return;
         }
 
-        nettyServerHandler.protocolService.parseAndResponse(msg, ctx);
+        byte[] data = msg.getContent();
+        try {
+            //验证校验位 测试情况除外
+            if (!BaseTypeUtils.checkChkSum(data, data.length - 2) && !FebsConstant.IS_TEST_NETTY) {
+                log.error("校验位验证错误");
+                nettyServerHandler.protocolService.wrieteToCustomer(ctx, nettyServerHandler.protocolService.emptyResBytes);
+            }
+
+            //解析类型
+            byte protocolType = MachineToServiceProtocol.parseType(data);
+
+            if (protocolType == HeartPortocol.PROTOCOL_TYPE) {
+                byte[] operateIdArr = new byte[]{data[1], data[2]};
+                nettyServerHandler.heartPortocol.setOperateIdArr(operateIdArr);
+                nettyServerHandler.protocolService.wrieteToCustomer(ctx, nettyServerHandler.heartPortocol.parseContentAndRspone(data, ctx));
+            } else {
+                nettyServerHandler.protocolService.parseContentAndWrite(data, protocolType, ctx);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            ReferenceCountUtil.release(msg);
+            data = null;
+        }
+
         /*nettyServerHandler.taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
