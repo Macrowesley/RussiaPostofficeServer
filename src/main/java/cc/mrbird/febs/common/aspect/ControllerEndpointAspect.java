@@ -59,8 +59,8 @@ public class ControllerEndpointAspect extends BaseAspectSupport {
                 exceptionMessage = exceptionMessage.substring(1,exceptionMessage.length() - 1);
                 exceptionMessage = MessageUtils.getMessage(exceptionMessage);
             }
-            String error = FebsUtil.containChinese(message) ? exceptionMessage + "，" + message : exceptionMessage;
-            throw new FebsException(error);
+//            String error = FebsUtil.containChinese(message) ? exceptionMessage + "，" + message : exceptionMessage;
+            throw new FebsException(message);
         }
     }
 }

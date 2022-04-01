@@ -70,6 +70,11 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
     /**
      * 解析并返回结果流
      *
@@ -78,7 +83,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
         long t1 = System.currentTimeMillis();
         try {
@@ -96,7 +101,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
         }__attribute__((packed))Foreseens, *Foreseens;
          */
 
-            log.info("机器开始 Foreseens");
 
 
             //测试代码
@@ -154,7 +158,9 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 
                     //判断上一次打印是否闭环
                     PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
-                    if (dbPrintJob != null && dbPrintJob.getType() == PrintJobTypeEnum.Machine.getCode() && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
+//                    if (dbPrintJob != null && dbPrintJob.getType() == PrintJobTypeEnum.Machine.getCode() && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
+                    if (dbPrintJob != null && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
+//                    if (dbPrintJob != null) {
                         /**
                          * 特殊的情况：上次订单过程中，访问俄罗斯transaction接口时，没有访问成功，导致没有闭环，解决方案如下：
                          * 返回给机器一个状态，让机器直接再次发送transaction信息
@@ -190,7 +196,6 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
-            log.info("机器结束 Foreseens 耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
 /*

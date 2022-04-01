@@ -64,7 +64,12 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
     }
 
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
+    @Override
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
 
         /*
          * 发送机器表头号和时间戳，为了服务器能够通过表头号找到机器
@@ -84,7 +89,6 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
         String version = "";
         try {
             int pos = getBeginPos();
-            log.info("【协议】机器登录校验协议 开始");
 //            log.info("【协议】机器登录校验协议：  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));
             //解析表头号
             String acnum = BaseTypeUtils.byteToString(bytes, pos, REQ_ACNUM_LEN, BaseTypeUtils.UTF8);

@@ -96,6 +96,11 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
     /**
      * 解析并返回结果流
      *
@@ -104,7 +109,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
         try {
         /*
@@ -124,7 +129,6 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                 unsigned char tail;					//0xD0
             }__attribute__((packed))CheckService, *CheckService;
          */
-            log.info("机器开始 {}", OPERATION_NAME);
             if (!FebsConstant.IS_TEST_NETTY) {
                 //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
                 String key = ctx.channel().id().toString() + "_" + OPERATION_NAME;
@@ -353,7 +357,6 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + "error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.DefaultError.getCode());
         } finally {
-            log.info("机器结束 CheckServicePortocol");
         }
 
     }

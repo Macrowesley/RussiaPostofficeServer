@@ -68,6 +68,10 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
     /**
      * 解析并返回结果流
      *
@@ -76,7 +80,7 @@ public class UpdatePrivateKeyResultPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
         try {
         /*

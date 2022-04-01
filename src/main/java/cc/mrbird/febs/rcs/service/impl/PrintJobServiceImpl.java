@@ -161,11 +161,33 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             throw new FebsException(MessageUtils.getMessage("printJob.fillProductInfo"));
         }
 
+        //判断字符长度
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getAddress().length() <=1 ){
+                throw new FebsException("address length is too short");
+            }
+        }
+
+
+        //确定合同号是否正常
+        if(!contractService.checkIsExist(printJobAddDto.getContractCode())){
+            throw new FebsException("Contract not found");
+        }
+
+        //确定机器ID是否正常
+        if(!deviceService.checkExistByFmId(printJobAddDto.getFrankMachineId())){
+            throw new FebsException("FrankMachineId not found");
+        }
+
+        //todo 确定产品编号是否正常
+
+
         //确定上一个订单是否闭环
         PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
         if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
             throw new FebsException(MessageUtils.getMessage("printJob.waitLastOrderFinish"));
         }
+
 
         PrintJob printJob = new PrintJob();
         BeanUtils.copyProperties(printJobAddDto, printJob);

@@ -50,6 +50,11 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
     /**
      * 解析并返回结果流
      *
@@ -58,7 +63,7 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         String version = null;
         long t1 = System.currentTimeMillis();
         try {
@@ -75,7 +80,6 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
                 unsigned char tail;					//0xD0
             }__attribute__((packed))TransactionMsg, *TransactionMsg;
              */
-            log.info("机器开始 transactionMsg");
 
             if (!FebsConstant.IS_TEST_NETTY){
                 //防止频繁操作 需要时间，暂时假设一次闭环需要1分钟，成功或者失败都返回结果
@@ -121,7 +125,6 @@ public class TransactionMsgPortocol extends MachineToServiceProtocol {
             log.error(OPERATION_NAME + " error info = " + e.getMessage());
             return getErrorResult(ctx, version, OPERATION_NAME);
         } finally {
-            log.info("机器结束 transactionMsg 耗时：" + (System.currentTimeMillis() - t1) );
         }
     }
 

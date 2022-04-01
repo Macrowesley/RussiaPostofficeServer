@@ -24,6 +24,8 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
 
     public static OpenSSHResultPortocol openSSHResultPortocol;
 
+    private static final String OPERATION_NAME = "OpenSSHResultPortocol";
+
     @PostConstruct
     public void init(){
         openSSHResultPortocol = this;
@@ -43,6 +45,11 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
         return PROTOCOL_TYPE;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
     /**
      * 解析并返回结果流
      *
@@ -51,7 +58,7 @@ public class OpenSSHResultPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         /*
         typedef  struct{
             unsigned char head;				    //0xAA

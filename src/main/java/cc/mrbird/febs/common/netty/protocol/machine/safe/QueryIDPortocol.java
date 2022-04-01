@@ -29,6 +29,8 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
     //唯一id长度
     private static final int RES_UUID_LEN = 16;
 
+    public static String OPERATION_NAME = "QueryIDPortocol";
+
     @Autowired
     IDeviceService deviceService;
 
@@ -50,7 +52,12 @@ public class QueryIDPortocol extends MachineToServiceProtocol {
     }
 
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
+
+    @Override
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         try {
             int pos = getBeginPos();
             log.info("【协议】获取唯一id：  开始" + " 全部内容：" + BaseTypeUtils.byteToString(bytes, BaseTypeUtils.UTF8) + " 字节内容：" + BaseTypeUtils.bytesToHexString(bytes));

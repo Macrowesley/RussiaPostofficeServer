@@ -41,6 +41,8 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
 
     public static ClickPrintResultPortocol protocol;
 
+    private String OPERATION_NAME = "ClickPrintResultPortocol";
+
     @PostConstruct
     public void init(){
         protocol = this;
@@ -51,6 +53,10 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
         return protocol;
     }
 
+    @Override
+    public String getProtocolName() {
+        return OPERATION_NAME;
+    }
 
     /**
      * 获取协议类型
@@ -69,7 +75,7 @@ public class ClickPrintResultPortocol extends MachineToServiceProtocol {
      * @return
      */
     @Override
-    public synchronized byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
+    public byte[] parseContentAndRspone(byte[] bytes, ChannelHandlerContext ctx) throws Exception {
         try {
         /*
         typedef  struct{
