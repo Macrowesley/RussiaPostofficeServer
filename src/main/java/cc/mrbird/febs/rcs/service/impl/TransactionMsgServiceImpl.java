@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
+import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.rcs.api.CheckUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
@@ -26,15 +27,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.CollectionOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * 交易表 Service实现
@@ -58,7 +65,18 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     IPrintJobService printJobService;
 
     @Autowired
+    RedisService redisService;
+
+    @Autowired
     CheckUtils checkUtils;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    /**
+     * 是否使用mongodb保存数据
+     */
+    boolean useMongodb = true;
 
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
@@ -70,6 +88,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
     @Override
     public List<TransactionMsg> findTransactionMsgs(TransactionMsg transactionMsg) {
+        if(useMongodb){
+            return this.mongoTemplate.findAll(TransactionMsg.class);
+        }
 	    LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
 		// TODO 设置查询条件
 		return this.baseMapper.selectList(queryWrapper);
@@ -78,8 +99,24 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
-        System.out.println("transactionMsg:"+ JSON.toJSONString(transactionMsg));
-        this.save(transactionMsg);
+        if(useMongodb){
+                transactionMsg.setAmount(100L);
+                transactionMsg.setCode("2102");
+                transactionMsg.setCount(589L);
+                transactionMsg.setCreatedTime(new Date());
+                transactionMsg.setDmMsg("01PM64313100022032210020000000605000500020110001000001770020");
+                transactionMsg.setFrankMachineId("PM100200");
+                transactionMsg.setStatus("2");
+                transactionMsg.setTransactionId("58702413-b657-484b-81c0-c7899dc2c5b7");
+                transactionMsg.setId(redisService.getIncr("msgId"));
+                this.saveMsgToMongodb(transactionMsg);
+        }else{
+            this.save(transactionMsg);
+        }
+    }
+
+    private void saveMsgToMongodb(TransactionMsg transactionMsg) {
+        this.mongoTemplate.insert(transactionMsg);
     }
 
     @Override
@@ -129,12 +166,32 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         return this.baseMapper.selectList(wrapper);
     }
 
+    /**
+     * 获取数据库最新消息
+     * @param transactionId
+     * @return
+     */
     @Override
     public TransactionMsg getLastestMsg(String transactionId) {
-        LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(TransactionMsg::getTransactionId, transactionId);
-        queryWrapper.orderByDesc(TransactionMsg::getId).last("limit 1");
-        return this.getOne(queryWrapper);
+        TransactionMsg transactionMsg = null;
+        if(useMongodb){
+            List<TransactionMsg> transactionMsgList = selectByTransactionIdInMongdb(transactionId);
+            if(transactionMsgList.size()>0){
+                transactionMsg =  transactionMsgList.get(transactionMsgList.size()-1);
+            }
+        }else{
+            LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(TransactionMsg::getTransactionId, transactionId);
+            queryWrapper.orderByDesc(TransactionMsg::getId).last("limit 1");
+            transactionMsg = this.getOne(queryWrapper);
+        }
+        return transactionMsg;
+
+    }
+
+    private List<TransactionMsg> selectByTransactionIdInMongdb(String transactionId) {
+        // mongoTemplate.find (new Query(Criteria.where("onumber").is("002")),entityClass)
+        return mongoTemplate.find(new Query(Criteria.where("transaction_id").is(transactionId)).with(Sort.by(Sort.Order.asc("_id"))),TransactionMsg.class);
     }
 
     @Override
@@ -382,4 +439,5 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         return this.getDmMsgDetail(transactionMsgList, true, needProductPrintCount);
     }
+
 }

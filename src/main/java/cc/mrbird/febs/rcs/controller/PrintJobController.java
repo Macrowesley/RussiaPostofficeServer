@@ -141,6 +141,7 @@ public class PrintJobController extends BaseController {
         try {
             this.printJobService.doPrintJob(id);
         } catch (Exception e) {
+            e.printStackTrace();
             return new FebsResponse().success().data(e.getMessage());
         }
         return new FebsResponse().success().data("ok");

@@ -46,7 +46,7 @@ public class TransactionMsgController extends BaseController {
 
     @GetMapping("transactionMsg")
     @ResponseBody
-    @RequiresPermissions("transactionMsg:list")
+    //@RequiresPermissions("transactionMsg:list")
     public FebsResponse getAllTransactionMsgs(TransactionMsg frank) {
         return new FebsResponse().success().data(transactionMsgService.findTransactionMsgs(frank));
     }
@@ -62,9 +62,13 @@ public class TransactionMsgController extends BaseController {
     @ControllerEndpoint(operation = "新增TransactionMsg", exceptionMessage = "新增TransactionMsg失败")
     @PostMapping("transactionMsg")
     @ResponseBody
-    @RequiresPermissions("transactionMsg:add")
+//    @RequiresPermissions("transactionMsg:add")
     public FebsResponse addTransactionMsg(@Valid TransactionMsg frank) {
-        this.transactionMsgService.createTransactionMsg(frank);
+        try{
+            this.transactionMsgService.createTransactionMsg(frank);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return new FebsResponse().success();
     }
 
