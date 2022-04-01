@@ -34,6 +34,7 @@ import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +81,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
+        //如何考虑切换为到mongodb?
         LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
         Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
@@ -116,21 +118,36 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     private void saveMsgToMongodb(TransactionMsg transactionMsg) {
+
         this.mongoTemplate.insert(transactionMsg);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTransactionMsg(TransactionMsg transactionMsg) {
+        if(useMongodb){
+//            Query query = new Query();
+//            query.addCriteria(Criteria.where("_id").is(transactionMsg.getId()));
+//            Update update = new Update();
+//            update.set("count",transactionMsg.getCount());
+//            return this.mongoTemplate.upsert(TransactionMsg);
+            mongoTemplate.update(TransactionMsg.class);
+        }
         this.saveOrUpdate(transactionMsg);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteTransactionMsg(TransactionMsg transactionMsg) {
-        LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
-	    // TODO 设置删除条件
-	    this.remove(wrapper);
+        if(useMongodb){
+            Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
+            mongoTemplate.remove(query, TransactionMsg.class);
+        }else{
+            LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
+            // TODO 设置删除条件
+            this.remove(wrapper);
+        }
+
 	}
 
     @Override
