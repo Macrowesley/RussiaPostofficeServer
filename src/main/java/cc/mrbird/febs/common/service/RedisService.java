@@ -22,21 +22,6 @@ public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     /**
-     * @Description: 获取自增长值
-     * @param key key
-     * @return
-     */
-    public synchronized Long getIncr(String key) {
-        Long increment = incr(key, 1L);
-
-        if (increment == 0){
-            set(key,1);
-            return 1L;
-        }
-        return increment;
-    }
-
-    /**
      * 指定缓存失效时间
      *
      * @param key  键
