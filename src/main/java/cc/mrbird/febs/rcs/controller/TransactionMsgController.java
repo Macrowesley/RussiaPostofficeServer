@@ -73,13 +73,27 @@ public class TransactionMsgController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "删除TransactionMsg", exceptionMessage = "删除TransactionMsg失败")
+    @GetMapping("transactionMsg/deleteBySchedule")
+    @ResponseBody
+//    @RequiresPermissions("transactionMsg:delete")
+    public FebsResponse deleteTransactionMsgBySchedule(TransactionMsg frank) {
+        try{
+            this.transactionMsgService.deleteTransactionMsgBySchedule();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new FebsResponse().success();
+    }
+
+    @ControllerEndpoint(operation = "删除TransactionMsg", exceptionMessage = "删除TransactionMsg失败")
     @GetMapping("transactionMsg/delete")
     @ResponseBody
-    @RequiresPermissions("transactionMsg:delete")
+//    @RequiresPermissions("transactionMsg:delete")
     public FebsResponse deleteTransactionMsg(TransactionMsg frank) {
         this.transactionMsgService.deleteTransactionMsg(frank);
         return new FebsResponse().success();
     }
+
 
     @ControllerEndpoint(operation = "修改TransactionMsg", exceptionMessage = "修改TransactionMsg失败")
     @PostMapping("transactionMsg/update")
