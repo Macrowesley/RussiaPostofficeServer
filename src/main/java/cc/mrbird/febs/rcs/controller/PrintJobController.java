@@ -64,6 +64,9 @@ public class PrintJobController extends BaseController {
     @Autowired
     LicenseVerifyUtils verifyUtils;
 
+    @Autowired
+    ITransactionMsgService iTransactionMsgService;
+
 //    @GetMapping("select/tree")
 //    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
 //    public List<DeptTree<Dept>> getFlowTree() throws FebsException {

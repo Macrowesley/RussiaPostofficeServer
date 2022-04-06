@@ -91,23 +91,19 @@
         }[cur_status];
     }}
     <span  class="{{status.class}}">{{ status.title }}</span>
-<!--    <span>{{ status.title }}</span>-->
-    <!--<div><span id="machine-  + {{d.id}}" ></span>666</div>-->
 </script>
 <script type="text/html" id="printJob-option">
     <span shiro:lacksPermission="printJob:add,printJob:update,printJob:delete">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
-    <!--<a lay-event="detail" shiro:hasPermission="printJob:view"><i
-            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
-    <a lay-event="edit" shiro:hasPermission="printJob:update"><i
+    <!--<a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
     <a lay-event="detail" th:text="#{printJob.detail}" id="printDetail"></a>
     <!--<a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
     <a lay-event="printJob" shiro:hasPermission="printJob:view" th:text="#{printJob.operation2}" id="printLabal"></a>
 <!--    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>-->
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}" id="editLablal"></a>
-<!--    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.check}" id="checkLablal"></a>-->
+    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
     let flag1 = true;
@@ -162,8 +158,6 @@
 
             //搜索点击事件
             $query.on('click', function () {
-                /*var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-                tableIns.reload({where: params, page: {curr: 1}});*/
                 queryTable(1);
             });
 
@@ -183,7 +177,6 @@
 
             //添加订单 点击事件
             $add.on('click', function () {
-                // alert("添加订单")
                 febs.modal.open(i18n("printJob.addprintJob"), 'rcs/printJob/add', {
                     btn: [i18n("submit"), i18n("reset")],
                     area: $(window).width() <= 750 ?  ['95%', '95%'] : ['80%', '95%'],
@@ -204,42 +197,8 @@
                 elem: $view.find('.action-more'),
                 click: function (name, elem, event) {
                     var checkStatus = table.checkStatus('printJobTable');
-                   /* if (name === 'add') {
-
-
-                    }*/
-                    /*if (name === 'delete') {
-                        if (!checkStatus.data.length) {
-                            febs.alert.warn('请选择需要删除的设备');
-                        } else {
-                            febs.modal.confirm('删除设备', '确定删除该设备？', function () {
-                                var printJobIds = [];
-                                layui.each(checkStatus.data, function (key, item) {
-                                    printJobIds.push(item.printJobId)
-                                });
-                                deleteprintJobs(printJobIds.join(','));
-                            });
-                        }
-                    }*/
-
-                   /* if (name === 'export') {
-                        var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-                        params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
-                        params.pageNum = $view.find(".layui-laypage-em").next().html();
-                        /!*console.log(params)
-                        return;*!/
-                        febs.download(ctx + 'printJob/excel', params, i18n("printJob.list")+'.xlsx');
-                    }*/
                 },
-                options: [/*{
-                    name: 'add',
-                    title: i18n("printJob.addprintJob"),
-                    perms: 'printJob:add'
-                },*/ /*{
-                    name: 'delete',
-                    title: '删除设备',
-                    perms: 'printJob:delete'
-                },*/ {
+                options: [{
                     name: 'export',
                     title: i18n("exportExcel"),
                     perms: 'printJob:export'
@@ -256,7 +215,6 @@
                 id: 'printJobTable',
                 url: ctx + 'printJob/list',
                 cols: [[
-                    //{type: 'checkbox'},
                     {field: 'id', title: i18n("printJob.code"), minWidth: 100},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},
                     {field: 'foreseenId', title: i18n("printJob.foreseenId"), event:'foreseenInfo', minWidth: 100,id: 'transactionIdColor', style: 'color:#2db7f5'},
@@ -277,12 +235,6 @@
 
                         var data = obj.data,
                             layEvent = obj.event;
-                        /*
-                    if (layEvent === 'del') {
-                        febs.modal.confirm('删除设备', '确定删除该设备？', function () {
-                            deleteprintJobs(data.printJobId);
-                        });
-                    }*/
 
                         if (layEvent === 'detail') {
                             febs.modal.view(i18n("printJob.detail"), 'rcs/printJob/detail/' + data.id, {
@@ -312,26 +264,11 @@
                             febs.alert.success(i18n("printJob.cannotEdit"))
                         }
 
-                        if (layEvent === 'operation1') {
-                            // alert("1")
-                        }
-
-                        //document.getElementById("a").onclick = "alert(1)";
-                        //$('a span').click();
                         //点击第二次才执行
                         if (layEvent === 'printJob') {
                             if(flag1==true) {
-                                //console.log(11)
-                                //$(this).css("color", "#CCC");
-                                //$("#editLablal").css("color","#CCC");
                                 var timer = setTimeout(turnBack, 5000);
                                 flag1 = false;
-
-                                //$("#printLabal").attr("disabled",true);
-
-                                // if(this.color=="#CCC"){
-                                //     console.log(33)
-                                // }
                                 $('#printLabal').attr('disabled', 'disabled');
                                 febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
 
@@ -342,26 +279,16 @@
                                     // febs.alert.error(i18n("febs.operationFail"))
                                     febs.alert.error(res.data)
                                 }
-                                //console.log(JSON.stringify(res))
-                                // queryTable(1);
                             })
-                            //noMoreClick();
-
-                                // $("a").one("click",function(){
-                                //     $(this).click(function (){
-                                //         console.log("1禁止处理中")
-                                //         return false;
-                                //     });
-                                //     console.log("禁止完成")
-                                // });
-                                //console.log("flag:" + flag)
                             }else{
                                 febs.alert.success(i18n("printJob.holdon"))
                             }
                         }
 
                         if(layEvent === 'printCheck'){
-
+                            febs.modal.view(i18n("printJob.MsgCheck"), 'rcs/printJob/msgDetail/' + data.id, {
+                                area: $(window).width() <= 750 ? '95%' : '660px'
+                            });
                         }
 
                         //todo 需要点击后不能再次点击
@@ -374,12 +301,10 @@
                                     febs.alert.error(res.message)
                                 }
                                 console.log(JSON.stringify(res))
-                                // queryTable(0);
                             })
                         }
 
                     if (layEvent === 'foreseenInfo') {
-                    //alert(JSON.stringify(data))
                         if(null != data.foreseenId && 0 != data.foreseenId.length){
                             febs.modal.view(i18n("foreseen.detail"), 'rcs/foreseen/detail/' + data.foreseenId, {
                                 area: $(window).width() <= 750 ? '95%' : '660px'
@@ -387,7 +312,6 @@
                         }else{
                             febs.alert.success(i18n("printJob.isNull"))
                         }
-
                     }
 
                     if (layEvent === 'transactionInfo') {
@@ -435,9 +359,7 @@
             //
             //             //发送ajax请求
             //
-            //
             //             //同步更新表格和缓存对应的值
-            //
             //
             //             obj.update({
             //                 sign:value
@@ -451,7 +373,6 @@
             //alert("恢复打印")
             $("#printLabal").css("color","#2db7f5");
             $("#editLablal").css("color","#2db7f5");
-            //$(this).click(function (){return true;});
             //定时恢复flag为true
             flag1 = true;
             flag2 = true;

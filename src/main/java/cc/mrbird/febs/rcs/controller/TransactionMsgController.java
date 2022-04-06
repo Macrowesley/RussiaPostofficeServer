@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,11 @@ public class TransactionMsgController extends BaseController {
     @ResponseBody
     //@RequiresPermissions("transactionMsg:list")
     public FebsResponse getAllTransactionMsgs(TransactionMsg frank) {
-        return new FebsResponse().success().data(transactionMsgService.findTransactionMsgs(frank));
+        List<TransactionMsg> transactionMsgs = transactionMsgService.findTransactionMsgs(frank);
+        Map<String, Object> data = new HashMap<>(2);
+        data.put("rows", transactionMsgs);
+        data.put("total", transactionMsgs.size());
+        return new FebsResponse().success().data(data);
     }
 
     @GetMapping("transactionMsg/list")

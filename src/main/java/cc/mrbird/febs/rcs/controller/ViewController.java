@@ -8,10 +8,7 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
-import cc.mrbird.febs.rcs.entity.Foreseen;
-import cc.mrbird.febs.rcs.entity.ForeseenProduct;
-import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.entity.Transaction;
+import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Controller("RcsView")
@@ -49,6 +47,9 @@ public class ViewController extends BaseController{
 
     @Autowired
     ITransactionService transactionService;
+
+    @Autowired
+    ITransactionMsgService iTransactionMsgService;
 
     @GetMapping("/contract")
     @RequiresPermissions("contract:view")
@@ -126,6 +127,17 @@ public class ViewController extends BaseController{
         //printJobAddDto.setProducts(foreseenProduct);
         //System.out.println("printJobAddDto:"+JSON.toJSONString(printJobAddDto));
         return FebsUtil.view("rcs/printJob/printJobUpdate");
+    }
+
+    @GetMapping("/printJob/msgDetail/{id}")
+    @RequiresPermissions("printJob:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String msgDetail(@PathVariable int id, Model model) {
+        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
+        //根据TransactionId查找TransactionMsg列表
+        List<TransactionMsg> list = iTransactionMsgService.selectByTransactionId(printJob.getTransactionId());
+        model.addAttribute("transactionMsgList",list);
+        return FebsUtil.view("rcs/printJob/msgDetail");
     }
 
     @GetMapping("/foreseen/detail/{foreseenId}")
