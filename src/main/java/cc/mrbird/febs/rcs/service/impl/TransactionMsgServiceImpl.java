@@ -112,15 +112,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
-//                transactionMsg.setAmount(100L);
-//                transactionMsg.setCode("2102");
-//                transactionMsg.setCount(589L);
-//                transactionMsg.setCreatedTime(new Date());//mongdb中偏差8H
-//            log.info(new Date().toString());//Sat Apr 02 13:27:10 CST 2022
-//                transactionMsg.setDmMsg("01PM64313100022032210020000000605000500020110001000001770020");
-//                transactionMsg.setFrankMachineId("PM100200");
-//                transactionMsg.setStatus("1");
-//                transactionMsg.setTransactionId("58702413-b657-484b-81c0-c7899dc2c5b7");
                 transactionMsg.setId(redisService.getIncr("msgId"));
                 this.saveMsgToMongodb(transactionMsg);
         }else{
@@ -144,9 +135,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 //            Update update = new Update();
 //            update.set("count",transactionMsg.getCount());
 //            return this.mongoTemplate.upsert(TransactionMsg);
-            this.saveOrUpdate(transactionMsg);
+            mongoTemplate.update(TransactionMsg.class);
         }
-
+        this.saveOrUpdate(transactionMsg);
     }
 
     @Override
@@ -155,12 +146,10 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         if(useMongodb){
             Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
             mongoTemplate.remove(query, TransactionMsg.class);
-        }else{
             LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
             // TODO 设置删除条件
             this.remove(wrapper);
         }
-
 	}
 
     @Override
@@ -190,16 +179,14 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
      */
     @Override
     public List<TransactionMsg> selectByTransactionId(String transactionId) {
-        List<TransactionMsg> list = null;
-        if(useMongodb){
-            list = mongoTemplate.find(new Query(Criteria.where("transaction_id").is(transactionId)).with(Sort.by(Sort.Order.asc("_id"))),TransactionMsg.class);
-        }else{
+        if (useMongodb) {
+            return selectByTransactionIdInMongdb(transactionId);
+        } else {
             LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(TransactionMsg::getTransactionId, transactionId);
             wrapper.orderByAsc(TransactionMsg::getId);
-            list = this.baseMapper.selectList(wrapper);
+            return this.baseMapper.selectList(wrapper);
         }
-        return list;
     }
 
     /**
