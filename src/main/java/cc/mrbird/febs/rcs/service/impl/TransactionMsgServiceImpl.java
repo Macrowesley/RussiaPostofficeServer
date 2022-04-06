@@ -19,14 +19,20 @@ import cc.mrbird.febs.rcs.mapper.TransactionMsgMapper;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import cc.mrbird.febs.rcs.service.ITransactionService;
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.gridfs.GridFSFindIterable;
+import com.mongodb.client.model.IndexOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -34,14 +40,19 @@ import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 交易表 Service实现
@@ -80,6 +91,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
+        //如何考虑切换为到mongodb?
         LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
         // TODO 设置查询条件
         Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
@@ -108,12 +120,21 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     private void saveMsgToMongodb(TransactionMsg transactionMsg) {
+
         this.mongoTemplate.insert(transactionMsg);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateTransactionMsg(TransactionMsg transactionMsg) {
+        if(useMongodb){
+//            Query query = new Query();
+//            query.addCriteria(Criteria.where("_id").is(transactionMsg.getId()));
+//            Update update = new Update();
+//            update.set("count",transactionMsg.getCount());
+//            return this.mongoTemplate.upsert(TransactionMsg);
+            mongoTemplate.update(TransactionMsg.class);
+        }
         this.saveOrUpdate(transactionMsg);
     }
 
@@ -123,7 +144,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         if(useMongodb){
             Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
             mongoTemplate.remove(query, TransactionMsg.class);
-        }else {
             LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
             // TODO 设置删除条件
             this.remove(wrapper);
@@ -439,6 +459,32 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     public DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount ) {
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         return this.getDmMsgDetail(transactionMsgList, true, needProductPrintCount);
+    }
+
+    @Override
+    public void deleteTransactionMsgBySchedule() {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        final SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd" );
+
+        Date date = new Date();
+        Format format = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            date = df.parse(format.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        final java.util.Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime( date );
+        cal.add( GregorianCalendar.MONTH, -6 );
+        criteria.and("created_time").lte(date);
+        criteria.andOperator(criteria.where("status").is("2"));
+        query.addCriteria(criteria);
+        List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
+        log.info("删除前查找："+list.toString());
+        mongoTemplate.remove(query,"rcs_transaction_msg");
+        log.info("删除成功");
     }
 
 }

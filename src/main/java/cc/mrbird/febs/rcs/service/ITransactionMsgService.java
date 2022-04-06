@@ -7,6 +7,7 @@ import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -104,4 +105,5 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      */
     DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount);
 
+    void deleteTransactionMsgBySchedule() throws ParseException, Exception;
 }
