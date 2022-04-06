@@ -100,14 +100,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
-//                transactionMsg.setAmount(100L);
-//                transactionMsg.setCode("2102");
-//                transactionMsg.setCount(589L);
-//                transactionMsg.setCreatedTime(new Date());
-//                transactionMsg.setDmMsg("01PM64313100022032210020000000605000500020110001000001770020");
-//                transactionMsg.setFrankMachineId("PM100200");
-//                transactionMsg.setStatus("2");
-//                transactionMsg.setTransactionId("58702413-b657-484b-81c0-c7899dc2c5b7");
                 transactionMsg.setId(redisService.getIncr("msgId"));
                 this.saveMsgToMongodb(transactionMsg);
         }else{
