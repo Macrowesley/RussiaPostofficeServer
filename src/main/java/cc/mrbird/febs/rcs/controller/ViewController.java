@@ -88,8 +88,6 @@ public class ViewController extends BaseController{
 //    @RequiresPermissions("printJob:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String printJobAdd(Model model) {
-
-        //System.out.println("执行printjob的add方法");
         return FebsUtil.view("rcs/printJob/printJobAdd");
     }
 
@@ -98,12 +96,8 @@ public class ViewController extends BaseController{
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String printDetail(@PathVariable int id, Model model) {
         PrintJob printJob = iPrintJobService.getByPrintJobId(id);
-        //System.out.println(JSON.toJSONString(printJob));
         ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
-        //System.out.println(JSON.toJSONString(foreseenProduct));
         PrintJobAddDto printJobAddDto = null;
-//        PrintJob printJob1=null;
-//        BeanUtils.copyProperties(printJob,printJob1);
         model.addAttribute("printJob",printJob);
         model.addAttribute("foreseenProduct",foreseenProduct);
         //printJobAddDto.setProducts(foreseenProduct);
@@ -129,20 +123,16 @@ public class ViewController extends BaseController{
         return FebsUtil.view("rcs/printJob/printJobUpdate");
     }
 
-    @GetMapping("/printJob/msgDetail/{id}")
+    @GetMapping("/printJob/msgDetail/{transactionId}")
     @RequiresPermissions("printJob:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
-    public String msgDetail(@PathVariable int id, Model model) {
-        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
-        //根据TransactionId查找TransactionMsg列表
-        List<TransactionMsg> list = iTransactionMsgService.selectByTransactionId(printJob.getTransactionId());
-        model.addAttribute("transactionMsgList",list);
+    public String msgDetail(@PathVariable String transactionId, Model model) {
+//        model.addAttribute("transactionId",transactionId);
         return FebsUtil.view("rcs/printJob/msgDetail");
     }
 
     @GetMapping("/foreseen/detail/{foreseenId}")
     public String foreseenInfo(@PathVariable String foreseenId, Model model) {
-        log.info("得到的foreseenid={}",foreseenId);
         Foreseen foreseen = foreseenService.getForeseenDetail(foreseenId);
         log.info("详情 foreseen = " + foreseen.toString());
         model.addAttribute("foreseen", foreseen);

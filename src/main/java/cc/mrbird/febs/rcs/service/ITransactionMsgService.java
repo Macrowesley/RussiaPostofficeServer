@@ -29,10 +29,10 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
     /**
      * 查询（所有）
      *
-     * @param transactionMsg transactionMsg
+     * @param String transactionId
      * @return List<TransactionMsg>
      */
-    List<TransactionMsg> findTransactionMsgs(TransactionMsg transactionMsg);
+    List<TransactionMsg> findTransactionMsgs(String transactionId);
 
     /**
      * 新增
@@ -105,5 +105,5 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      */
     DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount);
 
-    void deleteTransactionMsgBySchedule() throws ParseException, Exception;
+    void deleteTransactionMsgBySchedule() throws Exception;
 }

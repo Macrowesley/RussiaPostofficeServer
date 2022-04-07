@@ -8,7 +8,6 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import com.wuwenze.poi.ExcelKit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +46,9 @@ public class TransactionMsgController extends BaseController {
 
     @GetMapping("transactionMsg")
     @ResponseBody
-    //@RequiresPermissions("transactionMsg:list")
-    public FebsResponse getAllTransactionMsgs(TransactionMsg frank) {
-        List<TransactionMsg> transactionMsgs = transactionMsgService.findTransactionMsgs(frank);
+    @RequiresPermissions("transactionMsg:list")
+    public FebsResponse getAllTransactionMsgs(String transactionId) {
+        List<TransactionMsg> transactionMsgs = transactionMsgService.findTransactionMsgs(transactionId);
         Map<String, Object> data = new HashMap<>(2);
         data.put("rows", transactionMsgs);
         data.put("total", transactionMsgs.size());
@@ -65,9 +64,9 @@ public class TransactionMsgController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "新增TransactionMsg", exceptionMessage = "新增TransactionMsg失败")
-    @PostMapping("transactionMsg")
+    @PostMapping("transactionMsg/add")
     @ResponseBody
-//    @RequiresPermissions("transactionMsg:add")
+    @RequiresPermissions("transactionMsg:add")
     public FebsResponse addTransactionMsg(@Valid TransactionMsg frank) {
         try{
             this.transactionMsgService.createTransactionMsg(frank);
@@ -77,11 +76,11 @@ public class TransactionMsgController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "删除TransactionMsg", exceptionMessage = "删除TransactionMsg失败")
+    @ControllerEndpoint(operation = "定时删除TransactionMsg", exceptionMessage = "删除TransactionMsg失败")
     @GetMapping("transactionMsg/deleteBySchedule")
     @ResponseBody
-//    @RequiresPermissions("transactionMsg:delete")
-    public FebsResponse deleteTransactionMsgBySchedule(TransactionMsg frank) {
+    @RequiresPermissions("transactionMsg:delete")
+    public FebsResponse deleteTransactionMsgBySchedule() {
         try{
             this.transactionMsgService.deleteTransactionMsgBySchedule();
         }catch (Exception e){
@@ -93,7 +92,7 @@ public class TransactionMsgController extends BaseController {
     @ControllerEndpoint(operation = "删除TransactionMsg", exceptionMessage = "删除TransactionMsg失败")
     @GetMapping("transactionMsg/delete")
     @ResponseBody
-//    @RequiresPermissions("transactionMsg:delete")
+    @RequiresPermissions("transactionMsg:delete")
     public FebsResponse deleteTransactionMsg(TransactionMsg frank) {
         this.transactionMsgService.deleteTransactionMsg(frank);
         return new FebsResponse().success();

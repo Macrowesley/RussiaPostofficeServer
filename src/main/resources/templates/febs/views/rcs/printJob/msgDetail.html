@@ -4,6 +4,7 @@
             <div class="layui-card">
                 <div class="layui-card-body febs-table-full">
                     <table lay-filter="transactionMsgTable" lay-data="{id: 'transactionMsgTable'}"></table>
+                    <input id="transactionId" type="hidden" th:value="${transactionId}" />
                 </div>
             </div>
         </div>
@@ -18,24 +19,30 @@
             tableIns;
 
         form.render();
+        var transactionId = $("#transactionId").val();
 
-        initTable();
+        myInitTable();
 
         /**
          *初始化表格
          */
-        function initTable() {
-            tableIns = febs.table.init({
-                elem: $view.find('table'),
-                id: 'transactionMsgTable',
-                url: ctx + 'transactionMsg',
-                cols: [[
-                    {field: 'id', title: i18n("transactionMsg.id"), minWidth: 100},
-                    {field: 'transactionId', title: i18n("transaction.id"), minWidth: 100},
-                    {field: 'dmMsg', title: i18n("transactionMsg.dmMsg"), minWidth: 300}
-                ]]
-            });
-        }
+         function myInitTable() {
+             tableIns = febs.table.init({
+                 elem: $view.find('table'),
+                 id: 'transactionMsgTable',
+                 url: ctx + 'transactionMsg',
+                 where:{
+                   transactionId: transactionId
+                 },
+                 cols: [[
+                     {field: 'id', title: i18n("transactionMsg.id"), minWidth: 100},
+                     {field: 'transactionId', title: i18n("transaction.id"), minWidth: 100},
+                     {field: 'dmMsg', title: i18n("transactionMsg.dmMsg"), minWidth: 300}
+                 ]]
+             });
+
+         }
+
     })
 </script>
 

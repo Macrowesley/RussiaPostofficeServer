@@ -286,7 +286,7 @@
                         }
 
                         if(layEvent === 'printCheck'){
-                            febs.modal.view(i18n("printJob.MsgCheck"), 'rcs/printJob/msgDetail/' + data.id, {
+                            febs.modal.view(i18n("printJob.MsgCheck"), 'rcs/printJob/msgDetail/' + data.transactionId, {
                                 area: $(window).width() <= 750 ? '95%' : '660px'
                             });
                         }
@@ -335,38 +335,6 @@
                     })
                 });
             });
-
-            //监听行单机
-            //layuiTable.on('row(tabEmployee)', function (obj) {}
-            //监听单元格事件,点击显示交易明细弹窗
-            // table.on('row(printJobTable)',function (obj) {
-            //     let event = obj.event;
-            //     let row = obj.data;
-            //     console.info("click call", obj);
-            //     if (event === "pro-view") {
-            //         // 处理你的业务逻辑
-            //         alert("点击生效")
-            //     }
-            //     alert(11)
-            //     var data = obj.table;
-            //     if(obj.event==='setSign'){
-            //         layer.prompt({
-            //             formType:2,
-            //             title:'修改ID为'+data.id+'用户',
-            //             value:data.sign
-            //         },function (value,index) {
-            //             layer.close(index);
-            //
-            //             //发送ajax请求
-            //
-            //             //同步更新表格和缓存对应的值
-            //
-            //             obj.update({
-            //                 sign:value
-            //             });
-            //         });
-            //     }
-            // })
         }
 
         function turnBack() {

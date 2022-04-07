@@ -99,9 +99,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     @Override
-    public List<TransactionMsg> findTransactionMsgs(TransactionMsg transactionMsg) {
+    public List<TransactionMsg> findTransactionMsgs(String transactionId) {
         if(useMongodb){
-            return this.mongoTemplate.findAll(TransactionMsg.class);
+            return this.mongoTemplate.find(new Query(Criteria.where("transaction_id").is(transactionId)).with(Sort.by(Sort.Order.asc("_id"))),TransactionMsg.class);
         }
 	    LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
 		// TODO 设置查询条件
@@ -120,7 +120,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     private void saveMsgToMongodb(TransactionMsg transactionMsg) {
-
         this.mongoTemplate.insert(transactionMsg);
     }
 
@@ -128,11 +127,13 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void updateTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
-            mongoTemplate.update(TransactionMsg.class);
+            Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
+            Update update = new Update();
+            update.set("_id", transactionMsg.getId());
+            mongoTemplate.upsert(query,update,TransactionMsg.class,"transactionMsg");
         }else{
             this.saveOrUpdate(transactionMsg);
         }
-
     }
 
     @Override
@@ -210,7 +211,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     }
 
     private List<TransactionMsg> selectByTransactionIdInMongdb(String transactionId) {
-        // mongoTemplate.find (new Query(Criteria.where("onumber").is("002")),entityClass)
         return mongoTemplate.find(new Query(Criteria.where("transaction_id").is(transactionId)).with(Sort.by(Sort.Order.asc("_id"))),TransactionMsg.class);
     }
 
@@ -481,9 +481,6 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         criteria.andOperator(criteria.where("status").is("2"));
         query.addCriteria(criteria);
         List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
-        log.info("删除前查找："+list.toString());
         mongoTemplate.remove(query,"rcs_transaction_msg");
-        log.info("删除成功");
     }
-
 }
