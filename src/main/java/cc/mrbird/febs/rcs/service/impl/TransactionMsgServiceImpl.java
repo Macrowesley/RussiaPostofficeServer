@@ -112,8 +112,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
-                transactionMsg.setId(redisService.getIncr("msgId"));
-                this.saveMsgToMongodb(transactionMsg);
+            transactionMsg.setId(redisService.getIncr("msgId"));
+            this.saveMsgToMongodb(transactionMsg);
         }else{
             this.save(transactionMsg);
         }
@@ -130,14 +130,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         if(useMongodb){
             mongoTemplate.update(TransactionMsg.class);
         }else{
-//            Query query = new Query();
-//            query.addCriteria(Criteria.where("_id").is(transactionMsg.getId()));
-//            Update update = new Update();
-//            update.set("count",transactionMsg.getCount());
-//            return this.mongoTemplate.upsert(TransactionMsg);
-            mongoTemplate.update(TransactionMsg.class);
+            this.saveOrUpdate(transactionMsg);
         }
-        this.saveOrUpdate(transactionMsg);
+
     }
 
     @Override
@@ -146,6 +141,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         if(useMongodb){
             Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
             mongoTemplate.remove(query, TransactionMsg.class);
+
+        }else{
             LambdaQueryWrapper<TransactionMsg> wrapper = new LambdaQueryWrapper<>();
             // TODO 设置删除条件
             this.remove(wrapper);
