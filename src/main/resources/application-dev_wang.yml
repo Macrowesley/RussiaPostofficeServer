@@ -23,6 +23,10 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://127.0.0.1:3306/gdpt_russia_server?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
+  data:
+    mongodb:
+      uri: mongodb://root:Gdpt2022@localhost:27017/russiadb
+
   redis:
     # Redis数据库索引（默认为 0）
     database: 0
@@ -55,9 +59,9 @@ websocket:
 netty:
   port: 12800
   ip: 192.168.2.119
-  ssl: false
+  ssl: true
   enable: true
 
 info:
   download-base-url: http://russia.uprins.com:90/russia/file/
-  base-path: D:\workspace\RussiaPostofficeServerFile\
+  base-path: F:\workspace\RussiaPostofficeServerFile\
