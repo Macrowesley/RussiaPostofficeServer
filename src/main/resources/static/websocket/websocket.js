@@ -1,7 +1,7 @@
 var socket
 var heartCheck
 
-function openSocket (userId, websocketServiceName, febs) {
+function openSocket (userId, tcpName, websocketServiceName, febs) {
 
   // console.log("openSocket userId = " + userId + " websocketServiceName = " + websocketServiceName)
   if (typeof (WebSocket) == 'undefined') {
@@ -27,18 +27,18 @@ function openSocket (userId, websocketServiceName, febs) {
           } else {
             console.log('断开状态，尝试重连')
             heartCheck.reset()
-            openSocket(userId, websocketServiceName, febs)
+            openSocket(userId,tcpName, websocketServiceName, febs)
           }
         }, this.timeout)
       }
     }
     // console.log("您的浏览器支持WebSocket");
     //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
-    var socketUrl = 'http://' + window.location.host + ctx + websocketServiceName + '/' + userId
-    var replaceStr = 'ws'
+    var socketUrl = tcpName + '://' + window.location.host + ctx + websocketServiceName + '/' + userId
+    // var replaceStr = 'ws'
     //需要https的时候才能使用这个
     // replaceStr = "wss";
-    socketUrl = socketUrl.replace('https', replaceStr).replace('http', replaceStr)
+    // socketUrl = socketUrl.replace('https', replaceStr).replace('http', replaceStr)
 
     // console.log("连接地址为：" + socketUrl);
     if (socket != null) {

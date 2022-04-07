@@ -51,6 +51,8 @@ mybatis-plus:
 
 websocket:
   service: websocket
+  tcpName: ws
+#  tcpName: ws
 
 
 netty:

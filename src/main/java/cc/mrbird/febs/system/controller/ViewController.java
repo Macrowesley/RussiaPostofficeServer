@@ -55,6 +55,9 @@ public class ViewController extends BaseController {
     @Value("${websocket.service}")
     String websocketServiceName;
 
+    @Value("${websocket.tcpName}")
+    String tcpName;
+
     @Autowired
     LicenseVerifyUtils verifyUtils;
 
@@ -104,6 +107,8 @@ public class ViewController extends BaseController {
 
         //网站地址
         model.addAttribute("websocketServiceName", websocketServiceName);
+        model.addAttribute("tcpName", tcpName);
+
 
 
 /*        log.error("获取权限 user = " + currentUserDetail.toString());
