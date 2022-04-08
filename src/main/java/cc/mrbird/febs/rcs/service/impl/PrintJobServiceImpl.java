@@ -90,8 +90,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Override
     public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
-        queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
+
         //System.out.println(JSON.toJSONString(printJob));
         if(StringUtils.isNotBlank(printJob.getContractCode())){
             queryWrapper.eq(PrintJob::getContractCode,printJob.getContractCode());
@@ -123,7 +122,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         User currentUser = FebsUtil.getCurrentUser();
         if (currentUser != null && !currentUser.getRoleId().equals(RoleType.systemManager)){
             queryWrapper.eq(PrintJob::getPcUserId, currentUser.getUserId());
+            //普通用户只能查询网络订单，超级管理员所有订单都能查询
+            queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
         }
+
+
 
         queryWrapper.orderByDesc(PrintJob::getId);
 

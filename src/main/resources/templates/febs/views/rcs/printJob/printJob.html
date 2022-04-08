@@ -98,12 +98,12 @@
     </span>
     <!--<a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
-    <a lay-event="detail" th:text="#{printJob.detail}" id="printDetail"></a>
+    <a lay-event="detail" shiro:hasPermission="printJob:update"  th:text="#{printJob.detail}" id="printDetail"></a>
     <!--<a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
-    <a lay-event="printJob" shiro:hasPermission="printJob:view" th:text="#{printJob.operation2}" id="printLabal"></a>
+    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}" id="printLabal"></a>
 <!--    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>-->
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}" id="editLablal"></a>
-    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
+    <a lay-event="printCheck" shiro:hasPermission="transactionMsg:list" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
     let flag1 = true;
@@ -286,8 +286,13 @@
                         }
 
                         if(layEvent === 'printCheck'){
+                            console.log("data.transactionId = "  + data.transactionId)
+                            if (data.transactionId === ""){
+                                febs.alert.warn(i18n("transactionMsg.noMsg"));
+                                return;
+                            }
                             febs.modal.view(i18n("printJob.MsgCheck"), 'rcs/printJob/msgDetail/' + data.transactionId, {
-                                area: $(window).width() <= 750 ? '95%' : '660px'
+                                area: $(window).width() <= 750 ? '95%' : '85%'
                             });
                         }
 

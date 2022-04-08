@@ -31,10 +31,13 @@ import com.mongodb.client.model.IndexOptions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.bson.Document;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -92,10 +95,28 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
         //如何考虑切换为到mongodb?
-        LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
-        Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+        if(useMongodb){
+            Pageable pageable = PageRequest.of(request.getPageNum() - 1,request.getPageSize());
+            Query query = new Query(Criteria.where("transaction_id").is(transactionMsg.getTransactionId()));
+
+            //获取总数量
+            long total = mongoTemplate.count(query, TransactionMsg.class);
+
+            List<TransactionMsg> list = this.mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Order.asc("_id"))), TransactionMsg.class);
+
+            Page<TransactionMsg> page = new Page<>(request.getPageNum(),request.getPageSize());
+
+            page.setTotal(total);
+            page.setRecords(list);
+
+            return page;
+        }else{
+            LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
+            // TODO 设置查询条件
+            Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
+            return this.page(page, queryWrapper);
+        }
+
     }
 
     @Override

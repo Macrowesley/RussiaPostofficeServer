@@ -30,14 +30,17 @@
              tableIns = febs.table.init({
                  elem: $view.find('table'),
                  id: 'transactionMsgTable',
-                 url: ctx + 'transactionMsg',
-                 where:{
-                   transactionId: transactionId
-                 },
+                 url: ctx + 'transactionMsg/list' + "?transactionId="+transactionId,
+                 limit: 10,
+                 limits: [10],
                  cols: [[
                      {field: 'id', title: i18n("transactionMsg.id"), minWidth: 100},
-                     {field: 'transactionId', title: i18n("transaction.id"), minWidth: 100},
-                     {field: 'dmMsg', title: i18n("transactionMsg.dmMsg"), minWidth: 300}
+                     {field: 'code', title: i18n("transactionMsg.code"), minWidth: 100},
+                     {field: 'count', title: i18n("transactionMsg.count"), minWidth: 100},
+                     {field: 'amount', title: i18n("transactionMsg.amount"), minWidth: 100},
+                     {field: 'status', title: i18n("transactionMsg.status"), minWidth: 100},
+                     {field: 'dmMsg', title: i18n("transactionMsg.dmMsg"), minWidth: 300},
+                     {field: 'createdTime', title: i18n("transactionMsg.createdTime"), minWidth: 100}
                  ]]
              });
 

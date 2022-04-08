@@ -124,7 +124,7 @@ public class ViewController extends BaseController{
     }
 
     @GetMapping("/printJob/msgDetail/{transactionId}")
-    @RequiresPermissions("printJob:view")
+    @RequiresPermissions("transactionMsg:list")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String msgDetail(@PathVariable String transactionId, Model model) {
 //        model.addAttribute("transactionId",transactionId);
