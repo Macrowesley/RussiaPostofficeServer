@@ -20,6 +20,8 @@ import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import cc.mrbird.febs.rcs.service.ITransactionService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.unit.DataUnit;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -498,10 +500,13 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         final java.util.Calendar cal = GregorianCalendar.getInstance();
         cal.setTime( date );
         cal.add( GregorianCalendar.MONTH, -6 );
-        criteria.and("created_time").lte(date);
-        criteria.andOperator(criteria.where("status").is("2"));
+        criteria.and("created_time").lte(cal.getTime());
         query.addCriteria(criteria);
         List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
+        /*log.info("list.size() = " + list.size());
+        list.stream().forEach(s->{
+            log.info("id = " + s.getId() +" time = " + DateUtil.formatDate(s.getCreatedTime()));
+        });*/
         mongoTemplate.remove(query,"rcs_transaction_msg");
     }
 }
