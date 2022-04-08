@@ -38,6 +38,7 @@
     currentUser.permissionSet = [[${permissions}]];
     var hasNewNotice = [[${hasNewNotice}]];
     var websocketServiceName = [[${websocketServiceName}]];
+    var tcpName = [[${tcpName}]];
 
     layui.config({
         base: './febs/',
@@ -55,7 +56,7 @@
         initLaunage()
         // echo("222")
         //开启websocket
-        openSocket(currentUser.userId, websocketServiceName, febs)
+        openSocket(currentUser.userId, tcpName,  websocketServiceName, febs)
     })
 
 

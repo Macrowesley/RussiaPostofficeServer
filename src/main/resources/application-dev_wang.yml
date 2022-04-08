@@ -55,6 +55,8 @@ mybatis-plus:
 
 websocket:
   service: websocket
+  tcpName: ws
+#  tcpName: ws
 
 netty:
   port: 12800
