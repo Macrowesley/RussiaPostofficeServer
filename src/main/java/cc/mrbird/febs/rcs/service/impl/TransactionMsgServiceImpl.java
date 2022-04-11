@@ -502,8 +502,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         cal.add( GregorianCalendar.MONTH, -6 );
         criteria.and("created_time").lte(cal.getTime());
         query.addCriteria(criteria);
-        List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
-        /*log.info("list.size() = " + list.size());
+        /*List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
+        log.info("list.size() = " + list.size());
         list.stream().forEach(s->{
             log.info("id = " + s.getId() +" time = " + DateUtil.formatDate(s.getCreatedTime()));
         });*/
