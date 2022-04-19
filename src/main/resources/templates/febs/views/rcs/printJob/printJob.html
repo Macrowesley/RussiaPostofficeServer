@@ -50,8 +50,9 @@
                                      id="add">
                                     <i class="layui-icon">&#xe891;</i>
                                 </div>
+
                                 <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
-                                     shiro:hasAnyPermissions="printJob:add,printJob:update,printJob:delete,printJob:export">
+                                     shiro:hasAnyPermissions="printJob:export">
                                     <i class="layui-icon">&#xe875;</i>
                                 </div>
                             </div>
@@ -197,6 +198,12 @@
                 elem: $view.find('.action-more'),
                 click: function (name, elem, event) {
                     var checkStatus = table.checkStatus('printJobTable');
+                    if (name === 'export') {
+                        var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                        params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                        params.pageNum = $view.find(".layui-laypage-em").next().html();
+                        febs.download(ctx + 'printJob/excel', params, 'printJob.xlsx');
+                    }
                 },
                 options: [{
                     name: 'export',

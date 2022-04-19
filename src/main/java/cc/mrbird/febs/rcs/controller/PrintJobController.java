@@ -126,7 +126,7 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "导出Excel失败")
-    @PostMapping("printJob/excel")
+    @GetMapping("printJob/excel")
     @ResponseBody
     @RequiresPermissions("printJob:export")
     public void export(QueryRequest queryRequest, PrintJob printJob, HttpServletResponse response) {
