@@ -11,7 +11,6 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.notice.service.INoticeService;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserDataPermissionService;
 import cc.mrbird.febs.system.service.IUserService;
@@ -49,8 +48,7 @@ public class ViewController extends BaseController {
     ShiroHelper shiroHelper;
     @Autowired
     IUserDataPermissionService userDataPermissionService;
-    @Autowired
-    INoticeService noticeService;
+
 
     @Value("${websocket.service}")
     String websocketServiceName;
@@ -102,8 +100,6 @@ public class ViewController extends BaseController {
         model.addAttribute("roles", authorizationInfo.getRoles());
 
         //判断是否有新消息
-        boolean hasNew = noticeService.findHasNewNotices();
-        model.addAttribute("hasNewNotice", hasNew ? "1":"0");
 
         //网站地址
         model.addAttribute("websocketServiceName", websocketServiceName);
