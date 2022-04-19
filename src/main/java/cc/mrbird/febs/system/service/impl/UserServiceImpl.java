@@ -40,7 +40,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
-
+    @Autowired
+    MessageUtils messageUtils;
     @Autowired
     IUserRoleService userRoleService;
     @Autowired
@@ -117,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional(rollbackFor = Exception.class)
     public void createUser(User user) {
         if (user.getRoleId().equals(RoleType.systemManager)){
-            throw new FebsException(MessageUtils.getMessage("user.cannotAddSystemUser"));
+            throw new FebsException(messageUtils.getMessage("user.cannotAddSystemUser"));
         }
         user.setCreateTime(new Date());
         user.setStatus(User.STATUS_VALID);
@@ -277,7 +278,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (isCurrentUser(user.getId())) {
             updateById(user);
         } else {
-            throw new FebsException(MessageUtils.getMessage("user.operation.noPermissionEditOther"));
+            throw new FebsException(messageUtils.getMessage("user.operation.noPermissionEditOther"));
         }
     }
 

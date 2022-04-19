@@ -33,6 +33,8 @@ import java.util.List;
 @RequestMapping("menu")
 @ApiIgnore
 public class MenuController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IMenuService menuService;
@@ -42,7 +44,7 @@ public class MenuController extends BaseController {
     public FebsResponse getUserMenus(@NotBlank(message = "{required}") @PathVariable String username) throws FebsException {
         User currentUser = getCurrentUser();
         if (!StringUtils.equalsIgnoreCase(username, currentUser.getUsername())) {
-            throw new FebsException(MessageUtils.getMessage("menu.noPamission"));
+            throw new FebsException(messageUtils.getMessage("menu.noPamission"));
         }
         MenuTree<Menu> userMenus = this.menuService.findUserMenus(username);
         return new FebsResponse().data(userMenus);

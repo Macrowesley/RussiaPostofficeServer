@@ -16,7 +16,7 @@ public abstract class BaseAspectSupport {
         Method method = getDeclaredMethod(targetClass, signature.getName(),
                 signature.getMethod().getParameterTypes());
         if (method == null) {
-            throw new IllegalStateException(MessageUtils.getMessage("aspect.cannotParseMethod") + signature.getMethod().getName());
+            throw new IllegalStateException(MessageUtils.getStaticMessage("aspect.cannotParseMethod") + signature.getMethod().getName());
         }
         return method;
     }

@@ -44,6 +44,9 @@ import java.util.Map;
 @RequestMapping("device")
 public class DeviceController extends BaseController {
     @Autowired
+    MessageUtils messageUtils;
+
+    @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
     @Autowired
@@ -90,7 +93,7 @@ public class DeviceController extends BaseController {
     public FebsResponse addDevice(@Validated @NotNull AddDeviceDTO deviceDTO) {
         log.info("新增device deviceDTO= {}" , deviceDTO.toString());
         if (deviceDTO.getAcnumList().length() < 6 && !deviceDTO.getAcnumList().contains(",")){
-            throw new FebsException(MessageUtils.getMessage("IncorrectDataFormat"));
+            throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
         }
         this.deviceService.saveDeviceList(deviceDTO);
         return new FebsResponse().success();
@@ -128,7 +131,7 @@ public class DeviceController extends BaseController {
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     public FebsResponse checkIsExist(@Validated CheckIsExistDTO checkIsExistDTO) {
         if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
-            throw new FebsException(MessageUtils.getMessage("IncorrectDataFormat"));
+            throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
         }
         Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
         return new FebsResponse().success().data(res);

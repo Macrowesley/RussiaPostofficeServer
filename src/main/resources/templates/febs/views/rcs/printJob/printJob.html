@@ -107,8 +107,8 @@
     <a lay-event="printCheck" shiro:hasPermission="transactionMsg:list" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
-    let flag1 = true;
-    let flag2 = true;
+    var flag1 = true;
+    var flag2 = true;
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
         var $ = layui.jquery,
             laydate = layui.laydate,

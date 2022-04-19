@@ -41,7 +41,8 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @ApiIgnore
 public class ViewController extends BaseController {
-
+    @Autowired
+    MessageUtils messageUtils;
     @Autowired
     IUserService userService;
     @Autowired
@@ -258,11 +259,11 @@ public class ViewController extends BaseController {
         if (transform) {
             String sex = user.getSex();
             if (User.SEX_MALE.equals(sex)) {
-                user.setSex(MessageUtils.getMessage("man"));
+                user.setSex(messageUtils.getMessage("man"));
             } else if (User.SEX_FEMALE.equals(sex)) {
-                user.setSex(MessageUtils.getMessage("woman"));
+                user.setSex(messageUtils.getMessage("woman"));
             } else {
-                user.setSex(MessageUtils.getMessage("secrecy"));
+                user.setSex(messageUtils.getMessage("secrecy"));
             }
         }
         if (user.getLastLoginTime() != null) {

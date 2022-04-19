@@ -4,8 +4,8 @@ package cc.mrbird.febs.rcs.common.enums;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 
 public enum FlowEnum {
-    FlowIng(0, MessageUtils.getMessage("printJob.noClosedLoop")),
-    FlowEnd(1,MessageUtils.getMessage("printJob.closedFinished"));
+    FlowIng(0, MessageUtils.getStaticMessage("printJob.noClosedLoop")),
+    FlowEnd(1,MessageUtils.getStaticMessage("printJob.closedFinished"));
     int code;
     String msg;
 

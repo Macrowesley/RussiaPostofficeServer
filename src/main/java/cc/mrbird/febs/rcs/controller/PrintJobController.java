@@ -54,6 +54,8 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @RequiredArgsConstructor
 public class PrintJobController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IPrintJobService printJobService;
@@ -100,7 +102,7 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:add")
     public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
         if(!verifyUtils.verify()){
-            throw new FebsException(MessageUtils.getMessage("printJob.expiredLicense"));
+            throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
         }
         //log.info("前端添加订单：" + printJobAddDto.toString());
         this.printJobService.createPrintJobDto(printJobAddDto);

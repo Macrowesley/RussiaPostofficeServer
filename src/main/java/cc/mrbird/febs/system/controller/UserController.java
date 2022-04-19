@@ -38,6 +38,8 @@ import java.util.Map;
 @RequestMapping("user")
 @ApiIgnore
 public class UserController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IUserService userService;
@@ -122,7 +124,7 @@ public class UserController extends BaseController {
             @NotBlank(message = "{required}") String newPassword) {
         User user = getCurrentUser();
         if (!StringUtils.equals(user.getPassword(), MD5Util.encrypt(user.getUsername(), oldPassword))) {
-            throw new FebsException(MessageUtils.getMessage("user.operation.oldPwdError"));
+            throw new FebsException(messageUtils.getMessage("user.operation.oldPwdError"));
         }
         userService.updatePassword(user.getUsername(), newPassword);
         return new FebsResponse().success();

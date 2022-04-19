@@ -61,6 +61,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> implements IPrintJobService {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     PrintJobMapper printJobMapper;
@@ -161,7 +163,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         ArrayList<ForeseenProductFmDto> products = printJobAddDto.getProducts();
 
         if (products.size() == 0){
-            throw new FebsException(MessageUtils.getMessage("printJob.fillProductInfo"));
+            throw new FebsException(messageUtils.getMessage("printJob.fillProductInfo"));
         }
 
         //判断字符长度
@@ -188,7 +190,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         //确定上一个订单是否闭环
         PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
         if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
-            throw new FebsException(MessageUtils.getMessage("printJob.waitLastOrderFinish"));
+            throw new FebsException(messageUtils.getMessage("printJob.waitLastOrderFinish"));
         }
 
 
@@ -476,7 +478,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         this.updatePrintJob(dbPrintJob);
 
         if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
-            noticeFrontService.notice(7, MessageUtils.getMessage("printJob.machineCancel"), dbPrintJob.getPcUserId());
+            noticeFrontService.notice(7, messageUtils.getMessage("printJob.machineCancel"), dbPrintJob.getPcUserId());
         }
     }
 
@@ -522,11 +524,11 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             dbContract.setCurrent(balanceDTO.getCurrent());
 
             if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
-                noticeFrontService.notice(8, MessageUtils.getMessage("printJob.printSuccess"), dbPrintJob.getPcUserId());
+                noticeFrontService.notice(8, messageUtils.getMessage("printJob.printSuccess"), dbPrintJob.getPcUserId());
             }
         }else{
             if (dbPrintJob.getType() == PrintJobTypeEnum.Web.getCode()) {
-                noticeFrontService.notice(8, MessageUtils.getMessage("printJob.printAbnormal"), dbPrintJob.getPcUserId());
+                noticeFrontService.notice(8, messageUtils.getMessage("printJob.printAbnormal"), dbPrintJob.getPcUserId());
             }
         }
 
@@ -574,7 +576,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         //判断打印是否完成
         if (dbFlow == FlowEnum.FlowEnd){
-            throw new FebsException(MessageUtils.getMessage("printJob.noRepeatClick"));
+            throw new FebsException(messageUtils.getMessage("printJob.noRepeatClick"));
         }
 
         //todo 判断机器是否是在打印中，从redis中查询
@@ -596,7 +598,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             FlowEnum dbFlow = FlowEnum.getByCode(dbPrintJob.getFlow());
 
             if (dbFlow == FlowEnum.FlowEnd){
-                throw new FebsException(MessageUtils.getMessage("printJob.noCancelPrintJob"));
+                throw new FebsException(messageUtils.getMessage("printJob.noCancelPrintJob"));
             }
 
             //哪些情况可以点击取消打印呢？没有开始transaction的时候
@@ -608,7 +610,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
             //判断是否可以取消打印任务
             if (!enableCancle){
-                throw new FebsException(MessageUtils.getMessage("printJob.waitCancelPrintJob"));
+                throw new FebsException(messageUtils.getMessage("printJob.waitCancelPrintJob"));
             }
 
             serviceToMachineProtocol.cancelPrintJob(dbPrintJob);

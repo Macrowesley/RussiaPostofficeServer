@@ -59,7 +59,7 @@ public class WebSocketServer {
 
         try {
 //            sendMessage("连接成功");
-            sendInfo(1, MessageUtils.getMessage("notice.connectSuccess"), userId);
+            sendInfo(1, MessageUtils.getStaticMessage("notice.connectSuccess"), userId);
         } catch (Exception e) {
             logger.error("用户:" + userId + ",网络异常!!!!!!");
         }

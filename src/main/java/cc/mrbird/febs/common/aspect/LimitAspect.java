@@ -16,6 +16,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -35,6 +36,8 @@ import java.lang.reflect.Method;
 @Component
 @RequiredArgsConstructor
 public class LimitAspect extends BaseAspectSupport {
+    @Autowired
+    MessageUtils messageUtils;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -74,9 +77,9 @@ public class LimitAspect extends BaseAspectSupport {
             return point.proceed();
         } else {
             if (isApi){
-                throw new LimitAccessException(MessageUtils.getMessage("aspect.tooManyRequest"));
+                throw new LimitAccessException(messageUtils.getMessage("aspect.tooManyRequest"));
             }else{
-                throw new LimitAccessViewException(MessageUtils.getMessage("aspect.tooManyRequest"));
+                throw new LimitAccessViewException(messageUtils.getMessage("aspect.tooManyRequest"));
             }
         }
     }
