@@ -227,7 +227,9 @@ public class ServiceInvokeRussia {
         ForeseenDTO foreseenDTO = new ForeseenDTO();
         BeanUtils.copyProperties(foreseenFmDto, foreseenDTO);
         foreseenDTO.setTotalAmount(MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
-        ForeseenProductFmDto[] fmProducts = foreseenFmDto.getProducts();
+
+        //PC订单和机器订单都不发送产品列表
+        /*ForeseenProductFmDto[] fmProducts = foreseenFmDto.getProducts();
         if (fmProducts != null && fmProducts.length > 0){
             int length = fmProducts.length;
             ForeseenProductRussiaDto[] products = new ForeseenProductRussiaDto[length];
@@ -237,7 +239,7 @@ public class ServiceInvokeRussia {
                 products[i] = temp;
             }
             foreseenDTO.setProducts(products);
-        }
+        }*/
 
         String url = baseUrl + "/foreseens";
         return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
