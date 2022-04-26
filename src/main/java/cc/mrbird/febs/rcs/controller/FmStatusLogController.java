@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.FmStatusLog;
 import cc.mrbird.febs.rcs.service.IFmStatusLogService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class FmStatusLogController extends BaseController {
     @RequiresPermissions("fmStatusLog:export")
     public void export(QueryRequest queryRequest, FmStatusLog fmStatusLog, HttpServletResponse response) {
         List<FmStatusLog> fmStatusLogs = this.fmStatusLogService.findFmStatusLogs(queryRequest, fmStatusLog).getRecords();
-        ExcelKit.$Export(FmStatusLog.class, response).downXlsx(fmStatusLogs, false);
+        //ExcelKit.$Export(FmStatusLog.class, response).downXlsx(fmStatusLogs, false);
     }
 }

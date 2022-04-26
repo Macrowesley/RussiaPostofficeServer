@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.PostOffice;
 import cc.mrbird.febs.rcs.service.IPostOfficeService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class PostOfficeController extends BaseController {
     @RequiresPermissions("postOffice:export")
     public void export(QueryRequest queryRequest, PostOffice postOffice, HttpServletResponse response) {
         List<PostOffice> postOffices = this.postOfficeService.findPostOffices(queryRequest, postOffice).getRecords();
-        ExcelKit.$Export(PostOffice.class, response).downXlsx(postOffices, false);
+        //ExcelKit.$Export(PostOffice.class, response).downXlsx(postOffices, false);
     }
 }

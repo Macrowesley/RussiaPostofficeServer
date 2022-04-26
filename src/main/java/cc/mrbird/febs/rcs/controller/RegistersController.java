@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Registers;
 import cc.mrbird.febs.rcs.service.IRegistersService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class RegistersController extends BaseController {
     @RequiresPermissions("registers:export")
     public void export(QueryRequest queryRequest, Registers registers, HttpServletResponse response) {
         List<Registers> registerss = this.registersService.findRegisterss(queryRequest, registers).getRecords();
-        ExcelKit.$Export(Registers.class, response).downXlsx(registerss, false);
+        //ExcelKit.$Export(Registers.class, response).downXlsx(registerss, false);
     }
 }

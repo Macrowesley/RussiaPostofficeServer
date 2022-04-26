@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.service.ICustomerService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class CustomerController extends BaseController {
     @RequiresPermissions("customer:export")
     public void export(QueryRequest queryRequest, Customer customer, HttpServletResponse response) {
         List<Customer> customers = this.customerService.findCustomers(queryRequest, customer).getRecords();
-        ExcelKit.$Export(Customer.class, response).downXlsx(customers, false);
+        //ExcelKit.$Export(Customer.class, response).downXlsx(customers, false);
     }
 }

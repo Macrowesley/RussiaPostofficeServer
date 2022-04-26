@@ -1,12 +1,11 @@
 package cc.mrbird.febs.system.entity;
 
 import cc.mrbird.febs.common.converter.TimeConverter;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.wuwenze.poi.annotation.Excel;
-import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -17,7 +16,6 @@ import java.util.Date;
 
 @Data
 @TableName("t_menu")
-@Excel("菜单信息表")
 public class Menu implements Serializable {
 
     private static final long serialVersionUID = 8571011372410167901L;
@@ -51,7 +49,7 @@ public class Menu implements Serializable {
 //    @TableField("MENU_NAME")
 //    @NotBlank(message = "{required}")
 //    @Size(max = 10, message = "{noMoreThan}")
-//    @ExcelField(value = "名称")
+//    @ExcelProperty(value = "名称")
 //    private String menuEnglishName;
 
 
@@ -61,7 +59,7 @@ public class Menu implements Serializable {
     @TableField("MENU_CHINESE_NAME")
     @NotBlank(message = "{required}")
     @Size(max = 10, message = "{noMoreThan}")
-    @ExcelField(value = "中文名称")
+    @ExcelProperty(value = "中文名称")
     private String menuChineseName;
 
     /**
@@ -70,7 +68,7 @@ public class Menu implements Serializable {
     @TableField("MENU_RUSSIAN_NAME")
     @NotBlank(message = "{required}")
     @Size(max = 50, message = "{noMoreThan}")
-    @ExcelField(value = "俄文名称")
+    @ExcelProperty(value = "俄文名称")
     private String menuRussianName;
 
     /**
@@ -79,7 +77,7 @@ public class Menu implements Serializable {
     @TableField("MENU_ENGLISH_NAME")
     @NotBlank(message = "{required}")
     @Size(max = 50, message = "{noMoreThan}")
-    @ExcelField(value = "英文名称")
+    @ExcelProperty(value = "英文名称")
     private String menuEnglishName;
 
     /**
@@ -87,7 +85,7 @@ public class Menu implements Serializable {
      */
     @TableField("URL")
     @Size(max = 50, message = "{noMoreThan}")
-    @ExcelField(value = "URL")
+    @ExcelProperty(value = "URL")
     private String url;
 
     /**
@@ -95,7 +93,7 @@ public class Menu implements Serializable {
      */
     @TableField("PERMS")
     @Size(max = 50, message = "{noMoreThan}")
-    @ExcelField(value = "权限")
+    @ExcelProperty(value = "权限")
     private String perms;
 
     /**
@@ -103,7 +101,7 @@ public class Menu implements Serializable {
      */
     @TableField("ICON")
     @Size(max = 50, message = "{noMoreThan}")
-    @ExcelField(value = "图标")
+    @ExcelProperty(value = "图标")
     private String icon;
 
     /**
@@ -111,7 +109,6 @@ public class Menu implements Serializable {
      */
     @TableField("TYPE")
     @NotBlank(message = "{required}")
-    @ExcelField(value = "类型", writeConverterExp = "0=按钮,1=菜单")
     private String type;
 
     /**
@@ -124,14 +121,12 @@ public class Menu implements Serializable {
      * 创建时间
      */
     @TableField("CREATE_TIME")
-    @ExcelField(value = "创建时间", writeConverter = TimeConverter.class)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @TableField("MODIFY_TIME")
-    @ExcelField(value = "修改时间", writeConverter = TimeConverter.class)
     private Date modifyTime;
 
 

@@ -12,7 +12,7 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IMenuService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +91,6 @@ public class MenuController extends BaseController {
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     public void export(Menu menu, HttpServletResponse response) {
         List<Menu> menus = this.menuService.findMenuList(menu);
-        ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);
+        //ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);
     }
 }

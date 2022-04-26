@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -114,6 +114,6 @@ public class TransactionMsgController extends BaseController {
     @RequiresPermissions("transactionMsg:export")
     public void export(QueryRequest queryRequest, TransactionMsg frank, HttpServletResponse response) {
         List<TransactionMsg> franks = this.transactionMsgService.findTransactionMsgs(queryRequest, frank).getRecords();
-        ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
+        //ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
     }
 }

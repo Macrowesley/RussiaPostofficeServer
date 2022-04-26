@@ -11,17 +11,13 @@ import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.common.kit.EasyExcelKit;
-import cc.mrbird.febs.rcs.common.kit.TestFileUtil;
 import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
-import cc.mrbird.febs.rcs.entity.DemoData;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.write.metadata.WriteSheet;
+import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -35,8 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -132,47 +126,13 @@ public class PrintJobController extends BaseController {
     @ResponseBody
     @RequiresPermissions("printJob:export")
     public void export(QueryRequest queryRequest, PrintJobDTO printJobDto, HttpServletResponse response) {
-        /*List<PrintJobExcelVO2> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
-        try {
-            ExcelKit.$Export(PrintJobExcelVO2.class, response).downXlsx(printJobExcelVOList, false);
-        }catch (Exception e){
-            e.printStackTrace();
-        }*/
-
-
         log.info("导出excel");
-//        List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
-
+        List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
         try {
-            String fileName = TestFileUtil.getPath() + "simpleWrite" + System.currentTimeMillis() + ".xlsx";
-            // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
-            // 如果这里想使用03 则 传入excelType参数即可
-//            EasyExcel.write(fileName, DemoData.class).sheet("模板").doWrite(data());
-
-            fileName = TestFileUtil.getPath() + "simpleWrite" + System.currentTimeMillis() + ".xlsx";
-            // 这里 需要指定写用哪个class去写
-            ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build();
-            WriteSheet writeSheet = EasyExcel.writerSheet("模板").build();
-            excelWriter.write(data(), writeSheet);
-            // 千万别忘记finish 会帮忙关闭流
-            excelWriter.finish();
-
-//            easyExcelKit.download(response,data(),DemoData.class);
+            easyExcelKit.download(response, printJobExcelVOList,PrintJobExcelVO.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private List<DemoData> data() {
-        List<DemoData> list =  new ArrayList<DemoData>();
-        for (int i = 0; i < 10; i++) {
-            DemoData data = new DemoData();
-            data.setString("字符串" + i);
-            data.setDate(new Date());
-            data.setDoubleData(0.56);
-            list.add(data);
-        }
-        return list;
     }
 
     @ControllerEndpoint(operation = "打印任务操作", exceptionMessage = "打印任务操作失败")

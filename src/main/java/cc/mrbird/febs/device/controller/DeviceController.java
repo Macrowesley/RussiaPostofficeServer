@@ -17,7 +17,7 @@ import cc.mrbird.febs.device.dto.SendDeviceDTO;
 import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -123,7 +123,7 @@ public class DeviceController extends BaseController {
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
         List<Device> devices = this.deviceService.findDevices(queryRequest, device).getRecords();
-        ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
+        //ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
     }
 
     @ControllerEndpoint(operation = "检查表头号是否存在", exceptionMessage = "{device.operation.checkAcnumError}")

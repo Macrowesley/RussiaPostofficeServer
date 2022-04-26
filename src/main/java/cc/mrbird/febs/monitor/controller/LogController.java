@@ -7,7 +7,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.monitor.entity.SystemLog;
 import cc.mrbird.febs.monitor.service.ILogService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -53,6 +53,6 @@ public class LogController extends BaseController {
     @ControllerEndpoint(exceptionMessage = "导出Excel失败")
     public void export(QueryRequest request, SystemLog lg, HttpServletResponse response) {
         List<SystemLog> logs = this.logService.findLogs(lg, request).getRecords();
-        ExcelKit.$Export(SystemLog.class, response).downXlsx(logs, false);
+        //ExcelKit.$Export(SystemLog.class, response).downXlsx(logs, false);
     }
 }

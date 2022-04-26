@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Statistics;
 import cc.mrbird.febs.rcs.service.IStatisticsService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class StatisticsController extends BaseController {
     @RequiresPermissions("statistics:export")
     public void export(QueryRequest queryRequest, Statistics statistics, HttpServletResponse response) {
         List<Statistics> statisticss = this.statisticsService.findStatisticss(queryRequest, statistics).getRecords();
-        ExcelKit.$Export(Statistics.class, response).downXlsx(statisticss, false);
+        //ExcelKit.$Export(Statistics.class, response).downXlsx(statisticss, false);
     }
 }

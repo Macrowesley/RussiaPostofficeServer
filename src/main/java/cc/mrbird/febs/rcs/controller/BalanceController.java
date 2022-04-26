@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Balance;
 import cc.mrbird.febs.rcs.service.IBalanceService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +92,6 @@ public class BalanceController extends BaseController {
     @RequiresPermissions("balance:export")
     public void export(QueryRequest queryRequest, Balance balance, HttpServletResponse response) {
         List<Balance> balances = this.balanceService.findBalances(queryRequest, balance).getRecords();
-        ExcelKit.$Export(Balance.class, response).downXlsx(balances, false);
+        //ExcelKit.$Export(Balance.class, response).downXlsx(balances, false);
     }
 }

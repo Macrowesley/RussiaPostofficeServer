@@ -6,7 +6,7 @@ import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.service.IContractService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -85,6 +85,6 @@ public class ContractController extends BaseController {
     @RequiresPermissions("contract:export")
     public void export(QueryRequest queryRequest, Contract contract, HttpServletResponse response) {
         List<Contract> contracts = this.contractService.findContracts(queryRequest, contract).getRecords();
-        ExcelKit.$Export(Contract.class, response).downXlsx(contracts, false);
+        //ExcelKit.$Export(Contract.class, response).downXlsx(contracts, false);
     }
 }

@@ -253,7 +253,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
          * 1. 根据用户名归档
          * 2. 同样的用户名中，再按时间排序
          */
-        log.info("tempList.size() = " + tempList.size());
+//        log.info("tempList.size() = " + tempList.size());
         Map<String, List<PrintJobExcelVO>> collect = tempList.stream().collect(Collectors.groupingBy(PrintJobExcelVO::getBCustomerName));
 
         collect.forEach((key, list)->{
@@ -333,6 +333,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         lastOneObject.setCode("");
         lastOneObject.setStartMsgId(0L);
 
+        //添加最后三行数据
+        PrintJobExcelVO emptyObject = new PrintJobExcelVO();
+        printJobExcelVOList.add(emptyObject);
         printJobExcelVOList.add(lastSecondObject);
         printJobExcelVOList.add(lastOneObject);
 

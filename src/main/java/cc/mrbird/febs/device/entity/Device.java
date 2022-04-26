@@ -1,19 +1,17 @@
 package cc.mrbird.febs.device.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import cc.mrbird.febs.common.converter.TimeConverter;
-import com.wuwenze.poi.annotation.Excel;
-import com.wuwenze.poi.annotation.ExcelField;
-import lombok.Data;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 设备表 Entity
@@ -23,7 +21,6 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 @ToString
-@Excel("设备表")
 @TableName("t_device")
 public class Device implements Serializable {
 
@@ -31,14 +28,14 @@ public class Device implements Serializable {
     /**
      * 设备id
      */
-    @ExcelField(value = "设备id")
+    @ExcelProperty(value = "设备id")
     @TableId(value = "device_id", type = IdType.AUTO)
     private Long deviceId;
 
     /**
      * 表头号
      */
-    @ExcelField(value = "表头号")
+    @ExcelProperty(value = "表头号")
     @NotBlank(message = "{required}")
     @TableField("acnum")
     private String acnum;
@@ -46,35 +43,35 @@ public class Device implements Serializable {
     /**
      * 设备昵称
      */
-    @ExcelField(value = "设备昵称")
+    @ExcelProperty(value = "设备昵称")
     @TableField("nickname")
     private String nickname;
 
     /**
      * 默认警告金额（分为单位）
      */
-    @ExcelField(value = "默认警告金额（分为单位）")
+    @ExcelProperty(value = "默认警告金额（分为单位）")
     @TableField("warn_amount")
     private String warnAmount;
 
     /**
      * 最大金额（分为单位）
      */
-    @ExcelField(value = "最大金额（分为单位）")
+    @ExcelProperty(value = "最大金额（分为单位）")
     @TableField("max_amount")
     private String maxAmount;
 
     /**
      * 加密秘钥
      */
-    @ExcelField(value = "加密秘钥")
+    @ExcelProperty(value = "加密秘钥")
     @TableField("secret_key")
     private String secretKey;
 
     /**
      * 有效天数
      */
-    @ExcelField(value = "有效天数")
+    @ExcelProperty(value = "有效天数")
     @TableField("valid_days")
     private Integer validDays;
 
@@ -94,7 +91,6 @@ public class Device implements Serializable {
     /**
      * 添加时间
      */
-    @ExcelField(value = "添加时间", writeConverter = TimeConverter.class)
     @TableField("created_time")
     private Date createdTime;
 

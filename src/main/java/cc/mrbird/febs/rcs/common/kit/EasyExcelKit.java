@@ -1,11 +1,13 @@
 package cc.mrbird.febs.rcs.common.kit;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,12 +24,34 @@ public class EasyExcelKit {
      */
     @GetMapping("download")
     public void download(HttpServletResponse response, Collection<?> data, Class<?> clazz) throws IOException {
-        // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
+        WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+        //设置背景颜色
+        headWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+        //设置头字体
+        WriteFont headWriteFont = new WriteFont();
+        headWriteFont.setFontHeightInPoints((short)13);
+        headWriteFont.setBold(true);
+        headWriteCellStyle.setWriteFont(headWriteFont);
+        //设置头居中
+        headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+        //内容策略
+        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+        //设置 水平居中
+        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
+
+        // 这里注意 使用swagger 会导致各种问题，请直接用浏览器或者用postman
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
-        String fileName = URLEncoder.encode("测试", "UTF-8");
+        String fileName = URLEncoder.encode("export", "UTF-8");
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), clazz).sheet("sheet1").doWrite(data);
+        EasyExcel
+                .write(response.getOutputStream(), clazz)
+                .registerWriteHandler(horizontalCellStyleStrategy)
+                .registerWriteHandler(new FreezeHandler())
+                .sheet("sheet1")
+                .doWrite(data);
     }
 }

@@ -242,15 +242,15 @@
                             febs.alert.warn(i18n("printJob.timeWarn"))
                             return;
                         }
-                        // febs.download(ctx + 'printJob/excel', params, 'printJob.xlsx');
-                        febs.get(ctx + "printJob/excel", params, function (res) {
+                        febs.download(ctx + 'printJob/excel', params, 'printJob.xlsx');
+                        /*febs.get(ctx + "printJob/excel", params, function (res) {
                             if (res.code === 200) {
                                 console.log("下载成功")
                             }else{
                                 febs.alert.warn(i18n("order.retry"));
                             }
 
-                        })
+                        })*/
                     }
                 },
                 options: [{

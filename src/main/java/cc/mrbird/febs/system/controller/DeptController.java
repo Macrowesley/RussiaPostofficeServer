@@ -9,7 +9,7 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.system.entity.Dept;
 import cc.mrbird.febs.system.service.IDeptService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -76,6 +76,6 @@ public class DeptController {
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
     public void export(Dept dept, QueryRequest request, HttpServletResponse response) throws FebsException {
         List<Dept> depts = this.deptService.findDepts(dept, request);
-        ExcelKit.$Export(Dept.class, response).downXlsx(depts, false);
+        //ExcelKit.$Export(Dept.class, response).downXlsx(depts, false);
     }
 }

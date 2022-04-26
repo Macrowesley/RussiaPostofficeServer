@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.service.IForeseenService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -99,6 +99,6 @@ public class ForeseenController extends BaseController {
     @RequiresPermissions("foreseen:export")
     public void export(QueryRequest queryRequest, Foreseen foreseen, HttpServletResponse response) {
         List<Foreseen> foreseens = this.foreseenService.findForeseens(queryRequest, foreseen).getRecords();
-        ExcelKit.$Export(Foreseen.class, response).downXlsx(foreseens, false);
+        //ExcelKit.$Export(Foreseen.class, response).downXlsx(foreseens, false);
     }
 }
