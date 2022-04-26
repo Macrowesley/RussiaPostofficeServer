@@ -20,18 +20,19 @@ import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
+import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
+import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import cc.mrbird.febs.system.entity.User;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -45,10 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 打印任务表 Service实现
@@ -90,61 +89,254 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     INoticeFrontService noticeFrontService;
 
     @Override
-    public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob) {
+    public IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJobDTO printJobDto) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
-
-        //System.out.println(JSON.toJSONString(printJob));
-        if(StringUtils.isNotBlank(printJob.getContractCode())){
-            queryWrapper.eq(PrintJob::getContractCode,printJob.getContractCode());
-        }
-
-        //printJob.getFlow()可能为0、1、2、3
-        //0为notBegin,1为flowing,2为successFlowed,3为failFlowed
-        if(null!=printJob.getFlow()) {
-            if (0 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 70);
-                queryWrapper.eq(PrintJob::getFlow, 0);
-            }else if (2 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 61);
-                queryWrapper.eq(PrintJob::getFlow, 1);
-            } else if (3 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 62);
-                queryWrapper.eq(PrintJob::getFlow, 1);
-            } else if (4 == printJob.getFlow()) {
-                queryWrapper.eq(PrintJob::getFlowDetail, 63);
-                queryWrapper.eq(PrintJob::getFlow, 1);
-            } else if (1 == printJob.getFlow()) {
-                queryWrapper.notIn(PrintJob::getFlowDetail, 70,61,62,63);
-                queryWrapper.eq(PrintJob::getFlow, 0);
-            }
-        }
-        if(StringUtils.isNotBlank(printJob.getForeseenId())){
-            queryWrapper.eq(PrintJob::getForeseenId,printJob.getForeseenId());
-        }
-        User currentUser = FebsUtil.getCurrentUser();
-        if (currentUser != null && !currentUser.getRoleId().equals(RoleType.systemManager)){
-            queryWrapper.eq(PrintJob::getPcUserId, currentUser.getUserId());
-            //普通用户只能查询网络订单，超级管理员所有订单都能查询
-            queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
-        }
-
-
-
+        buildCondition(printJobDto, queryWrapper);
         queryWrapper.orderByDesc(PrintJob::getId);
 
-
-
         Page<PrintJob> page = new Page<>(request.getPageNum(), request.getPageSize());
-//        page = this.page(page, queryWrapper);
-//        System.out.println("page:"+JSON.toJSONString(page));
         return this.page(page, queryWrapper);
     }
 
+    private void buildCondition(PrintJobDTO printJobDto, LambdaQueryWrapper<PrintJob> queryWrapper) {
+        if (StringUtils.isNotBlank(printJobDto.getContractCode())) {
+            queryWrapper.eq(PrintJob::getContractCode, printJobDto.getContractCode());
+        }
+
+        //printJobDto.getFlow()可能为0、1、2、3
+        //0为notBegin,1为flowing,2为successFlowed,3为failFlowed
+        if (null != printJobDto.getFlow()) {
+            if (0 == printJobDto.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 70);
+                queryWrapper.eq(PrintJob::getFlow, 0);
+            } else if (2 == printJobDto.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 61);
+                queryWrapper.eq(PrintJob::getFlow, 1);
+            } else if (3 == printJobDto.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 62);
+                queryWrapper.eq(PrintJob::getFlow, 1);
+            } else if (4 == printJobDto.getFlow()) {
+                queryWrapper.eq(PrintJob::getFlowDetail, 63);
+                queryWrapper.eq(PrintJob::getFlow, 1);
+            } else if (1 == printJobDto.getFlow()) {
+                queryWrapper.notIn(PrintJob::getFlowDetail, 70, 61, 62, 63);
+                queryWrapper.eq(PrintJob::getFlow, 0);
+            }
+        }
+        if (StringUtils.isNotBlank(printJobDto.getForeseenId())) {
+            queryWrapper.eq(PrintJob::getForeseenId, printJobDto.getForeseenId());
+        }
+        if (StringUtils.isNotBlank(printJobDto.getFrankMachineId())) {
+            queryWrapper.eq(PrintJob::getFrankMachineId, printJobDto.getFrankMachineId());
+        }
+
+        //如果时间范围不为空，查询闭环的订单
+        String startDate = printJobDto.getStartDate();
+        String endData = printJobDto.getEndData();
+        if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endData)){
+            queryWrapper.eq(PrintJob::getFlow, 1);
+            queryWrapper.gt(PrintJob::getCreatedTime, startDate);
+            queryWrapper.le(PrintJob::getCreatedTime, endData);
+        }
+
+
+        try {
+            User currentUser = FebsUtil.getCurrentUser();
+            if (currentUser != null && !currentUser.getRoleId().equals(RoleType.systemManager)) {
+                queryWrapper.eq(PrintJob::getPcUserId, currentUser.getUserId());
+                //普通用户只能查询网络订单，超级管理员所有订单都能查询
+                queryWrapper.eq(PrintJob::getType, PrintJobTypeEnum.Web.getCode());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
     @Override
-    public List<PrintJob> findPrintJobs(PrintJob printJob) {
+    public List<PrintJob> findPrintJobs(PrintJobDTO printJobDto) {
         LambdaQueryWrapper<PrintJob> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
+        buildCondition(printJobDto, queryWrapper);
+        queryWrapper.orderByAsc(PrintJob::getId);
         return this.baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 返回excel需要的数据
+     *
+     * @param queryRequest
+     * @param printJob
+     * @return
+     */
+    @Override
+    public List<PrintJobExcelVO> selectExcelData(PrintJobDTO printJobDto) {
+        List<PrintJob> printJobList = findPrintJobs(printJobDto);
+        int printJobSize = printJobList.size();
+        log.info("printJobList.size = " + printJobSize);
+
+        ArrayList<PrintJobExcelVO> tempList = new ArrayList<>();
+        ArrayList<PrintJobExcelVO> printJobExcelVOList = new ArrayList<>();
+
+
+        //倒数第二行数据
+        double a2 = 0,q2 = 0,u2 = 0,v2 = 0,w2 = 0;
+        int n2 = 0,o2 = 0,s2 = 0;
+        //倒数第1行数据
+        double a1 = 0,q1 = 0,u1 = 0,v1 = 0,w1 = 0;
+        int n1 = 0,o1 = 0,s1 = 0;
+
+
+        for (int m = 0; m < printJobSize; m++) {
+            PrintJob  bean = printJobList.get(m);
+
+            //一次打印任务的批次信息
+            long t1 = System.currentTimeMillis();
+            List<TransactionMsgBatchInfo> onePrintJobTransactionProuductList = transactionMsgService.mergeMsgList(bean.getTransactionId());
+//            log.info("合并一次打印任务批次信息耗时{}",(System.currentTimeMillis() -t1));
+
+            //获取合同和客户信息
+            ContractCustomerInfo customerInfo = contractService.findContractAndCustomer(bean.getContractCode());
+//            log.info(customerInfo.toString());
+
+            int size = onePrintJobTransactionProuductList.size();
+            for (int i = 0; i < size; i++) {
+                //一个批次的信息
+                TransactionMsgBatchInfo batchBean = onePrintJobTransactionProuductList.get(i);
+                PrintJobExcelVO excelVO = new PrintJobExcelVO();
+                //printjob添加一个字段，初期金额
+                excelVO.setAPrintBeginContractMoney(bean.getContractCurrent());
+                excelVO.setBCustomerName(customerInfo.getCustomerName());
+                excelVO.setCCustomerinnRu(customerInfo.getCustomerinnRu());
+                excelVO.setDCustomerKppRu(customerInfo.getCustomerKppRu());
+                excelVO.setEContractName(customerInfo.getContractName());
+                excelVO.setFFrankMachineId(bean.getFrankMachineId());
+                excelVO.setGListNumber(String.valueOf(i+1));
+                excelVO.setHStartDate(DateUtil.format(batchBean.getStartDate(),"yyyy/MM/dd"));
+                excelVO.setIStartTime(DateUtil.format(batchBean.getStartDate(),"HH:mm:ss"));
+                excelVO.setJEndDate(DateUtil.format(batchBean.getEndDate(),"yyyy/MM/dd"));
+                excelVO.setKEndTime(DateUtil.format(batchBean.getEndDate(),"HH:mm:ss"));
+                excelVO.setLTaxRegionType(batchBean.getTaxRegionType());
+                excelVO.setMTaxLabelRu(batchBean.getTaxLabelRu());
+                excelVO.setNForeseenOneBatchCount(batchBean.getForeseenOneBatchCount());
+                excelVO.setOForeseenOneBatchWeight(batchBean.getForeseenOneBatchWeight());
+                excelVO.setPTaxFixedValue(String.valueOf(batchBean.getTaxFixedValue()));
+                excelVO.setQCallculationAmount(batchBean.getCallculationAmount());
+                excelVO.setRTransactionOneBatchCount(String.valueOf(batchBean.getTransactionOneBatchCount()));
+                excelVO.setSTransactionOneBatchWeight(batchBean.getTransactionOneBatchWeight());
+                excelVO.setTTaxRealSaleRate(String.valueOf(batchBean.getTaxRealSaleRate()));
+                //TransactionOneBatchCount * taxRealSaleRate
+                excelVO.setUCallculationRealSumMoney((double) (batchBean.getTransactionOneBatchCount() * batchBean.getTaxRealSaleRate()));
+                //callculationAmount - callculationRealSumMoney
+                excelVO.setVCallculationRealRestMoney(excelVO.getQCallculationAmount() - excelVO.getUCallculationRealSumMoney());
+                //printBeginContractMoney - callculationRealSumMoney
+                excelVO.setWPrintEndContractMoney(excelVO.getAPrintBeginContractMoney() - excelVO.getUCallculationRealSumMoney());
+
+                //添加额外信息
+                excelVO.setCode(batchBean.getCode());
+                excelVO.setStartMsgId(batchBean.getStartMsgId());
+                tempList.add(excelVO);
+
+                //累加倒数第一行的结果
+                a1 = a1 + excelVO.getAPrintBeginContractMoney();
+                n1 = n1 + excelVO.getNForeseenOneBatchCount();
+                q1 = q1 + excelVO.getQCallculationAmount();
+                s1 = s1 + excelVO.getSTransactionOneBatchWeight();
+                u1 = u1 + excelVO.getUCallculationRealSumMoney();
+                v1 = v1 + excelVO.getVCallculationRealRestMoney();
+                w1 = w1 + excelVO.getWPrintEndContractMoney();
+
+                //累加倒数第二行结果
+                o2 = o2 + excelVO.getOForeseenOneBatchWeight();
+            }
+        }
+
+        /**
+         * 1. 根据用户名归档
+         * 2. 同样的用户名中，再按时间排序
+         */
+        log.info("tempList.size() = " + tempList.size());
+        Map<String, List<PrintJobExcelVO>> collect = tempList.stream().collect(Collectors.groupingBy(PrintJobExcelVO::getBCustomerName));
+
+        collect.forEach((key, list)->{
+            int size = list.size();
+            for (int i = 0; i < size; i++) {
+                PrintJobExcelVO e = list.get(i);
+                printJobExcelVOList.add(e);
+            }
+        });
+
+        //处理倒数第二行信息
+        PrintJobExcelVO firstObject = printJobExcelVOList.get(0);
+        a2 = firstObject.getAPrintBeginContractMoney();
+        n2 = firstObject.getNForeseenOneBatchCount();
+        q2 = firstObject.getQCallculationAmount();
+        s2 = firstObject.getSTransactionOneBatchWeight();
+        u2 = firstObject.getUCallculationRealSumMoney();
+        v2 = firstObject.getVCallculationRealRestMoney();
+        w2 = firstObject.getWPrintEndContractMoney();
+
+        o1 = o2;
+
+
+        //处理最后2行的数据
+        PrintJobExcelVO lastSecondObject = new PrintJobExcelVO();
+        lastSecondObject.setAPrintBeginContractMoney(a2);
+        lastSecondObject.setBCustomerName("Total under the definite contract");
+        lastSecondObject.setCCustomerinnRu("");
+        lastSecondObject.setDCustomerKppRu("");
+        lastSecondObject.setEContractName("");
+        lastSecondObject.setFFrankMachineId("");
+        lastSecondObject.setGListNumber("");
+        lastSecondObject.setHStartDate("");
+        lastSecondObject.setIStartTime("");
+        lastSecondObject.setJEndDate("");
+        lastSecondObject.setKEndTime("");
+        lastSecondObject.setLTaxRegionType("");
+        lastSecondObject.setMTaxLabelRu("");
+        lastSecondObject.setNForeseenOneBatchCount(n2);
+        lastSecondObject.setOForeseenOneBatchWeight(o2);
+        lastSecondObject.setPTaxFixedValue("");
+        lastSecondObject.setQCallculationAmount(q2);
+        lastSecondObject.setRTransactionOneBatchCount("");
+        lastSecondObject.setSTransactionOneBatchWeight(s2);
+        lastSecondObject.setTTaxRealSaleRate("");
+        lastSecondObject.setUCallculationRealSumMoney(u2);
+        lastSecondObject.setVCallculationRealRestMoney(v2);
+        lastSecondObject.setWPrintEndContractMoney(w2);
+        lastSecondObject.setCode("");
+        lastSecondObject.setStartMsgId(0L);
+
+        //处理最后1行的数据
+        PrintJobExcelVO lastOneObject = new PrintJobExcelVO();
+        lastOneObject.setAPrintBeginContractMoney(a1);
+        lastOneObject.setBCustomerName("Total amount of money for all contracts of the organiztions for the reporting period");
+        lastOneObject.setCCustomerinnRu("");
+        lastOneObject.setDCustomerKppRu("");
+        lastOneObject.setEContractName("");
+        lastOneObject.setFFrankMachineId("");
+        lastOneObject.setGListNumber("");
+        lastOneObject.setHStartDate("");
+        lastOneObject.setIStartTime("");
+        lastOneObject.setJEndDate("");
+        lastOneObject.setKEndTime("");
+        lastOneObject.setLTaxRegionType("");
+        lastOneObject.setMTaxLabelRu("");
+        lastOneObject.setNForeseenOneBatchCount(n1);
+        lastOneObject.setOForeseenOneBatchWeight(o1);
+        lastOneObject.setPTaxFixedValue("");
+        lastOneObject.setQCallculationAmount(q1);
+        lastOneObject.setRTransactionOneBatchCount("");
+        lastOneObject.setSTransactionOneBatchWeight(s1);
+        lastOneObject.setTTaxRealSaleRate("");
+        lastOneObject.setUCallculationRealSumMoney(u1);
+        lastOneObject.setVCallculationRealRestMoney(v1);
+        lastOneObject.setWPrintEndContractMoney(w1);
+        lastOneObject.setCode("");
+        lastOneObject.setStartMsgId(0L);
+
+        printJobExcelVOList.add(lastSecondObject);
+        printJobExcelVOList.add(lastOneObject);
+
+        return printJobExcelVOList;
     }
 
     @Override
@@ -175,7 +367,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
 
         //确定合同号是否正常
-        if(!contractService.checkIsExist(printJobAddDto.getContractCode())){
+        Contract dbContract = contractService.getByConractCode(printJobAddDto.getContractCode());
+        if(dbContract == null){
             throw new FebsException("Contract not found");
         }
 
@@ -201,6 +394,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
         printJob.setType(PrintJobTypeEnum.Web.getCode());
         printJob.setCreatedTime(new Date());
+        //为了报表信息，添加创建打印任务时的开始金额
+        printJob.setContractCurrent(dbContract.getCurrent());
+        printJob.setContractConsolidate(dbContract.getConsolidate());
+
         this.save(printJob);
 
         //log.info(printJob.toString());
@@ -417,7 +614,16 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         printJob.setUpdatedTime(new Date());
 
 
+
+
+        //机器订单时创建，网络订单是更新
         if (isMachineOrder){
+            //机器需要传，网络订单创建的时候已经保存好了
+            Contract dbContract = contractService.getByConractCode(foreseenFmDto.getContractCode());
+            printJob.setContractCurrent(dbContract.getCurrent());
+            printJob.setContractConsolidate(dbContract.getConsolidate());
+
+            //机器需要传，网络订单创建的时候已经保存好了
             printJob.setTotalCount(foreseen.getTotalCount());
             printJob.setTotalAmount(foreseen.getTotalAmmount());
             printJob.setCreatedTime(new Date());

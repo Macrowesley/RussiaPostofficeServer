@@ -1,10 +1,7 @@
 package cc.mrbird.febs.rcs.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.annotation.Limit;
-import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
-import cc.mrbird.febs.common.entity.DeptTree;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -12,36 +9,36 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
-import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.rcs.common.kit.EasyExcelKit;
+import cc.mrbird.febs.rcs.common.kit.TestFileUtil;
+import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.entity.DemoData;
 import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.entity.Transaction;
-import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import cc.mrbird.febs.system.entity.Dept;
-import cn.hutool.core.date.DateTime;
-import com.alibaba.fastjson.JSON;
-import com.wuwenze.poi.ExcelKit;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 打印任务表 Controller
@@ -69,6 +66,9 @@ public class PrintJobController extends BaseController {
     @Autowired
     ITransactionMsgService iTransactionMsgService;
 
+    @Autowired
+    EasyExcelKit easyExcelKit;
+
 //    @GetMapping("select/tree")
 //    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
 //    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
@@ -80,19 +80,19 @@ public class PrintJobController extends BaseController {
         return FebsUtil.view("printJob/printJob");
     }
 
-    @GetMapping("printJob")
+/*    @GetMapping("printJob")
     @ResponseBody
     @RequiresPermissions("printJob:list")
     public FebsResponse getAllPrintJobs(PrintJob printJob) {
         return new FebsResponse().success().data(printJobService.findPrintJobs(printJob));
-    }
+    }*/
 
     @GetMapping("printJob/list")
     @ResponseBody
     @RequiresPermissions("printJob:list")
-    public FebsResponse printJobList(QueryRequest request, PrintJob printJob) {
-        Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJob));
-//        System.out.println(JSON.toJSONString(dataTable));
+    public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
+        log.info(printJobDto.toString());
+        Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
         return new FebsResponse().success().data(dataTable);
     }
 
@@ -127,13 +127,52 @@ public class PrintJobController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(operation = "导出PrintJob", exceptionMessage = "导出Excel失败")
     @GetMapping("printJob/excel")
     @ResponseBody
     @RequiresPermissions("printJob:export")
-    public void export(QueryRequest queryRequest, PrintJob printJob, HttpServletResponse response) {
-        List<PrintJob> printJobs = this.printJobService.findPrintJobs(queryRequest, printJob).getRecords();
-        ExcelKit.$Export(PrintJob.class, response).downXlsx(printJobs, false);
+    public void export(QueryRequest queryRequest, PrintJobDTO printJobDto, HttpServletResponse response) {
+        /*List<PrintJobExcelVO2> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
+        try {
+            ExcelKit.$Export(PrintJobExcelVO2.class, response).downXlsx(printJobExcelVOList, false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }*/
+
+
+        log.info("导出excel");
+//        List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
+
+        try {
+            String fileName = TestFileUtil.getPath() + "simpleWrite" + System.currentTimeMillis() + ".xlsx";
+            // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+            // 如果这里想使用03 则 传入excelType参数即可
+//            EasyExcel.write(fileName, DemoData.class).sheet("模板").doWrite(data());
+
+            fileName = TestFileUtil.getPath() + "simpleWrite" + System.currentTimeMillis() + ".xlsx";
+            // 这里 需要指定写用哪个class去写
+            ExcelWriter excelWriter = EasyExcel.write(fileName, DemoData.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("模板").build();
+            excelWriter.write(data(), writeSheet);
+            // 千万别忘记finish 会帮忙关闭流
+            excelWriter.finish();
+
+//            easyExcelKit.download(response,data(),DemoData.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<DemoData> data() {
+        List<DemoData> list =  new ArrayList<DemoData>();
+        for (int i = 0; i < 10; i++) {
+            DemoData data = new DemoData();
+            data.setString("字符串" + i);
+            data.setDate(new Date());
+            data.setDoubleData(0.56);
+            list.add(data);
+        }
+        return list;
     }
 
     @ControllerEndpoint(operation = "打印任务操作", exceptionMessage = "打印任务操作失败")

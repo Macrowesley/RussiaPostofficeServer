@@ -3,6 +3,7 @@ package cc.mrbird.febs.rcs.service;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.ContractCustomerInfo;
 import cc.mrbird.febs.rcs.vo.ContractVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -66,4 +67,11 @@ public interface IContractService extends IService<Contract> {
      * @return
      */
     ContractVO getVoByConractCode(String contractCode);
+
+    /**
+     * 获取合同号和客户信息
+     * @param contractCode
+     * @return
+     */
+    ContractCustomerInfo findContractAndCustomer(String contractCode);
 }

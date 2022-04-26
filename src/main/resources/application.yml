@@ -16,8 +16,8 @@ server:
 spring:
   profiles:
 #    active: prod
-     active: test
-#    active: dev_lai
+#     active: test
+    active: dev_lai
 #     active: dev_wang
 
   thymeleaf:
@@ -46,6 +46,10 @@ spring:
       # 写入redis时是否使用键前缀。
       use-key-prefix: true
     cache-names: pos
+
+  data:
+    mongodb:
+      uri: mongodb://root:Gdpt2022@localhost:27017/russiadb?authSource=admin
 
 jasypt:
   encryptor:

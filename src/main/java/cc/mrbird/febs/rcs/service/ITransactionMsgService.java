@@ -4,10 +4,10 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
+import cc.mrbird.febs.rcs.entity.TransactionMsgBatchInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -80,6 +80,13 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
      * @return
      */
     DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList, boolean needProductPrintCount);
+
+    /**
+     * 合并msg成具体的批次信息
+     * @param transactionId
+     * @return
+     */
+    List<TransactionMsgBatchInfo> mergeMsgList(String transactionId);
 
     /**
      * 机器开机的时候获取dmMsgDetail

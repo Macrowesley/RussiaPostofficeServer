@@ -45,6 +45,32 @@ public class TransactionMsg {
     @Field("amount")
     private Long amount;
 
+
+    //单批次预估数量
+    @TableField("batchCount")
+    @Field("batchCount")
+    private Integer batchCount;
+
+    //单个的重量, 单位是g
+    @TableField("singleWeight")
+    @Field("singleWeight")
+    private Integer singleWeight;
+
+    //regionType
+    @TableField("regionType")
+    @Field("regionType")
+    private String regionType;
+
+    //labelRu
+    @TableField("labelRu")
+    @Field("labelRu")
+    private String labelRu;
+
+    //fixedValue
+    @TableField("fixedValue")
+    @Field("fixedValue")
+    private Integer fixedValue;
+
     @TableField("dm_msg")
     @Field("dm_msg")
     private String dmMsg;

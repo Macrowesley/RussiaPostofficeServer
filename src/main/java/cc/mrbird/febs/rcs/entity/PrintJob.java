@@ -73,6 +73,19 @@ public class PrintJob {
     @TableField("total_amount")
     @ExcelField(value = "totalAmount")
     Double totalAmount;
+
+    /**
+     * 创建打印任务时，合同金额
+     */
+    @TableField("contract_current")
+    Double contractCurrent;
+
+    /**
+     * 创建打印任务时，合同金额
+     */
+    @TableField("contract_consolidate")
+    Double contractConsolidate;
+
     /**
      * 1 机器创建的订单 2 管理页面创建的订单
      */
