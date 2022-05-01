@@ -127,8 +127,8 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:export")
     public void export(QueryRequest queryRequest, PrintJobDTO printJobDto, HttpServletResponse response) {
         log.info("导出excel");
-        List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
         try {
+            List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
             easyExcelKit.download(response, printJobExcelVOList,PrintJobExcelVO.class);
         } catch (Exception e) {
             e.printStackTrace();

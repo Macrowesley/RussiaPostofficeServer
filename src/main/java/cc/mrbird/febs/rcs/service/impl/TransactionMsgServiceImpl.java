@@ -369,7 +369,8 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             TransactionMsg endMsg = msgList.get(size - 1);
             Integer foreseenOneBatchCount = firstMsg.getBatchCount();
             Integer singleWeight = firstMsg.getSingleWeight();
-            Integer fixedValue = firstMsg.getFixedValue();
+            //分转元
+            double fixedValue = firstMsg.getFixedValue().doubleValue()/100;
             int transactionOneBatchCount = dmMsgDetail.getActualCount();
 
 
@@ -532,10 +533,13 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 
             dbPrintJob.setTransactionId(transactionId);
             printJobService.updatePrintJob(dbPrintJob);
-        } /*else {
+        } else {
             transactionId = transactionMsgFMDTO.getId();
-            checkUtils.checkTransactionIdExist(transactionId);
-        }*/
+//            checkUtils.checkTransactionIdExist(transactionId);
+            if (!StringUtils.isNotBlank(transactionId)){
+                throw new FmException(FMResultEnum.TransactionIdNoExist);
+            }
+        }
         /**
          * id是TransactionId
          * 保存transactionMsgFMDTO

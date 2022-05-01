@@ -17,7 +17,7 @@ public class TransactionMsgBatchInfo {
     String taxLabelRu;
     Integer foreseenOneBatchCount;
     Integer foreseenOneBatchWeight;
-    Integer taxFixedValue;
+    Double taxFixedValue;
     /**
      * foreseenOneBatchCount * taxFixedValue
      */
@@ -27,7 +27,7 @@ public class TransactionMsgBatchInfo {
     /**
      *  = taxFixedValue
      */
-    Integer taxRealSaleRate;
+    Double taxRealSaleRate;
 
     /**
      * 额外信息，用于辅助，不用于excel

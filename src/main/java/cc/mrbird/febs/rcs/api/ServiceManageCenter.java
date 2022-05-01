@@ -605,7 +605,7 @@ public class ServiceManageCenter {
         checkUtils.checkTransactionMsg(transactionMsgFmDto.getDmMsg().trim());
 
         //判断机器状态是否正常
-        checkUtils.checkFmEnable(transactionMsgFmDto.getFrankMachineId());
+//        checkUtils.checkFmEnable(transactionMsgFmDto.getFrankMachineId());
 
         return dmMsgService.saveMsg(transactionMsgFmDto);
     }

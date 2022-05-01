@@ -279,7 +279,7 @@ public class ServiceInvokeRussia {
         //测试条件下，返回假数据
         if (isTest){
             log.info("测试transaction给俄罗斯数据，模拟返回");
-            log.info("transactionDTO 信息 = " + JSON.toJSONString(transactionDTO));
+//            log.info("transactionDTO 信息 = " + JSON.toJSONString(transactionDTO));
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(transactionDTO.getContractCode());
             balanceDTO.setCurrent(100000D);
