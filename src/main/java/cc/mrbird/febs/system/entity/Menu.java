@@ -58,7 +58,7 @@ public class Menu implements Serializable {
      */
     @TableField("MENU_CHINESE_NAME")
     @NotBlank(message = "{required}")
-    @Size(max = 10, message = "{noMoreThan}")
+    @Size(max = 30, message = "{noMoreThan}")
     @ExcelProperty(value = "中文名称")
     private String menuChineseName;
 

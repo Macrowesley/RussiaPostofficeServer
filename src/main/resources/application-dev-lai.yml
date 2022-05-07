@@ -62,5 +62,5 @@ netty:
   enable: false
 
 info:
-  download-base-url: http://localhost:90/russia/file/
+  download-base-url: http://localhost/russia/file/
   base-path: D:\workspace\RussiaPostofficeServerFile\

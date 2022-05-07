@@ -47,8 +47,6 @@ public class ProtocolService {
     @Autowired
     CloseSSHResultPortocol closeSSHResultPortocol;
 
-    @Autowired
-    BalanceResultPortocol balanceResultPortocol;
 
     @Autowired
     UpdatePrivateKeyResultPortocol updatePrivateKeyResultPortocol;
@@ -82,6 +80,9 @@ public class ProtocolService {
 
     @Autowired
     CancelPrintResultPortocol cancelPrintResultPortocol;
+
+    @Autowired
+    UpdateRemoteFileResultPortocol updateRemoteFileResultPortocol;
 
 
     @Autowired
@@ -219,6 +220,9 @@ public class ProtocolService {
                 break;
             case CancelPrintResultPortocol.PROTOCOL_TYPE:
                 baseProtocol = isNewObject ? new CancelPrintResultPortocol() : cancelPrintResultPortocol;
+                break;
+            case UpdateRemoteFileResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = updateRemoteFileResultPortocol;
                 break;
             default:
                 log.error("protocolType 格式不对： " + BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));

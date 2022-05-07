@@ -10,6 +10,7 @@ import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
 import cc.mrbird.febs.common.netty.protocol.kit.TempKeyUtils;
 import cc.mrbird.febs.common.netty.protocol.machine.ForeseensPortocol;
 import cc.mrbird.febs.common.utils.*;
+import cc.mrbird.febs.device.dto.RemoteFileDTO;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cc.mrbird.febs.rcs.api.CheckUtils;
@@ -29,6 +30,7 @@ import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
 import com.alibaba.fastjson.JSON;
+import com.mchange.lang.ByteUtils;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -173,6 +178,60 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             }*/
         }
     }
+
+    /**
+     * 更新远程文件
+     * @param acnum
+     * @return
+     */
+    public boolean updateRemoteFileProtocol(RemoteFileDTO remoteFileDTO) {
+        try {
+
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(remoteFileDTO.getAcnum());
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+
+            /*typedef  struct{
+                unsigned char length[4];			 //4个字节
+                unsigned char type;				 	 //0xC5
+                unsigned char operateID[2];
+                unsigned char content[?];            //加密后内容 版本内容(3) + RemoteFileDTO的json
+                unsigned char check;				 //校验位
+                unsigned char tail;					 //0xD0
+            }__attribute__((packed))updateFile, *updateFile;
+
+            public class RemoteFileDTO {
+                Long deviceId;
+                String acnum;
+                String remoteFilePath;
+                String url;
+                String md5;
+            }*/
+
+            //准备数据
+            String version = "001";
+            //找到上传文件的绝对路径，得到文件内容
+            String filePath = (String) redisService.get(remoteFileDTO.getUrl());
+            Path path = Paths.get(filePath);
+            byte[] bytes = Files.readAllBytes(path);
+
+            String md5Str = ByteUtils.toHexAscii(MD5Util.md5(bytes)).toLowerCase();
+            remoteFileDTO.setMd5(md5Str);
+            String entryctContent = AESUtils.encrypt(version + JSON.toJSONString(remoteFileDTO), tempKey);
+
+            //发送数据
+            wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC5));
+            log.info("服务器发送更新机器文件指令 " + remoteFileDTO.getRemoteFilePath());
+
+            redisService.del(remoteFileDTO.getUrl());
+            return true;
+        } catch (Exception e) {
+            log.error("服务器发送更新机器文件指令，原因如下：" + e.getMessage());
+            return false;
+        }
+    }
+
 
     /**
      * 服务器改变机器状态

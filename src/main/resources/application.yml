@@ -14,10 +14,15 @@ server:
     context-path: /posmart
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB  #单个数据大小
+      max-request-size: 1024MB #总数据大小
+
   profiles:
 #    active: prod
-     active: test-ru
-#    active: dev-lai
+#     active: test-ru
+    active: dev-lai
 #     active: dev-wang
 
   thymeleaf:

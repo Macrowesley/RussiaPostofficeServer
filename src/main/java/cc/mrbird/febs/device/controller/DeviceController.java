@@ -11,23 +11,27 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.netty.NettyServerHandler;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
-import cc.mrbird.febs.device.dto.AddDeviceDTO;
-import cc.mrbird.febs.device.dto.CheckIsExistDTO;
-import cc.mrbird.febs.device.dto.SendDeviceDTO;
-import cc.mrbird.febs.device.dto.UpdateDeviceDTO;
+import cc.mrbird.febs.common.service.RedisService;
+import cc.mrbird.febs.device.dto.*;
 import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
-
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("device")
 public class DeviceController extends BaseController {
+    @Value("${info.base-path}")
+    private String basePath;
+
+    @Value("${info.download-base-url}")
+    private String downLoadBaseUrl;
+
+
     @Autowired
     MessageUtils messageUtils;
 
@@ -57,6 +68,9 @@ public class DeviceController extends BaseController {
 
     @Autowired
     NettyServerHandler nettyServerHandler;
+
+    @Autowired
+    RedisService redisService;
 
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("list")
@@ -163,9 +177,38 @@ public class DeviceController extends BaseController {
         return new FebsResponse().success().data("ok");
     }
 
-//    @PostMapping("test")
-//    public void test(Device device) {
-//        log.info("批量新增device");
-//        this.deviceService.testInsert();
-//    }
+    @ControllerEndpoint(operation = "上传远程文件", exceptionMessage = "上传远程文件失败")
+    @PostMapping("uploadRemoteFile")
+    @RequiresPermissions("device:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    public FebsResponse uploadRemoteFile(@RequestParam("file") MultipartFile mf) {
+        String url = "";
+        try {
+            log.info("mf = " + mf.toString());
+            log.info("basePath = " + basePath);
+            String lastName = mf.getOriginalFilename();
+            String newName = lastName;
+            log.info("lastName = " + lastName);
+            String dirName = DateUtil.format(new Date(), "yyyy-MM-dd");
+            File file = FileUtil.file(FileUtil.mkdir(basePath + "remote\\" + dirName), newName);
+            mf.transferTo(file);
+
+            url = downLoadBaseUrl + "remote/" + dirName + "/" + newName;
+            redisService.set(url, basePath + "remote\\" + dirName + "\\" + newName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("url = " + url);
+        return new FebsResponse().success().data(url);
+    }
+
+    @ControllerEndpoint(operation = "更新远程文件信息", exceptionMessage = "{device.operation.editDeviceError}")
+    @PostMapping("updateRemoteFile")
+    @RequiresPermissions("device:update")
+    @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    public FebsResponse updateRemoteFile(@Validated @NotNull RemoteFileDTO remoteFileDTO) {
+        log.info(remoteFileDTO.toString());
+        serviceToMachineProtocol.updateRemoteFileProtocol(remoteFileDTO);
+        return new FebsResponse().success();
+    }
 }

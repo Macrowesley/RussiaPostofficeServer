@@ -6,6 +6,7 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class MD5Util {
@@ -57,8 +58,24 @@ public class MD5Util {
         return resultString.toUpperCase();
     }
 
-    private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5",
-            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+    private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+
+    /**
+     * 将字节数组进行 MD5 加密
+     *
+     * @param data
+     * @return
+     */
+    public static byte[] md5(byte[] data) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("md5");
+            return md.digest(data);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return new byte[]{};
+    }
 
     public static void main(String[] args) {
         String path = "D:\\workspace\\RussiaPostofficeServerFile\\tax\\2021_10_27_15_25_37.json";
