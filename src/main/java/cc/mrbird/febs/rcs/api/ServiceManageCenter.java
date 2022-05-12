@@ -486,7 +486,7 @@ public class ServiceManageCenter {
 
         //判断合同金额是否够用
         double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 

@@ -68,7 +68,7 @@ public interface IPrintJobService extends IService<PrintJob> {
      * 编辑
      * @param printJobUpdateDto
      */
-    void editPrintJob(PrintJobUpdateDto printJobUpdateDto);
+    void editPrintJob(PrintJobAddDto printJobUpdateDto);
 
     /**
      * 修改

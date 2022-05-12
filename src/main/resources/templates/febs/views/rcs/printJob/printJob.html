@@ -114,16 +114,17 @@
     <span  class="{{status.class}}">{{ status.title }}</span>
 </script>
 <script type="text/html" id="printJob-option">
-    <span shiro:lacksPermission="printJob:add,printJob:update,printJob:delete">
+    <span shiro:lacksPermission="printJob:add,printJob:update,printJob:delete,transactionMsg:list">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
     <!--<a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
     <a lay-event="detail" shiro:hasPermission="printJob:update"  th:text="#{printJob.detail}" id="printDetail"></a>
     <!--<a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
-    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}" id="printLabal"></a>
+
 <!--    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>-->
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}" id="editLablal"></a>
+    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}" id="printLabal"></a>
     <a lay-event="printCheck" shiro:hasPermission="transactionMsg:list" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
@@ -285,6 +286,7 @@
         /**
          * 初始化表格工具栏
          */
+        var timer;
         function initTableTool(){
             table.on('tool(printJobTable)', function (obj) {
 
@@ -310,7 +312,7 @@
                                         layer.closeAll();
                                     }
                                 });
-                                //var timer = setTimeout(turnBack, 5000);
+                                timer = setTimeout(turnBack, 3000);
                                 flag2 = false;
                             }else{
                                 febs.alert.success(i18n("printJob.holdon"))
@@ -322,7 +324,7 @@
                         //点击第二次才执行
                         if (layEvent === 'printJob') {
                             if(flag1==true) {
-                                var timer = setTimeout(turnBack, 5000);
+                                timer = setTimeout(turnBack, 3000);
                                 flag1 = false;
                                 $('#printLabal').attr('disabled', 'disabled');
                                 febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {

@@ -116,7 +116,7 @@ public class PrintJobController extends BaseController {
     @PostMapping("printJob/update/{id}")
     @ResponseBody
     @RequiresPermissions("printJob:update")
-    public FebsResponse updatePrintJob(@PathVariable int id,PrintJobUpdateDto printJobUpdateDto) {
+    public FebsResponse updatePrintJob(@PathVariable int id,PrintJobAddDto printJobUpdateDto) {
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }

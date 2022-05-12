@@ -30,9 +30,13 @@ public class MessageUtils {
      */
     public String getMessage(String messageKey) {
         //根据Request请求的语言来决定国际化
-        log.info("语言环境 " + request.getLocale().getLanguage().toString());
-        String message = messageSource.getMessage(messageKey, null, RequestContextUtils.getLocale(request));
-        return message;
+        try {
+            log.info("语言环境 " + request.getLocale().getLanguage().toString());
+            String message = messageSource.getMessage(messageKey, null, RequestContextUtils.getLocale(request));
+            return message;
+        }catch (Exception e){
+            return getStaticMessage(messageKey);
+        }
     }
 
     public static String getStaticMessage(String messageKey) {

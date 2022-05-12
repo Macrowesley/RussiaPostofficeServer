@@ -169,6 +169,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     public List<PrintJobExcelVO> selectExcelData(PrintJobDTO printJobDto) {
+        log.info("excel搜索条件：printJobDto = " + printJobDto.toString());
         List<PrintJob> printJobList = findPrintJobs(printJobDto);
         int printJobSize = printJobList.size();
         log.info("printJobList.size = " + printJobSize);
@@ -187,6 +188,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
         for (int m = 0; m < printJobSize; m++) {
             PrintJob  bean = printJobList.get(m);
+//            log.info("/n ============");
+//            log.info("每个订单的信息" + bean.toString());
 
             //一次打印任务的批次信息
             long t1 = System.currentTimeMillis();
@@ -201,6 +204,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             for (int i = 0; i < size; i++) {
                 //一个批次的信息
                 TransactionMsgBatchInfo batchBean = onePrintJobTransactionProuductList.get(i);
+                log.info("每个订单的批次信息：batchBean = " + batchBean.toString());
                 PrintJobExcelVO excelVO = new PrintJobExcelVO();
                 //printjob添加一个字段，初期金额
                 excelVO.setAPrintBeginContractMoney(bean.getContractCurrent());
@@ -234,6 +238,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 excelVO.setCode(batchBean.getCode());
                 excelVO.setStartMsgId(batchBean.getStartMsgId());
                 tempList.add(excelVO);
+                log.info("Excel每行信息 excelVO = " + excelVO.toString());
 
                 //累加倒数第一行的结果
                 a1 = a1 + excelVO.getAPrintBeginContractMoney();
@@ -357,28 +362,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     public void createPrintJobDto(PrintJobAddDto printJobAddDto) {
         ArrayList<ForeseenProductFmDto> products = printJobAddDto.getProducts();
 
-        if (products.size() == 0){
-            throw new FebsException(messageUtils.getMessage("printJob.fillProductInfo"));
-        }
-
-        //判断字符长度
-        for (int i = 0; i < products.size(); i++) {
-            if (products.get(i).getAddress().length() <=1 ){
-                throw new FebsException("address length is too short");
-            }
-        }
-
-
-        //确定合同号是否正常
-        Contract dbContract = contractService.getByConractCode(printJobAddDto.getContractCode());
-        if(dbContract == null){
-            throw new FebsException("Contract not found");
-        }
-
-        //确定机器ID是否正常
-        if(!deviceService.checkExistByFmId(printJobAddDto.getFrankMachineId())){
-            throw new FebsException("FrankMachineId not found");
-        }
+        Contract dbContract = checkPrintJob(printJobAddDto, products);
 
         //todo 确定产品编号是否正常
 
@@ -417,6 +401,49 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         foreseenProductService.saveBatch(productList);
     }
 
+    private Contract checkPrintJob(PrintJobAddDto printJobAddDto, ArrayList<ForeseenProductFmDto> products) {
+        if (printJobAddDto.getTotalAmount() < 0) {
+            throw new FebsException("Total amount can not less 0");
+        }
+
+        if (products.size() == 0){
+            throw new FebsException(messageUtils.getMessage("printJob.fillProductInfo"));
+        }
+
+        //判断字符长度
+        int totalCount = 0;
+        for (int i = 0; i < products.size(); i++) {
+            ForeseenProductFmDto temp = products.get(i);
+            if (temp.getAddress().length() <=1 ){
+                throw new FebsException("address length is too short");
+            }
+
+            if (temp.getCount() < 0) {
+                throw new FebsException("product count can not less 0");
+            }
+
+            if (temp.getWeight() < 0) {
+                throw new FebsException("product weight can not less 0");
+            }
+
+            totalCount += temp.getCount();
+        }
+
+        printJobAddDto.setTotalCount(totalCount);
+
+        //确定合同号是否正常
+        Contract dbContract = contractService.getByConractCode(printJobAddDto.getContractCode());
+        if(dbContract == null){
+            throw new FebsException("Contract not found");
+        }
+
+        //确定机器ID是否正常
+        if(!deviceService.checkExistByFmId(printJobAddDto.getFrankMachineId())){
+            throw new FebsException("FrankMachineId not found");
+        }
+        return dbContract;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePrintJob(PrintJob printJob) {
@@ -433,8 +460,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void editPrintJob(PrintJobUpdateDto printJobUpdateDto) {
+    public void editPrintJob(PrintJobAddDto printJobUpdateDto) {
         PrintJob printJob = new PrintJob();
+        ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
+        Contract dbContract = checkPrintJob(printJobUpdateDto, products);
         BeanUtils.copyProperties(printJobUpdateDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
@@ -445,7 +474,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         this.editAndUpdatePrintJob(printJob);
 
         //此编辑通过删除原有数据，新增新数据实现，会导致编辑后的唯一id改变
-        ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
+
         //删除库中的products
         LambdaQueryWrapper<ForeseenProduct> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ForeseenProduct::getPrintJobId,printJob.getId());

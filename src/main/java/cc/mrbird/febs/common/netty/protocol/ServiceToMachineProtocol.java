@@ -29,6 +29,7 @@ import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
 import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.mchange.lang.ByteUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -213,18 +214,16 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             String version = "001";
             //找到上传文件的绝对路径，得到文件内容
             String filePath = (String) redisService.get(remoteFileDTO.getUrl());
-            Path path = Paths.get(filePath);
-            byte[] bytes = Files.readAllBytes(path);
+            byte[] bytes = FileUtil.readBytes(filePath);
 
             String md5Str = ByteUtils.toHexAscii(MD5Util.md5(bytes)).toLowerCase();
             remoteFileDTO.setMd5(md5Str);
             String entryctContent = AESUtils.encrypt(version + JSON.toJSONString(remoteFileDTO), tempKey);
-
             //发送数据
             wrieteToCustomer(ctx, getWriteContent(BaseTypeUtils.stringToByte(entryctContent, BaseTypeUtils.UTF8), (byte) 0xC5));
             log.info("服务器发送更新机器文件指令 " + remoteFileDTO.getRemoteFilePath());
 
-            redisService.del(remoteFileDTO.getUrl());
+//            redisService.del(remoteFileDTO.getUrl());
             return true;
         } catch (Exception e) {
             log.error("服务器发送更新机器文件指令，原因如下：" + e.getMessage());

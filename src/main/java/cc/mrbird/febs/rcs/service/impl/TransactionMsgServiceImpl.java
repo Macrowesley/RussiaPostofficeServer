@@ -282,8 +282,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         for (int i = 0; i < msgList.size(); i++) {
             if (i % 2 == 0) {
                 beginMsg = msgList.get(i);
+                log.info("-------------------------");
+//                log.info("beginMsg = " + beginMsg.toString());
             }else{
                 endMsg = msgList.get(i);
+//                log.info("endMsg = " + endMsg.toString());
                 //list是顺序的，array数组也是正序的
                 if (beginMsg != null && endMsg != null && !(endMsg.getCount().equals(beginMsg.getCount()))) {
                     //log.info("\nbeginMsg={},\nendMsg={}",beginMsg,endMsg);
@@ -364,6 +367,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
 //            log.info("key={},  value.size={}" ,key, size);
 
             DmMsgDetail dmMsgDetail = getDmMsgDetail(msgList, false, false);
+//            log.info("dmMsgDetail = " + dmMsgDetail.toString());
 
             TransactionMsg firstMsg = msgList.get(0);
             TransactionMsg endMsg = msgList.get(size - 1);
@@ -509,6 +513,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             if (!StringUtils.isEmpty(dbPrintJob.getTransactionId())){
                 throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
             }
+
+            //校验订单状态是否符合条件
+            checkUtils.checkTransactionFlowDetailIsOk(foreseenId,transactionMsgFMDTO.getFrankMachineId());
 
             if (!FebsConstant.IS_TEST_NETTY) {
                 transactionId = AESUtils.createUUID();

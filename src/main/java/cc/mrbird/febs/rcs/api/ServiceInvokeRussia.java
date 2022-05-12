@@ -4,9 +4,15 @@ import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
+import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.Foreseen;
+import cc.mrbird.febs.rcs.service.IContractService;
+import cc.mrbird.febs.rcs.service.IForeseenService;
+import cc.mrbird.febs.rcs.service.IPrintJobService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.sun.java.browser.plugin2.DOM;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +50,12 @@ public class ServiceInvokeRussia {
      * 端口号：12800
      */
     private final boolean isTest = true;
+
+    @Autowired
+    IContractService contractService;
+
+    @Autowired
+    IPrintJobService printJobService;
     /**
      * 发送机器状况
      *
@@ -219,8 +231,19 @@ public class ServiceInvokeRussia {
             }
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(foreseenFmDto.getContractCode());
-            balanceDTO.setCurrent(100000D);
-            balanceDTO.setConsolidate(100000D);
+
+
+            //balanceDTO.setCurrent(100000D);
+            //balanceDTO.setConsolidate(100000D);
+
+            log.info(foreseenFmDto.toString());
+            //测试环境，模拟真实情况
+            Contract dbContract = contractService.getByConractCode(foreseenFmDto.getContractCode());
+            log.info("测试模拟数据");
+            log.info(dbContract.toString());
+            balanceDTO.setCurrent(dbContract.getCurrent());
+            balanceDTO.setConsolidate(dbContract.getConsolidate() - MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
+            log.info("{} - {} = {}",dbContract.getConsolidate(),MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()),balanceDTO.getConsolidate());
             return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
         //fm信息转ForeseenDTO
@@ -258,8 +281,14 @@ public class ServiceInvokeRussia {
         if (isTest){
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(contractCode);
-            balanceDTO.setCurrent(100000D);
-            balanceDTO.setConsolidate(100000D);
+            //balanceDTO.setCurrent(100000D);
+            //balanceDTO.setConsolidate(100000D);
+
+            //测试环境，模拟真实情况
+            Contract dbContract = contractService.getByConractCode(contractCode);
+            balanceDTO.setCurrent(dbContract.getCurrent());
+            balanceDTO.setConsolidate(dbContract.getConsolidate());
+
             return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
@@ -282,8 +311,17 @@ public class ServiceInvokeRussia {
 //            log.info("transactionDTO 信息 = " + JSON.toJSONString(transactionDTO));
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
             balanceDTO.setContractCode(transactionDTO.getContractCode());
-            balanceDTO.setCurrent(100000D);
-            balanceDTO.setConsolidate(100000D);
+
+            //balanceDTO.setCurrent(100000D);
+            //balanceDTO.setConsolidate(100000D);
+
+            //测试环境，模拟真实情况
+            log.info("模拟真实情况");
+            log.info(transactionDTO.toString());
+            Contract dbContract = contractService.getByConractCode(transactionDTO.getContractCode());
+            Foreseen dbForeseen = printJobService.getForeseenById(transactionDTO.getForeseenId());
+            balanceDTO.setCurrent(dbContract.getCurrent() - transactionDTO.getAmount());
+            balanceDTO.setConsolidate(dbContract.getConsolidate() + (dbForeseen.getTotalAmmount() - transactionDTO.getAmount()));
             return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
 
