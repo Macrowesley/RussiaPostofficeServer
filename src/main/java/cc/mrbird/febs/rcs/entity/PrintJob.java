@@ -82,6 +82,14 @@ public class PrintJob {
     @TableField("type")
     private Integer type;
 
+    /**
+     * 打印对象类型：过戳还是签条
+     * 1 stamp
+     * 2 stick
+     */
+    @TableField("object_type")
+    private Integer printObjectType;
+
 
     /**
      * 取消原因

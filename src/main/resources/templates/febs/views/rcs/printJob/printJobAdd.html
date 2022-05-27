@@ -59,6 +59,14 @@
       </div>
     </div>
 
+    <div class="layui-form-item">
+      <label class="layui-form-label left-label" th:text="#{printJob.type}+':'"></label>
+      <div class="layui-input-block">
+        <input type="radio" name="printObjectType" value="1" th:title="#{printJob.stamp}" checked>
+        <input type="radio" name="printObjectType" value="2" th:title="#{printJob.stick}">
+      </div>
+    </div>
+
     <!--购物车-->
     <div class="layui-form-item">
       <label class="layui-form-label left-label" th:text="#{printJob.products}+':'"></label>

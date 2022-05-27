@@ -24,15 +24,13 @@ import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.mapper.PrintJobMapper;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import cc.mrbird.febs.system.entity.User;
 import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -356,26 +354,26 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     /**
      * 创建前端打印订单
      *
-     * @param printJobAddDto
+     * @param printJobReq
      */
     @Override
-    public void createPrintJobDto(PrintJobAddDto printJobAddDto) {
-        ArrayList<ForeseenProductFmDto> products = printJobAddDto.getProducts();
+    public void createPrintJobDto(PrintJobReq printJobReq) {
+        ArrayList<ForeseenProductFmDto> products = printJobReq.getProducts();
 
-        Contract dbContract = checkPrintJob(printJobAddDto, products);
+        Contract dbContract = checkPrintJob(printJobReq, products);
 
         //todo 确定产品编号是否正常
 
 
         //确定上一个订单是否闭环
-        PrintJob lastestJob = getLastestJobByFmId(printJobAddDto.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
+        PrintJob lastestJob = getLastestJobByFmId(printJobReq.getFrankMachineId(), PrintJobTypeEnum.Web.getCode());
         if (lastestJob != null && lastestJob.getFlow() != FlowEnum.FlowEnd.getCode()) {
             throw new FebsException(messageUtils.getMessage("printJob.waitLastOrderFinish"));
         }
 
 
         PrintJob printJob = new PrintJob();
-        BeanUtils.copyProperties(printJobAddDto, printJob);
+        BeanUtils.copyProperties(printJobReq, printJob);
         printJob.setPcUserId(FebsUtil.getCurrentUser().getUserId().intValue());
         printJob.setFlow(FlowEnum.FlowIng.getCode());
         printJob.setFlowDetail(FlowDetailEnum.JobingPcCreatePrint.getCode());
@@ -401,8 +399,8 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         foreseenProductService.saveBatch(productList);
     }
 
-    private Contract checkPrintJob(PrintJobAddDto printJobAddDto, ArrayList<ForeseenProductFmDto> products) {
-        if (printJobAddDto.getTotalAmount() < 0) {
+    private Contract checkPrintJob(PrintJobReq printJobReq, ArrayList<ForeseenProductFmDto> products) {
+        if (printJobReq.getTotalAmount() < 0) {
             throw new FebsException("Total amount can not less 0");
         }
 
@@ -429,16 +427,16 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             totalCount += temp.getCount();
         }
 
-        printJobAddDto.setTotalCount(totalCount);
+        printJobReq.setTotalCount(totalCount);
 
         //确定合同号是否正常
-        Contract dbContract = contractService.getByConractCode(printJobAddDto.getContractCode());
+        Contract dbContract = contractService.getByConractCode(printJobReq.getContractCode());
         if(dbContract == null){
             throw new FebsException("Contract not found");
         }
 
         //确定机器ID是否正常
-        if(!deviceService.checkExistByFmId(printJobAddDto.getFrankMachineId())){
+        if(!deviceService.checkExistByFmId(printJobReq.getFrankMachineId())){
             throw new FebsException("FrankMachineId not found");
         }
         return dbContract;
@@ -460,7 +458,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void editPrintJob(PrintJobAddDto printJobUpdateDto) {
+    public void editPrintJob(PrintJobReq printJobUpdateDto) {
         PrintJob printJob = new PrintJob();
         ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
         Contract dbContract = checkPrintJob(printJobUpdateDto, products);

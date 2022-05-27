@@ -573,6 +573,8 @@ public class ServiceManageCenter {
             foreseensResultDTO.setActualAmount(printProgressInfo.getActualAmount());
             foreseensResultDTO.setActualCount(printProgressInfo.getActualCount());
             foreseensResultDTO.setHasTranaction(StringUtils.isNotBlank(dbPrintJob.getTransactionId()) == true ? "1" : "0");
+            //网络订单，告诉机器打印什么类型的戳
+            foreseensResultDTO.setPrintObjectType(dbPrintJob.getPrintObjectType());
         }
 //        log.info(JSON.toJSONString(printProgressInfo.getProductArr()));
         /*Arrays.stream(printProgressInfo.getProductArr()).forEach(item -> {

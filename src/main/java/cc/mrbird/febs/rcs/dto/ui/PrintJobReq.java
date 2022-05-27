@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 @Data
 @ToString
-public class PrintJobAddDto {
+public class PrintJobReq {
 
     private Integer id;
 
@@ -30,5 +30,12 @@ public class PrintJobAddDto {
     private String foreseenId;
 
     private String transactionId;
+
+    /**
+     * 打印对象类型：过戳还是签条
+     * 1 stamp
+     * 2 stick
+     */
+    private int printObjectType;
 
 }

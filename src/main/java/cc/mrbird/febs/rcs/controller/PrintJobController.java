@@ -12,8 +12,7 @@ import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.common.kit.EasyExcelKit;
 import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
@@ -94,12 +93,12 @@ public class PrintJobController extends BaseController {
     @PostMapping("printJob/add")
     @ResponseBody
     @RequiresPermissions("printJob:add")
-    public FebsResponse addPrintJob(@Valid PrintJobAddDto printJobAddDto) {
+    public FebsResponse addPrintJob(@Valid PrintJobReq printJobReq) {
         if(!verifyUtils.verify()){
             throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
         }
         //log.info("前端添加订单：" + printJobAddDto.toString());
-        this.printJobService.createPrintJobDto(printJobAddDto);
+        this.printJobService.createPrintJobDto(printJobReq);
         return new FebsResponse().success();
     }
 
@@ -116,7 +115,7 @@ public class PrintJobController extends BaseController {
     @PostMapping("printJob/update/{id}")
     @ResponseBody
     @RequiresPermissions("printJob:update")
-    public FebsResponse updatePrintJob(@PathVariable int id,PrintJobAddDto printJobUpdateDto) {
+    public FebsResponse updatePrintJob(@PathVariable int id, PrintJobReq printJobUpdateDto) {
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }

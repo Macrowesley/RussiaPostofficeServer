@@ -8,8 +8,7 @@ import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
 import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
@@ -60,15 +59,15 @@ public interface IPrintJobService extends IService<PrintJob> {
 
     /**
      * 创建前端打印订单
-     * @param printJobAddDto
+     * @param printJobReq
      */
-    void createPrintJobDto(PrintJobAddDto printJobAddDto);
+    void createPrintJobDto(PrintJobReq printJobReq);
 
     /**
      * 编辑
      * @param printJobUpdateDto
      */
-    void editPrintJob(PrintJobAddDto printJobUpdateDto);
+    void editPrintJob(PrintJobReq printJobUpdateDto);
 
     /**
      * 修改
