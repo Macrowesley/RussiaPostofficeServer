@@ -26,8 +26,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +114,16 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void createTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
+//            transactionMsg.setCreatedTime(new Date());
+//            transactionMsg.setStatus("1");
+//            transactionMsg.setCode("2102");
+//            transactionMsg.setDmMsg("01PM64313100022032210020000000605000500020110001000001770020");
+//            transactionMsg.setAmount(100L);
+//            transactionMsg.setCount(500L);
+//            transactionMsg.setFrankMachineId("PM100200");
+//            transactionMsg.setTransactionId("58702413-b657-484b-81c0-c7899dc2c5b7");
+
+
             transactionMsg.setId(redisService.getIncr("msgId"));
             this.saveMsgToMongodb(transactionMsg);
         }else{
@@ -477,10 +489,39 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         final java.util.Calendar cal = GregorianCalendar.getInstance();
         cal.setTime( date );
         cal.add( GregorianCalendar.MONTH, -6 );
-        criteria.and("created_time").lte(date);
+        log.info(date.toString());
+        criteria.and("created_time").lte(cal.getTime());
         criteria.andOperator(criteria.where("status").is("2"));
         query.addCriteria(criteria);
-        List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
         mongoTemplate.remove(query,"rcs_transaction_msg");
+    }
+
+    @Override
+    public void batchCreate() {
+        List<TransactionMsg> list = new ArrayList<TransactionMsg>();
+//        for (Long i = 101L; i < 120; i++){
+//                for (Long i = 100010140L; i < 100010240; i++){
+//        for (int i = 200000001; i < 200010001; i++){
+//        for (Long i = 200001020L; i < 200001030; i++){
+
+        for (Long i = 10L; i < 15; i++){
+            TransactionMsg transactionMsg = new TransactionMsg();
+            transactionMsg.setId(i);
+            transactionMsg.setTransactionId("0000cffcc-c277-4145-8b42-694114f54601");
+            transactionMsg.setFrankMachineId("PM100200");
+            transactionMsg.setCode("2100");
+            transactionMsg.setCount(668L);
+            transactionMsg.setAmount(1000L);
+            transactionMsg.setDmMsg("01PM64313100022032210020000000556000800021000001000001770020");
+            transactionMsg.setStatus("2");
+            transactionMsg.setCreatedTime(new Date());
+            list.add(transactionMsg);
+//            if (i != 0 && i %100000 == 0){
+            if (i != 0 && i %2 == 0){
+                System.out.println("插入" + " " + i + "条");
+                this.mongoTemplate.insertAll(list);
+                list.clear();
+            }
+        }
     }
 }

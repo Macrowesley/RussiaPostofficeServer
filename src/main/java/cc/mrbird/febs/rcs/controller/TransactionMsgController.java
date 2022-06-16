@@ -116,4 +116,18 @@ public class TransactionMsgController extends BaseController {
         List<TransactionMsg> franks = this.transactionMsgService.findTransactionMsgs(queryRequest, frank).getRecords();
         ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
     }
+
+    @ControllerEndpoint(operation = "批量插入数据", exceptionMessage = "批量插入数据失败")
+    @PostMapping("transactionMsg/batchInsert")
+    @ResponseBody
+    @RequiresPermissions("transactionMsg:add")
+    public FebsResponse batchInsert(QueryRequest queryRequest, HttpServletResponse response) {
+        try{
+            this.transactionMsgService.batchCreate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new FebsResponse().success();
+    }
+
 }
