@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -18,6 +19,7 @@ import java.util.Date;
 @Data
 @TableName("t_dept")
 @Excel("部门信息表")
+@ApiModel
 public class Dept implements Serializable {
 
     private static final long serialVersionUID = 5702271568363798328L;

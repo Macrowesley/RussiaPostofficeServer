@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
@@ -38,6 +39,7 @@ import java.util.Base64;
 @RequestMapping("/rcs-service")
 @RestController
 @Validated
+@ApiIgnore
 public class ServiceApi {
     @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;

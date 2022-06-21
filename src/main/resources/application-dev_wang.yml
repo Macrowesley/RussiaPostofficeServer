@@ -25,7 +25,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://root:Gdpt2022@localhost:27017/russiadb
+      uri: mongodb://root:Gdpt2022@localhost:27010/russiadb?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
 
   redis:
     # Redis数据库索引（默认为 0）

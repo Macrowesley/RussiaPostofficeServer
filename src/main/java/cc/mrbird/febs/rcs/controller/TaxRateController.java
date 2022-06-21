@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ import java.util.Map;
 @Validated
 @Controller
 @RequiredArgsConstructor
+@ApiIgnore
 public class TaxRateController extends BaseController {
 
     @Autowired

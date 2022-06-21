@@ -9,6 +9,8 @@ import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.ITransactionService;
 import com.wuwenze.poi.ExcelKit;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -18,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -34,12 +37,15 @@ import java.util.Map;
 @Validated
 @Controller
 @RequiredArgsConstructor
+@Api(description = "Add, delete, change, search for transaction")
+@ApiIgnore
 public class TransactionController extends BaseController {
 
     @Autowired
     ITransactionService transactionService;
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "transaction")
+
     public String transactionIndex(){
         return FebsUtil.view("transaction/transaction");
     }
@@ -47,6 +53,7 @@ public class TransactionController extends BaseController {
     @GetMapping("transaction")
     @ResponseBody
     @RequiresPermissions("transaction:list")
+    @ApiOperation("List for all transactions")
     public FebsResponse getAllTransactions(Transaction transaction) {
         return new FebsResponse().success().data(transactionService.findTransactions(transaction));
     }
@@ -54,6 +61,7 @@ public class TransactionController extends BaseController {
     @GetMapping("transaction/list")
     @ResponseBody
     @RequiresPermissions("transaction:list")
+    @ApiOperation("List for transactions")
     public FebsResponse transactionList(QueryRequest request, Transaction transaction) {
         Map<String, Object> dataTable = getDataTable(this.transactionService.findTransactions(request, transaction));
         return new FebsResponse().success().data(dataTable);
@@ -63,6 +71,7 @@ public class TransactionController extends BaseController {
     @PostMapping("transaction")
     @ResponseBody
     @RequiresPermissions("transaction:add")
+    @ApiOperation("Add a transaction")
     public FebsResponse addTransaction(@Valid Transaction transaction) {
         this.transactionService.createTransaction(transaction);
         return new FebsResponse().success();
@@ -72,6 +81,7 @@ public class TransactionController extends BaseController {
     @GetMapping("transaction/delete")
     @ResponseBody
     @RequiresPermissions("transaction:delete")
+    @ApiOperation("Delete a transaction")
     public FebsResponse deleteTransaction(Transaction transaction) {
         this.transactionService.deleteTransaction(transaction);
         return new FebsResponse().success();
@@ -81,15 +91,17 @@ public class TransactionController extends BaseController {
     @PostMapping("transaction/update")
     @ResponseBody
     @RequiresPermissions("transaction:update")
+    @ApiOperation("Update a transaction")
     public FebsResponse updateTransaction(Transaction transaction) {
         this.transactionService.updateTransaction(transaction);
         return new FebsResponse().success();
     }
 
-    @ControllerEndpoint(operation = "修改Transaction", exceptionMessage = "导出Excel失败")
+    @ControllerEndpoint(operation = "export excel", exceptionMessage = "导出Excel失败")
     @PostMapping("transaction/excel")
     @ResponseBody
     @RequiresPermissions("transaction:export")
+    @ApiOperation("export excel")
     public void export(QueryRequest queryRequest, Transaction transaction, HttpServletResponse response) {
         List<Transaction> transactions = this.transactionService.findTransactions(queryRequest, transaction).getRecords();
         ExcelKit.$Export(Transaction.class, response).downXlsx(transactions, false);
