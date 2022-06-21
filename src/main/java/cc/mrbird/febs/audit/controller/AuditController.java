@@ -18,6 +18,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -31,6 +32,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("audit")
+@ApiIgnore
 public class AuditController extends BaseController {
 
     @Autowired

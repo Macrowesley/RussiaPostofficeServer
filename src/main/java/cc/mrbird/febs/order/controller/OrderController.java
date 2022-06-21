@@ -31,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -49,6 +50,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("order")
+@ApiIgnore
 public class OrderController extends BaseController {
     @Autowired
     private TokenUtil tokenUtil;
