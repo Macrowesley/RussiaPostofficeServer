@@ -4,10 +4,8 @@ import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
-import cc.mrbird.febs.common.exception.FebsException;
-import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
@@ -24,7 +22,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Controller("RcsView")
@@ -97,7 +94,7 @@ public class ViewController extends BaseController{
     public String printDetail(@PathVariable int id, Model model) {
         PrintJob printJob = iPrintJobService.getByPrintJobId(id);
         ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
-        PrintJobAddDto printJobAddDto = null;
+        PrintJobReq printJobReq = null;
         model.addAttribute("printJob",printJob);
         model.addAttribute("foreseenProduct",foreseenProduct);
         //printJobAddDto.setProducts(foreseenProduct);
@@ -113,7 +110,7 @@ public class ViewController extends BaseController{
         //System.out.println(JSON.toJSONString(printJob));
         ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
         //System.out.println(JSON.toJSONString(foreseenProduct));
-        PrintJobAddDto printJobAddDto = null;
+        PrintJobReq printJobReq = null;
 //        PrintJob printJob1=null;
 //        BeanUtils.copyProperties(printJob,printJob1);
         model.addAttribute("printJob",printJob);
@@ -124,7 +121,7 @@ public class ViewController extends BaseController{
     }
 
     @GetMapping("/printJob/msgDetail/{transactionId}")
-    @RequiresPermissions("printJob:view")
+    @RequiresPermissions("transactionMsg:list")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String msgDetail(@PathVariable String transactionId, Model model) {
 //        model.addAttribute("transactionId",transactionId);

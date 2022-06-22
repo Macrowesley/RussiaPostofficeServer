@@ -4,7 +4,6 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
-import cc.mrbird.febs.common.entity.DeptTree;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
@@ -12,20 +11,19 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.service.RedisService;
-import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.FebsUtil;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
+import cc.mrbird.febs.rcs.common.kit.EasyExcelKit;
+import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.entity.ForeseenProduct;
 import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.entity.Transaction;
-import cc.mrbird.febs.rcs.entity.TransactionMsg;
+import cc.mrbird.febs.rcs.service.IForeseenProductService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import cc.mrbird.febs.system.entity.Dept;
-import cn.hutool.core.date.DateTime;
-import com.alibaba.fastjson.JSON;
-import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.*;
+
+import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -33,17 +31,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
+
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 打印任务表 Controller
@@ -57,6 +58,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Api(description = "Add, delete, change, search for print job, and operate print task")
 public class PrintJobController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IPrintJobService printJobService;
@@ -70,6 +73,15 @@ public class PrintJobController extends BaseController {
     @Autowired
     ITransactionMsgService iTransactionMsgService;
 
+    @Autowired
+    IForeseenProductService iForeseenProductService;
+
+    @Autowired
+    IPrintJobService iPrintJobService;
+
+    @Autowired
+    EasyExcelKit easyExcelKit;
+
 //    @GetMapping("select/tree")
 //    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
 //    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
@@ -82,25 +94,25 @@ public class PrintJobController extends BaseController {
         return FebsUtil.view("printJob/printJob");
     }
 
-    @GetMapping("printJob")
+/*    @GetMapping("printJob")
     @ResponseBody
     @RequiresPermissions("printJob:list")
     @ApiOperation("List for print jobs")
     @ApiIgnore
     public FebsResponse getAllPrintJobs(PrintJob printJob) {
         return new FebsResponse().success().data(printJobService.findPrintJobs(printJob));
-    }
+    }*/
 
     @GetMapping("printJob/list")
-    @ResponseBody
     @RequiresPermissions("printJob:list")
     @ApiOperation("List for print jobs")
+    @ResponseBody
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = PrintJob.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse printJobList(QueryRequest request, @RequestBody PrintJob printJob) {
-        Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJob));
+    public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
+        Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
 //        System.out.println(JSON.toJSONString(dataTable));
         return new FebsResponse().success().data(dataTable);
     }
@@ -114,12 +126,12 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addPrintJob(@Valid @RequestBody PrintJobAddDto printJobAddDto) {
+    public FebsResponse addPrintJob(@Valid PrintJobReq printJobReq) {
         if(!verifyUtils.verify()){
-            throw new FebsException(MessageUtils.getMessage("printJob.expiredLicense"));
+            throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
         }
-        //log.info("前端添加订单：" + printJobAddDto.toString());
-        this.printJobService.createPrintJobDto(printJobAddDto);
+        log.info("前端添加订单：" + printJobReq.toString());
+        this.printJobService.createPrintJobDto(printJobReq);
         return new FebsResponse().success();
     }
 
@@ -146,7 +158,7 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updatePrintJob(@PathVariable int id,@RequestBody PrintJobUpdateDto printJobUpdateDto) {
+    public FebsResponse updatePrintJob(@PathVariable int id, PrintJobReq printJobUpdateDto) {
         this.printJobService.editPrintJob(printJobUpdateDto);
         return new FebsResponse().success();
     }
@@ -157,9 +169,14 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:export")
     @ApiOperation("Export excel")
     @ApiIgnore
-    public void export(QueryRequest queryRequest, PrintJob printJob, HttpServletResponse response) {
-        List<PrintJob> printJobs = this.printJobService.findPrintJobs(queryRequest, printJob).getRecords();
-        ExcelKit.$Export(PrintJob.class, response).downXlsx(printJobs, false);
+    public void export(QueryRequest queryRequest, PrintJobDTO printJobDto, HttpServletResponse response) {
+        log.info("导出excel");
+        try {
+            List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
+            easyExcelKit.download(response, printJobExcelVOList,PrintJobExcelVO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @ControllerEndpoint(operation = "打印任务操作", exceptionMessage = "打印任务操作失败")
@@ -203,6 +220,29 @@ public class PrintJobController extends BaseController {
         log.info("开始取消打印任务操作：" + id);
         this.printJobService.cancelPrintJob(id);
         return new FebsResponse().success().data("ok");
+    }
+
+    @GetMapping("/printJob/detail/{id}")
+    @RequiresPermissions("printJob:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    @ApiOperation("get a print job detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "id", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = PrintJob.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse printDetail(@PathVariable int id) {
+        Map data = new HashMap();
+        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
+        ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
+        PrintJobReq printJobReq = null;
+        data.put("printJob",printJob);
+        data.put("foreseenProduct",foreseenProduct);
+        //printJobAddDto.setProducts(foreseenProduct);
+        //System.out.println("printJobAddDto:"+JSON.toJSONString(printJobAddDto));
+        return new FebsResponse().success().data(data);
     }
 
 //    @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/update/{username}")

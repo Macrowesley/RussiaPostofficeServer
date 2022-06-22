@@ -8,7 +8,6 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.ForeseenProduct;
 import cc.mrbird.febs.rcs.service.IForeseenProductService;
-import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -104,6 +103,6 @@ public class ForeseenProductController extends BaseController {
     @ApiOperation("export excel")
     public void export(QueryRequest queryRequest, ForeseenProduct foreseenProduct, HttpServletResponse response) {
         List<ForeseenProduct> foreseenProducts = this.foreseenProductService.findForeseenProducts(queryRequest, foreseenProduct).getRecords();
-        ExcelKit.$Export(ForeseenProduct.class, response).downXlsx(foreseenProducts, false);
+        //ExcelKit.$Export(ForeseenProduct.class, response).downXlsx(foreseenProducts, false);
     }
 }

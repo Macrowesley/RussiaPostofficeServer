@@ -486,7 +486,7 @@ public class ServiceManageCenter {
 
         //判断合同金额是否够用
         double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || !DoubleKit.isV1BiggerThanV2(dbConsolidate, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
@@ -573,6 +573,8 @@ public class ServiceManageCenter {
             foreseensResultDTO.setActualAmount(printProgressInfo.getActualAmount());
             foreseensResultDTO.setActualCount(printProgressInfo.getActualCount());
             foreseensResultDTO.setHasTranaction(StringUtils.isNotBlank(dbPrintJob.getTransactionId()) == true ? "1" : "0");
+            //网络订单，告诉机器打印什么类型的戳
+            foreseensResultDTO.setPrintObjectType(dbPrintJob.getPrintObjectType());
         }
 //        log.info(JSON.toJSONString(printProgressInfo.getProductArr()));
         /*Arrays.stream(printProgressInfo.getProductArr()).forEach(item -> {
@@ -605,7 +607,7 @@ public class ServiceManageCenter {
         checkUtils.checkTransactionMsg(transactionMsgFmDto.getDmMsg().trim());
 
         //判断机器状态是否正常
-        checkUtils.checkFmEnable(transactionMsgFmDto.getFrankMachineId());
+//        checkUtils.checkFmEnable(transactionMsgFmDto.getFrankMachineId());
 
         return dmMsgService.saveMsg(transactionMsgFmDto);
     }

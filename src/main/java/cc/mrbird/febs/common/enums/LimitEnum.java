@@ -3,8 +3,8 @@ package cc.mrbird.febs.common.enums;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 
 public enum LimitEnum {
-    strict(1,60, 10, MessageUtils.getMessage("limitEnum.strict")),
-    loose(2,60, 30, MessageUtils.getMessage("limitEnum.loose"));
+    strict(1,60, 10, MessageUtils.getStaticMessage("limitEnum.strict")),
+    loose(2,60, 30, MessageUtils.getStaticMessage("limitEnum.loose"));
     private int type;
     private int period;
     private int count;
@@ -55,6 +55,6 @@ public enum LimitEnum {
                 return item;
             }
         }
-        throw new Exception(MessageUtils.getMessage("audit.BtnEnum.noType"));
+        throw new Exception(MessageUtils.getStaticMessage("audit.BtnEnum.noType"));
     }
 }

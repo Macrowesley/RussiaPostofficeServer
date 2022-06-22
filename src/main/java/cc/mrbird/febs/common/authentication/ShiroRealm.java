@@ -68,6 +68,9 @@ public class ShiroRealm extends AuthorizingRealm {
         this.userDataPermissionService = userDataPermissionService;
     }
 
+    @Autowired
+    MessageUtils messageUtils;
+
     /**
      * 授权模块，获取用户角色和权限
      *
@@ -152,11 +155,11 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         if (user == null || !StringUtils.equals(password, user.getPassword())) {
             addErrorTime(username);
-//            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdError"));
+//            throw new IncorrectCredentialsException(messageUtils.getMessage("validation.pwdError"));
         }
 
         if (User.STATUS_LOCK.equals(user.getStatus())) {
-            throw new LockedAccountException(MessageUtils.getMessage("validation.accountIsLock"));
+            throw new LockedAccountException(messageUtils.getMessage("validation.accountIsLock"));
         }
         String deptIds = this.userDataPermissionService.findByUserId(String.valueOf(user.getUserId()));
         user.setDeptIds(deptIds);
@@ -173,9 +176,9 @@ public class ShiroRealm extends AuthorizingRealm {
             errorTimes = redisService.incr(key,1L);
         }
         if (errorTimes > 3){
-            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdErrorMoreThree"));
+            throw new IncorrectCredentialsException(messageUtils.getMessage("validation.pwdErrorMoreThree"));
         }else{
-            throw new IncorrectCredentialsException(MessageFormat.format(MessageUtils.getMessage("validation.pwdErrorTimes"),errorTimes));
+            throw new IncorrectCredentialsException(MessageFormat.format(messageUtils.getMessage("validation.pwdErrorTimes"),errorTimes));
         }
 
     }

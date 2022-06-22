@@ -170,6 +170,9 @@ public class CheckUtils {
     }
 
     public Transaction checkTransactionIdExist(String transactionId) {
+        if (!StringUtils.isNotBlank(transactionId)){
+            throw new FmException(FMResultEnum.TransactionIdNoExist);
+        }
         Transaction transaction = printJobService.getTransactionById(transactionId);
         if (transaction == null){
             throw new FmException(FMResultEnum.TransactionIdNoExist);

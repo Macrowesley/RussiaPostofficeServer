@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
 import cc.mrbird.febs.rcs.service.IPostOfficeContractService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -94,6 +94,6 @@ public class PostOfficeContractController extends BaseController {
     @RequiresPermissions("postOfficeContract:export")
     public void export(QueryRequest queryRequest, PostOfficeContract postOfficeContract, HttpServletResponse response) {
         List<PostOfficeContract> postOfficeContracts = this.postOfficeContractService.findPostOfficeContracts(queryRequest, postOfficeContract).getRecords();
-        ExcelKit.$Export(PostOfficeContract.class, response).downXlsx(postOfficeContracts, false);
+        //ExcelKit.$Export(PostOfficeContract.class, response).downXlsx(postOfficeContracts, false);
     }
 }

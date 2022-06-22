@@ -97,6 +97,16 @@ public class MoneyUtils {
         return moneySaveTwoDecimal(m1).equals(moneySaveTwoDecimal(m2));
     }
 
+    /**
+     * 保存金额格式
+     * @param money
+     * @return
+     */
+    public static String moneyForm(double money){
+        DecimalFormat df = new DecimalFormat("#,###.00");
+        return df.format(money);
+    }
+
     public static void main(String[] args) {
 //        test1();
 //        test2();

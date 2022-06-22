@@ -8,14 +8,14 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.service.IForeseenService;
-import com.wuwenze.poi.ExcelKit;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +39,6 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 @Api(description = "Add, delete, change, search for foreseens")
-@ApiIgnore
 public class ForeseenController extends BaseController {
 
     @Autowired
@@ -55,6 +54,7 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:list")
     @ApiOperation("Get all foreseens")
+    @ApiIgnore
     public FebsResponse getAllForeseens(Foreseen foreseen) {
         return new FebsResponse().success().data(foreseenService.findForeseens(foreseen));
     }
@@ -63,17 +63,10 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:list")
     @ApiOperation("Get all foreseens")
+    @ApiIgnore
     public FebsResponse foreseenList(QueryRequest request, Foreseen foreseen) {
         Map<String, Object> dataTable = getDataTable(this.foreseenService.findForeseens(request, foreseen));
         return new FebsResponse().success().data(dataTable);
-    }
-
-    @GetMapping(FebsConstant.VIEW_PREFIX +"foreseen/detail/{foreseenId}")
-    @ResponseBody
-    @ApiOperation("Get foreseen detail")
-    @ApiIgnore
-    public FebsResponse foreseenInfo(@PathVariable String foreseenId){
-        return new FebsResponse().success().data(foreseenService.getForeseenDetail(foreseenId));
     }
 
     @ControllerEndpoint(operation = "新增Foreseen", exceptionMessage = "新增Foreseen失败")
@@ -81,6 +74,7 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:add")
     @ApiOperation("add a foreseen")
+    @ApiIgnore
     public FebsResponse addForeseen(@Valid Foreseen foreseen) {
         this.foreseenService.createForeseen(foreseen);
         return new FebsResponse().success();
@@ -91,6 +85,7 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:delete")
     @ApiOperation("delete a foreseen")
+    @ApiIgnore
     public FebsResponse deleteForeseen(Foreseen foreseen) {
         this.foreseenService.deleteForeseen(foreseen);
         return new FebsResponse().success();
@@ -101,6 +96,7 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:update")
     @ApiOperation("Update a foreseen")
+    @ApiIgnore
     public FebsResponse updateForeseen(Foreseen foreseen) {
         this.foreseenService.updateForeseen(foreseen);
         return new FebsResponse().success();
@@ -111,8 +107,25 @@ public class ForeseenController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseen:export")
     @ApiOperation("export excel")
+    @ApiIgnore
     public void export(QueryRequest queryRequest, Foreseen foreseen, HttpServletResponse response) {
         List<Foreseen> foreseens = this.foreseenService.findForeseens(queryRequest, foreseen).getRecords();
-        ExcelKit.$Export(Foreseen.class, response).downXlsx(foreseens, false);
+        //ExcelKit.$Export(Foreseen.class, response).downXlsx(foreseens, false);
+    }
+
+    @GetMapping("/foreseen/detail/{foreseenId}")
+    @ResponseBody
+    @ApiOperation("get foreseen detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "foreseenId", value = "foreseenId", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Foreseen.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse foreseenInfo(@PathVariable String foreseenId) {
+        Foreseen foreseen = foreseenService.getForeseenDetail(foreseenId);
+        log.info("详情 foreseen = " + foreseen.toString());
+        return new FebsResponse().success().data(foreseen);
     }
 }

@@ -8,16 +8,16 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.ITransactionService;
-import com.wuwenze.poi.ExcelKit;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
@@ -38,14 +38,13 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 @Api(description = "Add, delete, change, search for transaction")
-@ApiIgnore
 public class TransactionController extends BaseController {
 
     @Autowired
     ITransactionService transactionService;
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "transaction")
-
+    @ApiIgnore
     public String transactionIndex(){
         return FebsUtil.view("transaction/transaction");
     }
@@ -54,6 +53,7 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:list")
     @ApiOperation("List for all transactions")
+    @ApiIgnore
     public FebsResponse getAllTransactions(Transaction transaction) {
         return new FebsResponse().success().data(transactionService.findTransactions(transaction));
     }
@@ -62,6 +62,7 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:list")
     @ApiOperation("List for transactions")
+    @ApiIgnore
     public FebsResponse transactionList(QueryRequest request, Transaction transaction) {
         Map<String, Object> dataTable = getDataTable(this.transactionService.findTransactions(request, transaction));
         return new FebsResponse().success().data(dataTable);
@@ -72,6 +73,7 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:add")
     @ApiOperation("Add a transaction")
+    @ApiIgnore
     public FebsResponse addTransaction(@Valid Transaction transaction) {
         this.transactionService.createTransaction(transaction);
         return new FebsResponse().success();
@@ -82,6 +84,7 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:delete")
     @ApiOperation("Delete a transaction")
+    @ApiIgnore
     public FebsResponse deleteTransaction(Transaction transaction) {
         this.transactionService.deleteTransaction(transaction);
         return new FebsResponse().success();
@@ -92,6 +95,7 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:update")
     @ApiOperation("Update a transaction")
+    @ApiIgnore
     public FebsResponse updateTransaction(Transaction transaction) {
         this.transactionService.updateTransaction(transaction);
         return new FebsResponse().success();
@@ -102,8 +106,24 @@ public class TransactionController extends BaseController {
     @ResponseBody
     @RequiresPermissions("transaction:export")
     @ApiOperation("export excel")
+    @ApiIgnore
     public void export(QueryRequest queryRequest, Transaction transaction, HttpServletResponse response) {
         List<Transaction> transactions = this.transactionService.findTransactions(queryRequest, transaction).getRecords();
-        ExcelKit.$Export(Transaction.class, response).downXlsx(transactions, false);
+        //ExcelKit.$Export(Transaction.class, response).downXlsx(transactions, false);
+    }
+
+    @GetMapping("/transaction/detail/{transactionId}")
+    @ResponseBody
+    @ApiOperation("Get transaction information")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "transactionId", value = "transactionId", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Transaction.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse transactionInfo(@PathVariable String transactionId) {
+        Transaction transaction= transactionService.getTransactionDetail(transactionId);
+        return new FebsResponse().success().data(transaction);
     }
 }

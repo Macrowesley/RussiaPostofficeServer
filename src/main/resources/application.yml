@@ -14,11 +14,17 @@ server:
     context-path: /posmart
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB  #单个数据大小
+      max-request-size: 1024MB #总数据大小
+
   profiles:
 #    active: prod
 #     active: test
 #    active: dev_lai
-     active: dev_wang
+     active: dev-wang
+
 
   thymeleaf:
     cache: false
@@ -46,6 +52,10 @@ spring:
       # 写入redis时是否使用键前缀。
       use-key-prefix: true
     cache-names: pos
+
+  data:
+    mongodb:
+      uri: mongodb://root:Gdpt2022@localhost:27017/russiadb?authSource=admin
 
 jasypt:
   encryptor:

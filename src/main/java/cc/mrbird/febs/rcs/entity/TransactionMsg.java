@@ -27,8 +27,8 @@ public class TransactionMsg {
      * format: uuid
      */
     @TableField("transaction_id")
-    @Field("transaction_id")
     @Indexed
+    @Field("transaction_id")
     private String transactionId;
 
     /**
@@ -46,6 +46,32 @@ public class TransactionMsg {
     @TableField("amount")
     @Field("amount")
     private Long amount;
+
+
+    //单批次预估数量
+    @TableField("batchCount")
+    @Field("batchCount")
+    private Integer batchCount;
+
+    //单个的重量, 单位是g
+    @TableField("singleWeight")
+    @Field("singleWeight")
+    private Integer singleWeight;
+
+    //regionType
+    @TableField("regionType")
+    @Field("regionType")
+    private String regionType;
+
+    //labelRu
+    @TableField("labelRu")
+    @Field("labelRu")
+    private String labelRu;
+
+    //fixedValue 单位分
+    @TableField("fixedValue")
+    @Field("fixedValue")
+    private Integer fixedValue;
 
     @TableField("dm_msg")
     @Field("dm_msg")

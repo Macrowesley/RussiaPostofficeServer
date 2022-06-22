@@ -1,6 +1,7 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.rcs.common.enums.RcsApiErrorEnum;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
@@ -8,6 +9,7 @@ import cc.mrbird.febs.rcs.dto.service.ContractDTO;
 import cc.mrbird.febs.rcs.dto.service.CustomerDTO;
 import cc.mrbird.febs.rcs.dto.service.PostOfficeDTO;
 import cc.mrbird.febs.rcs.entity.Contract;
+import cc.mrbird.febs.rcs.entity.ContractCustomerInfo;
 import cc.mrbird.febs.rcs.entity.Customer;
 import cc.mrbird.febs.rcs.entity.PostOfficeContract;
 import cc.mrbird.febs.rcs.mapper.ContractMapper;
@@ -187,5 +189,20 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         BeanUtils.copyProperties(contract, contractVO);
         contractVO.setAddressContent(addressContent);
         return contractVO;
+    }
+
+    /**
+     * 获取合同号和客户信息
+     *
+     * @param contractCode
+     * @return
+     */
+    @Override
+    public ContractCustomerInfo findContractAndCustomer(String contractCode) {
+        ContractCustomerInfo contractAndCustomer = this.baseMapper.findContractAndCustomer(contractCode);
+        if (contractAndCustomer == null || contractAndCustomer.getCustomerName() == null){
+            throw new FebsException("customer info is null, contract code = " + contractCode);
+        }
+        return contractAndCustomer;
     }
 }

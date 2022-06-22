@@ -23,6 +23,8 @@ import java.text.MessageFormat;
 @ApiIgnore
 public class TestController {
     @Autowired
+    MessageUtils messageUtils;
+    @Autowired
     ServiceToMachineProtocol serviceToMachineProtocol;
 
 
@@ -154,9 +156,9 @@ public class TestController {
         }
         log.info("errorTimes = {}",errorTimes);
         if (errorTimes > 3) {
-            throw new IncorrectCredentialsException(MessageUtils.getMessage("validation.pwdErrorMoreThree"));
+            throw new IncorrectCredentialsException(messageUtils.getMessage("validation.pwdErrorMoreThree"));
         } else {
-            throw new IncorrectCredentialsException(MessageFormat.format(MessageUtils.getMessage("validation.pwdErrorTimes"), errorTimes));
+            throw new IncorrectCredentialsException(MessageFormat.format(messageUtils.getMessage("validation.pwdErrorTimes"), errorTimes));
         }
     }
 }

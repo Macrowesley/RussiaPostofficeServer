@@ -10,8 +10,8 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.system.entity.Role;
 import cc.mrbird.febs.system.service.IRoleService;
-import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -63,7 +63,7 @@ public class RoleController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Role.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse roleList(@RequestBody Role role, QueryRequest request) {
+    public FebsResponse roleList(Role role, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.roleService.findRoles(role, request));
         return new FebsResponse().success().data(dataTable);
     }
@@ -77,7 +77,7 @@ public class RoleController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addRole(@Valid @RequestBody Role role) {
+    public FebsResponse addRole(@Valid Role role) {
         this.roleService.createRole(role);
         return new FebsResponse().success();
     }
@@ -108,7 +108,7 @@ public class RoleController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateRole(@RequestBody Role role) {
+    public FebsResponse updateRole(Role role) {
         this.roleService.updateRole(role);
         return new FebsResponse().success();
     }
@@ -120,7 +120,7 @@ public class RoleController extends BaseController {
     @ApiOperation("Export excel")
     public void export(QueryRequest queryRequest, Role role, HttpServletResponse response) throws FebsException {
         List<Role> roles = this.roleService.findRoles(role, queryRequest).getRecords();
-        ExcelKit.$Export(Role.class, response).downXlsx(roles, false);
+        //ExcelKit.$Export(Role.class, response).downXlsx(roles, false);
     }
 
 }

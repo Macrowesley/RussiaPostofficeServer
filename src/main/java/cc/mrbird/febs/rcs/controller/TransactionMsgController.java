@@ -8,7 +8,6 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +137,7 @@ public class TransactionMsgController extends BaseController {
     @ApiIgnore
     public void export(QueryRequest queryRequest, TransactionMsg frank, HttpServletResponse response) {
         List<TransactionMsg> franks = this.transactionMsgService.findTransactionMsgs(queryRequest, frank).getRecords();
-        ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
+        //ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
     }
 
     @ControllerEndpoint(operation = "批量插入数据", exceptionMessage = "批量插入数据失败")

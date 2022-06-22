@@ -1,12 +1,6 @@
 package cc.mrbird.febs.common.converter;
 
-import cc.mrbird.febs.common.utils.DateUtil;
-import com.wuwenze.poi.convert.WriteConverter;
-import com.wuwenze.poi.exception.ExcelKitWriteConverterException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
-import java.text.ParseException;
 
 /**
  * Execl导出时间类型字段格式化
@@ -14,6 +8,10 @@ import java.text.ParseException;
  *
  */
 @Slf4j
+public class TimeConverter {
+
+}
+/*@Slf4j
 public class TimeConverter implements WriteConverter {
     @Override
     public String convert(Object value) {
@@ -29,4 +27,4 @@ public class TimeConverter implements WriteConverter {
             }
         }
     }
-}
+}*/

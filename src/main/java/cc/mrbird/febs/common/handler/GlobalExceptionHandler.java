@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     public FebsResponse handleException(Exception e) {
         e.printStackTrace();
         log.error("系统内部异常，异常信息 {}", e.getMessage());
-        return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(MessageUtils.getMessage("globalHandler.system.error"));
+        return new FebsResponse().code(HttpStatus.INTERNAL_SERVER_ERROR).message(messageUtils.getMessage("globalHandler.system.error"));
     }
     */
 

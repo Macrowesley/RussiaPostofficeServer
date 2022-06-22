@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Tax;
 import cc.mrbird.febs.rcs.service.ITaxService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -94,6 +94,6 @@ public class TaxController extends BaseController {
     @RequiresPermissions("tax:export")
     public void export(QueryRequest queryRequest, Tax tax, HttpServletResponse response) {
         List<Tax> taxs = this.taxService.findTaxs(queryRequest, tax).getRecords();
-        ExcelKit.$Export(Tax.class, response).downXlsx(taxs, false);
+        //ExcelKit.$Export(Tax.class, response).downXlsx(taxs, false);
     }
 }

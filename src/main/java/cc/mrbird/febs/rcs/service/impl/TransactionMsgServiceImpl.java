@@ -15,11 +15,14 @@ import cc.mrbird.febs.rcs.dto.manager.FrankDTO;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
+import cc.mrbird.febs.rcs.entity.TransactionMsgBatchInfo;
 import cc.mrbird.febs.rcs.mapper.TransactionMsgMapper;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
 import cc.mrbird.febs.rcs.service.ITransactionService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.unit.DataUnit;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,10 +36,13 @@ import com.mongodb.client.model.Indexes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.bson.Document;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -55,6 +61,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 交易表 Service实现
@@ -94,10 +101,28 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Override
     public IPage<TransactionMsg> findTransactionMsgs(QueryRequest request, TransactionMsg transactionMsg) {
         //如何考虑切换为到mongodb?
-        LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
-        // TODO 设置查询条件
-        Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+        if(useMongodb){
+            Pageable pageable = PageRequest.of(request.getPageNum() - 1,request.getPageSize());
+            Query query = new Query(Criteria.where("transaction_id").is(transactionMsg.getTransactionId()));
+
+            //获取总数量
+            long total = mongoTemplate.count(query, TransactionMsg.class);
+
+            List<TransactionMsg> list = this.mongoTemplate.find(query.with(pageable).with(Sort.by(Sort.Order.asc("_id"))), TransactionMsg.class);
+
+            Page<TransactionMsg> page = new Page<>(request.getPageNum(),request.getPageSize());
+
+            page.setTotal(total);
+            page.setRecords(list);
+
+            return page;
+        }else{
+            LambdaQueryWrapper<TransactionMsg> queryWrapper = new LambdaQueryWrapper<>();
+            // TODO 设置查询条件
+            Page<TransactionMsg> page = new Page<>(request.getPageNum(), request.getPageSize());
+            return this.page(page, queryWrapper);
+        }
+
     }
 
     @Override
@@ -139,10 +164,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     @Transactional(rollbackFor = Exception.class)
     public void updateTransactionMsg(TransactionMsg transactionMsg) {
         if(useMongodb){
-            Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
+            //暂时用不上，用上再完善，下面代码有问题
+            /*Query query = Query.query(Criteria.where("_id").is(transactionMsg.getId()));
             Update update = new Update();
             update.set("_id", transactionMsg.getId());
-            mongoTemplate.upsert(query,update,TransactionMsg.class,"transactionMsg");
+            mongoTemplate.upsert(query,update,TransactionMsg.class,"transactionMsg");*/
         }else{
             this.saveOrUpdate(transactionMsg);
         }
@@ -226,8 +252,18 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         return mongoTemplate.find(new Query(Criteria.where("transaction_id").is(transactionId)).with(Sort.by(Sort.Order.asc("_id"))),TransactionMsg.class);
     }
 
+    /**
+     *
+     * @param msgList
+     * @param needToRussiaList 是否需要给俄罗斯transaction里面的的矩阵list
+     * @param needRealPrintCount 是否需要获取每种产品的真实打印数量
+     *                           PS:
+     *                           actualCount是整个job的实际打印数量,每种产品的真实打印数量是单类产品的,是部分和整体的关系
+     *
+     * @return
+     */
     @Override
-    public DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needDmMsgList, boolean needProductPrintCount) {
+    public DmMsgDetail getDmMsgDetail(List<TransactionMsg> msgList, boolean needToRussiaList, boolean needRealPrintCount) {
         if (msgList.size() % 2 != 0) {
             throw new FmException(FMResultEnum.DmmsgIsNotFinish.getCode(),"批次记录为奇数，有没有完成的批次");
         }
@@ -254,12 +290,15 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         TransactionMsg endMsg = null;
         List<FrankDTO> frankDTOList = new ArrayList<>();
         //订单进度详情
-        HashMap<String, Integer> productPrintCountMap = new HashMap<>();
+        HashMap<String, Integer> productRealPrintCountMap = new HashMap<>();
         for (int i = 0; i < msgList.size(); i++) {
             if (i % 2 == 0) {
                 beginMsg = msgList.get(i);
+                log.info("-------------------------");
+//                log.info("beginMsg = " + beginMsg.toString());
             }else{
                 endMsg = msgList.get(i);
+//                log.info("endMsg = " + endMsg.toString());
                 //list是顺序的，array数组也是正序的
                 if (beginMsg != null && endMsg != null && !(endMsg.getCount().equals(beginMsg.getCount()))) {
                     //log.info("\nbeginMsg={},\nendMsg={}",beginMsg,endMsg);
@@ -274,7 +313,7 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                     //log.info("i={}, code = {}, endMsg.getAmount()={},  beginMsg.getAmount()={}, tempAmount={},actualAmount = {}", i, beginMsg.getCode(), endMsg.getAmount(), beginMsg.getAmount(), tempAmount, actualAmount);
                     //现在是每条dmMsg都不一样，需要找到指定的那个点，按照actualCount累加
                     //!45!01NE6431310001410210000000000050000024002100000100001010
-                    if (needDmMsgList) {
+                    if (needToRussiaList) {
                         tempDmMsg = beginMsg.getDmMsg();
                         firstStr = tempDmMsg.substring(0, firstPos);
                         int pieceCount = Integer.valueOf(tempDmMsg.substring(firstPos, endPos));
@@ -284,14 +323,14 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                         }
                     }
 
-                    //判断是否需要获取产品进度
-                    if (needProductPrintCount){
-                        if (productPrintCountMap.containsKey(beginMsg.getCode())){
-//                            log.info("包含" + beginMsg.getCode() + " getCode = " + productPrintCountMap.get(beginMsg.getCode()));
-                            productPrintCountMap.put(beginMsg.getCode(), (int) (batchCount + productPrintCountMap.get(beginMsg.getCode())));
+                    //是否需要获取产品真实打印数量
+                    if (needRealPrintCount){
+                        if (productRealPrintCountMap.containsKey(beginMsg.getCode())){
+//                            log.info("包含" + beginMsg.getCode() + " getCode = " + productRealPrintCountMap.get(beginMsg.getCode()));
+                            productRealPrintCountMap.put(beginMsg.getCode(), (int) (batchCount + productRealPrintCountMap.get(beginMsg.getCode())));
                         }else{
-                            productPrintCountMap.put(beginMsg.getCode(), (int) batchCount);
-//                            log.info("不包含" + beginMsg.getCode() + " getCode = " + productPrintCountMap.get(beginMsg.getCode()));
+                            productRealPrintCountMap.put(beginMsg.getCode(), (int) batchCount);
+//                            log.info("不包含" + beginMsg.getCode() + " getCode = " + productRealPrintCountMap.get(beginMsg.getCode()));
                         }
                     }
                 }
@@ -299,17 +338,87 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         }
         dmMsgDetail.setActualCount(actualCount);
         dmMsgDetail.setActualAmount(String.valueOf(actualAmount));
-        log.info("String.valueOf(actualAmount) = " + String.valueOf(actualAmount));
-        if (needDmMsgList) {
+//        log.info("String.valueOf(actualAmount) = " + String.valueOf(actualAmount));
+        if (needToRussiaList) {
             FrankDTO[] frankDtoArray = frankDTOList.toArray(new FrankDTO[frankDTOList.size()]);
             dmMsgDetail.setFranks(frankDtoArray);
         }
 
-        if (needProductPrintCount){
-            dmMsgDetail.setProductCountMap(productPrintCountMap);
+        if (needRealPrintCount){
+            dmMsgDetail.setProductCountMap(productRealPrintCountMap);
         }
 
         return dmMsgDetail;
+    }
+
+
+    /**
+     * 根据transactionId找到对应的msg列表，然后合并msg成具体的批次信息
+     *
+     * @param transactionId
+     * @return
+     */
+    @Override
+    public List<TransactionMsgBatchInfo> mergeMsgList(String transactionId) {
+        //1. 找出了一个transaction的所有的msg
+        List<TransactionMsg> transactionMsgs = selectByTransactionId(transactionId);
+        List<TransactionMsgBatchInfo> transactionMsgBatchInfoList= new ArrayList<>();
+
+        /**
+         * 1. 需要把msg分批：code， singleWeight，batchCount 一致的为一批
+         * 2. 把一批的统计：实际金额，实际数量，实际重量
+         * 3. 把批次信息放入list
+         */
+        Map<String, List<TransactionMsg>> collect = transactionMsgs.stream().collect(
+                Collectors.groupingBy(bean ->
+                        bean.getCode() + "_" + bean.getSingleWeight() + "_" + bean.getBatchCount()
+                ));
+
+        collect.forEach((key, msgList) -> {
+            int size = msgList.size();
+//            log.info("key={},  value.size={}" ,key, size);
+
+            DmMsgDetail dmMsgDetail = getDmMsgDetail(msgList, false, false);
+//            log.info("dmMsgDetail = " + dmMsgDetail.toString());
+
+            TransactionMsg firstMsg = msgList.get(0);
+            TransactionMsg endMsg = msgList.get(size - 1);
+            Integer foreseenOneBatchCount = firstMsg.getBatchCount();
+            Integer singleWeight = firstMsg.getSingleWeight();
+            //分转元
+            double fixedValue = firstMsg.getFixedValue().doubleValue()/100;
+            int transactionOneBatchCount = dmMsgDetail.getActualCount();
+
+
+            TransactionMsgBatchInfo resultBean = new TransactionMsgBatchInfo();
+            resultBean.setStartDate(firstMsg.getCreatedTime());
+            resultBean.setEndDate(endMsg.getCreatedTime());
+            resultBean.setTaxRegionType(firstMsg.getRegionType());
+            resultBean.setTaxLabelRu(firstMsg.getLabelRu());
+            resultBean.setForeseenOneBatchCount(foreseenOneBatchCount);
+            resultBean.setForeseenOneBatchWeight(foreseenOneBatchCount * singleWeight);
+            resultBean.setTaxFixedValue(fixedValue);
+            resultBean.setCallculationAmount((double) (fixedValue * foreseenOneBatchCount));
+            resultBean.setTransactionOneBatchCount(transactionOneBatchCount);
+            resultBean.setTransactionOneBatchWeight(transactionOneBatchCount * singleWeight);
+            resultBean.setTaxRealSaleRate(fixedValue);
+            resultBean.setStartMsgId(firstMsg.getId());
+            resultBean.setCode(firstMsg.getCode());
+
+            transactionMsgBatchInfoList.add(resultBean);
+
+            /*log.info("打印分组后list信息, size = " + size);
+            msgList.forEach(bean -> {
+                log.info(bean.toString());
+            });
+            log.info("合并批次信息后内容：" + resultBean.toString());*/
+        });
+
+        List<TransactionMsgBatchInfo> resultList = transactionMsgBatchInfoList
+                .stream()
+                .sorted(Comparator.comparing(TransactionMsgBatchInfo::getStartMsgId))
+                .collect(Collectors.toList());
+        return resultList;
     }
 
     /**
@@ -325,10 +434,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
     public DmMsgDetail getDmMsgDetailOnFmStart(String transactionId, TransactionMsgFMDTO transactionMsgFMDTO) {
         List<TransactionMsg> transactionMsgList = selectByTransactionId(transactionId);
         if (transactionMsgList.size() % 2 != 0){
+            TransactionMsg lastestMsg = transactionMsgList.get(transactionMsgList.size() - 1);
             long fmTotalAmount = Long.valueOf(transactionMsgFMDTO.getTotalAmount());
             long fmTotalCount = Long.valueOf(transactionMsgFMDTO.getTotalCount());
 
-            TransactionMsg lastestMsg = getLastestMsg(transactionId);
+//            TransactionMsg lastestMsg = getLastestMsg(transactionId);
             if (lastestMsg!=null) {
                 if (lastestMsg.getCount() > fmTotalCount) {
                     throw new FmException(FMResultEnum.CountOrAmountSmallThenDb.getCode(), "transactionMsg信息中的的总数量或者总金额小于数据库的值");
@@ -342,7 +452,12 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             transactionMsg.setCode(lastestMsg.getCode());
             transactionMsg.setCount(fmTotalCount);
             transactionMsg.setAmount(fmTotalAmount);
-            transactionMsg.setDmMsg(transactionMsgList.get(transactionMsgList.size()-1).getDmMsg());
+            transactionMsg.setBatchCount(lastestMsg.getBatchCount());
+            transactionMsg.setFixedValue(Integer.valueOf(lastestMsg.getFixedValue()));
+            transactionMsg.setSingleWeight(Integer.valueOf(lastestMsg.getSingleWeight()));
+            transactionMsg.setRegionType(lastestMsg.getRegionType());
+            transactionMsg.setLabelRu(lastestMsg.getLabelRu());
+            transactionMsg.setDmMsg(lastestMsg.getDmMsg());
             transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
             transactionMsg.setStatus("2");
             transactionMsg.setCreatedTime(new Date());
@@ -411,6 +526,9 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
                 throw new FmException(FMResultEnum.TransactionExist.getCode(),"transaction已经存在，不能新建");
             }
 
+            //校验订单状态是否符合条件
+            checkUtils.checkTransactionFlowDetailIsOk(foreseenId,transactionMsgFMDTO.getFrankMachineId());
+
             if (!FebsConstant.IS_TEST_NETTY) {
                 transactionId = AESUtils.createUUID();
             }else{
@@ -436,7 +554,10 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
             printJobService.updatePrintJob(dbPrintJob);
         } else {
             transactionId = transactionMsgFMDTO.getId();
-            checkUtils.checkTransactionIdExist(transactionId);
+//            checkUtils.checkTransactionIdExist(transactionId);
+            if (!StringUtils.isNotBlank(transactionId)){
+                throw new FmException(FMResultEnum.TransactionIdNoExist);
+            }
         }
         /**
          * id是TransactionId
@@ -448,6 +569,11 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         transactionMsg.setCode(transactionMsgFMDTO.getCode());
         transactionMsg.setCount(fmTotalCount);
         transactionMsg.setAmount(fmTotalAmount);
+        transactionMsg.setBatchCount(Integer.valueOf(transactionMsgFMDTO.getBatchCount()));
+        transactionMsg.setFixedValue(Integer.valueOf(transactionMsgFMDTO.getFixedValue()));
+        transactionMsg.setSingleWeight(Integer.valueOf(transactionMsgFMDTO.getSingleWeight()));
+        transactionMsg.setRegionType(transactionMsgFMDTO.getRegionType());
+        transactionMsg.setLabelRu(transactionMsgFMDTO.getLabelRu());
         transactionMsg.setDmMsg(transactionMsgFMDTO.getDmMsg());
         transactionMsg.setFrankMachineId(transactionMsgFMDTO.getFrankMachineId());
         transactionMsg.setStatus(status);
@@ -489,10 +615,13 @@ public class TransactionMsgServiceImpl extends ServiceImpl<TransactionMsgMapper,
         final java.util.Calendar cal = GregorianCalendar.getInstance();
         cal.setTime( date );
         cal.add( GregorianCalendar.MONTH, -6 );
-        log.info(date.toString());
         criteria.and("created_time").lte(cal.getTime());
-        criteria.andOperator(criteria.where("status").is("2"));
         query.addCriteria(criteria);
+        /*List<TransactionMsg> list =  mongoTemplate.find(query,TransactionMsg.class);
+        log.info("list.size() = " + list.size());
+        list.stream().forEach(s->{
+            log.info("id = " + s.getId() +" time = " + DateUtil.formatDate(s.getCreatedTime()));
+        });*/
         mongoTemplate.remove(query,"rcs_transaction_msg");
     }
 

@@ -17,11 +17,7 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import com.wuwenze.poi.ExcelKit;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -88,7 +84,7 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Device.class, responseContainer = "Map"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse devicePageList(QueryRequest request, @RequestBody Device device) {
+    public FebsResponse devicePageList(QueryRequest request, Device device) {
         log.info("request = " + request.toString() + " device = " + device.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
         return new FebsResponse().success().data(dataTable);
@@ -152,6 +148,7 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public FebsResponse updateDevice(@Validated @NotNull UpdateDeviceDTO updateDeviceDTO) {
         this.deviceService.updateDevice(updateDeviceDTO);
         return new FebsResponse().success();
@@ -175,7 +172,7 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class, responseContainer = "Map"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse checkIsExist(@Validated @RequestBody CheckIsExistDTO checkIsExistDTO) {
+    public FebsResponse checkIsExist(@Validated CheckIsExistDTO checkIsExistDTO) {
         if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
             throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
         }
@@ -227,6 +224,7 @@ public class DeviceController extends BaseController {
     @PostMapping("uploadRemoteFile")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    @ApiIgnore
     public FebsResponse uploadRemoteFile(@RequestParam("file") MultipartFile mf) {
         String url = "";
         try {
@@ -252,6 +250,11 @@ public class DeviceController extends BaseController {
     @PostMapping("updateRemoteFile")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    @ApiOperation("Update remote file")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse updateRemoteFile(@Validated @NotNull RemoteFileDTO remoteFileDTO) {
         log.info(remoteFileDTO.toString());
         serviceToMachineProtocol.updateRemoteFileProtocol(remoteFileDTO);

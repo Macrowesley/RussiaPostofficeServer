@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.TransactionData;
 import cc.mrbird.febs.rcs.service.ITransactionDataService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -94,6 +94,6 @@ public class TransactionDataController extends BaseController {
     @RequiresPermissions("transactionData:export")
     public void export(QueryRequest queryRequest, TransactionData transactionData, HttpServletResponse response) {
         List<TransactionData> transactionDatas = this.transactionDataService.findTransactionDatas(queryRequest, transactionData).getRecords();
-        ExcelKit.$Export(TransactionData.class, response).downXlsx(transactionDatas, false);
+        //ExcelKit.$Export(TransactionData.class, response).downXlsx(transactionDatas, false);
     }
 }

@@ -14,6 +14,12 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.frankMachineId}+':'" style="width: 100px;"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="frankMachineId" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
                                         <label class="layui-form-label layui-form-label-sm" th:text="#{printJob.status}"></label>
                                         <div class="layui-input-inline">
                                             <select name="flow">
@@ -32,6 +38,20 @@
                                             <input type="text" name="foreseenId" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label" th:text="#{printJob.startDate}+':'"/>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="startDate" id="febs-form-group-start-date" lay-verify="date"
+                                                   placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label" th:text="#{printJob.endData}+':'"/>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="endData" id="febs-form-group-end-date" lay-verify="date"
+                                                   placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
@@ -46,12 +66,13 @@
                                 </div>
 
                                 <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
-                                        shiro:hasAnyPermissions="printJob:update,printJob:delete,printJob:export"
+                                        shiro:hasAnyPermissions="printJob:update"
                                      id="add">
                                     <i class="layui-icon">&#xe891;</i>
                                 </div>
+
                                 <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
-                                     shiro:hasAnyPermissions="printJob:add,printJob:update,printJob:delete,printJob:export">
+                                     shiro:hasAnyPermissions="printJob:export">
                                     <i class="layui-icon">&#xe875;</i>
                                 </div>
                             </div>
@@ -93,21 +114,22 @@
     <span  class="{{status.class}}">{{ status.title }}</span>
 </script>
 <script type="text/html" id="printJob-option">
-    <span shiro:lacksPermission="printJob:add,printJob:update,printJob:delete">
+    <span shiro:lacksPermission="printJob:add,printJob:update,printJob:delete,transactionMsg:list">
         <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
     </span>
     <!--<a lay-event="edit" shiro:hasPermission="printJob:update"><i
             class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
-    <a lay-event="detail" th:text="#{printJob.detail}" id="printDetail"></a>
+    <a lay-event="detail" shiro:hasPermission="printJob:update"  th:text="#{printJob.detail}" id="printDetail"></a>
     <!--<a lay-event="operation1" shiro:hasPermission="printJob:update" th:text="#{printJob.operation1}"></a>-->
-    <a lay-event="printJob" shiro:hasPermission="printJob:view" th:text="#{printJob.operation2}" id="printLabal"></a>
+
 <!--    <a lay-event="printJobCancel" shiro:hasPermission="printJob:update" th:text="#{printJob.operation3}"></a>-->
     <a lay-event="printEdit" shiro:hasPermission="printJob:update" th:text="#{printJob.edit}" id="editLablal"></a>
-    <a lay-event="printCheck" shiro:hasPermission="printJob:view" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
+    <a lay-event="printJob" shiro:hasPermission="printJob:update" th:text="#{printJob.operation2}" id="printLabal"></a>
+    <a lay-event="printCheck" shiro:hasPermission="transactionMsg:list" th:text="#{printJob.checkMsg}" id="checkLablal"></a>
 </script>
 <script data-th-inline="none" type="text/javascript">
-    let flag1 = true;
-    let flag2 = true;
+    var flag1 = true;
+    var flag2 = true;
     layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'treeSelect'], function () {
         var $ = layui.jquery,
             laydate = layui.laydate,
@@ -128,6 +150,16 @@
             createTimeTo;
 
         form.render();
+
+        //处理日期
+        laydate.render({
+            elem: '#febs-form-group-start-date',
+            lang: i18n("currentLang"),
+        });
+        laydate.render({
+            elem: '#febs-form-group-end-date',
+            lang: i18n("currentLang"),
+        });
         
         initSearchView();
         initTable();
@@ -140,7 +172,13 @@
          */
         function queryTable(isFirstQuery){
             var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-            //alert(JSON.stringify(params))
+            // alert(JSON.stringify(params))
+            if (compareDate(params.startDate, params.endData)){
+                febs.alert.warn(i18n("printJob.timeWarn"))
+                return;
+            }
+
+
             if (isFirstQuery == 1){
                 // alert(JSON.stringify(params))
                 tableIns.reload({where: params, page: {curr: 1}});
@@ -197,6 +235,24 @@
                 elem: $view.find('.action-more'),
                 click: function (name, elem, event) {
                     var checkStatus = table.checkStatus('printJobTable');
+                    if (name === 'export') {
+                        var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                        params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                        params.pageNum = $view.find(".layui-laypage-em").next().html();
+                        if (compareDate(params.startDate, params.endData)){
+                            febs.alert.warn(i18n("printJob.timeWarn"))
+                            return;
+                        }
+                        febs.download(ctx + 'printJob/excel', params, 'printJob.xlsx');
+                        /*febs.get(ctx + "printJob/excel", params, function (res) {
+                            if (res.code === 200) {
+                                console.log("下载成功")
+                            }else{
+                                febs.alert.warn(i18n("order.retry"));
+                            }
+
+                        })*/
+                    }
                 },
                 options: [{
                     name: 'export',
@@ -230,6 +286,7 @@
         /**
          * 初始化表格工具栏
          */
+        var timer;
         function initTableTool(){
             table.on('tool(printJobTable)', function (obj) {
 
@@ -255,7 +312,7 @@
                                         layer.closeAll();
                                     }
                                 });
-                                //var timer = setTimeout(turnBack, 5000);
+                                timer = setTimeout(turnBack, 3000);
                                 flag2 = false;
                             }else{
                                 febs.alert.success(i18n("printJob.holdon"))
@@ -267,7 +324,7 @@
                         //点击第二次才执行
                         if (layEvent === 'printJob') {
                             if(flag1==true) {
-                                var timer = setTimeout(turnBack, 5000);
+                                timer = setTimeout(turnBack, 3000);
                                 flag1 = false;
                                 $('#printLabal').attr('disabled', 'disabled');
                                 febs.post(ctx + 'printJob/begin', {id: data.id}, function (res) {
@@ -286,8 +343,12 @@
                         }
 
                         if(layEvent === 'printCheck'){
+                            if (data.transactionId === ""){
+                                febs.alert.warn(i18n("transactionMsg.noMsg"));
+                                return;
+                            }
                             febs.modal.view(i18n("printJob.MsgCheck"), 'rcs/printJob/msgDetail/' + data.transactionId, {
-                                area: $(window).width() <= 750 ? '95%' : '660px'
+                                area: $(window).width() <= 750 ? '95%' : '85%'
                             });
                         }
 
@@ -355,14 +416,29 @@
                 createTimeFrom = createTime.split(' - ')[0];
                 createTimeTo = createTime.split(' - ')[1];
             }
+
             return {
                 createTimeFrom: createTimeFrom,
                 createTimeTo: createTimeTo,
                 contractCode: $searchForm.find('input[name="contractCode"]').val().trim(),
                 flow: $searchForm.find("select[name='flow']").val(),
                 foreseenId: $searchForm.find('input[name="foreseenId"]').val().trim(),
+                frankMachineId: $searchForm.find('input[name="frankMachineId"]').val().trim(),
+                startDate: $searchForm.find('input[name="startDate"]').val().trim(),
+                endData: $searchForm.find('input[name="endData"]').val().trim(),
                 invalidate_ie_cache: new Date()
             };
+        }
+
+        // 比较时间大小
+        function compareDate(date1,date2){
+            var oDate1 = new Date(date1);
+            var oDate2 = new Date(date2);
+            if(oDate1.getTime() > oDate2.getTime()){
+                return true; //第一个大
+            } else {
+                return false; //第二个大
+            }
         }
     })
 </script>

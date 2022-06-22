@@ -5,15 +5,15 @@ import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
-import cc.mrbird.febs.rcs.dto.manager.ForeseenDTO;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.manager.TransactionDTO;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobAddDto;
-import cc.mrbird.febs.rcs.dto.ui.PrintJobUpdateDto;
+import cc.mrbird.febs.rcs.dto.service.PrintJobDTO;
+import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.entity.Transaction;
+import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -30,10 +30,10 @@ public interface IPrintJobService extends IService<PrintJob> {
      * 查询（分页）
      *
      * @param request QueryRequest
-     * @param printJob printJob
+     * @param printJobDto printJobDto
      * @return IPage<PrintJob>
      */
-    IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJob printJob);
+    IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJobDTO printJobDto);
 
     /**
      * 查询（所有）
@@ -41,7 +41,14 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @param printJob printJob
      * @return List<PrintJob>
      */
-    List<PrintJob> findPrintJobs(PrintJob printJob);
+    List<PrintJob> findPrintJobs(PrintJobDTO printJobDto);
+
+    /**
+     * 返回excel需要的数据
+     * @param printJob
+     * @return
+     */
+    List<PrintJobExcelVO> selectExcelData(PrintJobDTO printJobDto);
 
     /**
      * 新增
@@ -52,15 +59,15 @@ public interface IPrintJobService extends IService<PrintJob> {
 
     /**
      * 创建前端打印订单
-     * @param printJobAddDto
+     * @param printJobReq
      */
-    void createPrintJobDto(PrintJobAddDto printJobAddDto);
+    void createPrintJobDto(PrintJobReq printJobReq);
 
     /**
      * 编辑
      * @param printJobUpdateDto
      */
-    void editPrintJob(PrintJobUpdateDto printJobUpdateDto);
+    void editPrintJob(PrintJobReq printJobUpdateDto);
 
     /**
      * 修改
@@ -139,4 +146,6 @@ public interface IPrintJobService extends IService<PrintJob> {
      * @return
      */
     PrintProgressInfo getProductPrintProgress(PrintJob dbPrintJob);
+
+
 }

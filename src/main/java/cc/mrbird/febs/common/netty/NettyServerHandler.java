@@ -217,10 +217,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<SocketData> 
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("客户端发生异常，断开连接");
         nettyServerHandler.channelMapperManager.removeCache(ctx);
-        log.info(ctx.channel().id() + " 发生了错误,此连接被关闭" + "此时连通数量: " + ChannelMapperManager.All_CHANNEL_MAP.size()  + " 有效连接数量：" + nettyServerHandler.channelMapperManager.getChannleSize());
-        cause.printStackTrace();
+        log.error("客户端" + ctx.channel().id() + " 发生异常，此连接被关闭， " +
+                "此时连通数量: " + ChannelMapperManager.All_CHANNEL_MAP.size()  + "" +
+                " 有效连接数量：" + nettyServerHandler.channelMapperManager.getChannleSize() + "" +
+                " 原因：" + cause.toString());
+//        cause.printStackTrace();
         ctx.close();
     }
 

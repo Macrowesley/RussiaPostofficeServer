@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.PostalProduct;
 import cc.mrbird.febs.rcs.service.IPostalProductService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -94,6 +94,6 @@ public class PostalProductController extends BaseController {
     @RequiresPermissions("postalProduct:export")
     public void export(QueryRequest queryRequest, PostalProduct postalProduct, HttpServletResponse response) {
         List<PostalProduct> postalProducts = this.postalProductService.findPostalProducts(queryRequest, postalProduct).getRecords();
-        ExcelKit.$Export(PostalProduct.class, response).downXlsx(postalProducts, false);
+        //ExcelKit.$Export(PostalProduct.class, response).downXlsx(postalProducts, false);
     }
 }

@@ -29,13 +29,13 @@
                        class="layui-input rigth-view">
             </div>
         </div>
-        <div class="layui-form-item">
+        <!--<div class="layui-form-item">
             <label class="layui-form-label left-label" th:text="#{printJob.totalCount}+':'"></label>
             <div class="layui-input-block">
                 <input type="number" name="totalCount" autocomplete="off"
                        class="layui-input rigth-view">
             </div>
-        </div>
+        </div>-->
 
         <div class="layui-form-item">
             <label class="layui-form-label left-label" th:text="#{printJob.totalAmount}+':'"></label>
@@ -44,7 +44,13 @@
                        class="layui-input rigth-view">
             </div>
         </div>
-
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{printJob.type}+':'"></label>
+            <div class="layui-input-block">
+                <input type="radio" name="printObjectType" value="1" th:title="#{printJob.stamp}" checked>
+                <input type="radio" name="printObjectType" value="2" th:title="#{printJob.stick}">
+            </div>
+        </div>
         <!--购物车-->
         <div class="layui-form-item">
             <label class="layui-form-label left-label" th:text="#{printJob.products}+':'"></label>
@@ -204,6 +210,7 @@
                 "frankMachineId": printJob.frankMachineId,
                 "totalCount": printJob.totalCount,
                 "totalAmount": printJob.totalAmount,
+                "printObjectType": printJob.printObjectType,
                 "products[0].productCode":foreseenProduct[0].productCode,
                 "products[0].count": foreseenProduct[0].count,
                 "products[0].weight": foreseenProduct[0].weight,

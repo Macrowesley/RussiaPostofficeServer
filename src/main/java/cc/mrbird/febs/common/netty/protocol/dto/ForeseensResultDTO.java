@@ -17,6 +17,12 @@ public class ForeseensResultDTO {
      * 1 机器创建的订单  2 PC创建的订单
      */
     Integer printJobType;
+    /**
+     * PC订单 打印对象类型：过戳还是签条
+     * 1 stamp
+     * 2 stick
+     */
+    private int printObjectType;
     //pc创建订单时，给机器的，再带过来
     Integer printJobId;
     ForeseenProductFmDto[] products;

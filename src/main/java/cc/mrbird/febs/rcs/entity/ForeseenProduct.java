@@ -50,7 +50,7 @@ public class ForeseenProduct {
     private Integer count;
 
     /**
-     * 重量
+     * 批次总重量
      */
     @TableField("weight")
     private Double weight;

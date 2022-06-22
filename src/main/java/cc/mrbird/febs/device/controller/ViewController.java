@@ -72,4 +72,16 @@ public class ViewController {
         return FebsUtil.view("device/deviceDetail");
     }
 
+    @GetMapping("updateRemoteFile/{deviceId}")
+    @RequiresPermissions("device:update")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_view", isApi = false)
+    public String updateRemoteFile(@NotNull @Min(1) @PathVariable Long deviceId, Model model) {
+        Device device = deviceService.findDeviceById(deviceId);
+
+        log.info("device信息 = " + device.toString());
+        model.addAttribute("device", device);
+
+        return FebsUtil.view("device/updateRemoteFile");
+    }
+
 }

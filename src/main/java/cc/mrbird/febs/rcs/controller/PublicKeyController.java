@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.PublicKey;
 import cc.mrbird.febs.rcs.service.IPublicKeyService;
-import com.wuwenze.poi.ExcelKit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -94,6 +94,6 @@ public class PublicKeyController extends BaseController {
     @RequiresPermissions("publicKey:export")
     public void export(QueryRequest queryRequest, PublicKey publicKey, HttpServletResponse response) {
         List<PublicKey> publicKeys = this.publicKeyService.findPublicKeys(queryRequest, publicKey).getRecords();
-        ExcelKit.$Export(PublicKey.class, response).downXlsx(publicKeys, false);
+        //ExcelKit.$Export(PublicKey.class, response).downXlsx(publicKeys, false);
     }
 }

@@ -11,6 +11,7 @@ import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class ValidateCodeService {
+    @Autowired
+    MessageUtils messageUtils;
 
     private final RedisService redisService;
     private final FebsProperties properties;
@@ -47,13 +50,13 @@ public class ValidateCodeService {
     public void check(String key, String value) throws FebsException {
         Object codeInRedis = redisService.get(FebsConstant.CODE_PREFIX + key);
         if (StringUtils.isBlank(value)) {
-            throw new FebsException(MessageUtils.getMessage("validation.inputCheckCode"));
+            throw new FebsException(messageUtils.getMessage("validation.inputCheckCode"));
         }
         if (codeInRedis == null) {
-            throw new FebsException(MessageUtils.getMessage("validation.checkCodeOverTime"));
+            throw new FebsException(messageUtils.getMessage("validation.checkCodeOverTime"));
         }
         if (!StringUtils.equalsIgnoreCase(value, String.valueOf(codeInRedis))) {
-            throw new FebsException(MessageUtils.getMessage("validation.checkCodeIsError"));
+            throw new FebsException(messageUtils.getMessage("validation.checkCodeIsError"));
         }
     }
 

@@ -14,7 +14,6 @@ import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.wuwenze.poi.ExcelKit;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +38,22 @@ import java.util.Map;
 @RequestMapping("user")
 @Api(description = "Add, delete, change, search for user, manage password and other operations")
 public class UserController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IUserService userService;
 
     @GetMapping("{username}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
+    @ApiOperation("Get information of a user ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "username", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = User.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public User getUser(@NotBlank(message = "{required}") @PathVariable String username) {
 
         return this.userService.findUserDetailList(username);
@@ -74,7 +83,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = User.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse userList(@RequestBody User user, QueryRequest request) {
+    public FebsResponse userList(User user, QueryRequest request) {
         System.out.println("userList:"+JSON.toJSONString(user));
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
@@ -88,6 +97,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = User.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public FebsResponse deptUserList() {
         List<User> users = this.userService.findUserByRoleId(RoleType.organizationManager);
         return new FebsResponse().success().data(users);
@@ -102,7 +112,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addUser(@Valid @RequestBody User user) {
+    public FebsResponse addUser(@Valid User user) {
         this.userService.createUser(user);
         return new FebsResponse().success();
     }
@@ -119,6 +129,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public FebsResponse deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
         /*String[] ids = userIds.split(StringPool.COMMA);
         this.userService.deleteUsers(ids);*/
@@ -134,7 +145,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateUser(@Valid @RequestBody User user) {
+    public FebsResponse updateUser(@Valid User user) {
         if (user.getUserId() == null) {
             throw new FebsException("用户ID为空");
         }
@@ -172,12 +183,13 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public FebsResponse updatePassword(
             @NotBlank(message = "{required}") String oldPassword,
             @NotBlank(message = "{required}") String newPassword) {
         User user = getCurrentUser();
         if (!StringUtils.equals(user.getPassword(), MD5Util.encrypt(user.getUsername(), oldPassword))) {
-            throw new FebsException(MessageUtils.getMessage("user.operation.oldPwdError"));
+            throw new FebsException(messageUtils.getMessage("user.operation.oldPwdError"));
         }
         userService.updatePassword(user.getUsername(), newPassword);
         return new FebsResponse().success();
@@ -212,6 +224,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public FebsResponse updateTheme(String theme, String isTab) {
         User user = getCurrentUser();
         this.userService.updateTheme(user.getUsername(), theme, isTab);
@@ -226,7 +239,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateProfile(@RequestBody User user) throws FebsException {
+    public FebsResponse updateProfile(User user) throws FebsException {
         User currentUser = getCurrentUser();
         user.setUserId(currentUser.getUserId());
         this.userService.updateProfile(user);
@@ -240,6 +253,6 @@ public class UserController extends BaseController {
     @ApiOperation("Export excel")
     public void export(QueryRequest queryRequest, User user, HttpServletResponse response) {
         List<User> users = this.userService.findUserDetailList(user, queryRequest).getRecords();
-        ExcelKit.$Export(User.class, response).downXlsx(users, false);
+        //ExcelKit.$Export(User.class, response).downXlsx(users, false);
     }
 }

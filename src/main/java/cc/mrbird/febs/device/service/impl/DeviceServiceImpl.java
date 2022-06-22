@@ -58,6 +58,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> implements IDeviceService {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IUserDeviceService userDeviceService;
@@ -318,7 +320,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
         List<UserRole> list = userRoleService.queryRoleListByUserId(Long.valueOf(bindUserId));
         if (list.size() == 0) {
-            throw new FebsException(MessageUtils.getMessage("device.operation.noList"));
+            throw new FebsException(messageUtils.getMessage("device.operation.noList"));
         }
         Long roleType = list.get(0).getRoleId();
 
@@ -346,7 +348,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
                 data.put("bindDevices", res);
                 break;
             default:
-                throw new FebsException(MessageUtils.getMessage("device.operation.noList"));
+                throw new FebsException(messageUtils.getMessage("device.operation.noList"));
         }
 
         /*data.put("allDevices", findAllDeviceListByUserId(FebsUtil.getCurrentUser().getUserId()));

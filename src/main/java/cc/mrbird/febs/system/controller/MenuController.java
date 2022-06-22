@@ -12,7 +12,9 @@ import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.system.entity.Menu;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IMenuService;
-import com.wuwenze.poi.ExcelKit;
+
+import com.alibaba.fastjson.JSON;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,18 +33,28 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("menu")
-@ApiIgnore
 public class MenuController extends BaseController {
+    @Autowired
+    MessageUtils messageUtils;
 
     @Autowired
     IMenuService menuService;
 
     @GetMapping("{username}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("get a user's menus")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "username", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Menu.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    @ApiIgnore
     public FebsResponse getUserMenus(@NotBlank(message = "{required}") @PathVariable String username) throws FebsException {
         User currentUser = getCurrentUser();
         if (!StringUtils.equalsIgnoreCase(username, currentUser.getUsername())) {
-            throw new FebsException(MessageUtils.getMessage("menu.noPamission"));
+            throw new FebsException(messageUtils.getMessage("menu.noPamission"));
         }
         MenuTree<Menu> userMenus = this.menuService.findUserMenus(username);
         return new FebsResponse().data(userMenus);
@@ -51,6 +63,11 @@ public class MenuController extends BaseController {
     @GetMapping("tree")
     @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("Get menu tree")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Menu.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse getMenuTree(Menu menu) {
         MenuTree<Menu> menus = this.menuService.findMenus(menu);
         return new FebsResponse().success().data(menus.getChilds());
@@ -60,6 +77,11 @@ public class MenuController extends BaseController {
     @RequiresPermissions("menu:add")
     @ControllerEndpoint(operation = "新增菜单/按钮", exceptionMessage = "{menu.addFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("Add a menu")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse addMenu(@Valid Menu menu) {
         this.menuService.createMenu(menu);
         return new FebsResponse().success();
@@ -69,6 +91,14 @@ public class MenuController extends BaseController {
     @RequiresPermissions("menu:delete")
     @ControllerEndpoint(operation = "删除菜单/按钮", exceptionMessage = "{menu.deleteFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("delete menus")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "menuIds", value = "menuIds", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse deleteMenus(@NotBlank(message = "{required}") @PathVariable String menuIds) {
         this.menuService.deleteMenus(menuIds);
         return new FebsResponse().success();
@@ -78,6 +108,11 @@ public class MenuController extends BaseController {
     @RequiresPermissions("menu:update")
     @ControllerEndpoint(operation = "修改菜单/按钮", exceptionMessage = "{menu.editFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("Update a menu")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse updateMenu(@Valid Menu menu) {
         this.menuService.updateMenu(menu);
         return new FebsResponse().success();
@@ -87,8 +122,13 @@ public class MenuController extends BaseController {
     @RequiresPermissions("menu:export")
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiOperation("export excel")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public void export(Menu menu, HttpServletResponse response) {
         List<Menu> menus = this.menuService.findMenuList(menu);
-        ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);
+        //ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);
     }
 }

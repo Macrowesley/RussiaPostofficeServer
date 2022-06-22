@@ -1,0 +1,165 @@
+<style>
+  #device-remote-update {
+    padding: 20px 25px 25px 0;
+  }
+
+  #device-remote-update .layui-treeSelect .ztree li a, .ztree li span {
+    margin: 0 0 2px 3px !important;
+  }
+
+  #device-remote-update #data-permission-tree-block {
+    border: 1px solid #eee;
+    border-radius: 2px;
+    padding: 3px 0;
+  }
+
+  .left-label {
+    width: 20%;
+  }
+
+  .rigth-view {
+    width: 80%;
+  }
+
+</style>
+<div class="layui-fluid" id="device-remote-update">
+  <form class="layui-form" action="" lay-filter="device-remote-update-form">
+    <div class="layui-form-item febs-hide">
+      <label class="layui-form-label febs-form-item-require" th:text="#{device.id}"></label>
+      <div class="layui-input-block">
+        <input type="text" name="deviceId" data-th-value="${device.deviceId}">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label left-label" th:text="#{acnum.colon}"></label>
+      <div class="layui-input-block ">
+        <input type="text" name="acnum" autocomplete="off" class="layui-input rigth-view" readonly/>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label left-label" th:text="#{device.file.path}"></label>
+      <div class="layui-input-block ">
+        <input type="text" name="remoteFilePath" autocomplete="off" class="layui-input rigth-view" />
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label left-label" th:text="#{device.file.url}"></label>
+      <div class="layui-input-block">
+        <input type="text" name="url" minlength="2" maxlength="10" id="fileUrl" placeholder="知道路径直接复制过来，不知道路径再上传"
+               autocomplete="off" class="layui-input rigth-view">
+      </div>
+    </div>
+    <div class="layui-form-item ">
+      <label class="layui-form-label left-label"></label>
+      <div class="layui-input-block">
+        <button type="button" class="layui-btn" id="uploadRemoteFile"  >
+          <i class="layui-icon">&#xe67c;</i><span th:text="#{device.file.upload}"></span>
+        </button>
+      </div>
+    </div>
+
+
+
+    <div class="layui-form-item febs-hide">
+      <button class="layui-btn" lay-submit="" lay-filter="device-remote-update-form-submit" id="submit"></button>
+      <button type="reset" class="layui-btn" id="reset"></button>
+    </div>
+  </form>
+</div>
+
+<script data-th-inline="javascript">
+layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree', 'upload'], function () {
+  var $ = layui.$,
+    febs = layui.febs,
+    layer = layui.layer,
+    formSelects = layui.formSelects,
+    form = layui.form,
+    eleTree = layui.eleTree,
+    device = [[${device}]],
+    userDevice = [[${userDevice}]],
+    $view = $('#device-remote-update'),
+    validate = layui.validate,
+    _deptTree;
+
+  form.verify(validate);
+  form.render();
+  initValue();
+
+  // initSelect();
+
+  /**
+   * 处理下拉框
+   */
+  function initSelect() {
+    if (userDevice == null){
+      return;
+    }
+    $.ajax({
+      url: ctx + "user/deptUserList",
+      type: 'get',
+      success: function (data) {
+        $.each(data.data, function (index, item) {
+          //需要知道这个机器绑定的用户是谁 （机构管理员）
+          if (userDevice.userId == item.userId) {
+            $('#userList').append("<option value="+item.userId+" selected >"+item.username+"</option>");
+          }else{
+            $('#userList').append("<option value="+item.userId+">"+item.username+"</option>");
+          }
+        });
+        layui.form.render("select");
+      }
+    });
+  }
+
+
+  function initValue() {
+    form.val("device-remote-update-form", {
+      "acnum": device.acnum,
+    });
+  }
+
+  form.on('submit(device-remote-update-form-submit)', function (data) {
+    if (febs.nativeEqual(data.field, device)) {
+      febs.alert.warn(i18n("noEdit"));
+      return false;
+    }
+
+    //开始修改
+    var userDeviceId = 0;
+    if (userDevice != null){
+      userDeviceId = userDevice.id;
+    }
+
+    data.field.userDeviceId = userDeviceId;
+    febs.post(ctx + 'device/updateRemoteFile', data.field, function () {
+      layer.closeAll();
+      febs.alert.success( i18n("device.device")+ device.acnum + i18n("operationSuccess"));
+      // $('#febs-device').find('#refreshQuery').click();
+    });
+
+    return false;
+  });
+
+  var upload = layui.upload;
+  var uploadInst = upload.render({
+    elem: '#uploadRemoteFile'
+    , url: ctx + 'device/uploadRemoteFile'
+    , accept: 'file'
+    , done: function (res) {
+      console.log(JSON.stringify(res))
+      layui.use('layer', function () {
+        $("#fileUrl").val(res.data)
+        var layer = layui.layer
+        layer.msg("上传成功", {
+          time: 3000, //6s后自动关闭
+          icon: 1
+        })
+      })
+    }
+    , error: function () {
+      //请求异常回调
+    }
+  })
+
+});
+</script>

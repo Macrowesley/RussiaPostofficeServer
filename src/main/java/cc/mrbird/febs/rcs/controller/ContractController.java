@@ -1,25 +1,23 @@
 package cc.mrbird.febs.rcs.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
-import cc.mrbird.febs.common.configure.swagger2.ApiResponseObject;
-import cc.mrbird.febs.common.configure.swagger2.ApiResponseProperty;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.service.IContractService;
-import com.wuwenze.poi.ExcelKit;
+
+import cc.mrbird.febs.rcs.vo.ContractVO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
@@ -52,7 +50,7 @@ public class ContractController extends BaseController {
             @ApiResponse(code = 500, message = "内部异常")
     })
     @ApiIgnore
-    public FebsResponse getAllContracts(@RequestBody Contract contract) {
+    public FebsResponse getAllContracts(Contract contract) {
         return new FebsResponse().success().data(contractService.findContracts(contract));
     }
 
@@ -64,7 +62,7 @@ public class ContractController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Contract.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse contractList(QueryRequest request, @RequestBody Contract contract) {
+    public FebsResponse contractList(QueryRequest request, Contract contract) {
         Map<String, Object> dataTable = getDataTable(this.contractService.findContracts(request, contract));
         return new FebsResponse().success().data(dataTable);
     }
@@ -110,6 +108,23 @@ public class ContractController extends BaseController {
     @ApiIgnore
     public void export(QueryRequest queryRequest, Contract contract, HttpServletResponse response) {
         List<Contract> contracts = this.contractService.findContracts(queryRequest, contract).getRecords();
-        ExcelKit.$Export(Contract.class, response).downXlsx(contracts, false);
+        //ExcelKit.$Export(Contract.class, response).downXlsx(contracts, false);
     }
+
+    @GetMapping("/contract/detail/{id}")
+    @ResponseBody
+    @ApiOperation("Get contract detail")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "id", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Contract.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    @ApiIgnore
+    public FebsResponse contractDetail(@PathVariable String id) {
+        ContractVO contractVO = contractService.getVoByConractCode(id);
+        return new FebsResponse().success().data(contractVO);
+    }
+
 }

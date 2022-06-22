@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.entity;
 
 
+import cc.mrbird.febs.common.converter.TimeConverter;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -61,11 +63,32 @@ public class PrintJob {
 
     @TableField("total_amount")
     Double totalAmount;
+
+    /**
+     * 创建打印任务时，合同金额
+     */
+    @TableField("contract_current")
+    Double contractCurrent;
+
+    /**
+     * 创建打印任务时，合同金额
+     */
+    @TableField("contract_consolidate")
+    Double contractConsolidate;
+
     /**
      * 1 机器创建的订单 2 管理页面创建的订单
      */
     @TableField("type")
     private Integer type;
+
+    /**
+     * 打印对象类型：过戳还是签条
+     * 1 stamp
+     * 2 stick
+     */
+    @TableField("object_type")
+    private Integer printObjectType;
 
 
     /**

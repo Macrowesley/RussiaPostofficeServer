@@ -12,6 +12,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -25,6 +26,8 @@ import java.lang.reflect.Method;
 @Component
 @RequiredArgsConstructor
 public class ControllerEndpointAspect extends BaseAspectSupport {
+    @Autowired
+    MessageUtils messageUtils;
 
     private final ILogService logService;
 
@@ -57,7 +60,7 @@ public class ControllerEndpointAspect extends BaseAspectSupport {
             String message = throwable.getMessage();
             if (exceptionMessage.contains("{")){
                 exceptionMessage = exceptionMessage.substring(1,exceptionMessage.length() - 1);
-                exceptionMessage = MessageUtils.getMessage(exceptionMessage);
+                exceptionMessage = messageUtils.getMessage(exceptionMessage);
             }
 //            String error = FebsUtil.containChinese(message) ? exceptionMessage + "，" + message : exceptionMessage;
             throw new FebsException(message);
