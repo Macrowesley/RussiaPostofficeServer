@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.properties.FebsProperties;
 import cc.mrbird.febs.common.properties.SwaggerProperties;
 import cc.mrbird.febs.common.xss.XssFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableSwagger2
 @RequiredArgsConstructor
 public class FebsConfigure {
+    @Value("${swagger2.host}")
+    private String swaggerHost;
 
     private final FebsProperties properties;
     private int corePoolSize = Runtime.getRuntime().availableProcessors();
@@ -89,6 +92,7 @@ public class FebsConfigure {
                 .apis(RequestHandlerSelectors.basePackage(swagger.getBasePackage()))
                 .paths(PathSelectors.any())
                 .build()
+                .host(swaggerHost)
                 .apiInfo(apiInfo(swagger));
     }
 

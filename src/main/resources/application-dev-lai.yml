@@ -64,3 +64,6 @@ netty:
 info:
   download-base-url: http://localhost/russia/file/
   base-path: D:\workspace\RussiaPostofficeServerFile\
+
+swagger2:
+  host: localhost:88
