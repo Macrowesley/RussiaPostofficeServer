@@ -168,7 +168,7 @@ public class PrintJobController extends BaseController {
     @RequiresPermissions("printJob:export")
     @ApiOperation("export excel")
     @ApiIgnore
-    public void export(QueryRequest queryRequest, PrintJobDTO printJobDto, HttpServletResponse response) {
+    public void export(PrintJobDTO printJobDto, HttpServletResponse response) {
         log.info("导出excel");
         try {
             List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);

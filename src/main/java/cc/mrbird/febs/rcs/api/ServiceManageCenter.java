@@ -563,12 +563,14 @@ public class ServiceManageCenter {
 
         //决定给机器发送什么内容
         if (printJobType == PrintJobTypeEnum.Machine.getCode()) {
+            //机器的时候发特殊网页填写的地址列表
             foreseensResultDTO.setAddressList(contractAddressService.selectArrayByConractCode(dbContract.getCode()));
         }else {
             if (printProgressInfo == null){
                 printProgressInfo = printJobService.getProductPrintProgress(dbPrintJob);
             }
             foreseensResultDTO.setPcUserId(String.valueOf(FebsUtil.getCurrentUser().getUserId()));
+            //PC创建订单的时候，地址信息是保存在Products里面
             foreseensResultDTO.setProducts(printProgressInfo.getProductArr());
             foreseensResultDTO.setActualAmount(printProgressInfo.getActualAmount());
             foreseensResultDTO.setActualCount(printProgressInfo.getActualCount());

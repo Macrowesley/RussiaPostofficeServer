@@ -65,3 +65,6 @@ netty:
 info:
   download-base-url: http://russia.uprins.com:90/russia/file/
   base-path: D:\workspace\RussiaPostofficeServerFile\
+
+swagger2:
+  host: russia.uprins.com:90
