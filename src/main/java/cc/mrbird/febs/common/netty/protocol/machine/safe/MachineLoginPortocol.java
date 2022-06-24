@@ -8,8 +8,10 @@ import cc.mrbird.febs.common.netty.protocol.kit.TempTimeUtils;
 import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
 import cc.mrbird.febs.device.service.IDeviceService;
-import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
-import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.machine.AdImageInfo;
+import cc.mrbird.febs.rcs.dto.machine.AdInfoDTO;
+import cc.mrbird.febs.rcs.service.IAdImageService;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 
 /**
  * 机器登录校验协议
@@ -45,6 +46,9 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
     @Autowired
     ChannelMapperManager channelMapperManager;
+
+    @Autowired
+    IAdImageService adImageService;
 
     @Override
     public byte getProtocolType() {
@@ -81,7 +85,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
             * unsigned char  operateID[2];
             unsigned char acnum[6];             //机器的表头号
             unsigned char version[3];           //版本内容(3)
-            unsigned char content[?];           //加密内容：时间戳(13)
+            unsigned char content[?];           //加密内容：时间戳(13) + frankMachineId(9)
             unsigned char check;                //校验位
             unsigned char tail;                 //0xD0
         }__attribute__((packed))machineInfo,*machineInfo;
@@ -114,17 +118,26 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                     pos = VERSION_LEN;
 
 //                    String timestamp = dectryptContent.substring(pos, pos + TIMESTAMP_LEN);
-                    String timestamp = dectryptContent.trim();
+                    String timestamp = dectryptContent.trim().substring(0,13);
+                    String frankMachineId = dectryptContent.trim().substring(13 );
+                    log.info("timestamp={}, frankMachineId={}",timestamp, frankMachineId);
 
                     //验证时间是否正常
 //                    byte[] res = new byte[]{0x00};
                     String res = "0";
+                    String returnData = "";
                     if(machineLoginPortocol.tempTimeUtils.isValidTime(ctx, Long.valueOf(timestamp))){
                         res = "1";
 
                         //保存到缓存
                         if (!machineLoginPortocol.channelMapperManager.containsKeyAcnum(acnum)) {
                             machineLoginPortocol.channelMapperManager.addChannel(acnum, ctx);
+
+                            //把机器广告图片列表给机器
+                            AdImageInfo[] adImageInfoArr = machineLoginPortocol.adImageService.getAdImageInfoArr(frankMachineId);
+                            AdInfoDTO adInfoDTO = new AdInfoDTO();
+                            adInfoDTO.setAdImageList(adImageInfoArr);
+                            returnData = JSON.toJSONString(adInfoDTO);
                         }else{
                             res = "0";
                             log.info("有问题：服务器中保存的表头号为"+acnum + " ChannelMapperUtils.getChannelByAcnum(acnum) = "
@@ -141,14 +154,17 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
                         unsigned char length[4];			 //2个字节
                         unsigned char type;				 	 //0xA5
                         unsigned char  operateID[2];
-                        unsigned char res;                   //加密内容： 1 正常  0 失败 (失败的话，只能重新执行请求密钥，再发送机器信息) + 机器时间（14）
+                        unsigned char res;                   //加密内容： 1 正常  0 失败 (失败的话，发给机器0x00) + AdInfoDTO的json
                         unsigned char check;				 //校验位
                         unsigned char tail;					 //0xD0
                     }__attribute__((packed))T_InjectionAck, *PT_InjectionAck;*/
 
-                    String content = res + DateKit.formatDateYmdhms(new Date());
+                    String content = res + returnData;
                     String resEntryctContent = AESUtils.encrypt(content, tempKey);
                     log.info("机器登录校验协议 结束");
+
+
+
                     return getWriteContent(BaseTypeUtils.stringToByte(resEntryctContent, BaseTypeUtils.UTF8));
                 default:
                     throw new Exception("获取唯一id：版本不存在");

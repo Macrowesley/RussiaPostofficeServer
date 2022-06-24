@@ -60,7 +60,7 @@ public class MenuController extends BaseController {
         return new FebsResponse().data(userMenus);
     }
 
-    @GetMapping("tree")
+    @PostMapping("tree")
     @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     @ApiOperation("Get menu tree")
@@ -68,7 +68,8 @@ public class MenuController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Menu.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse getMenuTree(Menu menu) {
+
+    public FebsResponse getMenuTree(@RequestBody(required = false) Menu menu) {
         MenuTree<Menu> menus = this.menuService.findMenus(menu);
         return new FebsResponse().success().data(menus.getChilds());
     }
@@ -82,7 +83,7 @@ public class MenuController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addMenu(@Valid Menu menu) {
+    public FebsResponse addMenu(@Valid @RequestBody Menu menu) {
         this.menuService.createMenu(menu);
         return new FebsResponse().success();
     }
@@ -113,7 +114,7 @@ public class MenuController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateMenu(@Valid Menu menu) {
+    public FebsResponse updateMenu(@Valid @RequestBody Menu menu) {
         this.menuService.updateMenu(menu);
         return new FebsResponse().success();
     }
@@ -122,12 +123,8 @@ public class MenuController extends BaseController {
     @RequiresPermissions("menu:export")
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
-    @ApiOperation("export excel")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "success", response = String.class),
-            @ApiResponse(code = 500, message = "内部异常")
-    })
-    public void export(Menu menu, HttpServletResponse response) {
+    @ApiIgnore
+    public void export(@RequestBody Menu menu, HttpServletResponse response) {
         List<Menu> menus = this.menuService.findMenuList(menu);
         //ExcelKit.$Export(Menu.class, response).downXlsx(menus, false);
     }

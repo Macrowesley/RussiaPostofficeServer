@@ -84,6 +84,11 @@ public class ProtocolService {
     @Autowired
     UpdateRemoteFileResultPortocol updateRemoteFileResultPortocol;
 
+    @Autowired
+    ClearMoneyResultPortocol clearMoneyResultPortocol;
+
+    @Autowired
+    AdDownloadResultPortocol adDownloadResultPortocol;
 
     @Autowired
     @Qualifier(value = FebsConstant.NETTY_ASYNC_POOL)
@@ -223,6 +228,12 @@ public class ProtocolService {
                 break;
             case UpdateRemoteFileResultPortocol.PROTOCOL_TYPE:
                 baseProtocol = updateRemoteFileResultPortocol;
+                break;
+            case ClearMoneyResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = clearMoneyResultPortocol;
+                break;
+            case AdDownloadResultPortocol.PROTOCOL_TYPE:
+                baseProtocol = adDownloadResultPortocol;
                 break;
             default:
                 log.error("protocolType 格式不对： " + BaseTypeUtils.bytesToHexString(new byte[]{protocolType}));

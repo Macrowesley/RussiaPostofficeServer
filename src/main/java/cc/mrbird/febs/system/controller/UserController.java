@@ -74,7 +74,8 @@ public class UserController extends BaseController {
         return this.userService.findByName(username) == null || StringUtils.isNotBlank(userId);
     }
 
-    @GetMapping("list")
+    @PostMapping("list")
+    @ResponseBody
     @RequiresPermissions("user:view")
     @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
     @ApiOperation("List for users")
@@ -83,8 +84,8 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = User.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse userList(User user, QueryRequest request) {
-        System.out.println("userList:"+JSON.toJSONString(user));
+    public FebsResponse userList(QueryRequest request, @RequestBody(required = false)  User user) {
+        log.info("开始查询");
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
     }
@@ -112,7 +113,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addUser(@Valid User user) {
+    public FebsResponse addUser(@Valid @RequestBody User user) {
         this.userService.createUser(user);
         return new FebsResponse().success();
     }
@@ -145,7 +146,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateUser(@Valid User user) {
+    public FebsResponse updateUser(@Valid @RequestBody User user) {
         if (user.getUserId() == null) {
             throw new FebsException("用户ID为空");
         }
@@ -239,7 +240,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateProfile(User user) throws FebsException {
+    public FebsResponse updateProfile(@RequestBody User user) throws FebsException {
         User currentUser = getCurrentUser();
         user.setUserId(currentUser.getUserId());
         this.userService.updateProfile(user);
@@ -251,6 +252,7 @@ public class UserController extends BaseController {
     @ControllerEndpoint(exceptionMessage = "{user.operation.exportError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     @ApiOperation("Export excel")
+    @ApiIgnore
     public void export(QueryRequest queryRequest, User user, HttpServletResponse response) {
         List<User> users = this.userService.findUserDetailList(user, queryRequest).getRecords();
         //ExcelKit.$Export(User.class, response).downXlsx(users, false);

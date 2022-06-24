@@ -59,7 +59,7 @@ public class LoginController extends BaseController {
             @ApiImplicitParam(name = "verifyCode", value = "verifyCode", defaultValue = "")
     })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
     public FebsResponse login(

@@ -18,14 +18,13 @@ import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.WebSocketEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.dto.machine.AdImageInfo;
+import cc.mrbird.febs.rcs.dto.machine.AdInfoDTO;
 import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
 import cc.mrbird.febs.rcs.dto.service.ChangeStatusRequestDTO;
 import cc.mrbird.febs.rcs.dto.service.TaxVersionDTO;
-import cc.mrbird.febs.rcs.entity.Contract;
-import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.entity.PublicKey;
-import cc.mrbird.febs.rcs.entity.TaxDeviceUnreceived;
+import cc.mrbird.febs.rcs.entity.*;
 import cc.mrbird.febs.rcs.service.IMsgService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITaxDeviceUnreceivedService;
@@ -40,9 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -471,62 +467,6 @@ public class ServiceToMachineProtocol extends BaseProtocol {
     }
 
 
-//    @Async(FebsConstant.NETTY_ASYNC_POOL)
-//    @Deprecated
-//    public void doPrintJobOld(PrintJob dbPrintJob) {
-//        log.info("【协议开始 发送pc订单给机器】 dbPrintJob =" + dbPrintJob.toString());
-//        /**
-//         typedef  struct{
-//             unsigned char length[4];
-//             unsigned char type;				 	 //0xC7
-//             unsigned char operateID[2];
-//             unsigned char version[3];			 //版本内容(3)
-//             unsigned char content[?];            //加密后内容: pcPrintInfoDTO信息
-//             unsigned char check;				 //校验位
-//             unsigned char tail;					 //0xD0
-//         }__attribute__((packed))pcPrintJob, *pcPrintJob;
-//         */
-//        try {
-//            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(dbPrintJob.getFrankMachineId()));
-//
-//            if (ctx == null) {
-//                throw new FebsException("机器" + dbPrintJob.getFrankMachineId() + "没有连接，无法操作");
-//            }
-//
-//            //获取临时密钥
-//            String tempKey = tempKeyUtils.getTempKey(ctx);
-//
-//            //准备数据
-//            String version = FebsConstant.FmVersion1;
-//
-//            ForeseenProductDTO[] productPrintProgress = printJobService.getProductPrintProgress(dbPrintJob);
-//
-//            PcPrintInfoDTO pcPrintInfoDTO = new PcPrintInfoDTO();
-//            pcPrintInfoDTO.setPrintJobId(dbPrintJob.getId());
-//            pcPrintInfoDTO.setFrankMachineId(dbPrintJob.getFrankMachineId());
-//            pcPrintInfoDTO.setForeseenId(dbPrintJob.getForeseenId());
-//            pcPrintInfoDTO.setTransactionId(dbPrintJob.getTransactionId());
-//            pcPrintInfoDTO.setContractCode(dbPrintJob.getContractCode());
-//            pcPrintInfoDTO.setFlowDetail(dbPrintJob.getFlowDetail());
-//            pcPrintInfoDTO.setPrintJobType(dbPrintJob.getType());
-//            pcPrintInfoDTO.setPrintProducts(productPrintProgress);
-//
-//            String content = JSON.toJSONString(pcPrintInfoDTO);
-//
-//            String entryctContent = AESUtils.encrypt(content, tempKey);
-//            log.info("服务器发送tax给机器 加密后长度={}  content={}, entryctContent={}", entryctContent.length(), content, entryctContent);
-//            wrieteToCustomer(
-//                    ctx,
-//                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
-//                            (byte) 0xC7));
-//
-//            msgService.sendMsg(WebSocketEnum.ClickPrintRes.getCode(), dbPrintJob.getId(),"");
-//            log.info("【协议结束 发送pc订单给机器】");
-//        } catch (Exception e) {
-////            e.printStackTrace();
-//            throw new FmException(e.getMessage());
-//        }
-//    }
 
     /**
      * PC主动取消打印任务
@@ -577,6 +517,95 @@ public class ServiceToMachineProtocol extends BaseProtocol {
             throw new FmException(e.getMessage());
         }
     }
+
+    /**
+     * 1. 发送批量广告图片给机器
+     * 两种情况：
+     * - 开机的时候，机器登录后，发给机器
+     * - PC对图片有增删，也把最新的图片列表给机器
+     * @param frankMachineId
+     */
+    public void syncImageList(String frankMachineId, AdImageInfo[] adImageInfoArr){
+        /*typedef  struct{
+            unsigned char length[4];
+            unsigned char type;				 	 //0xCA
+            unsigned char operateID[2];
+            unsigned char version[3];			 //版本内容(3)
+            unsigned char content[?];            //加密后内容: AdInfoDTO
+            unsigned char check;				 //校验位
+            unsigned char tail;					 //0xD0
+        }__attribute__((packed))adInfo, *adInfo;*/
+
+        try {
+            log.info("【协议开始 发送批量广告图片 给机器】");
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(frankMachineId));
+            if (ctx == null) {
+                throw new FebsException("机器" + frankMachineId + "没有连接，无法操作");
+            }
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            //准备数据
+            String version = FebsConstant.FmVersion1;
+
+
+            AdInfoDTO adInfoDTO = new AdInfoDTO();
+            adInfoDTO.setAdImageList(adImageInfoArr);
+            String content = JSON.toJSONString(adInfoDTO);
+            String entryctContent = AESUtils.encrypt(content, tempKey);
+            log.info("服务器 发送批量广告图片 给机器 content={},加密后entryctContent={}", content, entryctContent);
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xCA));
+
+            log.info("【协议结束 发送批量广告图片 给机器】");
+        } catch (Exception e) {
+            throw new FmException(e.getMessage());
+        }
+    }
+
+    /**
+     * 清除机器累计金额
+     * @param frankMachineId
+     */
+    public void clearFmMoney(String frankMachineId){
+        /*typedef  struct{
+            unsigned char length[4];			 //4个字节
+            unsigned char type;				 	 //0xCC
+            unsigned char operateID[2];
+            unsigned char content[?];            //加密后内容 版本内容(3)
+            unsigned char check;				 //校验位
+            unsigned char tail;					 //0xD0
+        }__attribute__((packed))clearMoney, *clearMoney;*/
+
+
+        try {
+            log.info("【协议开始 清除机器累计金额 给机器】");
+            ChannelHandlerContext ctx = channelMapperManager.getChannelByAcnum(getAcnumByFmId(frankMachineId));
+            if (ctx == null) {
+                throw new FebsException("机器" + frankMachineId + "没有连接，无法操作");
+            }
+            //获取临时密钥
+            String tempKey = tempKeyUtils.getTempKey(ctx);
+
+            //准备数据
+            String version = FebsConstant.FmVersion1;
+
+            String entryctContent = AESUtils.encrypt(version, tempKey);
+
+            log.info("服务器 清除机器累计金额 给机器 content={},加密后entryctContent={}", version, entryctContent);
+            wrieteToCustomer(
+                    ctx,
+                    getWriteContent(BaseTypeUtils.stringToByte(version + entryctContent, BaseTypeUtils.UTF8),
+                            (byte) 0xCC));
+
+            log.info("【协议结束 清除机器累计金额 给机器】");
+        } catch (Exception e) {
+            throw new FmException(e.getMessage());
+        }
+    }
+
 
      /*
      ***********************************************************

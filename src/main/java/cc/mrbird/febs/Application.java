@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class Application {
 
     public static void main(String[] args) {
+        System.setProperty("tomcat.util.http.parser.HttpParser.requestTargetAllow","|{}");
         new SpringApplicationBuilder(Application.class)
                 .web(WebApplicationType.SERVLET)
                 .run(args);

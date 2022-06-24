@@ -111,6 +111,7 @@ public class DeptController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
+    @ApiIgnore
     public void export(Dept dept, QueryRequest request, HttpServletResponse response) throws FebsException {
         List<Dept> depts = this.deptService.findDepts(dept, request);
         //ExcelKit.$Export(Dept.class, response).downXlsx(depts, false);

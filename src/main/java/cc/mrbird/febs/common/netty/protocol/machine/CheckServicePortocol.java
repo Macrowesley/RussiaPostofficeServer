@@ -316,7 +316,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setActualCount(String.valueOf(actualCount));
                     resultDto.setActualAmount(actualAmount);
 //                    resultDto.setDmMsg(dmMsg);
-                    resultDto.setServerDate(DateKit.formatDateYmdhms(new Date()));
+                    resultDto.setServerDate(DateKit.formatDateyyyy_MM_dd_HH_mm_ss(new Date()));
                     resultDto.setTransactionId(transactionId);
                     resultDto.setPrintJobType(printJobType);
 //                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));

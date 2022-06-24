@@ -9,11 +9,13 @@ import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.service.IContractService;
 
 import cc.mrbird.febs.rcs.vo.ContractVO;
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -54,7 +56,7 @@ public class ContractController extends BaseController {
         return new FebsResponse().success().data(contractService.findContracts(contract));
     }
 
-    @GetMapping("contract/list")
+    @PostMapping("contract/list")
     @ResponseBody
     @RequiresPermissions("contract:list")
     @ApiOperation("List for contract")
@@ -62,7 +64,7 @@ public class ContractController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Contract.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse contractList(QueryRequest request, Contract contract) {
+    public FebsResponse contractList(QueryRequest request, @RequestBody(required = false) Contract contract) {
         Map<String, Object> dataTable = getDataTable(this.contractService.findContracts(request, contract));
         return new FebsResponse().success().data(dataTable);
     }

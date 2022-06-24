@@ -101,6 +101,7 @@ public class ForeseenProductController extends BaseController {
     @ResponseBody
     @RequiresPermissions("foreseenProduct:export")
     @ApiOperation("export excel")
+    @ApiIgnore
     public void export(QueryRequest queryRequest, ForeseenProduct foreseenProduct, HttpServletResponse response) {
         List<ForeseenProduct> foreseenProducts = this.foreseenProductService.findForeseenProducts(queryRequest, foreseenProduct).getRecords();
         //ExcelKit.$Export(ForeseenProduct.class, response).downXlsx(foreseenProducts, false);

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
@@ -47,7 +48,7 @@ public class TransactionMsgController extends BaseController {
         return FebsUtil.view("transactionMsg/frank");
     }
 
-    @GetMapping("transactionMsg")
+    @GetMapping("transactionMsg/{transactionId}")
     @ResponseBody
     @RequiresPermissions("transactionMsg:list")
     @ApiOperation("List for all transactions")
@@ -58,7 +59,7 @@ public class TransactionMsgController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = TransactionMsg.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse getAllTransactionMsgs(String transactionId) {
+    public FebsResponse getAllTransactionMsgs(@PathVariable(required = true) String transactionId) {
         List<TransactionMsg> transactionMsgs = transactionMsgService.findTransactionMsgs(transactionId);
         Map<String, Object> data = new HashMap<>(2);
         data.put("rows", transactionMsgs);

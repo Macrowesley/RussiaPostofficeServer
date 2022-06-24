@@ -173,6 +173,9 @@
         });
 
         $view.on('click', '#user-profile img', function () {
+            $.ajaxSetup({
+                contentType : 'application/json;charset=UTF-8'
+            });
             febs.modal.view(i18n("userProfile.clickToChange"), 'user/avatar', {
                 area: $(window).width() <= 750 ? '90%' : '650px',
                 offset: '100px'

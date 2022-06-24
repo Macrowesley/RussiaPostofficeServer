@@ -285,7 +285,9 @@
         function renderMenuTree() {
             _menuTree = eleTree.render({
                 elem: '.menuTree',
+                contentType: 'application/json;charset=UTF-8',
                 url: ctx + 'menu/tree',
+                method: 'post',
                 where: {
                     "menuEnglishName": $menuEnglishName.val().trim(),
                     "menuChineseName": $menuChineseName.val().trim(),
@@ -343,13 +345,19 @@
                     febs.alert.warn(i18n("noEdit"));
                     return false;
                 }
-                febs.post(ctx + 'menu/update', data.field, function () {
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + 'menu/update', JSON.stringify(data.field), function () {
                     febs.alert.success(i18n("editSuccess"));
                     reloadMenuTree();
                     reset();
                 })
             } else {
-                febs.post(ctx + 'menu', data.field, function () {
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + 'menu', JSON.stringify(data.field), function () {
                     febs.alert.success(i18n("addSuccess"));
                     reloadMenuTree();
                     reset();

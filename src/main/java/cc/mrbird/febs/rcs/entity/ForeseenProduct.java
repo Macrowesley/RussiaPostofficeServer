@@ -67,7 +67,15 @@ public class ForeseenProduct {
     @TableField("address")
     String address;
 
+    @TableField("ad_image_id")
+    String adImageId;
 
+    /**
+     * 地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id
+     *
+     */
+    @TableField("address_type")
+    String type;
 
     /**
      * 创建时间

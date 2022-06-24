@@ -164,8 +164,10 @@
             if(curRoleId == 1 || curRoleId == 2){
                 data.field.roleId = 0;
             }
-
-            febs.post(ctx + 'user/update', data.field, function () {
+            $.ajaxSetup({
+                contentType : 'application/json;charset=UTF-8'
+            });
+            febs.post(ctx + 'user/update',  JSON.stringify(data.field), function () {
                 layer.closeAll();
 
                 febs.alert.success(user.username + i18n("userDevice.editSuccess"));

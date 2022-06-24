@@ -105,7 +105,10 @@
                 febs.alert.warn(i18n("noEdit"));
                 return false;
             }
-            febs.post(ctx + 'user/profile/update', data.field, function () {
+            $.ajaxSetup({
+                contentType : 'application/json;charset=UTF-8'
+            });
+            febs.post(ctx + 'user/profile/update', JSON.stringify(data.field), function () {
                 layer.closeAll();
                 febs.modal.confirm(i18n("editSuccess"),i18n("refreshNow"),function () {
                     window.location.reload();

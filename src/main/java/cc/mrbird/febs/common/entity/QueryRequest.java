@@ -4,14 +4,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.ToString;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.Serializable;
 
 
 @Data
 @ToString
-@ApiModel
+@ApiModel(description = "QueryRequest")
 public class QueryRequest implements Serializable {
 
     private static final long serialVersionUID = -4869594085374385813L;
@@ -19,13 +18,13 @@ public class QueryRequest implements Serializable {
     /**
      * 当前页面数据量
      */
-    @ApiModelProperty
+    @ApiModelProperty("当前页面数据量")
     private int pageSize = 10;
 
     /**
      * 当前页码
      */
-    @ApiModelProperty
+    @ApiModelProperty("当前页码")
     private int pageNum = 1;
 
     /**

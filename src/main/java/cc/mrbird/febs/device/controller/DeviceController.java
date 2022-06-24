@@ -121,7 +121,11 @@ public class DeviceController extends BaseController {
     @RequiresPermissions("device:add")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     @ApiOperation("add a device")
-    public FebsResponse addDevice(@Validated @NotNull AddDeviceDTO deviceDTO) {
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse addDevice(@Validated @NotNull @RequestBody AddDeviceDTO deviceDTO) {
         log.info("新增device deviceDTO= {}" , deviceDTO.toString());
         if (deviceDTO.getAcnumList().length() < 6 && !deviceDTO.getAcnumList().contains(",")){
             throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
@@ -159,7 +163,8 @@ public class DeviceController extends BaseController {
     @RequiresPermissions("device:export")
     @ApiOperation("export excel")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
+    @ApiIgnore
+    public void export(QueryRequest queryRequest, @RequestBody Device device, HttpServletResponse response) {
         List<Device> devices = this.deviceService.findDevices(queryRequest, device).getRecords();
         //ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
     }
@@ -172,11 +177,15 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class, responseContainer = "Map"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse checkIsExist(@Validated CheckIsExistDTO checkIsExistDTO) {
-        if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
+    public FebsResponse checkIsExist(@Validated @RequestBody String acnumList) {
+        if (acnumList.length() < 6 && !acnumList.contains(",")){
             throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
         }
-        Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
+        Map<String, Object> res =  deviceService.getRepetitionInfo(acnumList);
+//        if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
+//            throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
+//        }
+//        Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
         return new FebsResponse().success().data(res);
     }
 
@@ -208,7 +217,7 @@ public class DeviceController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "从Netty中移除指定的表头号连接", exceptionMessage = "{device.operation.checkAcnumError}")
-    @GetMapping("removeChannelFromNetty/{acnum}")
+    @PostMapping("removeChannelFromNetty/{acnum}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     @ApiOperation("Removes the specified table primary connection from Netty")
     @ApiResponses({
@@ -224,8 +233,12 @@ public class DeviceController extends BaseController {
     @PostMapping("uploadRemoteFile")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    @ApiIgnore
-    public FebsResponse uploadRemoteFile(@RequestParam("file") MultipartFile mf) {
+    @ApiOperation("upload remoteFile")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse uploadRemoteFile(@RequestParam("file") @RequestBody MultipartFile mf) {
         String url = "";
         try {
             log.info("mf = " + mf.toString());
@@ -255,7 +268,7 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updateRemoteFile(@Validated @NotNull RemoteFileDTO remoteFileDTO) {
+    public FebsResponse updateRemoteFile(@Validated @NotNull @RequestBody RemoteFileDTO remoteFileDTO) {
         log.info(remoteFileDTO.toString());
         serviceToMachineProtocol.updateRemoteFileProtocol(remoteFileDTO);
         return new FebsResponse().success();
