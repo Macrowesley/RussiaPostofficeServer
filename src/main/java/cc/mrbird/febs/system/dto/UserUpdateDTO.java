@@ -1,7 +1,6 @@
 package cc.mrbird.febs.system.dto;
 
 import cc.mrbird.febs.common.annotation.IsMobile;
-
 import lombok.Data;
 
 import javax.validation.constraints.Email;

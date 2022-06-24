@@ -318,6 +318,19 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
             <version>${swagger.ui}</version>
+            <exclusions>
+                <!-- 排除自带的1.5.20版本 忽略swagger启动Swagger: java.lang.NumberFormatException: For input string: ""的警告-->
+                <exclusion>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 使用1.5.22-->
+        <dependency>
+         -   <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.22</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>

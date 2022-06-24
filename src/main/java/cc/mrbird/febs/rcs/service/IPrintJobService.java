@@ -125,6 +125,11 @@ public interface IPrintJobService extends IService<PrintJob> {
     Transaction getTransactionById(String transactionId);
 
 
+    /**
+     * 判断机器是否停止打印
+     * @param frankMachineId
+     * @return
+     */
     boolean checkPrintJobFinish(String frankMachineId);
 
 

@@ -815,8 +815,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             throw new FebsException(messageUtils.getMessage("printJob.noRepeatClick"));
         }
 
-        //todo 判断机器是否是在打印中，从redis中查询
-        //todo
+        //todo 俄罗斯新的修改需求  判断是否有广告图片，而且这个图片是否下载成功，没有则报错，让更新图片列表给机器，让机器重新下载
 
         serviceToMachineProtocol.doPrintJob(dbPrintJob);
     }
