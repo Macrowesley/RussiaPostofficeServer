@@ -164,7 +164,7 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "导出Excel失败")
-    @PostMapping("printJob/excel")
+    @GetMapping("printJob/excel")
     @ResponseBody
     @RequiresPermissions("printJob:export")
     @ApiOperation("export excel")
@@ -172,7 +172,7 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = void.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public void export(QueryRequest queryRequest, @RequestBody PrintJobDTO printJobDto, HttpServletResponse response) {
+    public void export(PrintJobDTO printJobDto, HttpServletResponse response) {
         log.info("导出excel");
         try {
             List<PrintJobExcelVO> printJobExcelVOList = printJobService.selectExcelData(printJobDto);
