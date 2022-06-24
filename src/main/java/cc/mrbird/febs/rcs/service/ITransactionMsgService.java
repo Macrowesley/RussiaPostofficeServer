@@ -113,4 +113,6 @@ public interface ITransactionMsgService extends IService<TransactionMsg> {
     DmMsgDetail getDmMsgDetailAfterFinishJob(String transactionId, boolean needProductPrintCount);
 
     void deleteTransactionMsgBySchedule() throws Exception;
+
+    void batchCreate();
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +23,7 @@ import java.util.Date;
 @Slf4j
 @RestController
 @RequestMapping("/test/managerTest")
+@ApiIgnore
 public class MangerTestController {
     @Autowired
     ServiceInvokeRussia serviceInvokeRussia;

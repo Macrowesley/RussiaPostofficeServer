@@ -243,7 +243,11 @@
                             febs.alert.warn(i18n("printJob.timeWarn"))
                             return;
                         }
-                        febs.download(ctx + 'printJob/excel', params, 'printJob.xlsx');
+                        $.ajaxSetup({
+                            contentType : 'application/json;charset=UTF-8',
+                            method: 'post'
+                        });
+                        febs.download(ctx + 'printJob/excel', JSON.stringify(params), 'printJob.xlsx');
                         /*febs.get(ctx + "printJob/excel", params, function (res) {
                             if (res.code === 200) {
                                 console.log("下载成功")
@@ -343,7 +347,6 @@
                         }
 
                         if(layEvent === 'printCheck'){
-                            console.log("data.transactionId = "  + data.transactionId)
                             if (data.transactionId === ""){
                                 febs.alert.warn(i18n("transactionMsg.noMsg"));
                                 return;

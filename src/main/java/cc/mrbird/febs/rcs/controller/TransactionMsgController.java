@@ -8,7 +8,7 @@ import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import cc.mrbird.febs.rcs.entity.TransactionMsg;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
-
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -34,20 +36,30 @@ import java.util.Map;
 @Validated
 @Controller
 @RequiredArgsConstructor
+@Api(description = "Add, delete, change, search for transaction message")
 public class TransactionMsgController extends BaseController {
 
     @Autowired
     ITransactionMsgService transactionMsgService;
 
     @GetMapping(FebsConstant.VIEW_PREFIX + "transactionMsg")
+    @ApiIgnore
     public String frankIndex(){
         return FebsUtil.view("transactionMsg/frank");
     }
 
-    @GetMapping("transactionMsg")
+    @GetMapping("transactionMsg/{transactionId}")
     @ResponseBody
     @RequiresPermissions("transactionMsg:list")
-    public FebsResponse getAllTransactionMsgs(String transactionId) {
+    @ApiOperation("List for all transactions")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "transactionId", value = "transactionId", defaultValue = "")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = TransactionMsg.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse getAllTransactionMsgs(@PathVariable(required = true) String transactionId) {
         List<TransactionMsg> transactionMsgs = transactionMsgService.findTransactionMsgs(transactionId);
         Map<String, Object> data = new HashMap<>(2);
         data.put("rows", transactionMsgs);
@@ -58,6 +70,8 @@ public class TransactionMsgController extends BaseController {
     @GetMapping("transactionMsg/list")
     @ResponseBody
     @RequiresPermissions("transactionMsg:list")
+    @ApiOperation("List for transactions")
+    @ApiIgnore
     public FebsResponse frankList(QueryRequest request, TransactionMsg frank) {
         Map<String, Object> dataTable = getDataTable(this.transactionMsgService.findTransactionMsgs(request, frank));
         return new FebsResponse().success().data(dataTable);
@@ -67,6 +81,8 @@ public class TransactionMsgController extends BaseController {
     @PostMapping("transactionMsg/add")
     @ResponseBody
     @RequiresPermissions("transactionMsg:add")
+    @ApiOperation("Add a transaction")
+    @ApiIgnore
     public FebsResponse addTransactionMsg(@Valid TransactionMsg frank) {
         try{
             this.transactionMsgService.createTransactionMsg(frank);
@@ -80,6 +96,8 @@ public class TransactionMsgController extends BaseController {
     @GetMapping("transactionMsg/deleteBySchedule")
     @ResponseBody
     @RequiresPermissions("transactionMsg:delete")
+    @ApiOperation("Delete transactions by schedule")
+    @ApiIgnore
     public FebsResponse deleteTransactionMsgBySchedule() {
         try{
             this.transactionMsgService.deleteTransactionMsgBySchedule();
@@ -93,6 +111,8 @@ public class TransactionMsgController extends BaseController {
     @GetMapping("transactionMsg/delete")
     @ResponseBody
     @RequiresPermissions("transactionMsg:delete")
+    @ApiOperation("Delete a transaction")
+    @ApiIgnore
     public FebsResponse deleteTransactionMsg(TransactionMsg frank) {
         this.transactionMsgService.deleteTransactionMsg(frank);
         return new FebsResponse().success();
@@ -103,6 +123,8 @@ public class TransactionMsgController extends BaseController {
     @PostMapping("transactionMsg/update")
     @ResponseBody
     @RequiresPermissions("transactionMsg:update")
+    @ApiOperation("Update a transaction")
+    @ApiIgnore
     public FebsResponse updateTransactionMsg(TransactionMsg frank) {
         this.transactionMsgService.updateTransactionMsg(frank);
         return new FebsResponse().success();
@@ -112,8 +134,25 @@ public class TransactionMsgController extends BaseController {
     @PostMapping("transactionMsg/excel")
     @ResponseBody
     @RequiresPermissions("transactionMsg:export")
+    @ApiOperation("export excel")
+    @ApiIgnore
     public void export(QueryRequest queryRequest, TransactionMsg frank, HttpServletResponse response) {
         List<TransactionMsg> franks = this.transactionMsgService.findTransactionMsgs(queryRequest, frank).getRecords();
         //ExcelKit.$Export(TransactionMsg.class, response).downXlsx(franks, false);
     }
+
+    @ControllerEndpoint(operation = "批量插入数据", exceptionMessage = "批量插入数据失败")
+    @PostMapping("transactionMsg/batchInsert")
+    @ResponseBody
+    @RequiresPermissions("transactionMsg:add")
+    @ApiIgnore
+    public FebsResponse batchInsert(QueryRequest queryRequest, HttpServletResponse response) {
+        try{
+            this.transactionMsgService.batchCreate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new FebsResponse().success();
+    }
+
 }

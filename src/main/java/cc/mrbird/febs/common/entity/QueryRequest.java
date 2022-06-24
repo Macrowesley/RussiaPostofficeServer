@@ -30,10 +30,12 @@ public class QueryRequest implements Serializable {
     /**
      * 排序字段
      */
+    @ApiModelProperty(name="field",  hidden = true)
     private String field;
 
     /**
      * 排序规则，asc升序，desc降序
      */
+    @ApiModelProperty(name="order",  hidden = true)
     private String order;
 }

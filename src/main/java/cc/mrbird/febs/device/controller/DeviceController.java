@@ -17,6 +17,7 @@ import cc.mrbird.febs.device.entity.Device;
 import cc.mrbird.febs.device.service.IDeviceService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
@@ -46,6 +48,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("device")
+@Api(description = "Add, change, search for device,distribution devices and other methods")
 public class DeviceController extends BaseController {
     @Value("${info.base-path}")
     private String basePath;
@@ -75,16 +78,23 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("list")
     @RequiresPermissions("device:list")
+    @ApiOperation("Get all devices")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = Device.class, responseContainer = "Map"),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse devicePageList(QueryRequest request, Device device) {
         log.info("request = " + request.toString() + " device = " + device.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
         return new FebsResponse().success().data(dataTable);
     }
 
+    @ApiIgnore
     @ControllerEndpoint(operation = "获取列表", exceptionMessage = "{device.operation.listError}")
     @GetMapping("allList/{bindUserId}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    @ApiOperation("Gets the list of devices under the specified user")
     public FebsResponse allList(@NotBlank(message = "{required}") @PathVariable String bindUserId) {
         Map<String, Object> data =  deviceService.selectDeviceListToTransfer(bindUserId);
         return new FebsResponse().success().data(data);
@@ -94,6 +104,12 @@ public class DeviceController extends BaseController {
     @PostMapping("sendDevice")
 //    @RequiresPermissions("device:add")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    @ApiOperation("distribution devices")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    @ApiIgnore
     public FebsResponse sendDevice(@Validated SendDeviceDTO deviceDTO) {
         log.info("获取的分配设备id = " + deviceDTO.getDeviceIds() + " 绑定的userId = " + deviceDTO.getBindUserId());
         deviceService.bindDevicesToUser(deviceDTO.getDeviceIds(), deviceDTO.getBindUserId());
@@ -104,7 +120,12 @@ public class DeviceController extends BaseController {
     @PostMapping("add")
     @RequiresPermissions("device:add")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    public FebsResponse addDevice(@Validated @NotNull AddDeviceDTO deviceDTO) {
+    @ApiOperation("add a device")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse addDevice(@Validated @NotNull @RequestBody AddDeviceDTO deviceDTO) {
         log.info("新增device deviceDTO= {}" , deviceDTO.toString());
         if (deviceDTO.getAcnumList().length() < 6 && !deviceDTO.getAcnumList().contains(",")){
             throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
@@ -125,7 +146,13 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "修改Device", exceptionMessage = "{device.operation.editDeviceError}")
     @PostMapping("update")
     @RequiresPermissions("device:update")
+    @ApiOperation("update a device")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    @ApiIgnore
     public FebsResponse updateDevice(@Validated @NotNull UpdateDeviceDTO updateDeviceDTO) {
         this.deviceService.updateDevice(updateDeviceDTO);
         return new FebsResponse().success();
@@ -134,8 +161,10 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "{device.operation.exportError}")
     @GetMapping("excel")
     @RequiresPermissions("device:export")
+    @ApiOperation("export excel")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
+    @ApiIgnore
+    public void export(QueryRequest queryRequest, @RequestBody Device device, HttpServletResponse response) {
         List<Device> devices = this.deviceService.findDevices(queryRequest, device).getRecords();
         //ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
     }
@@ -143,11 +172,20 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "检查表头号是否存在", exceptionMessage = "{device.operation.checkAcnumError}")
     @PostMapping("checkIsExist")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
-    public FebsResponse checkIsExist(@Validated CheckIsExistDTO checkIsExistDTO) {
-        if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
+    @ApiOperation("Check whether acnum exists")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class, responseContainer = "Map"),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse checkIsExist(@Validated @RequestBody String acnumList) {
+        if (acnumList.length() < 6 && !acnumList.contains(",")){
             throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
         }
-        Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
+        Map<String, Object> res =  deviceService.getRepetitionInfo(acnumList);
+//        if (checkIsExistDTO.getAcnumList().length() < 6 && !checkIsExistDTO.getAcnumList().contains(",")){
+//            throw new FebsException(messageUtils.getMessage("IncorrectDataFormat"));
+//        }
+//        Map<String, Object> res =  deviceService.getRepetitionInfo(checkIsExistDTO.getAcnumList());
         return new FebsResponse().success().data(res);
     }
 
@@ -155,6 +193,11 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "打开机器的ssh服务", exceptionMessage = "{device.operation.checkAcnumError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     @GetMapping("openSshPortocol/{acnum}")
+    @ApiOperation("Enable the SSH service on the machine")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = boolean.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse openSshPortocol(@PathVariable String acnum) {
         boolean res = serviceToMachineProtocol.openSshProtocol(acnum);
         return new FebsResponse().success().data(res);
@@ -164,14 +207,23 @@ public class DeviceController extends BaseController {
     @ControllerEndpoint(operation = "关闭机器的ssh服务", exceptionMessage = "{device.operation.checkAcnumError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
     @GetMapping("closeSshPortocol/{acnum}")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = boolean.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse closeSshPortocol(@PathVariable String acnum) {
         boolean res = serviceToMachineProtocol.closeSshProtocol(acnum);
         return new FebsResponse().success().data(res);
     }
 
     @ControllerEndpoint(operation = "从Netty中移除指定的表头号连接", exceptionMessage = "{device.operation.checkAcnumError}")
-    @GetMapping("removeChannelFromNetty/{acnum}")
+    @PostMapping("removeChannelFromNetty/{acnum}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
+    @ApiOperation("Removes the specified table primary connection from Netty")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
     public FebsResponse removeChannelFromNetty(@PathVariable String acnum) {
         channelMapperManager.removeCache(acnum);
         return new FebsResponse().success().data("ok");
@@ -181,7 +233,12 @@ public class DeviceController extends BaseController {
     @PostMapping("uploadRemoteFile")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    public FebsResponse uploadRemoteFile(@RequestParam("file") MultipartFile mf) {
+    @ApiOperation("upload remoteFile")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse uploadRemoteFile(@RequestParam("file") @RequestBody MultipartFile mf) {
         String url = "";
         try {
             log.info("mf = " + mf.toString());
@@ -206,7 +263,12 @@ public class DeviceController extends BaseController {
     @PostMapping("updateRemoteFile")
     @RequiresPermissions("device:update")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
-    public FebsResponse updateRemoteFile(@Validated @NotNull RemoteFileDTO remoteFileDTO) {
+    @ApiOperation("Update remote file")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "success", response = String.class),
+            @ApiResponse(code = 500, message = "内部异常")
+    })
+    public FebsResponse updateRemoteFile(@Validated @NotNull @RequestBody RemoteFileDTO remoteFileDTO) {
         log.info(remoteFileDTO.toString());
         serviceToMachineProtocol.updateRemoteFileProtocol(remoteFileDTO);
         return new FebsResponse().success();

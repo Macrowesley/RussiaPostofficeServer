@@ -131,7 +131,10 @@ layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree', '
     }
 
     data.field.userDeviceId = userDeviceId;
-    febs.post(ctx + 'device/updateRemoteFile', data.field, function () {
+    $.ajaxSetup({
+      contentType : 'application/json;charset=UTF-8'
+    });
+    febs.post(ctx + 'device/updateRemoteFile', JSON.stringify(data.field), function () {
       layer.closeAll();
       febs.alert.success( i18n("device.device")+ device.acnum + i18n("operationSuccess"));
       // $('#febs-device').find('#refreshQuery').click();
@@ -142,10 +145,12 @@ layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree', '
 
   var upload = layui.upload;
   var uploadInst = upload.render({
-    elem: '#uploadRemoteFile'
-    , url: ctx + 'device/uploadRemoteFile'
-    , accept: 'file'
-    , done: function (res) {
+     elem: '#uploadRemoteFile',
+     contentType: 'application/json;charset=UTF-8',
+     url: ctx + 'device/uploadRemoteFile',
+     method: 'post',
+     accept: 'file',
+     done: function (res) {
       console.log(JSON.stringify(res))
       layui.use('layer', function () {
         $("#fileUrl").val(res.data)

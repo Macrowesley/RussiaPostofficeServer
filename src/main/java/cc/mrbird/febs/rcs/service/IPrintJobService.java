@@ -30,7 +30,7 @@ public interface IPrintJobService extends IService<PrintJob> {
      * 查询（分页）
      *
      * @param request QueryRequest
-     * @param printJob printJob
+     * @param printJobDto printJobDto
      * @return IPage<PrintJob>
      */
     IPage<PrintJob> findPrintJobs(QueryRequest request, PrintJobDTO printJobDto);

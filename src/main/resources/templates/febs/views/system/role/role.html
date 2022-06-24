@@ -112,7 +112,9 @@
 
         var menuTree = eleTree.render({
             elem: '.menu-tree',
+            contentType: 'application/json;charset=UTF-8',
             url: ctx + 'menu/tree',
+            method: 'post',
             showCheckbox: true,
             where: {
                 "invalidate_ie_cache": new Date()
@@ -218,7 +220,9 @@
             tableIns = febs.table.init({
                 elem: $view.find('table'),
                 id: 'roleTable',
+                contentType: 'application/json;charset=UTF-8',
                 url: ctx + 'role/list',
+                method: 'post',
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'roleName', title: i18n("role.name"), minWidth: 120},
@@ -269,12 +273,18 @@
 
         var addOrUpdateRole = function (data) {
             if (data.roleId && $header.text() === i18n("role.edit")) {
-                febs.post(ctx + 'role/update', data, function () {
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + 'role/update', JSON.stringify(data), function () {
                     febs.alert.success(i18n("role.editSuccess"));
                     $query.trigger('click');
                 });
             } else {
-                febs.post(ctx + 'role', data, function () {
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + 'role', JSON.stringify(data), function () {
                     febs.alert.success(i18n("role.addSuccess"));
                     $query.trigger('click');
                 });

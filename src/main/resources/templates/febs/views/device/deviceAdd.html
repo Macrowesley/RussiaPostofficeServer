@@ -132,17 +132,21 @@
 
             // febs.modal.confirm(i18n("notice"), i18n("device.confirmBindUser"), function () {
                 //检查是否重复
-                febs.post(ctx + "device/checkIsExist", {acnumList:acnumList}, function (res) {
-                    console.log(res)
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + "device/checkIsExist", JSON.stringify(acnumList), function (res) {
                     var res = res.data;
                     if (res.isExist == 1) {
                         febs.alert.warn(i18n("acnum") + res.data + i18n("exist"))
                         return false;
                     }
                     // return false;
-
+                    $.ajaxSetup({
+                        contentType : 'application/json;charset=UTF-8'
+                    });
                     //开始添加
-                    febs.post(ctx + 'device/add', data.field, function () {
+                    febs.post(ctx + 'device/add', JSON.stringify(data.field), function () {
                         layer.closeAll();
                         febs.alert.success(i18n("device.addDeviceSuccess"));
                         $('#febs-device').find('#refreshQuery').click();

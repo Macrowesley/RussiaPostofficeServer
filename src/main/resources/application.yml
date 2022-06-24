@@ -21,10 +21,10 @@ spring:
 
   profiles:
 #    active: prod
-#     active: test-ru
-    active: test-ch
-#    active: dev-lai
-#     active: dev-wang
+#     active: test
+#    active: dev_lai
+     active: dev-wang
+
 
   thymeleaf:
     cache: false
