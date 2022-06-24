@@ -28,6 +28,13 @@ public class ForeseenProductFmDto {
 
     String address;
 
+    String adImageId;
+
+    /**
+     * 地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id
+     */
+    String type;
+
     /**
      * 已经打印数量
      */

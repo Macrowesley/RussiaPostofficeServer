@@ -268,15 +268,16 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         });
 
         //处理倒数第二行信息
-        PrintJobExcelVO firstObject = printJobExcelVOList.get(0);
-        a2 = firstObject.getAPrintBeginContractMoney();
-        n2 = firstObject.getNForeseenOneBatchCount();
-        q2 = firstObject.getQCallculationAmount();
-        s2 = firstObject.getSTransactionOneBatchWeight();
-        u2 = firstObject.getUCallculationRealSumMoney();
-        v2 = firstObject.getVCallculationRealRestMoney();
-        w2 = firstObject.getWPrintEndContractMoney();
-
+        if (printJobExcelVOList.size() != 0){
+            PrintJobExcelVO firstObject = printJobExcelVOList.get(0);
+            a2 = firstObject.getAPrintBeginContractMoney();
+            n2 = firstObject.getNForeseenOneBatchCount();
+            q2 = firstObject.getQCallculationAmount();
+            s2 = firstObject.getSTransactionOneBatchWeight();
+            u2 = firstObject.getUCallculationRealSumMoney();
+            v2 = firstObject.getVCallculationRealRestMoney();
+            w2 = firstObject.getWPrintEndContractMoney();
+        }
         o1 = o2;
 
 

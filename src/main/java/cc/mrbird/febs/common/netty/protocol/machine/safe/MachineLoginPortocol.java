@@ -120,7 +120,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 //                    String timestamp = dectryptContent.substring(pos, pos + TIMESTAMP_LEN);
                     String timestamp = dectryptContent.trim().substring(0,13);
                     String frankMachineId = dectryptContent.trim().substring(13 );
-                    log.info("timestamp={}, frankMachineId={}",timestamp, frankMachineId);
+                    log.info("acnum={}, timestamp={}, frankMachineId={}",acnum, timestamp, frankMachineId);
 
                     //验证时间是否正常
 //                    byte[] res = new byte[]{0x00};
