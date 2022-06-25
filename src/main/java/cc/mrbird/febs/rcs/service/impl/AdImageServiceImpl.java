@@ -3,7 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.rcs.Req.AdImageAddReq;
+import cc.mrbird.febs.rcs.req.AdImageAddReq;
 import cc.mrbird.febs.rcs.common.enums.AdImageStatusEnum;
 import cc.mrbird.febs.rcs.dto.machine.AdImageInfo;
 import cc.mrbird.febs.rcs.entity.AdImage;

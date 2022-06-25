@@ -3,23 +3,16 @@ package cc.mrbird.febs.common.netty.protocol.machine;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseensResultDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFmReqDTO;
 import cc.mrbird.febs.common.service.RedisService;
-import cc.mrbird.febs.common.utils.AESUtils;
 import cc.mrbird.febs.common.utils.BaseTypeUtils;
-import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.FMResultEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.common.enums.FlowEnum;
-import cc.mrbird.febs.rcs.common.enums.PrintJobTypeEnum;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
-import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.PrintJob;
-import cc.mrbird.febs.rcs.service.IContractAddressService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
-import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -137,27 +130,27 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
 //            log.info(version);
             switch (version) {
                 case FebsConstant.FmVersion1:
-                    ForeseenFMDTO foreseenFmDto = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFMDTO.class);
-                    log.info("解析得到的对象：foreseenFmDto={}", foreseenFmDto.toString());
-                    //foreseenFmDto.setFrankMachineId("PM100501");
-                    //foreseenFmDto.setContractCode("00001019");
+                    ForeseenFmReqDTO foreseenFmReqDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, ForeseenFmReqDTO.class);
+                    log.info("解析得到的对象：foreseenFmReqDTO={}", foreseenFmReqDTO.toString());
+                    //foreseenFmReqDTO.setFrankMachineId("PM100501");
+                    //foreseenFmReqDTO.setContractCode("00001019");
 
-                    if (StringUtils.isEmpty(foreseenFmDto.getContractCode())
-                            || StringUtils.isEmpty(foreseenFmDto.getFrankMachineId())
-                            || StringUtils.isEmpty(foreseenFmDto.getPostOffice())
-                            || StringUtils.isEmpty(foreseenFmDto.getTaxVersion())
-                            || StringUtils.isEmpty(foreseenFmDto.getTotalAmmount())
-                            || StringUtils.isEmpty(foreseenFmDto.getUserId())
-                            || foreseenFmDto.getTotalCount() == 0) {
+                    if (StringUtils.isEmpty(foreseenFmReqDTO.getContractCode())
+                            || StringUtils.isEmpty(foreseenFmReqDTO.getFrankMachineId())
+                            || StringUtils.isEmpty(foreseenFmReqDTO.getPostOffice())
+                            || StringUtils.isEmpty(foreseenFmReqDTO.getTaxVersion())
+                            || StringUtils.isEmpty(foreseenFmReqDTO.getTotalAmmount())
+                            || StringUtils.isEmpty(foreseenFmReqDTO.getUserId())
+                            || foreseenFmReqDTO.getTotalCount() == 0) {
                         return getErrorResult(ctx, version, OPERATION_NAME, FMResultEnum.SomeInfoIsEmpty.getCode());
                     }
 
                     //机器日期
-                    Date machineDate = DateKit.parseDateYmdhms(foreseenFmDto.getMachineDate());
+                    Date machineDate = DateKit.parseDateYmdhms(foreseenFmReqDTO.getMachineDate());
 
 
                     //判断上一次打印是否闭环
-                    PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmDto.getFrankMachineId());
+                    PrintJob dbPrintJob = foreseensPortocol.printJobService.getUnFinishJobByFmId(foreseenFmReqDTO.getFrankMachineId());
 //                    if (dbPrintJob != null && dbPrintJob.getType() == PrintJobTypeEnum.Machine.getCode() && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
                     if (dbPrintJob != null && dbPrintJob.getFlowDetail() != FlowDetailEnum.JobingErrorForeseensUnKnow.getCode()) {
 //                    if (dbPrintJob != null) {
@@ -177,7 +170,7 @@ public class ForeseensPortocol extends MachineToServiceProtocol {
                         return getErrorResult(ctx, version,OPERATION_NAME, FMResultEnum.NotFinish.getCode());
                     }
 
-                    return getWriteContent(foreseensPortocol.serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob,  ctx));
+                    return getWriteContent(foreseensPortocol.serviceManageCenter.foreseens(foreseenFmReqDTO, dbPrintJob,  ctx, null));
 
 //                    return getSuccessResult(version,ctx,foreseenId,dbContract);
                 default:

@@ -1,12 +1,15 @@
 package cc.mrbird.febs.rcs.dto.ui;
 
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductPcReqDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductPcRespDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -16,10 +19,8 @@ import java.util.List;
 @ToString
 @ApiModel
 @AllArgsConstructor
-public class PrintJobReq {
-    public PrintJobReq(){
-
-    }
+@NoArgsConstructor
+public class PrintJobResp {
 
     private Integer id;
 
@@ -32,15 +33,12 @@ public class PrintJobReq {
 
     double totalAmount;
 
-    @ApiModelProperty(hidden = true)
     int totalCount;
 
-    List<ForeseenProductPcReqDTO> products;
+    List<ForeseenProductPcRespDTO> products;
 
-    @ApiModelProperty(hidden = true)
     private String foreseenId;
 
-    @ApiModelProperty(hidden = true)
     private String transactionId;
 
     /**

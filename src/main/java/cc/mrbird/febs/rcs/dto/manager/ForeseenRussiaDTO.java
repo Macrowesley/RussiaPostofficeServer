@@ -7,10 +7,13 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * 发给俄罗斯的foreseen数据
+ */
 @Data
 @ToString
 @JSONType(orders={"id","postOffice","userId","frankMachineId","contractCode","contractId","totalCount","totalAmount","taxVersion","products"})
-public class ForeseenDTO {
+public class ForeseenRussiaDTO {
     /**
      * format: uuid
      */
@@ -27,13 +30,12 @@ public class ForeseenDTO {
      * 8位数字
      */
     String contractCode;
-    String contractId;
 
     @NotNull
     Integer totalCount;
 
     @NotNull
-    ForeseenProductRussiaDto[] products;
+    ForeseenProductRussiaRespDTO[] products;
 
     String frankMachineId;
 
@@ -47,10 +49,10 @@ public class ForeseenDTO {
     /**
      * 1 机器创建的订单  2 PC创建的订单
      */
-    Integer printJobType;
+//    Integer printJobType;
 
     /**
      * printJob的id
      */
-    Integer printJobId;
+//    Integer printJobId;
 }

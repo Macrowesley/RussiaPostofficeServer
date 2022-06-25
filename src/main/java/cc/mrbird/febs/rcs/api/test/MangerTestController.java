@@ -225,7 +225,7 @@ public class MangerTestController {
         this.foreseenId = foreseenId;
 
 
-        ForeseenProductFmDto foreseenProduct = new ForeseenProductFmDto();
+        ForeseenProductFmReqDTO foreseenProduct = new ForeseenProductFmReqDTO();
         foreseenProduct.setProductCode(productCode1);
         foreseenProduct.setCount(count1);
         foreseenProduct.setWeight(weight1);
@@ -239,21 +239,20 @@ public class MangerTestController {
         foreseenProduct2.setAmount(amount2);*/
 
 
-        ForeseenDTO foreseenDTO = new ForeseenDTO();
-        foreseenDTO.setId(foreseenId);
-        foreseenDTO.setPostOffice(postOffice);
-        foreseenDTO.setUserId(userId);
+        ForeseenRussiaDTO foreseenRussiaDTO = new ForeseenRussiaDTO();
+        foreseenRussiaDTO.setId(foreseenId);
+        foreseenRussiaDTO.setPostOffice(postOffice);
+        foreseenRussiaDTO.setUserId(userId);
 //        foreseenDTO.setContractCode(contractCode);
-        foreseenDTO.setContractId(contractCode);
-        foreseenDTO.setTotalCount(totalCount);
+        foreseenRussiaDTO.setTotalCount(totalCount);
 //        foreseenDTO.setProducts(new ForeseenProductDTO[]{foreseenProduct, foreseenProduct2});
 //        foreseenDTO.setProducts(new ForeseenProductFmDto[]{foreseenProduct});
-        foreseenDTO.setFrankMachineId(frankMachineId);
-        foreseenDTO.setTaxVersion(taxVersion);
-        foreseenDTO.setTotalAmount(totalAmount);
+        foreseenRussiaDTO.setFrankMachineId(frankMachineId);
+        foreseenRussiaDTO.setTaxVersion(taxVersion);
+        foreseenRussiaDTO.setTotalAmount(totalAmount);
 
         log.info("foreseenId = {}", foreseenId);
-        log.info("foreseen = {}", JSON.toJSONString(foreseenDTO));
+        log.info("foreseen = {}", JSON.toJSONString(foreseenRussiaDTO));
 
 //        ApiRussiaResponse apiRussiaResponse = serviceInvokeRussia.foreseens(foreseenDTO);
 //        log.info("测试结束：object = " + apiRussiaResponse.getObject().toString());

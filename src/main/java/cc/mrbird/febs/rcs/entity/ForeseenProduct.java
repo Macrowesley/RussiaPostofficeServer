@@ -30,12 +30,6 @@ public class ForeseenProduct {
     @TableField("print_job_id")
     private Integer printJobId;
 
-    /**
-     * 预算订单id
-     */
-    @TableField("foreseen_id")
-    private String foreseenId;
-
 
     /**
      * 产品code
@@ -71,11 +65,11 @@ public class ForeseenProduct {
     String adImageId;
 
     /**
-     * 地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id
+     * pc地址栏采用哪种内容：0表示机器订单，不管 1 文本地址 address  2 广告图片地址id
      *
      */
     @TableField("address_type")
-    String type;
+    Integer type;
 
     /**
      * 创建时间

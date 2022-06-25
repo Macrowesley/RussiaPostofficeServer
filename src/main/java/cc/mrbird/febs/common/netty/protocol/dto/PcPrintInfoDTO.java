@@ -1,6 +1,6 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmReqDTO;
 import lombok.Data;
 import lombok.ToString;
 
@@ -25,5 +25,5 @@ public class PcPrintInfoDTO {
     /**
      * 打印商品列表
      */
-    ForeseenProductFmDto[] printProducts;
+    ForeseenProductFmReqDTO[] printProducts;
 }

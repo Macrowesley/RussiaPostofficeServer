@@ -3,7 +3,7 @@ package cc.mrbird.febs.common.netty.protocol;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFmReqDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.PcCancelInfoDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.StatusFMDTO;
 import cc.mrbird.febs.common.netty.protocol.kit.ChannelMapperManager;
@@ -433,14 +433,15 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                 //如果是第一次创建网络订单或者foreseen网络错误，服务器自己拼接Foreseen给俄罗斯，俄罗斯通过后，拼接地址，进度等信息给机器
                 Device dbDevice = deviceService.checkAndGetDeviceByFrankMachineId(dbPrintJob.getFrankMachineId());
 
-                ForeseenFMDTO foreseenFmDto = new ForeseenFMDTO();
+                ForeseenFmReqDTO foreseenFmDto = new ForeseenFmReqDTO();
                 foreseenFmDto.setContractCode(dbPrintJob.getContractCode());
                 foreseenFmDto.setFrankMachineId(dbPrintJob.getFrankMachineId());
                 foreseenFmDto.setUserId(FebsUtil.getCurrentUser().getUsername());
                 foreseenFmDto.setPostOffice(dbDevice.getPostOffice());
                 foreseenFmDto.setTotalCount(dbPrintJob.getTotalCount());
 
-                foreseenFmDto.setProducts(productPrintProgress.getProductArr());
+                //如果俄方需要foreseen的时候传递产品信息，则给过去，否则先不管
+//                foreseenFmDto.setProducts();
 
                 foreseenFmDto.setTaxVersion(dbDevice.getTaxVersion());
                 foreseenFmDto.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
@@ -449,7 +450,7 @@ public class ServiceToMachineProtocol extends BaseProtocol {
                 foreseenFmDto.setPrintJobId(dbPrintJob.getId());
 
                 //发送给客户端的数据
-                data = serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob, ctx);
+                data = serviceManageCenter.foreseens(foreseenFmDto, dbPrintJob, ctx, productPrintProgress);
             }else{
                 //如果已经走通了foreseen,但是transaction没有成功，则发送消息，进度给机器，让机器继续打印
                 Contract dbContract = checkUtils.checkContractIsOk(dbPrintJob.getContractCode());

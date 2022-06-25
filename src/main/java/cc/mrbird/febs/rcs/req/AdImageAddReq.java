@@ -1,4 +1,4 @@
-package cc.mrbird.febs.rcs.Req;
+package cc.mrbird.febs.rcs.req;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

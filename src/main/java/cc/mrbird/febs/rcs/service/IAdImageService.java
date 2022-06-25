@@ -1,7 +1,7 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.Req.AdImageAddReq;
+import cc.mrbird.febs.rcs.req.AdImageAddReq;
 import cc.mrbird.febs.rcs.dto.machine.AdImageInfo;
 import cc.mrbird.febs.rcs.entity.AdImage;
 import com.baomidou.mybatisplus.core.metadata.IPage;

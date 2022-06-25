@@ -5,8 +5,12 @@ import cc.mrbird.febs.common.constant.LimitConstant;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductPcRespDTO;
 import cc.mrbird.febs.rcs.dto.ui.PrintJobReq;
-import cc.mrbird.febs.rcs.entity.*;
+import cc.mrbird.febs.rcs.entity.Foreseen;
+import cc.mrbird.febs.rcs.entity.ForeseenProduct;
+import cc.mrbird.febs.rcs.entity.PrintJob;
+import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.*;
 import cc.mrbird.febs.rcs.vo.ContractVO;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Controller("RcsView")
@@ -88,35 +93,27 @@ public class ViewController extends BaseController{
         return FebsUtil.view("rcs/printJob/printJobAdd");
     }
 
-    @GetMapping("/printJob/detail/{id}")
+    @GetMapping("/printJob/detail/{printJobId}")
     @RequiresPermissions("printJob:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
-    public String printDetail(@PathVariable int id, Model model) {
-        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
-        ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
-        PrintJobReq printJobReq = null;
+    public String printDetail(@PathVariable int printJobId, Model model) {
+        PrintJob printJob = iPrintJobService.getByPrintJobId(printJobId);
+        List<ForeseenProductPcRespDTO> productAdList = iForeseenProductService.selectPcProductAdList(printJobId);
+
         model.addAttribute("printJob",printJob);
-        model.addAttribute("foreseenProduct",foreseenProduct);
-        //printJobAddDto.setProducts(foreseenProduct);
-        //System.out.println("printJobAddDto:"+JSON.toJSONString(printJobAddDto));
+        model.addAttribute("foreseenProduct",productAdList);
+
         return FebsUtil.view("rcs/printJob/printDetail");
     }
 
-    @GetMapping("/printJob/update/{id}")
+    @GetMapping("/printJob/update/{printJobId}")
     @RequiresPermissions("printJob:update")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
-    public String printJobUpdate(@PathVariable int id, Model model) {
-        PrintJob printJob = iPrintJobService.getByPrintJobId(id);
-        //System.out.println(JSON.toJSONString(printJob));
-        ArrayList<ForeseenProduct> foreseenProduct = iForeseenProductService.getByPrintJobId(id);
-        //System.out.println(JSON.toJSONString(foreseenProduct));
-        PrintJobReq printJobReq = null;
-//        PrintJob printJob1=null;
-//        BeanUtils.copyProperties(printJob,printJob1);
+    public String printJobUpdate(@PathVariable int printJobId, Model model) {
+        PrintJob printJob = iPrintJobService.getByPrintJobId(printJobId);
+        List<ForeseenProductPcRespDTO> foreseenProduct = iForeseenProductService.selectPcProductAdList(printJobId);
         model.addAttribute("printJob",printJob);
         model.addAttribute("foreseenProduct",foreseenProduct);
-        //printJobAddDto.setProducts(foreseenProduct);
-        //System.out.println("printJobAddDto:"+JSON.toJSONString(printJobAddDto));
         return FebsUtil.view("rcs/printJob/printJobUpdate");
     }
 

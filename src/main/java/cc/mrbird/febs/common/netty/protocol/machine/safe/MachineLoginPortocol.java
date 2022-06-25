@@ -161,7 +161,7 @@ public class MachineLoginPortocol extends MachineToServiceProtocol {
 
                     String content = res + returnData;
                     String resEntryctContent = AESUtils.encrypt(content, tempKey);
-                    log.info("登录校验协议 发给机器的 临时密钥= {} content = {} 发给机器的是{}", tempKey, content, resEntryctContent);
+                    log.info("登录校验协议 发给机器的 临时密钥= {} content = {} 发给机器加密内容长度为：", tempKey, content, resEntryctContent.length());
                     log.info("机器登录校验协议 结束");
 
 

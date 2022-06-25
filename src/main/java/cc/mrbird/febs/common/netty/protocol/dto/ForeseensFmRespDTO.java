@@ -1,12 +1,13 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmReqDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmRespDTO;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
-public class ForeseensResultDTO {
+public class ForeseensFmRespDTO {
     String contractCode;
     String foreseenId;
     String consolidate;
@@ -25,7 +26,7 @@ public class ForeseensResultDTO {
     private int printObjectType;
     //pc创建订单时，给机器的，再带过来
     Integer printJobId;
-    ForeseenProductFmDto[] products;
+    ForeseenProductFmRespDTO[] products;
     String totalCount;
     //单位分
     String totalAmount;

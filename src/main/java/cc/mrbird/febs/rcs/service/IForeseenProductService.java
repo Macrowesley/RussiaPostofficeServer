@@ -1,6 +1,8 @@
 package cc.mrbird.febs.rcs.service;
 
 import cc.mrbird.febs.common.entity.QueryRequest;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmRespDTO;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductPcRespDTO;
 import cc.mrbird.febs.rcs.entity.ForeseenProduct;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -54,4 +56,13 @@ public interface IForeseenProductService extends IService<ForeseenProduct> {
     void deleteForeseenProduct(ForeseenProduct foreseenProduct);
 
     ArrayList<ForeseenProduct> getByPrintJobId(int id);
+
+    /**
+     * 根据订单id获取对应的产品列表，包含广告图片信息
+     * @param printJobId
+     * @return
+     */
+    List<ForeseenProductFmRespDTO> selectFmProductAdList(Integer printJobId);
+
+    List<ForeseenProductPcRespDTO> selectPcProductAdList(Integer printJobId);
 }

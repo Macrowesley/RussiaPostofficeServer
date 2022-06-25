@@ -1,18 +1,16 @@
 package cc.mrbird.febs.rcs.api;
 
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFmReqDTO;
 import cc.mrbird.febs.common.utils.MoneyUtils;
 import cc.mrbird.febs.rcs.common.enums.ResultEnum;
 import cc.mrbird.febs.rcs.dto.manager.*;
 import cc.mrbird.febs.rcs.entity.Contract;
 import cc.mrbird.febs.rcs.entity.Foreseen;
 import cc.mrbird.febs.rcs.service.IContractService;
-import cc.mrbird.febs.rcs.service.IForeseenService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.sun.java.browser.plugin2.DOM;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,7 +219,7 @@ public class ServiceInvokeRussia {
      * @return
      * @PostMapping("/foreseens")
      */
-    public ApiRussiaResponse foreseens(ForeseenFMDTO foreseenFmDto) {
+    public ApiRussiaResponse foreseens(ForeseenFmReqDTO foreseenFmReqDTO) {
         //测试条件下，返回假数据
         if (isTest){
             try {
@@ -230,42 +228,42 @@ public class ServiceInvokeRussia {
                 e.printStackTrace();
             }
             ManagerBalanceDTO balanceDTO = new ManagerBalanceDTO();
-            balanceDTO.setContractCode(foreseenFmDto.getContractCode());
+            balanceDTO.setContractCode(foreseenFmReqDTO.getContractCode());
 
 
             //balanceDTO.setCurrent(100000D);
             //balanceDTO.setConsolidate(100000D);
 
-            log.info(foreseenFmDto.toString());
+            log.info(foreseenFmReqDTO.toString());
             //测试环境，模拟真实情况
-            Contract dbContract = contractService.getByConractCode(foreseenFmDto.getContractCode());
+            Contract dbContract = contractService.getByConractCode(foreseenFmReqDTO.getContractCode());
             log.info("测试模拟数据");
             log.info(dbContract.toString());
             balanceDTO.setCurrent(dbContract.getCurrent());
-            balanceDTO.setConsolidate(dbContract.getConsolidate() - MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
-            log.info("{} - {} = {}",dbContract.getConsolidate(),MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()),balanceDTO.getConsolidate());
+            balanceDTO.setConsolidate(dbContract.getConsolidate() - MoneyUtils.changeF2Y(foreseenFmReqDTO.getTotalAmmount()));
+            log.info("{} - {} = {}",dbContract.getConsolidate(),MoneyUtils.changeF2Y(foreseenFmReqDTO.getTotalAmmount()),balanceDTO.getConsolidate());
             return new ApiRussiaResponse(ResultEnum.SUCCESS.getCode() ,balanceDTO);
         }
         //fm信息转ForeseenDTO
-        ForeseenDTO foreseenDTO = new ForeseenDTO();
-        BeanUtils.copyProperties(foreseenFmDto, foreseenDTO);
-        foreseenDTO.setTotalAmount(MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount()));
+        ForeseenRussiaDTO foreseenRussiaDTO = new ForeseenRussiaDTO();
+        BeanUtils.copyProperties(foreseenFmReqDTO, foreseenRussiaDTO);
+        foreseenRussiaDTO.setTotalAmount(MoneyUtils.changeF2Y(foreseenFmReqDTO.getTotalAmmount()));
 
         //PC订单和机器订单都不发送产品列表
-        /*ForeseenProductFmDto[] fmProducts = foreseenFmDto.getProducts();
+        /*ForeseenProductFmReqDTO[] fmProducts = foreseenFmReqDTO.getProducts();
         if (fmProducts != null && fmProducts.length > 0){
             int length = fmProducts.length;
-            ForeseenProductRussiaDto[] products = new ForeseenProductRussiaDto[length];
-            ForeseenProductRussiaDto temp = new ForeseenProductRussiaDto();
+            ForeseenProductRussiaRespDTO[] products = new ForeseenProductRussiaRespDTO[length];
+            ForeseenProductRussiaRespDTO temp = new ForeseenProductRussiaRespDTO();
             for (int i = 0; i < length; i++) {
                 BeanUtils.copyProperties(fmProducts[i], temp);
                 products[i] = temp;
             }
-            foreseenDTO.setProducts(products);
+            foreseenRussiaDTO.setProducts(products);
         }*/
 
         String url = baseUrl + "/foreseens";
-        return doExchange(url, foreseenDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
+        return doExchange(url, foreseenRussiaDTO, HttpMethod.POST, ManagerBalanceDTO.class,null);
     }
 
     /**

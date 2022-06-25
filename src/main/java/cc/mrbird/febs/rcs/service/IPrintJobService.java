@@ -3,7 +3,7 @@ package cc.mrbird.febs.rcs.service;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFmReqDTO;
 import cc.mrbird.febs.rcs.common.enums.FlowDetailEnum;
 import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.ManagerBalanceDTO;
@@ -103,7 +103,7 @@ public interface IPrintJobService extends IService<PrintJob> {
     /**
      * job流程中，foreseens的进度更新
      */
-    PrintJob changeForeseensStatus(ForeseenFMDTO foreseenFmDto, PrintJob dbPrintJob, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
+    PrintJob changeForeseensStatus(ForeseenFmReqDTO foreseenFmDto, PrintJob dbPrintJob, FlowDetailEnum curFlowDetail, ManagerBalanceDTO balanceDTO);
 
     /**
      * job流程中，foreseensCancel的进度更新
