@@ -176,6 +176,10 @@ public class AdImageServiceImpl extends ServiceImpl<AdImageMapper, AdImage> impl
         log.info("adImageAddReq = " + adImageAddReq.toString());
         String frankMachineId = adImageAddReq.getFrankMachineId();
 
+        if (selectCout(frankMachineId) >= 9){
+            throw new FebsException(frankMachineId+"绑定图片不能超过9个，请删除后重试");
+        }
+
         //保存
         AdImage adImage = new AdImage();
         adImage.setFrankMachineId(frankMachineId);
@@ -234,5 +238,17 @@ public class AdImageServiceImpl extends ServiceImpl<AdImageMapper, AdImage> impl
                 log.info("发给机器出错了" + e.getMessage());
             }
         }
+    }
+
+    /**
+     * 根据ID搜索有几个图片
+     * @param frankMachineId
+     * @return
+     */
+    @Override
+    public int selectCout(String frankMachineId) {
+        LambdaQueryWrapper<AdImage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AdImage::getFrankMachineId, frankMachineId);
+        return this.baseMapper.selectCount(wrapper);
     }
 }
