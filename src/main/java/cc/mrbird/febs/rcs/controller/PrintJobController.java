@@ -110,24 +110,22 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addPrintJob(@Valid @RequestBody PrintJobReq printJobReq) {
-        if(!verifyUtils.verify()){
-            throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
-        }
-        log.info("前端添加订单：" + printJobReq.toString());
-        this.printJobService.createPrintJobDto(printJobReq);
-        return new FebsResponse().success();
+    public FebsResponse addPrintJobApi(@Valid @RequestBody PrintJobReq printJobReq) {
+        return printJobService.createPrintJobDto(printJobReq);
     }
 
-    @ControllerEndpoint(operation = "删除PrintJob", exceptionMessage = "删除PrintJob失败")
-    @GetMapping("printJob/delete")
+    /**
+     * 一体化项目的前端新增job
+     * @param printJobReq
+     * @return
+     */
+    @ControllerEndpoint(operation = "新增PrintJob", exceptionMessage = "新增PrintJob失败")
+    @PostMapping("printJob/pc/add")
     @ResponseBody
-    @RequiresPermissions("printJob:delete")
-    @ApiOperation("Delete a print job")
+    @RequiresPermissions("printJob:add")
     @ApiIgnore
-    public FebsResponse deletePrintJob(PrintJob printJob) {
-        this.printJobService.deletePrintJob(printJob);
-        return new FebsResponse().success();
+    public FebsResponse addPcPrintJob(@Valid PrintJobReq printJobReq) {
+        return printJobService.createPrintJobDto(printJobReq);
     }
 
     @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "修改PrintJob失败")
@@ -142,10 +140,36 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updatePrintJob(@PathVariable int id, @RequestBody PrintJobReq printJobUpdateDto) {
-        this.printJobService.editPrintJob(printJobUpdateDto);
+    public FebsResponse updatePrintJobApi(@PathVariable int id, @RequestBody PrintJobReq printJobUpdateDto) {
+        return this.printJobService.editPrintJob(printJobUpdateDto);
+    }
+
+    /**
+     * 一体化项目的前端 更新
+     * @param id
+     * @param printJobUpdateDto
+     * @return
+     */
+    @ApiIgnore
+    @ResponseBody
+    @PostMapping("printJob/pc/update/{id}")
+    public FebsResponse updatePcPrintJob(@PathVariable int id, PrintJobReq printJobUpdateDto) {
+        return this.printJobService.editPrintJob(printJobUpdateDto);
+    }
+
+
+    @ControllerEndpoint(operation = "删除PrintJob", exceptionMessage = "删除PrintJob失败")
+    @GetMapping("printJob/delete")
+    @ResponseBody
+    @RequiresPermissions("printJob:delete")
+    @ApiOperation("Delete a print job")
+    @ApiIgnore
+    public FebsResponse deletePrintJob(PrintJob printJob) {
+        this.printJobService.deletePrintJob(printJob);
         return new FebsResponse().success();
     }
+
+
 
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "导出Excel失败")
     @GetMapping("printJob/excel")

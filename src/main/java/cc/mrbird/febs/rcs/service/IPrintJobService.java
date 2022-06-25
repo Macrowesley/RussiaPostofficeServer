@@ -1,5 +1,6 @@
 package cc.mrbird.febs.rcs.service;
 
+import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
@@ -61,13 +62,13 @@ public interface IPrintJobService extends IService<PrintJob> {
      * 创建前端打印订单
      * @param printJobReq
      */
-    void createPrintJobDto(PrintJobReq printJobReq);
+    FebsResponse createPrintJobDto(PrintJobReq printJobReq);
 
     /**
      * 编辑
      * @param printJobUpdateDto
      */
-    void editPrintJob(PrintJobReq printJobUpdateDto);
+    FebsResponse editPrintJob(PrintJobReq printJobUpdateDto);
 
     /**
      * 修改

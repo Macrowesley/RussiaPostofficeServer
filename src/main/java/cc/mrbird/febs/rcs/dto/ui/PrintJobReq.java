@@ -38,8 +38,7 @@ public class PrintJobReq {
     @ApiModelProperty(hidden = true)
     int totalCount;
 
-    List<ForeseenProductFmDto> products666;
-    ForeseenProductFmDto[] products;
+    List<ForeseenProductFmDto> products;
 
     @ApiModelProperty(hidden = true)
     private String foreseenId;
