@@ -3,10 +3,13 @@ package cc.mrbird.febs.rcs.dto.ui;
 import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -14,7 +17,11 @@ import java.util.ArrayList;
 @Data
 @ToString
 @ApiModel
+@AllArgsConstructor
 public class PrintJobReq {
+    public PrintJobReq(){
+
+    }
 
     @ApiModelProperty(hidden = true)
     private Integer id;
@@ -31,7 +38,8 @@ public class PrintJobReq {
     @ApiModelProperty(hidden = true)
     int totalCount;
 
-    ArrayList<ForeseenProductFmDto> products;
+    List<ForeseenProductFmDto> products666;
+    ForeseenProductFmDto[] products;
 
     @ApiModelProperty(hidden = true)
     private String foreseenId;

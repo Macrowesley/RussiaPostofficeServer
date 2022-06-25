@@ -182,6 +182,9 @@
                 data.field.roleId = 0;
             }
 
+            $.ajaxSetup({
+                contentType : 'application/json;charset=UTF-8'
+            });
             //console.log("更新数据："+JSON.stringify(data.field));
             febs.post(ctx + 'printJob/update/'+printJob.id, JSON.stringify(data.field), function () {
                 layer.closeAll();

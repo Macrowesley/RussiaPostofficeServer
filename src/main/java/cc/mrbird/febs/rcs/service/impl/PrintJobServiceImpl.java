@@ -359,7 +359,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      */
     @Override
     public void createPrintJobDto(PrintJobReq printJobReq) {
-        ArrayList<ForeseenProductFmDto> products = printJobReq.getProducts();
+        List<ForeseenProductFmDto> products = printJobReq.getProducts666();
 
         Contract dbContract = checkPrintJob(printJobReq, products);
 
@@ -400,12 +400,12 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         foreseenProductService.saveBatch(productList);
     }
 
-    private Contract checkPrintJob(PrintJobReq printJobReq, ArrayList<ForeseenProductFmDto> products) {
+    private Contract checkPrintJob(PrintJobReq printJobReq, List<ForeseenProductFmDto> products) {
         if (printJobReq.getTotalAmount() < 0) {
             throw new FebsException("Total amount can not less 0");
         }
 
-        if (products.size() == 0){
+        if (products == null || products.size() == 0){
             throw new FebsException(messageUtils.getMessage("printJob.fillProductInfo"));
         }
 
@@ -461,7 +461,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
     @Transactional(rollbackFor = Exception.class)
     public void editPrintJob(PrintJobReq printJobUpdateDto) {
         PrintJob printJob = new PrintJob();
-        ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
+        List<ForeseenProductFmDto> products = printJobUpdateDto.getProducts666();
         Contract dbContract = checkPrintJob(printJobUpdateDto, products);
         BeanUtils.copyProperties(printJobUpdateDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());

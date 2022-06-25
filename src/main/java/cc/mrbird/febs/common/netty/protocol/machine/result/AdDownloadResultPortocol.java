@@ -110,7 +110,7 @@ public class AdDownloadResultPortocol extends MachineToServiceProtocol {
             switch (version) {
                 case FebsConstant.FmVersion1:
                     AdInfoResDTO adInfoResDTO = parseEnctryptToObject(bytes, ctx, pos, REQ_ACNUM_LEN, AdInfoResDTO.class);
-                    log.info("解析得到的对象：adInfoResDTO={}", adInfoResDTO.toString());
+                    log.info("处理机器下载广告结果： 解析得到的对象 adInfoResDTO={}", adInfoResDTO.toString());
 
                     ArrayList<AdImage> adImageList = new ArrayList<>();
                     //解析机器广告图片下载情况，更新数据库
