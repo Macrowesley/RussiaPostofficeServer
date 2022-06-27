@@ -82,26 +82,11 @@ public class PrintJobController extends BaseController {
     @Autowired
     EasyExcelKit easyExcelKit;
 
-//    @GetMapping("select/tree")
-//    @ControllerEndpoint(exceptionMessage = "{flow.listFail}")
-//    public List<DeptTree<Dept>> getFlowTree() throws FebsException {
-//        return this.printJobService.findFlow();
-//    }
-
     @GetMapping(FebsConstant.VIEW_PREFIX + "printJob")
     @ApiIgnore
     public String printJobIndex(){
         return FebsUtil.view("printJob/printJob");
     }
-
-/*    @GetMapping("printJob")
-    @ResponseBody
-    @RequiresPermissions("printJob:list")
-    @ApiOperation("List for print jobs")
-    @ApiIgnore
-    public FebsResponse getAllPrintJobs(PrintJob printJob) {
-        return new FebsResponse().success().data(printJobService.findPrintJobs(printJob));
-    }*/
 
     @GetMapping("printJob/list")
     @RequiresPermissions("printJob:list")
@@ -113,7 +98,6 @@ public class PrintJobController extends BaseController {
     })
     public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
         Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
-//        System.out.println(JSON.toJSONString(dataTable));
         return new FebsResponse().success().data(dataTable);
     }
 
@@ -126,7 +110,7 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse addPrintJob(@Valid PrintJobReq printJobReq) {
+    public FebsResponse addPrintJob(@Valid @RequestBody PrintJobReq printJobReq) {
         if(!verifyUtils.verify()){
             throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
         }
