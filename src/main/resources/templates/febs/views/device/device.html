@@ -306,7 +306,10 @@
                     });
                 }
                 if (layEvent === 'removeConnect') {
-                    febs.post(ctx + 'device/removeChannelFromNetty/' + data.acnum, null, function () {
+                    $.ajaxSetup({
+                        contentType : 'application/json;charset=UTF-8'
+                    });
+                    febs.post(ctx + 'device/removeChannelFromNetty', JSON.stringify(data.acnum), function (r) {
                         febs.alert.success(data.acnum + "断开和服务器的socket连接")
                     });
                 }

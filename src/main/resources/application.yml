@@ -20,10 +20,11 @@ spring:
       max-request-size: 1024MB #总数据大小
 
   profiles:
-#    active: prod
-#     active: test
-#    active: dev_lai
-     active: dev-wang
+    #  active: prod
+    #  active: test-ru
+    active: test-ch
+    #  active: dev-lai
+    #  active: dev-wang
 
 
   thymeleaf:
