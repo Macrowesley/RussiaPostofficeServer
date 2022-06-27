@@ -1,10 +1,12 @@
 package cc.mrbird.febs.rcs.service.impl;
 
 import cc.mrbird.febs.common.entity.FebsConstant;
+import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
+import cc.mrbird.febs.common.license.LicenseVerifyUtils;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CancelJobFMDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
@@ -60,6 +62,9 @@ import java.util.stream.Collectors;
 public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> implements IPrintJobService {
     @Autowired
     MessageUtils messageUtils;
+
+    @Autowired
+    LicenseVerifyUtils verifyUtils;
 
     @Autowired
     PrintJobMapper printJobMapper;
@@ -358,8 +363,14 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      * @param printJobReq
      */
     @Override
-    public void createPrintJobDto(PrintJobReq printJobReq) {
-        ArrayList<ForeseenProductFmDto> products = printJobReq.getProducts();
+    public FebsResponse createPrintJobDto(PrintJobReq printJobReq) {
+
+        if (!verifyUtils.verify()) {
+            throw new FebsException(messageUtils.getMessage("printJob.expiredLicense"));
+        }
+        log.info("前端添加订单：" + printJobReq.toString());
+
+        List<ForeseenProductFmDto> products = printJobReq.getProducts();
 
         Contract dbContract = checkPrintJob(printJobReq, products);
 
@@ -398,14 +409,15 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         }
 
         foreseenProductService.saveBatch(productList);
+        return new FebsResponse().success();
     }
 
-    private Contract checkPrintJob(PrintJobReq printJobReq, ArrayList<ForeseenProductFmDto> products) {
+    private Contract checkPrintJob(PrintJobReq printJobReq, List<ForeseenProductFmDto> products) {
         if (printJobReq.getTotalAmount() < 0) {
             throw new FebsException("Total amount can not less 0");
         }
 
-        if (products.size() == 0){
+        if (products == null || products.size() == 0){
             throw new FebsException(messageUtils.getMessage("printJob.fillProductInfo"));
         }
 
@@ -459,9 +471,9 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void editPrintJob(PrintJobReq printJobUpdateDto) {
+    public FebsResponse editPrintJob(PrintJobReq printJobUpdateDto) {
         PrintJob printJob = new PrintJob();
-        ArrayList<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
+        List<ForeseenProductFmDto> products = printJobUpdateDto.getProducts();
         Contract dbContract = checkPrintJob(printJobUpdateDto, products);
         BeanUtils.copyProperties(printJobUpdateDto, printJob);
         printJob.setFlow(FlowEnum.FlowIng.getCode());
@@ -490,6 +502,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             }
         }
         foreseenProductService.saveOrUpdateBatch(productList);
+        return new FebsResponse().success();
     }
 
     @Override

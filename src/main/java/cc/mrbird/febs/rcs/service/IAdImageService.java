@@ -44,4 +44,6 @@ public interface IAdImageService extends IService<AdImage> {
      * @param frankMachineId
      */
     void syncImageList(String frankMachineId);
+
+    int selectCout(String frankMachineId);
 }

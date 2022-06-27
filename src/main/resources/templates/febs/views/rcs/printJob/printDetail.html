@@ -169,27 +169,5 @@
                 "products[0].address": foreseenProduct[0].address
             })
         }
-
-        form.on('submit(printJob-update-form-submit)', function (data) {
-            if(Object.keys(data.field).length<4){
-                febs.alert.warn(i18n("deletePrintJob"));
-            }else if (febs.nativeEqual(data.field, printJob)) {
-                febs.alert.warn(i18n("noEdit"));
-                return false;
-            }
-
-            if(curRoleId == 1 || curRoleId == 2){
-                data.field.roleId = 0;
-            }
-
-            //console.log("更新数据："+JSON.stringify(data.field));
-            febs.post(ctx + 'printJob/update/'+printJob.id, data.field, function () {
-                layer.closeAll();
-
-                febs.alert.success(printJob.contractCode + i18n("printJob.editSuccess"));
-                $('#febs-printJob').find('#refreshQuery').click();
-            })
-            return false;
-        })
     })
 </script>

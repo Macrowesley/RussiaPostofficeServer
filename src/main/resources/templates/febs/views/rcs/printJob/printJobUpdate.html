@@ -231,7 +231,7 @@
             }
 
             //console.log("更新数据："+JSON.stringify(data.field));
-            febs.post(ctx + 'printJob/update/'+printJob.id, data.field, function () {
+            febs.post(ctx + 'printJob/pc/update/'+printJob.id, data.field, function () {
                 layer.closeAll();
                 febs.alert.success(printJob.contractCode + i18n("printJob.editSuccess"));
                 $('#febs-printJob').find('#refreshQuery').click();

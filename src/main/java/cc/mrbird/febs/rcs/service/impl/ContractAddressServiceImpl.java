@@ -108,7 +108,7 @@ public class ContractAddressServiceImpl extends ServiceImpl<ContractAddressMappe
     @Override
     public AddressDTO[] selectArrayByConractCode(String contractCode) {
         return selectListByConractCode(contractCode).stream().map(contractAddress -> {
-            return new AddressDTO(contractAddress.getAddress(),"","");
+            return new AddressDTO(contractAddress.getAddress());
             /*String address = contractAddress.getAddress();
             try {
                 return new AddressDTO(new String(address.getBytes("UTF-8"),"gb2312"));

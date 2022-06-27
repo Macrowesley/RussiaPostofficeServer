@@ -1,11 +1,18 @@
 package cc.mrbird.febs.rcs.dto.manager;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @ToString
+@ApiModel
+@NoArgsConstructor
+@AllArgsConstructor
 public class ForeseenProductFmDto {
     String productCode;
 
@@ -33,10 +40,12 @@ public class ForeseenProductFmDto {
     /**
      * 地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id
      */
+    @ApiModelProperty(notes = "地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id")
     String type;
 
     /**
      * 已经打印数量
      */
+    @ApiModelProperty(hidden = true)
     Integer alreadyPrintCount = 0;
 }

@@ -132,16 +132,5 @@
             })
         }
 
-        form.on('submit(printJob-update-form-submit)', function (data) {
-            //console.log("ADD:"+JSON.stringify(data.field))
-            febs.post(ctx + 'printJob/add', data.field, function () {
-                layer.closeAll()
-                febs.alert.success(i18n('printJob.addprintJobSuccess'))
-                $('#febs-printJob').find('#refreshQuery').click()
-            })
-
-            return false
-        })
-
     })
 </script>
