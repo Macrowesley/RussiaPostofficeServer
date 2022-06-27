@@ -47,7 +47,7 @@ public class AdImageController extends BaseController {
     @PostMapping("list")
 //    @RequiresPermissions("adImage:list")
     @ControllerEndpoint(operation = "显示图片列表", exceptionMessage = "显示列表失败")
-    public FebsResponse list(QueryRequest request,  AdImage bean){
+    public FebsResponse list(QueryRequest request, @RequestBody AdImage bean){
         Map<String, Object> dataTable = getDataTable(this.adImageService.list(request, bean));
         return new FebsResponse().success().data(dataTable);
     }
