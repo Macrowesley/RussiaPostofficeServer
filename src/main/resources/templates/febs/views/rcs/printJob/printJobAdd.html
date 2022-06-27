@@ -170,10 +170,7 @@ layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
   form.on('submit(printJob-add-form-submit)', function (data) {
     //开始添加
     //console.log("ADD:"+JSON.stringify(data.field))
-    $.ajaxSetup({
-      contentType : 'application/json;charset=UTF-8'
-    });
-    febs.post(ctx + 'printJob/add', JSON.stringify(data.field), function () {
+    febs.post(ctx + 'printJob/pc/add', data.field, function () {
       layer.closeAll()
       febs.alert.success(i18n('printJob.addprintJobSuccess'))
       $('#febs-printJob').find('#refreshQuery').click()
