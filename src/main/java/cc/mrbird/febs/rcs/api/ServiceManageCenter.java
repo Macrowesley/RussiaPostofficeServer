@@ -518,17 +518,6 @@ public class ServiceManageCenter {
         dbContract.setCurrent(balanceDTO.getCurrent());
         dbContract.setConsolidate(balanceDTO.getConsolidate());
 
-        //拼接产品进度
-        ForeseenProductFmReqDTO[] fmReqDTOProducts = foreseenFmReqDTO.getProducts();
-        ForeseenProductFmRespDTO[] productArr = new ForeseenProductFmRespDTO[fmReqDTOProducts.length];
-
-
-        for (int i = 0; i < fmReqDTOProducts.length; i++) {
-            ForeseenProductFmRespDTO temp = new ForeseenProductFmRespDTO();
-            BeanUtils.copyProperties(fmReqDTOProducts[i], temp);
-            productArr[i] = temp;
-        }
-
         return buildForeseenResultBytes(dbPrintJob, ctx, foreseenId, dbContract, productPrintProgress);
     }
 

@@ -423,10 +423,10 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
         int totalCount = 0;
         for (int i = 0; i < products.size(); i++) {
             ForeseenProductPcReqDTO temp = products.get(i);
-            if (temp.getAddress().length() <=1 ){
+            /*if (temp.getAddress().length() <=1 ){
                 throw new FebsException("address length is too short");
             }
-
+*/
             if (temp.getCount() < 0) {
                 throw new FebsException("product count can not less 0");
             }
@@ -906,6 +906,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
                 String[] split = url.split("/");
                 String fileName = split[split.length -1];
                 temp.setAdImageName(fileName);
+                temp.setAdImagePath("");
             }
 
             temp.setAlreadyPrintCount(0);

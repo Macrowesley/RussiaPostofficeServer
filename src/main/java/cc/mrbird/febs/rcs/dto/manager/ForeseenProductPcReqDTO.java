@@ -44,7 +44,7 @@ public class ForeseenProductPcReqDTO {
      * 地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id
      */
     @ApiModelProperty(notes = "地址栏采用哪种内容： 1 文本地址 address  2 广告图片地址id")
-    String type;
+    Integer type;
 
     /**
      * 已经打印数量

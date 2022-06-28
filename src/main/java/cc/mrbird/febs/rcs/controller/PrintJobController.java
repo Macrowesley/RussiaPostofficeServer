@@ -23,6 +23,7 @@ import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +139,7 @@ public class PrintJobController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改PrintJob", exceptionMessage = "修改PrintJob失败")
-    @PostMapping("printJob/update")
+    @PostMapping("printJob/update/{printJobId}")
     @ResponseBody
     @RequiresPermissions("printJob:update")
     @ApiOperation("Update a print job")
@@ -145,7 +147,8 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse updatePrintJobApi(@RequestBody PrintJobReq printJobUpdateDto) {
+    public FebsResponse updatePrintJobApi(@PathVariable @NotBlank Integer printJobId, @RequestBody PrintJobReq printJobUpdateDto) {
+        printJobUpdateDto.setId(printJobId);
         return this.printJobService.editPrintJob(printJobUpdateDto);
     }
 

@@ -21,6 +21,7 @@ public class PrintJobReq {
 
     }
 
+    @ApiModelProperty(hidden = true)
     private Integer id;
 
     /**
