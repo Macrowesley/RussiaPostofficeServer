@@ -188,11 +188,6 @@
                         })
                     });
                 }
-                if (name === 'export') {
-                    febs.download(ctx + 'menu/excel', {
-                        "menuName": $menuName.val().trim()
-                    }, i18n("menu.table")+'.xlsx');
-                }
             },
             options: [{
                 name: 'add',
@@ -202,10 +197,6 @@
                 name: 'delete',
                 title: i18n("menuDelete"),
                 perms: 'menu:delete'
-            }, {
-                name: 'export',
-                title: i18n("exportExcel"),
-                perms: 'menu:export'
             }]
         });
 

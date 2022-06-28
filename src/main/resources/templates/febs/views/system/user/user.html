@@ -188,12 +188,6 @@
                         });
                     }
                 }
-                if (name === 'export') {
-                    var params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
-                    params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
-                    params.pageNum = $view.find(".layui-laypage-em").next().html();
-                    febs.download(ctx + 'user/excel', params, i18n("user.userInfoTable") + '.xlsx');
-                }
             },
             options: [{
                 name: 'add',
@@ -207,10 +201,6 @@
                 name: 'reset',
                 title: i18n("user.pwdReset"),
                 perms: 'user:password:reset'
-            }, {
-                name: 'export',
-                title: i18n("exportExcel"),
-                perms: 'user:export'
             }]
         });
 

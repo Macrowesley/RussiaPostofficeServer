@@ -156,12 +156,6 @@
                         });
                     }
                 }
-                if (name === 'export') {
-                    var params = getQueryParams();
-                    params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
-                    params.pageNum = $view.find(".layui-laypage-em").next().html();
-                    febs.download(ctx + 'role/excel', params, i18n("role.excel")+'.xlsx');
-                }
             },
             options: [{
                 name: 'add',
@@ -171,10 +165,6 @@
                 name: 'delete',
                 title: i18n("role.delete"),
                 perms: 'role:delete'
-            }, {
-                name: 'export',
-                title: i18n("exportExcel"),
-                perms: 'role:export'
             }]
         });
 

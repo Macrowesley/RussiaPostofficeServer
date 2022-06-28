@@ -119,13 +119,17 @@ public class AdDownloadResultPortocol extends MachineToServiceProtocol {
                         AdImageRes bean = adImageArr[i];
 
                         AdImage adImage = new AdImage();
-                        adImage.setId(Integer.valueOf(bean.getImageId()));
-                        adImage.setStatus(Integer.valueOf(bean.getRes()));
+                        if (bean.getImageId() != null) {
+                            adImage.setId(Integer.valueOf(bean.getImageId()));
+                            adImage.setStatus(Integer.valueOf(bean.getRes()));
+                            adImageList.add(adImage);
+                        }
 
-                        adImageList.add(adImage);
                     }
                     //批量更新
-                    portocol.adImageService.updateBatchById(adImageList, adImageList.size());
+                    if (adImageList.size() > 0) {
+                        portocol.adImageService.updateBatchById(adImageList, adImageList.size());
+                    }
 
                     byte[] data = new byte[]{(byte) 0x01};
                     return getWriteContent(data);
