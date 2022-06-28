@@ -274,6 +274,8 @@
                 elem: $view.find('table'),
                 id: 'printJobTable',
                 url: ctx + 'printJob/list',
+                contentType: 'application/json;charset=UTF-8',
+                method: 'post',
                 cols: [[
                     {field: 'id', title: i18n("printJob.code"), minWidth: 100},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},

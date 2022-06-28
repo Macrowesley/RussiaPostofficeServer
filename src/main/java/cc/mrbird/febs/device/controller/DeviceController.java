@@ -76,7 +76,7 @@ public class DeviceController extends BaseController {
     RedisService redisService;
 
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
-    @GetMapping("list")
+    @PostMapping("list")
     @RequiresPermissions("device:list")
     @ApiOperation("Get all devices")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
@@ -84,7 +84,7 @@ public class DeviceController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Device.class, responseContainer = "Map"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse devicePageList(QueryRequest request, Device device) {
+    public FebsResponse devicePageList(QueryRequest request, @RequestBody Device device) {
         log.info("request = " + request.toString() + " device = " + device.toString());
         Map<String, Object> dataTable = getDataTable(this.deviceService.findDevices(request, device));
         return new FebsResponse().success().data(dataTable);

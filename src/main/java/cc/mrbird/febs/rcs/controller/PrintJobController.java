@@ -78,7 +78,7 @@ public class PrintJobController extends BaseController {
         return FebsUtil.view("printJob/printJob");
     }
 
-    @GetMapping("printJob/list")
+    @PostMapping("printJob/list")
     @RequiresPermissions("printJob:list")
     @ApiOperation("List for print jobs")
     @ResponseBody
@@ -86,7 +86,7 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = PrintJob.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
+    public FebsResponse printJobList(QueryRequest request, @RequestBody PrintJobDTO printJobDto) {
         Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
         return new FebsResponse().success().data(dataTable);
     }
@@ -262,12 +262,4 @@ public class PrintJobController extends BaseController {
         return new FebsResponse().success().data(printJobResp);
     }
 
-//    @GetMapping(FebsConstant.VIEW_PREFIX + "system/user/update/{username}")
-//    @RequiresPermissions("user:update")
-//    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_view", isApi = false)
-//    public String systemUserUpdate(@PathVariable String username, Model model) {
-//        //resolveUserModel(username, model, false);
-//        model.addAttribute("roleId", FebsUtil.getCurrentUser().getRoleId());
-//        return FebsUtil.view("system/user/userUpdate");
-//    }
 }

@@ -21,9 +21,9 @@ spring:
 
   profiles:
     #  active: prod
-    #  active: test-ru
-#    active: test-ch
-      active: dev-lai
+#      active: test-ru
+    active: test-ch
+#      active: dev-lai
     #  active: dev-wang
 
 
