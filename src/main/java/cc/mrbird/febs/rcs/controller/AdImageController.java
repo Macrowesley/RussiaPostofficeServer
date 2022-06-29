@@ -57,7 +57,7 @@ public class AdImageController extends BaseController {
      * @param mf
      * @return
      */
-    @ApiOperation("上传图片")
+    @ApiOperation(value = "上传图片", notes = "图片格式必须是jpg, 图片高度必须是720px，宽度范围是：1700 ")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
