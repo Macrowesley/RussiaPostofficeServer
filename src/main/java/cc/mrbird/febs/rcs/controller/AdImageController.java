@@ -35,7 +35,7 @@ public class AdImageController extends BaseController {
      * @param bean
      * @return
      */
-    @ApiOperation("显示图片列表")
+    @ApiOperation("Display a list of pictures")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "frankMachineId", required = true)
     })
@@ -57,7 +57,7 @@ public class AdImageController extends BaseController {
      * @param mf
      * @return
      */
-    @ApiOperation(value = "上传图片", notes = "图片格式必须是jpg, 图片高度必须是720px，宽度范围是：1700 ")
+    @ApiOperation(value = "upload pictures", notes = "Upload pictures must be JPG format, 720px high and 1700px wide maximum")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
@@ -74,7 +74,7 @@ public class AdImageController extends BaseController {
      * 添加图片
      * @return
      */
-    @ApiOperation("添加图片")
+    @ApiOperation("Add images")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
@@ -92,7 +92,7 @@ public class AdImageController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation("删除图片")
+    @ApiOperation("delete picture")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "adImageId", required = true)
     })
@@ -113,7 +113,7 @@ public class AdImageController extends BaseController {
      * @param frankMachineId
      * @return
      */
-    @ApiOperation("同步图片列表给机器")
+    @ApiOperation("Synchronize the list of pictures to the machine")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "frankMachineId", required = true)
     })
