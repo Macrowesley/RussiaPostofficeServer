@@ -17,6 +17,7 @@ import cc.mrbird.febs.rcs.common.enums.*;
 import cc.mrbird.febs.rcs.common.exception.FmException;
 import cc.mrbird.febs.rcs.common.exception.RcsApiException;
 import cc.mrbird.febs.rcs.common.kit.DateKit;
+import cc.mrbird.febs.rcs.common.kit.StringKit;
 import cc.mrbird.febs.rcs.dto.machine.DmMsgDetail;
 import cc.mrbird.febs.rcs.dto.machine.PrintProgressInfo;
 import cc.mrbird.febs.rcs.dto.manager.*;
@@ -357,6 +358,7 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
      *
      * @param printJobReq
      */
+    @Transactional(rollbackFor = FebsException.class)
     @Override
     public FebsResponse createPrintJobDto(PrintJobReq printJobReq) {
 
@@ -402,6 +404,15 @@ public class PrintJobServiceImpl extends ServiceImpl<PrintJobMapper, PrintJob> i
             product.setPrintJobId(printJob.getId());
             product.setCreatedTime(new Date());
             productList.add(product);
+            String address = product.getAddress();
+            if (product.getType() == 1 && StringUtils.isNotBlank(address)){
+                int maxLen = 120;
+                if (address.length() > maxLen) {
+                    throw new FebsException("The length of the address cannot exceed " + maxLen + " characters\n");
+                }
+                //需要分行
+                product.setAddress(StringKit.splitString(address,30));
+            }
             log.info(product.toString());
         }
 

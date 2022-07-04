@@ -36,9 +36,6 @@ public class AdImageController extends BaseController {
      * @return
      */
     @ApiOperation("Display a list of pictures")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "frankMachineId", required = true)
-    })
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = AdImage.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
