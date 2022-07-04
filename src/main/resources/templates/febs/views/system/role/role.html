@@ -210,9 +210,7 @@
             tableIns = febs.table.init({
                 elem: $view.find('table'),
                 id: 'roleTable',
-                contentType: 'application/json;charset=UTF-8',
-                url: ctx + 'role/list',
-                method: 'post',
+                url: ctx + 'role/pc/list',
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'roleName', title: i18n("role.name"), minWidth: 120},

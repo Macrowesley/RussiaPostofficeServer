@@ -55,7 +55,17 @@ public class RoleController extends BaseController {
         return new FebsResponse().success().data(roleService.findSelectsRoleByUser());
     }
 
-    @PostMapping("list")
+    @GetMapping("pc/list")
+    @RequiresPermissions("role:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
+    @ApiIgnore
+    public FebsResponse roleList(Role role, QueryRequest request) {
+        Map<String, Object> dataTable = getDataTable(this.roleService.findRoles(role, request));
+        return new FebsResponse().success().data(dataTable);
+    }
+
+
+    @GetMapping("list")
     @RequiresPermissions("role:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     @ApiOperation("List for roles")
@@ -63,7 +73,7 @@ public class RoleController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Role.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse roleList(@RequestBody Role role, QueryRequest request) {
+    public FebsResponse roleListForAnnotation(@RequestBody Role role, QueryRequest request) {
         Map<String, Object> dataTable = getDataTable(this.roleService.findRoles(role, request));
         return new FebsResponse().success().data(dataTable);
     }

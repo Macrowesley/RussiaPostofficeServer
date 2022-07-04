@@ -74,7 +74,20 @@ public class UserController extends BaseController {
         return this.userService.findByName(username) == null || StringUtils.isNotBlank(userId);
     }
 
-    @PostMapping("list")
+    @GetMapping("pc/list")
+    @ResponseBody
+    @RequiresPermissions("user:view")
+    @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
+    @ApiOperation("List for users")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
+    @ApiIgnore
+    public FebsResponse userList(QueryRequest request, User user) {
+        log.info("开始查询");
+        Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
+        return new FebsResponse().success().data(dataTable);
+    }
+
+    @GetMapping("list")
     @ResponseBody
     @RequiresPermissions("user:view")
     @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
@@ -84,7 +97,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = User.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse userList(QueryRequest request, @RequestBody(required = false)  User user) {
+    public FebsResponse userListForAnnotation(QueryRequest request, @RequestBody(required = false)  User user) {
         log.info("开始查询");
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);

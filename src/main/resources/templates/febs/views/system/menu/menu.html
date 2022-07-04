@@ -276,9 +276,9 @@
         function renderMenuTree() {
             _menuTree = eleTree.render({
                 elem: '.menuTree',
-                contentType: 'application/json;charset=UTF-8',
-                url: ctx + 'menu/tree',
-                method: 'post',
+                // contentType: 'application/json;charset=UTF-8',
+                url: ctx + 'menu/pc/tree',
+                // method: 'post',
                 where: {
                     "menuEnglishName": $menuEnglishName.val().trim(),
                     "menuChineseName": $menuChineseName.val().trim(),

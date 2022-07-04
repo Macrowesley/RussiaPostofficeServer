@@ -21,6 +21,7 @@ import cc.mrbird.febs.rcs.entity.PrintJob;
 import cc.mrbird.febs.rcs.service.IForeseenProductService;
 import cc.mrbird.febs.rcs.service.IPrintJobService;
 import cc.mrbird.febs.rcs.service.ITransactionMsgService;
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.*;
 
 import cc.mrbird.febs.rcs.vo.PrintJobExcelVO;
@@ -88,6 +89,15 @@ public class PrintJobController extends BaseController {
         return FebsUtil.view("printJob/printJob");
     }
 
+    @GetMapping("pc/printJob/list")
+    @RequiresPermissions("printJob:list")
+    @ResponseBody
+    @ApiIgnore
+    public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
+        Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
+        return new FebsResponse().success().data(dataTable);
+    }
+
     @GetMapping("printJob/list")
     @RequiresPermissions("printJob:list")
     @ApiOperation("List for print jobs")
@@ -96,7 +106,7 @@ public class PrintJobController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = PrintJob.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse printJobList(QueryRequest request, PrintJobDTO printJobDto) {
+    public FebsResponse printJobListForAnnotation(QueryRequest request, @RequestBody PrintJobDTO printJobDto) {
         Map<String, Object> dataTable = getDataTable(this.printJobService.findPrintJobs(request, printJobDto));
         return new FebsResponse().success().data(dataTable);
     }

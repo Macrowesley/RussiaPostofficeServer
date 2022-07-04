@@ -304,9 +304,7 @@
             tableIns = febs.table.init({
                 elem: $view.find('table'),
                 id: 'userTable',
-                contentType: 'application/json;charset=UTF-8',
-                url: ctx + 'user/list',
-                method: 'post',
+                url: ctx + 'user/pc/list',
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'username', title: i18n("username"), minWidth: 100},

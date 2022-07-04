@@ -213,9 +213,7 @@
             tableIns = febs.table.init({
                 elem: $view.find('table'),
                 id: 'contractTable',
-                contentType: 'application/json;charset=UTF-8',
-                url: ctx + 'contract/list',
-                method: 'post',
+                url: ctx + 'pc/contract/list',
                 cols: [[
                     // {type: 'checkbox'},
                     {field: 'code', title: i18n("contract.id"), minWidth: 300},

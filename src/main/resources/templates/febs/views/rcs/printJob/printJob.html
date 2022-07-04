@@ -186,6 +186,7 @@
                 var pageNum = $view.find(".layui-laypage-em").next().html();
                 //alert(11)
                 tableIns.reload({where: params, page: {curr: pageNum}});
+
             }
         }
 
@@ -273,7 +274,7 @@
             tableIns = febs.table.init({
                 elem: $view.find('table'),
                 id: 'printJobTable',
-                url: ctx + 'printJob/list',
+                url: ctx + 'pc/printJob/list',
                 cols: [[
                     {field: 'id', title: i18n("printJob.code"), minWidth: 100},
                     {field: 'contractCode', title: i18n("printJob.contractCode"), minWidth: 100},

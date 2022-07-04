@@ -56,7 +56,16 @@ public class ContractController extends BaseController {
         return new FebsResponse().success().data(contractService.findContracts(contract));
     }
 
-    @PostMapping("contract/list")
+    @GetMapping("pc/contract/list")
+    @ResponseBody
+    @RequiresPermissions("contract:list")
+    @ApiIgnore
+    public FebsResponse contractList(QueryRequest request, Contract contract) {
+        Map<String, Object> dataTable = getDataTable(this.contractService.findContracts(request, contract));
+        return new FebsResponse().success().data(dataTable);
+    }
+
+    @GetMapping("contract/list")
     @ResponseBody
     @RequiresPermissions("contract:list")
     @ApiOperation("List for contract")
@@ -64,7 +73,7 @@ public class ContractController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Contract.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse contractList(QueryRequest request, @RequestBody(required = false) Contract contract) {
+    public FebsResponse contractListForAnnotation(QueryRequest request, @RequestBody(required = false) Contract contract) {
         Map<String, Object> dataTable = getDataTable(this.contractService.findContracts(request, contract));
         return new FebsResponse().success().data(dataTable);
     }

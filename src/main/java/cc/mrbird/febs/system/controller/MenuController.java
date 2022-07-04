@@ -60,7 +60,16 @@ public class MenuController extends BaseController {
         return new FebsResponse().data(userMenus);
     }
 
-    @PostMapping("tree")
+    @GetMapping("pc/tree")
+    @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
+    @ApiIgnore
+    public FebsResponse getMenuTree(Menu menu) {
+        MenuTree<Menu> menus = this.menuService.findMenus(menu);
+        return new FebsResponse().success().data(menus.getChilds());
+    }
+
+    @GetMapping("tree")
     @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     @ApiOperation("Get menu tree")
@@ -68,8 +77,7 @@ public class MenuController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = Menu.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-
-    public FebsResponse getMenuTree(@RequestBody(required = false) Menu menu) {
+    public FebsResponse getMenuTreeForAnnotation(@RequestBody(required = false) Menu menu) {
         MenuTree<Menu> menus = this.menuService.findMenus(menu);
         return new FebsResponse().success().data(menus.getChilds());
     }
