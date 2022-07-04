@@ -98,7 +98,7 @@ public class PrintJobController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @GetMapping("printJob/list")
+    @PostMapping("printJob/list")
     @RequiresPermissions("printJob:list")
     @ApiOperation("List for print jobs")
     @ResponseBody

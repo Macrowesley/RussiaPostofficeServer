@@ -87,7 +87,7 @@ public class DeviceController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "获取页面列表", exceptionMessage = "{device.operation.listError}")
-    @GetMapping("list")
+    @PostMapping("list")
     @RequiresPermissions("device:list")
     @ApiOperation("Get all devices")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_device_device")
@@ -170,7 +170,7 @@ public class DeviceController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "{device.operation.exportError}")
-    @GetMapping("excel")
+    @PostMapping("excel")
     @RequiresPermissions("device:export")
     @ApiOperation("export excel")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")

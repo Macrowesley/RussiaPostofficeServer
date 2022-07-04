@@ -69,7 +69,7 @@ public class MenuController extends BaseController {
         return new FebsResponse().success().data(menus.getChilds());
     }
 
-    @GetMapping("tree")
+    @PostMapping("tree")
     @ControllerEndpoint(exceptionMessage = "{menu.selectTreeFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")
     @ApiOperation("Get menu tree")
@@ -127,7 +127,7 @@ public class MenuController extends BaseController {
         return new FebsResponse().success();
     }
 
-    @GetMapping("excel")
+    @PostMapping("excel")
     @RequiresPermissions("menu:export")
     @ControllerEndpoint(exceptionMessage = "{excelFail}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Menu")

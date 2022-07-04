@@ -65,7 +65,7 @@ public class RoleController extends BaseController {
     }
 
 
-    @GetMapping("list")
+    @PostMapping("list")
     @RequiresPermissions("role:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_Role")
     @ApiOperation("List for roles")

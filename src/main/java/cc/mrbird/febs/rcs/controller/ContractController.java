@@ -65,7 +65,7 @@ public class ContractController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @GetMapping("contract/list")
+    @PostMapping("contract/list")
     @ResponseBody
     @RequiresPermissions("contract:list")
     @ApiOperation("List for contract")

@@ -87,7 +87,7 @@ public class UserController extends BaseController {
         return new FebsResponse().success().data(dataTable);
     }
 
-    @GetMapping("list")
+    @PostMapping("list")
     @ResponseBody
     @RequiresPermissions("user:view")
     @ControllerEndpoint(operation = "用户列表", exceptionMessage = "{user.operation.listError}")
