@@ -97,7 +97,7 @@ public class ForeseenProductController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "export excel", exceptionMessage = "导出Excel失败")
-    @PostMapping("foreseenProduct/excel")
+    @GetMapping("foreseenProduct/excel")
     @ResponseBody
     @RequiresPermissions("foreseenProduct:export")
     @ApiOperation("export excel")

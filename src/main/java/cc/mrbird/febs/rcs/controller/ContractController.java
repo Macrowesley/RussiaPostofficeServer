@@ -112,7 +112,7 @@ public class ContractController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "导出Excel失败")
-    @PostMapping("contract/excel")
+    @GetMapping("contract/excel")
     @ResponseBody
     @RequiresPermissions("contract:export")
     @ApiOperation("export excel")

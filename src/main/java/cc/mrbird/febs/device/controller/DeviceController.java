@@ -170,12 +170,12 @@ public class DeviceController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "导出Excel", exceptionMessage = "{device.operation.exportError}")
-    @PostMapping("excel")
+    @GetMapping("excel")
     @RequiresPermissions("device:export")
     @ApiOperation("export excel")
     @Limit(period = LimitConstant.Strict.period, count = LimitConstant.Strict.count, prefix = "limit_device_device")
     @ApiIgnore
-    public void export(QueryRequest queryRequest, @RequestBody Device device, HttpServletResponse response) {
+    public void export(QueryRequest queryRequest, Device device, HttpServletResponse response) {
         List<Device> devices = this.deviceService.findDevices(queryRequest, device).getRecords();
         //ExcelKit.$Export(Device.class, response).downXlsx(devices, false);
     }

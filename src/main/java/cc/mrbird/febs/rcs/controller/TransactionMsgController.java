@@ -131,7 +131,7 @@ public class TransactionMsgController extends BaseController {
     }
 
     @ControllerEndpoint(operation = "修改TransactionMsg", exceptionMessage = "导出Excel失败")
-    @PostMapping("transactionMsg/excel")
+    @GetMapping("transactionMsg/excel")
     @ResponseBody
     @RequiresPermissions("transactionMsg:export")
     @ApiOperation("export excel")
