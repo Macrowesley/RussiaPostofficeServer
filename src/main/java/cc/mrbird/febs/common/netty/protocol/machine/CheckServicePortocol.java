@@ -4,8 +4,8 @@ import cc.mrbird.febs.common.entity.FebsConstant;
 import cc.mrbird.febs.common.netty.protocol.base.BaseProtocol;
 import cc.mrbird.febs.common.netty.protocol.base.MachineToServiceProtocol;
 import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceResultDTO;
-import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFMDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.CheckServiceFmRespDTO;
+import cc.mrbird.febs.common.netty.protocol.dto.ForeseenFmReqDTO;
 import cc.mrbird.febs.common.netty.protocol.dto.TransactionMsgFMDTO;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.common.utils.AESUtils;
@@ -240,7 +240,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     int isFmPrivateNeedUpdate = checkServicePortocol.publicKeyService.checkFmIsUpdate(dbDevice.getFrankMachineId()) ? 0 : 1;
 
                     //数据库的合同信息
-                    ForeseenFMDTO foreseenFMDTO = new ForeseenFMDTO();
+                    ForeseenFmReqDTO foreseenFmReqDTO = new ForeseenFmReqDTO();
                     PrintJob dbPrintJob = checkServicePortocol.printJobService.getLastestJobByFmId(frankMachineId, PrintJobTypeEnum.Machine.getCode());
                     String transactionId = "";
                     String printJobType = "";
@@ -255,8 +255,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                             //没有闭环，返回foreseen信息
                             Foreseen dbForeseen = checkServicePortocol.printJobService.getForeseenById(foreseenId);
                             if (dbForeseen != null) {
-                                BeanUtils.copyProperties(dbForeseen, foreseenFMDTO);
-                                foreseenFMDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
+                                BeanUtils.copyProperties(dbForeseen, foreseenFmReqDTO);
+                                foreseenFmReqDTO.setTotalAmmount(String.valueOf(MoneyUtils.changeY2F(dbForeseen.getTotalAmmount())));
                             }
                         }
 
@@ -303,7 +303,7 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     log.info("处理dmMsg信息");
 
                     //拼接返回信息
-                    CheckServiceResultDTO resultDto = new CheckServiceResultDTO();
+                    CheckServiceFmRespDTO resultDto = new CheckServiceFmRespDTO();
                     resultDto.setResult(FMResultEnum.SUCCESS.getSuccessCode());
                     resultDto.setVersion(version);
                     resultDto.setFmStatus(String.valueOf(dbDevice.getCurFmStatus()));
@@ -320,8 +320,8 @@ public class CheckServicePortocol extends MachineToServiceProtocol {
                     resultDto.setTransactionId(transactionId);
                     resultDto.setPrintJobType(printJobType);
 //                    resultDto.setForeseenFMDTO(JSON.toJSONString(foreseenFMDTO, SerializerFeature.DisableCircularReferenceDetect));
-                    BeanUtils.copyProperties(foreseenFMDTO, resultDto);
-                    resultDto.setForeseenId(foreseenFMDTO.getId());
+                    BeanUtils.copyProperties(foreseenFmReqDTO, resultDto);
+                    resultDto.setForeseenId(foreseenFmReqDTO.getId());
 
                     String responseData = JSON.toJSONString(resultDto, SerializerFeature.DisableCircularReferenceDetect);
 

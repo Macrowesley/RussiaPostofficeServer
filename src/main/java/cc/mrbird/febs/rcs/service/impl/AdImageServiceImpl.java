@@ -3,7 +3,7 @@ package cc.mrbird.febs.rcs.service.impl;
 import cc.mrbird.febs.common.entity.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.netty.protocol.ServiceToMachineProtocol;
-import cc.mrbird.febs.rcs.Req.AdImageAddReq;
+import cc.mrbird.febs.rcs.req.AdImageAddReq;
 import cc.mrbird.febs.rcs.common.enums.AdImageStatusEnum;
 import cc.mrbird.febs.rcs.dto.machine.AdImageInfo;
 import cc.mrbird.febs.rcs.entity.AdImage;
@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -113,19 +116,19 @@ public class AdImageServiceImpl extends ServiceImpl<AdImageMapper, AdImage> impl
             String type = mf.getContentType();
             String newName = String.valueOf(System.currentTimeMillis()) + curFileName.substring(curFileName.lastIndexOf("."));
 
-            /*//判断类型
+            //判断类型
             String targetType = "image/jpeg";
             if (!targetType.equals(type)) {
                 throw new FebsException("上传的文件类型不是" + targetType);
             }
 
             //判断图片大小
-            long curSize = mf.getSize();
+            /*long curSize = mf.getSize();
             log.info("图片大小={}",curSize);
             long targetSize = 1 *1024;
             if (curSize > targetSize){
                 throw new FebsException("图片大小不能超过" + targetSize + "byte");
-            }
+            }*/
 
 
             //判断长宽
@@ -139,17 +142,19 @@ public class AdImageServiceImpl extends ServiceImpl<AdImageMapper, AdImage> impl
 
             log.info("图片宽={}, 高={} 单位px", curWidth, curHeight);
 
-            int targetWidth = 300;
-            int targetHeigth = 500;
-            if (curWidth != targetWidth || curHeight != targetHeigth) {
-                throw new FebsException("上传的文件尺寸不符合要求，必须是：宽=" + targetWidth + " 高=" + targetHeigth);
-            }*/
+            int targetMaxWidth = 300;
+            int targetHeigth = 720;
+            if (curWidth <= targetMaxWidth || curHeight != targetHeigth) {
+                throw new FebsException("上传的文件尺寸不符合要求，必须是：宽不超过" + targetMaxWidth + "px, 高等于" + targetHeigth+ "px");
+            }
 
 
             String dirName = DateUtil.format(new Date(), "yyyy-MM-dd");
 
             File file = FileUtil.file(FileUtil.mkdir(basePath + parentDirName + "\\" + dirName), newName);
-            mf.transferTo(file);
+//            mf.transferTo(file);
+            //图片xy方向都压缩0.5
+            Thumbnails.of(image).scale(0.5).toFile(file);
 
             url = downLoadBaseUrl + parentDirName + "/" + dirName + "/" + newName;
 
@@ -159,7 +164,7 @@ public class AdImageServiceImpl extends ServiceImpl<AdImageMapper, AdImage> impl
             log.info("url = " + url);
 
             return url;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FebsException("上传失败 " + e.getMessage());
         }
 

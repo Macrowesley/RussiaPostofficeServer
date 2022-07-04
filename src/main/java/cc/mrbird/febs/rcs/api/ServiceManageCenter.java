@@ -24,7 +24,6 @@ import cc.mrbird.febs.rcs.entity.Transaction;
 import cc.mrbird.febs.rcs.service.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import io.micrometer.core.instrument.Meter;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -445,21 +443,21 @@ public class ServiceManageCenter {
      * 【机器请求foreseens协议】调用本方法
      * 发送foreseen给俄罗斯
      */
-    public byte[] foreseens(ForeseenFMDTO foreseenFmDto, PrintJob dbPrintJob, ChannelHandlerContext ctx) {
+    public byte[] foreseens(ForeseenFmReqDTO foreseenFmReqDTO, PrintJob dbPrintJob, ChannelHandlerContext ctx , PrintProgressInfo productPrintProgress) {
         String version = FebsConstant.FmVersion1;
         String foreseenId = "";
         if (FebsConstant.IS_TEST_NETTY) {
-            foreseenId = foreseenFmDto.getId();
+            foreseenId = foreseenFmReqDTO.getId();
         }else{
             foreseenId = AESUtils.createUUID();
-            foreseenFmDto.setId(foreseenId);
+            foreseenFmReqDTO.setId(foreseenId);
         }
 
         //机器日期
-        Date machineDate = DateKit.parseDateYmdhms(foreseenFmDto.getMachineDate());
+        Date machineDate = DateKit.parseDateYmdhms(foreseenFmReqDTO.getMachineDate());
 
         String operationName = "foreseens";
-        String frankMachineId = foreseenFmDto.getFrankMachineId();
+        String frankMachineId = foreseenFmReqDTO.getFrankMachineId();
         log.info("foreseens 开始 {}, frankMachineId={}", operationName, frankMachineId);
 
         //判断软件许可证书是否过期
@@ -471,7 +469,7 @@ public class ServiceManageCenter {
         checkUtils.checkFmEnable(frankMachineId);
 
         //判断机器税率表是否更新
-        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFmDto.getTaxVersion(), foreseenFmDto.getMachineDate());
+        checkUtils.checkTaxIsOk(frankMachineId, ctx ,foreseenFmReqDTO.getTaxVersion(), foreseenFmReqDTO.getMachineDate());
 
         //判断publickey是否更新
         if (!publicKeyService.checkFmIsUpdate(frankMachineId)){
@@ -479,47 +477,48 @@ public class ServiceManageCenter {
             throw new FmException(FMResultEnum.PrivateKeyNeedUpdate.getCode(), "机器" + frankMachineId + "需要发送公钥和私钥给服务器");
         }
 
-        log.info("foreseenFmDto.getContractCode() = {}", foreseenFmDto.getContractCode());
-        Contract dbContract = checkUtils.checkContractIsOk(foreseenFmDto.getContractCode());
+        log.info("foreseenFmReqDTO.getContractCode() = {}", foreseenFmReqDTO.getContractCode());
+        Contract dbContract = checkUtils.checkContractIsOk(foreseenFmReqDTO.getContractCode());
         Double dbCurrent = dbContract.getCurrent();
         Double dbConsolidate = dbContract.getConsolidate();
 
         //判断合同金额是否够用
-        double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFmDto.getTotalAmmount());
-        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || Long.valueOf(foreseenFmDto.getTotalAmmount()) == 0) {
+        double fmTotalAmount = MoneyUtils.changeF2Y(foreseenFmReqDTO.getTotalAmmount());
+        if (!DoubleKit.isV1BiggerThanV2(dbCurrent, fmTotalAmount) || Long.valueOf(foreseenFmReqDTO.getTotalAmmount()) == 0) {
             throw new FmException(FMResultEnum.MoneyTooBig.getCode(), "foreseens 订单金额 fmTotalAmount为" + fmTotalAmount + "，数据库中合同dbCurrent为：" + dbCurrent + "，dbConsolidate为：" + dbConsolidate);
         }
 
         //判断postOffice是否存在
-        checkUtils.checkPostOfficeExist(foreseenFmDto.getPostOffice());
+        checkUtils.checkPostOfficeExist(foreseenFmReqDTO.getPostOffice());
 
         //给俄罗斯发送预处理订单信息并返回
-        ApiRussiaResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenFmDto);
+        ApiRussiaResponse foreseensResponse = serviceInvokeRussia.foreseens(foreseenFmReqDTO);
         if (!foreseensResponse.isOK()) {
             if (foreseensResponse.getCode() == ResultEnum.UNKNOW_ERROR.getCode()) {
                 //未接收到俄罗斯返回,返回失败信息给机器，保存进度
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，未接收到俄罗斯返回", frankMachineId, operationName);
-                dbPrintJob = printJobService.changeForeseensStatus(foreseenFmDto, dbPrintJob, FlowDetailEnum.JobingErrorForeseensUnKnow, null);
+                dbPrintJob = printJobService.changeForeseensStatus(foreseenFmReqDTO, dbPrintJob, FlowDetailEnum.JobingErrorForeseensUnKnow, null);
                 throw new FmException(FMResultEnum.VisitRussiaTimedOut.getCode(), "foreseensResponse.isOK() false ");
             } else {
                 //收到了俄罗斯返回，但是俄罗斯不同意，返回失败信息给机器
                 //todo 考虑返回的balance怎么用
                 log.error("服务器收到了设备{}发送的{}协议，发送了消息给俄罗斯，但是俄罗斯不同意，返回失败信息给机器", frankMachineId, operationName);
-                dbPrintJob = printJobService.changeForeseensStatus(foreseenFmDto, dbPrintJob, FlowDetailEnum.JobEndFailForeseens4xx, null);
+                dbPrintJob = printJobService.changeForeseensStatus(foreseenFmReqDTO, dbPrintJob, FlowDetailEnum.JobEndFailForeseens4xx, null);
                 throw new FmException(FMResultEnum.RussiaServerRefused.getCode(), "foreseensResponse.isOK() false ");
             }
         }
         ManagerBalanceDTO balanceDTO = (ManagerBalanceDTO) foreseensResponse.getObject();
         log.info("foreseens 俄罗斯返回的ManagerBalanceDTO = {}", balanceDTO);
-        balanceDTO.setContractCode(foreseenFmDto.getContractCode());
+        balanceDTO.setContractCode(foreseenFmReqDTO.getContractCode());
 
         //正常接收俄罗斯返回，更新数据库
-        dbPrintJob = printJobService.changeForeseensStatus(foreseenFmDto, dbPrintJob, FlowDetailEnum.JobingForeseensSuccess,balanceDTO);
+        dbPrintJob = printJobService.changeForeseensStatus(foreseenFmReqDTO, dbPrintJob, FlowDetailEnum.JobingForeseensSuccess,balanceDTO);
         log.info("foreseens结束 {}, frankMachineId={}", operationName, frankMachineId);
 
         dbContract.setCurrent(balanceDTO.getCurrent());
         dbContract.setConsolidate(balanceDTO.getConsolidate());
-        return buildForeseenResultBytes(dbPrintJob, ctx, foreseenId, dbContract, new PrintProgressInfo( 0, "0", foreseenFmDto.getProducts()));
+
+        return buildForeseenResultBytes(dbPrintJob, ctx, foreseenId, dbContract, productPrintProgress);
     }
 
     /**
@@ -546,43 +545,43 @@ public class ServiceManageCenter {
          }__attribute__((packed))ForeseensResult, *ForeseensResult;
          */
 
-        ForeseensResultDTO foreseensResultDTO = new ForeseensResultDTO();
+        ForeseensFmRespDTO foreseensFmRespDTO = new ForeseensFmRespDTO();
 
-        foreseensResultDTO.setContractCode(dbContract.getCode());
-        foreseensResultDTO.setForeseenId(foreseenId);
-        foreseensResultDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(dbContract.getConsolidate())));
-        foreseensResultDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(dbContract.getCurrent())));
-        foreseensResultDTO.setServerDate(DateKit.formatDateYmdhms(new Date()));
+        foreseensFmRespDTO.setContractCode(dbContract.getCode());
+        foreseensFmRespDTO.setForeseenId(foreseenId);
+        foreseensFmRespDTO.setConsolidate(String.valueOf(MoneyUtils.changeY2F(dbContract.getConsolidate())));
+        foreseensFmRespDTO.setCurrent(String.valueOf(MoneyUtils.changeY2F(dbContract.getCurrent())));
+        foreseensFmRespDTO.setServerDate(DateKit.formatDateYmdhms(new Date()));
 
 
         Integer printJobType = dbPrintJob.getType();
-        foreseensResultDTO.setPrintJobType(printJobType);
-        foreseensResultDTO.setPrintJobId(dbPrintJob.getId());
-        foreseensResultDTO.setTotalAmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
-        foreseensResultDTO.setTotalCount(String.valueOf(dbPrintJob.getTotalCount()));
+        foreseensFmRespDTO.setPrintJobType(printJobType);
+        foreseensFmRespDTO.setPrintJobId(dbPrintJob.getId());
+        foreseensFmRespDTO.setTotalAmount(String.valueOf(MoneyUtils.changeY2F(dbPrintJob.getTotalAmount())));
+        foreseensFmRespDTO.setTotalCount(String.valueOf(dbPrintJob.getTotalCount()));
 
         //决定给机器发送什么内容
         if (printJobType == PrintJobTypeEnum.Machine.getCode()) {
             //机器的时候发特殊网页填写的地址列表
-            foreseensResultDTO.setAddressList(contractAddressService.selectArrayByConractCode(dbContract.getCode()));
+            foreseensFmRespDTO.setAddressList(contractAddressService.selectArrayByConractCode(dbContract.getCode()));
         }else {
             if (printProgressInfo == null){
                 printProgressInfo = printJobService.getProductPrintProgress(dbPrintJob);
             }
-            foreseensResultDTO.setPcUserId(String.valueOf(FebsUtil.getCurrentUser().getUserId()));
+            foreseensFmRespDTO.setPcUserId(String.valueOf(FebsUtil.getCurrentUser().getUserId()));
             //PC创建订单的时候，地址信息是保存在Products里面
-            foreseensResultDTO.setProducts(printProgressInfo.getProductArr());
-            foreseensResultDTO.setActualAmount(printProgressInfo.getActualAmount());
-            foreseensResultDTO.setActualCount(printProgressInfo.getActualCount());
-            foreseensResultDTO.setHasTranaction(StringUtils.isNotBlank(dbPrintJob.getTransactionId()) == true ? "1" : "0");
+            foreseensFmRespDTO.setProducts(printProgressInfo.getProductArr());
+            foreseensFmRespDTO.setActualAmount(printProgressInfo.getActualAmount());
+            foreseensFmRespDTO.setActualCount(printProgressInfo.getActualCount());
+            foreseensFmRespDTO.setHasTranaction(StringUtils.isNotBlank(dbPrintJob.getTransactionId()) == true ? "1" : "0");
             //网络订单，告诉机器打印什么类型的戳
-            foreseensResultDTO.setPrintObjectType(dbPrintJob.getPrintObjectType());
+            foreseensFmRespDTO.setPrintObjectType(dbPrintJob.getPrintObjectType());
         }
 //        log.info(JSON.toJSONString(printProgressInfo.getProductArr()));
         /*Arrays.stream(printProgressInfo.getProductArr()).forEach(item -> {
             log.info(item.toString());
         });*/
-        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + FebsConstant.FmVersion1 + JSON.toJSONString(foreseensResultDTO,  SerializerFeature.DisableCircularReferenceDetect);
+        String responseData = FMResultEnum.SUCCESS.getSuccessCode() + FebsConstant.FmVersion1 + JSON.toJSONString(foreseensFmRespDTO,  SerializerFeature.DisableCircularReferenceDetect);
         String tempKey = null;
         try {
             tempKey = tempKeyUtils.getTempKey(ctx);

@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.rcs.mapper.ForeseenProductMapper">
 
+    <select id="selectProductAdList" resultType="cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmRespDTO">
+        SELECT
+            a.code as productCode,
+            a.print_job_id as printJobId,
+            a.count,
+            a.weight,
+            a.amount,
+            a.address,
+            a.address_type as type,
+            b.id as adImageId,
+            b.image_path as adImagePath
+        from
+            rcs_foreseen_product as a
+        left join
+            rcs_ad_image as b
+        on
+            a.ad_image_id = b.id
+        where
+            a.print_job_id = #{printJobId}
+
+    </select>
 </mapper>

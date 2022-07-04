@@ -126,12 +126,12 @@ public class ManagerApi {
 
     /**
      * 要求根据预报生产法郎
-     * @param foreseenDTO
+     * @param foreseenRussiaDTO
      * @return
      */
     @PostMapping("/foreseens")
-    public ApiRussiaResponse foreseens(@RequestBody ForeseenDTO foreseenDTO){
-        log.info("manager foreseen foreseen={}", foreseenDTO.toString());
+    public ApiRussiaResponse foreseens(@RequestBody ForeseenRussiaDTO foreseenRussiaDTO){
+        log.info("manager foreseen foreseen={}", foreseenRussiaDTO.toString());
         ManagerBalanceDTO managerBalanceDTO = new ManagerBalanceDTO();
         managerBalanceDTO.setBalanceId("11");
         managerBalanceDTO.setContractCode("222");

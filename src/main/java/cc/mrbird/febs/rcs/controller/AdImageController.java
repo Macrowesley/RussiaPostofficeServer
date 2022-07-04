@@ -4,13 +4,12 @@ import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.entity.FebsResponse;
 import cc.mrbird.febs.common.entity.QueryRequest;
-import cc.mrbird.febs.rcs.Req.AdImageAddReq;
+import cc.mrbird.febs.rcs.req.AdImageAddReq;
 import cc.mrbird.febs.rcs.entity.AdImage;
 import cc.mrbird.febs.rcs.service.IAdImageService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +35,7 @@ public class AdImageController extends BaseController {
      * @param bean
      * @return
      */
-    @ApiOperation("显示图片列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "frankMachineId", required = true)
-    })
+    @ApiOperation("Display a list of pictures")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = AdImage.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
@@ -58,7 +54,7 @@ public class AdImageController extends BaseController {
      * @param mf
      * @return
      */
-    @ApiOperation("上传图片")
+    @ApiOperation(value = "upload pictures", notes = "Upload pictures must be JPG format, 720px high and 1700px wide maximum")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
@@ -75,7 +71,7 @@ public class AdImageController extends BaseController {
      * 添加图片
      * @return
      */
-    @ApiOperation("添加图片")
+    @ApiOperation("Add images")
     @ApiResponses({
             @ApiResponse(code = 200, message = "success", response = String.class),
             @ApiResponse(code = 500, message = "内部异常")
@@ -93,7 +89,7 @@ public class AdImageController extends BaseController {
      * @param id
      * @return
      */
-    @ApiOperation("删除图片")
+    @ApiOperation("delete picture")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "adImageId", required = true)
     })
@@ -114,7 +110,7 @@ public class AdImageController extends BaseController {
      * @param frankMachineId
      * @return
      */
-    @ApiOperation("同步图片列表给机器")
+    @ApiOperation("Synchronize the list of pictures to the machine")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "frankMachineId", required = true)
     })

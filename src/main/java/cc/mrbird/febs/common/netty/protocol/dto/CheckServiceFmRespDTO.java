@@ -1,12 +1,15 @@
 package cc.mrbird.febs.common.netty.protocol.dto;
 
-import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmDto;
+import cc.mrbird.febs.rcs.dto.manager.ForeseenProductFmReqDTO;
 import lombok.Data;
 import lombok.ToString;
 
+/**
+ * 返回给机器的信息
+ */
 @Data
 @ToString
-public class CheckServiceResultDTO {
+public class CheckServiceFmRespDTO {
     //长度为2 1 成功
     String result;
     String version;
@@ -46,7 +49,7 @@ public class CheckServiceResultDTO {
     String userId;
     String postOffice;
     Integer totalCount;
-    ForeseenProductFmDto[] products;
+    ForeseenProductFmReqDTO[] products;
     String taxVersion;
     //金钱单位：分
     String totalAmmount;

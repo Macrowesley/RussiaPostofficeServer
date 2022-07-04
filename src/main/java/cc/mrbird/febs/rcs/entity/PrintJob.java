@@ -87,7 +87,7 @@ public class PrintJob {
      * 1 stamp
      * 2 stick
      */
-    @TableField("object_type")
+    @TableField("print_object_type")
     private Integer printObjectType;
 
 
