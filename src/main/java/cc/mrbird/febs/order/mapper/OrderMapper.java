@@ -1,5 +1,6 @@
-package cc.mrbird.febs.system.mapper;
+package cc.mrbird.febs.order.mapper;
 
+import cc.mrbird.febs.order.entity.Order;
 import cc.mrbird.febs.system.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface UserMapper extends BaseMapper<User> {
+public interface OrderMapper extends BaseMapper<Order> {
 
     /**
      *  查找用户
@@ -30,7 +31,9 @@ public interface UserMapper extends BaseMapper<User> {
 
     List<User> findUserDetailPage(@Param("user") User user);
 
-    long countUserDetail(@Param("user") User user);
+    IPage<Order> findOrderDetailPage(Page<User> page, Order order);
+
+    long countOrderDetail(Order order);
 
     /**
      * 查找用户详细信息
@@ -48,4 +51,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     List<User> findUserByRoleId(@Param("roleId") String roleId);
+
 }

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title th:text="#{login.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{febs/css/febs.css}" media="all">
+    <link rel="stylesheet" th:href="@{febs/css/login.css}" media="all">
+    <link rel="icon" th:href="@{febs/images/favicon.ico}" type="image/x-icon"/>
+</head>
+<body>
+<div id="febs-login" th:lay-title="#{login.pageTitle}">
+    <div class="login-wrap">
+        <div class="layui-container">
+            <div class="layui-row">
+                <div class="layui-col-xs12 layui-col-lg4 layui-col-lg-offset4 febs-tc">
+                    <div class="layui-logo"><span><b th:text="#{server.name}"></b></span></div>
+                </div>
+                <div class="layui-col-xs12 layui-col-lg4 layui-col-lg-offset4" id="login-div">
+                    <div class="layui-form" lay-filter="login-form">
+                        <div class="layui-anim layui-anim-upbit">
+                            <ul class="login-type-tab">
+                                <li class="active" th:text="#{login.system.login}"></li>
+                            </ul>
+                            <div class="normal-login-form">
+                                <div class="layui-form-item">
+                                    <label class="layui-icon label-icon layui-icon-username"></label>
+                                    <input type="text" name="username" lay-verify="required"
+                                           th:placeholder="#{login.username}" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-item password-block">
+                                    <label class="layui-icon label-icon layui-icon-password"></label>
+                                    <input type="password" name="password" lay-verify="required"
+                                           th:placeholder="#{login.pwd}" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-row">
+                                        <div class="layui-col-xs7">
+                                            <label class="layui-icon label-icon layui-icon-vercode"></label>
+                                            <input type="text" maxlength="4" name="verifyCode" lay-verify="required"
+                                                   th:placeholder="#{login.check.code}" class="layui-input" autocomplete="off">
+                                        </div>
+                                        <div class="layui-col-xs5">
+                                            <img class="codeimg" id="codeimg"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<div class="layui-form-item" style="margin-top: -10px;">
+                                    <input type="checkbox" name="rememberMe" th:title="#{login.rememberMe}" lay-skin="primary">
+                                </div>-->
+                                <div class="layui-form-item">
+                                    <button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit
+                                            lay-filter="login-submit" id="login" th:text="#{login.login}">
+                                        <i style="display: none"
+                                           class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+
+                                    </button>
+                                </div>
+                            </div>
+                            <!--<div class="layui-form-item febs-tr">
+                                <a id="regist-href">注册账号</a>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-xs12 layui-col-lg4 layui-col-lg-offset4 febs-hide" id="regist-div" style="display: none;">
+                    <div class="layui-form" lay-filter="regist-form">
+                        <div class="layui-anim layui-anim-upbit">
+                            <ul class="login-type-tab">
+                                <li class="active" th:text="#{login.reg}"></li>
+                            </ul>
+                            <div class="normal-login-form">
+                                <div class="layui-form-item">
+                                    <label class="layui-icon label-icon layui-icon-username"></label>
+                                    <input type="text" name="username" minlength="2" maxlength="10" lay-verify="range"
+                                           th:placeholder="#{login.username}" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-item password-block">
+                                    <label class="layui-icon label-icon layui-icon-password"></label>
+                                    <input type="password" name="password" minlength="6" lay-verify="range"
+                                           th:placeholder="#{login.pwd}" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-item password-block">
+                                    <label class="layui-icon label-icon layui-icon-password"></label>
+                                    <input type="password" name="passwordB" lay-verify="required"
+                                           th:placeholder="#{login.check.pwd}" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-item">
+                                    <button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit
+                                            lay-filter="regist-submit" id="regist" th:text="#{login.reg.now}">
+                                        <i style="display: none"
+                                           class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item febs-tr">
+                            <a id="login-href" th:text="#{login.has.account}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{layui/layui.js}"></script>
+<script th:src="@{i18n/jquery-3.5.1.min.js}"></script>
+<script th:src="@{i18n/jquery.i18n.properties-min-1.0.9.js}"></script>
+<script th:inline="javascript">
+    //jquery得到项目路径
+    var ctx = [[@{/}]];
+    //获取默认语言
+    var LANG_COUNTRY = [[${#locale.language+'_'+#locale.country}]];
+
+
+    layui.extend({
+        validate: './febs/lay/modules/validate'
+    }).use(['form', 'layer', 'validate'], function (form, layer) {
+        var $ = layui.jquery,
+            validate = layui.validate,
+            $view = $('#febs-login'),
+            type = 'login',
+            $loginDiv = $view.find('#login-div'),
+            $registDiv = $view.find('#regist-div');
+
+        form.verify(validate);
+        form.render();
+        initCode();
+
+        //提交登录表单
+        form.on('submit(login-submit)', function (data) {
+            var loading = $(this).find('.layui-icon');
+            if (loading.is(":visible")) return;
+            loading.show();
+            $.post(ctx + 'login', data.field, function (r) {
+                if (r.code === 200) {
+                    location.href = ctx + 'index';
+                } else {
+                    layer.msg(r.message);
+                    loading.hide();
+                    initCode();
+                }
+            });
+            return false;
+        });
+
+        function initCode() {
+            $view.find('#codeimg').attr("src", ctx + "images/captcha?data=" + new Date().getTime());
+        }
+
+        $view.find('#codeimg').on('click', function () {
+            initCode();
+        });
+
+        $view.find('#regist-href').on('click', function () {
+            resetForm();
+            type = 'regist';
+            $loginDiv.hide();
+            $registDiv.show();
+        });
+
+        $view.find('#login-href').on('click', function () {
+            resetForm();
+            type = 'login';
+            $loginDiv.show();
+            $registDiv.hide();
+        });
+
+        function resetForm() {
+            $registDiv.find('input[name="username"]').val('')
+                .end().find('input[name="password"]').val('')
+                .end().find('input[name="passwordB"]').val('');
+
+            $loginDiv.find('input[name="username"]').val('')
+                .end().find('input[name="password"]').val('')
+                .end().find('input[name="verifyCode"]').val('');
+        }
+
+        $(document).on('keydown', function (e) {
+            if (e.keyCode === 13) {
+                if (type === 'login')
+                    $view.find('#login').trigger("click");
+                if (type === 'regist')
+                    $view.find('#regist').trigger("click");
+            }
+        });
+    });
+
+    //项目国际化配置
+    initLaunage();
+
+    //初始化语言配置
+    function initLaunage() {
+        //初始化i18n插件
+        $.i18n.properties({
+            path: ctx + 'i18n/',//这里表示访问路径
+            name: 'message',//文件名开头
+            language: LANG_COUNTRY,//文件名语言 例如en_US
+            mode: 'both'//默认值
+        });
+    }
+
+    //初始化i18n函数
+    function i18n(msgKey) {
+        try {
+            return $.i18n.prop(msgKey);
+        } catch (e) {
+            return msgKey;
+        }
+    }
+</script>
+</body>
+</html>

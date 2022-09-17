@@ -1,0 +1,66 @@
+<div class="layui-fluid layui-anim febs-anim" id="febs-audit" th:lay-title="#{audit.record}">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <table lay-filter="auditTable" lay-data="{id: 'auditTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="audit-type">
+    {{#
+    var status = {
+    1: {title: i18n("audit.apply"), color: 'none'},
+    2: {title: i18n("audit.close"), color: 'red'}
+    }[d.auditType];
+    }}
+    <span>{{ status.title }}</span>
+</script>
+<script type="text/html" id="audit-status">
+    {{#
+    var status = {
+    0: {title: i18n("audit.auditing"), color: 'blue'},
+    1: {title: i18n("audit.success"), color: 'green'},
+    2: {title: i18n("audit.notPass"), color: 'red'},
+    3: {title: i18n("audit.orderFreezeing"), color: 'gold'},
+    4: {title: i18n("audit.orderRepeal"), color: 'gold'}
+    }[d.status];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        var $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            $view = $('#febs-audit'),
+            $orderId = [[${orderId}]],
+            sortObject = {field: 'createTime', type: null},
+            tableIns;
+
+
+        tableIns = febs.table.init({
+            elem: $view.find('table'),
+            id: 'auditTable',
+            url: ctx + 'audit/selectByOrderId/'+ $orderId,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'orderNumber', title: i18n("orderId"), width: 180},
+                {field: 'amount', title: i18n("amount"), minWidth: 90},
+                /*{field: 'applyUserName', title: '申请人', width: 90},
+                {field: 'auditUserName', title: '审核人', width: 90},*/
+                {title: i18n("audit.type"), templet: '#audit-type'},
+                {title: i18n("audit.status"), templet: '#audit-status'},
+                {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 90},
+                {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 90},
+                {field: 'auditRealName', title: i18n("audit.auditor"), minWidth: 90},
+                {field: 'submitRealName', title: i18n("audit.submitter"), minWidth: 90},
+                {field: 'createTime', title: i18n("audit.submitTime"), minWidth: 180, sort: false}
+            ]]
+        });
+    });
+</script>

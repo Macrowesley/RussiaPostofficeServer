@@ -1,0 +1,321 @@
+<style>
+    .layui-unselect dl {
+        max-height: 600px;
+    }
+</style>
+
+<div class="layui-fluid layui-anim febs-anim" id="febs-audit" th:lay-title="#{audit.manage}">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" id="audit-table-form" lay-filter="audit-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{acnum}"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="acnum" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{amount}"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="amount" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <!--<div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">创建时间</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="createTime" id="audit-createTime" class="layui-input">
+                                        </div>
+                                    </div>-->
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{audit.status}"></label>
+                                        <div class="layui-input-inline">
+                                            <select name="status" id="auditStatus" style="width: 300px;">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{audit.type}"></label>
+                                        <div class="layui-input-inline">
+                                            <select name="auditType" style="width: 300px;">
+                                                <option></option>
+                                                <option value="1"  th:text="#{audit.apply}"></option>
+                                                <option value="2"  th:text="#{audit.close}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm" th:text="#{orderId}"></label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="orderNumber" autocomplete="off"
+                                                   class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="febs-hide" id="refreshQuery"></div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action"
+                                     id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+
+                                <!--<div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action"
+                                     id="download" shiro:hasAnyPermissions="audit:export">
+                                    <i class="layui-icon">&#xe82a;</i>
+                                </div>-->
+
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="auditTable" lay-data="{id: 'auditTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="audit-type">
+    {{#
+    var status = {
+    1: {title: i18n("audit.apply"), color: 'none'},
+    2: {title: i18n("audit.close"), color: 'red'}
+    }[d.auditType];
+    }}
+    <span>{{ status.title }}</span>
+</script>
+<script type="text/html" id="audit-status">
+    {{#
+    var status = {
+    0: {title: i18n("audit.notBegin"), color: 'blue'},
+    1: {title: i18n("audit.success"), color: 'green'},
+    2: {title: i18n("audit.notPass"), color: 'red'},
+    3: {title: i18n("audit.orderFreezeing"), color: 'gold'},
+    4: {title: i18n("audit.orderRepeal"), color: 'gold'}
+    }[d.status];
+    }}
+    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>
+</script>
+
+<script type="text/html" id="audit-option">
+    <span shiro:lacksPermission="audit:update">
+        <span class="layui-badge-dot febs-bg-orange"></span> <span th:text="#{noPermission}"></span>
+    </span>
+
+    <div shiro:hasPermission="audit:update">
+        <!--<a lay-event="pass">通过</a>
+        <a lay-event="noPass">驳回</a>-->
+        {{#
+        layui.each(d.btnList, function(index, item){
+        }}
+        <a lay-event="{{ item.event }}">{{ item.title }} </a>
+        {{# }); }}
+
+        {{# if(d.btnList.length === 0){ }}
+        <span class="layui-badge-dot febs-bg-orange"></span><span th:text="#{disableOperation}"></span>
+        {{# } }}
+    </div>
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        var $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-audit'),
+            $query = $view.find('#query'),
+            $refreshQuery = $view.find('#refreshQuery'),
+            $reset = $view.find('#reset'),
+            $add = $view.find('#add'),
+            $download = $view.find('#download'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns,
+            createTimeFrom,
+            createTimeTo;
+
+        form.render();
+        initSearchView();
+        initTable();
+        initTableTool();
+        initSelect();
+
+        /**
+         * 查询表单数据
+         */
+        function queryTable(isFirstQuery) {
+            var params = $.extend(getQueryParams(), {field: sortObject.field, audit: sortObject.type});
+            if (isFirstQuery == 1) {
+                tableIns.reload({where: params, page: {curr: 1}});
+            } else {
+                var pageNum = $view.find(".layui-laypage-em").next().html();
+                tableIns.reload({where: params, page: {curr: pageNum}});
+            }
+        }
+
+        /**
+         * 初始化搜索栏
+         */
+        function initSearchView() {
+
+            //搜索点击事件
+            $query.on('click', function () {
+                queryTable(1);
+            });
+
+            //修改参数后，返回主页，刷新，回到指定页面
+            $refreshQuery.on('click', function () {
+                queryTable(0);
+            })
+
+            //刷新点击事件
+            $reset.on('click', function () {
+                $searchForm[0].reset();
+
+                sortObject.type = 'null';
+                createTimeTo = null;
+                createTimeFrom = null;
+
+                //直接刷新到第一页
+                tableIns.reload({where: getQueryParams(), page: {curr: 1}, initSort: sortObject});
+            });
+
+            /*//导出报表
+            $download.on('click', function () {
+                var params = $.extend(getQueryParams(), {field: sortObject.field, audit: sortObject.type});
+                params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                params.pageNum = $view.find(".layui-laypage-em").next().html();
+                febs.download(ctx + 'audit/excel', params, '审核报表.xlsx');
+            });*/
+
+        }
+
+        /**
+         *初始化表格
+         */
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'auditTable',
+                url: ctx + 'audit/list',
+                cols: [[
+                    {type: 'numbers'},
+                    {field: 'acnum', title: i18n("acnum"), width: 90},
+                    {field: 'orderNumber', title: i18n("orderId"), width: 180},
+                    {field: 'amount', title: i18n("amount"), minWidth: 90},
+                    /*{field: 'applyUserName', title: '申请人', width: 90},
+                    {field: 'auditUserName', title: '审核人', width: 90},*/
+                    {title: i18n("audit.type"), templet: '#audit-type'},
+                    {title: i18n("audit.status"), templet: '#audit-status'},
+                    {field: 'submitInfo', title: i18n("audit.submitRemark"), minWidth: 120},
+                    {field: 'checkRemark', title: i18n("audit.auditRemark"), minWidth: 120},
+                    {field: 'auditRealName', title: i18n("audit.auditor"), minWidth: 90},
+                    {field: 'submitRealName', title: i18n("audit.submitter"), minWidth: 90},
+                    {field: 'createTime', title: i18n("audit.submitTime"), minWidth: 180, sort: false},
+                    {title: i18n("operation"), toolbar: '#audit-option', minWidth: 120}
+                ]]
+            });
+        }
+
+        /**
+         * 初始化表格工具栏
+         */
+        function initTableTool() {
+            table.on('tool(auditTable)', function (obj) {
+                var data = obj.data,
+                    layEvent = obj.event;
+
+                //通过
+                if (layEvent == 'pass') {
+                    febs.modal.confirm(i18n("notice"), i18n("audit.conformPass"), function () {
+                        febs.post(ctx + "audit/pass/", {auditId: data.auditId}, function (res) {
+                            if (res.code === 200) {
+                                febs.alert.info(i18n("operationSuccess"));
+                                queryTable(0);
+                            } else {
+                                febs.alert.error(res.message);
+                            }
+                        })
+                    })
+                }
+
+                //驳回
+                if (layEvent == 'noPass') {
+                    febs.modal.open(i18n("audit.reject"), 'audit/reject/' + data.auditId, {
+                        area: $(window).width() <= 750 ? '90%' : '50%',
+                        offset: '30px',
+                        btn: [i18n("submit"), i18n("cancel")],
+                        yes: function (index, layero) {
+                            $('#audit-submit-reject').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+            });
+
+            table.on('sort(auditTable)', function (obj) {
+                sortObject = obj;
+                tableIns.reload({
+                    initSort: obj,
+                    where: $.extend(getQueryParams(), {
+                        field: obj.field,
+                        audit: obj.type
+                    })
+                });
+            });
+        }
+
+
+        /**
+         * 获取查询信息
+         */
+        function getQueryParams() {
+            /*var createTime = $searchForm.find('input[name="createTime"]').val();
+            if (createTime) {
+                createTimeFrom = createTime.split(' - ')[0];
+                createTimeTo = createTime.split(' - ')[1];
+            }*/
+            return {
+                // createTimeFrom: createTimeFrom,
+                // createTimeTo: createTimeTo,
+                acnum: $searchForm.find('input[name="acnum"]').val().trim(),
+                amount: $searchForm.find('input[name="amount"]').val().trim(),
+                status: $searchForm.find("select[name='status']").val(),
+                auditType: $searchForm.find("select[name='auditType']").val(),
+                orderNumber: $searchForm.find('input[name="orderNumber"]').val().trim(),
+                invalidate_ie_cache: new Date()
+            };
+        }
+
+        /**
+         * 处理下拉框
+         */
+        function initSelect() {
+            $.ajax({
+                url: ctx + "audit/selectStatus",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        $('#auditStatus').append("<option value=" + item.status + ">" + item.title + "</option>");
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
+    })
+</script>

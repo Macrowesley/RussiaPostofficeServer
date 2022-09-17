@@ -3526,7 +3526,8 @@ INSERT INTO `t_menu` VALUES ('173', '102', '导出excel', null, 'job:export', nu
 INSERT INTO `t_menu` VALUES ('174', '109', '导出excel', null, 'job:log:export', null, '1', null, '2019-06-13 14:37:46', '2019-06-13 14:38:02');
 INSERT INTO `t_menu` VALUES ('175', '2', 'swagger文档', '/monitor/swagger', 'swagger:view', '', '0', '8', '2019-08-18 17:25:36', '2019-08-18 17:25:59');
 INSERT INTO `t_menu` VALUES ('178', '115', '数据权限', '/others/datapermission', 'others:datapermission', '', '0', '5', '2020-04-29 09:34:25', null);
-INSERT INTO `t_menu` VALUES ('179', '0', '注资管理', '/order/order', 'order:view', 'layui-icon-alipay-square-fill', '0', '3', '2020-05-27 14:30:24', '2020-06-24 15:22:46');
+INSERT INTO `t_menu` VALUES ('179', '0', '注资管理', '' ||
+                                                 '/order/order', 'order:view', 'layui-icon-alipay-square-fill', '0', '3', '2020-05-27 14:30:24', '2020-06-24 15:22:46');
 INSERT INTO `t_menu` VALUES ('180', '0', '审核管理', '/audit/audit', 'audit:view', 'layui-icon-check-circle-fill', '0', '4', '2020-05-27 14:32:20', '2020-06-24 15:22:51');
 INSERT INTO `t_menu` VALUES ('181', '0', '设备管理', '/device/device', 'device:view', 'layui-icon-printer', '0', '5', '2020-05-27 14:36:48', '2020-06-24 15:22:54');
 INSERT INTO `t_menu` VALUES ('183', '181', '新增', null, 'device:add', null, '1', null, '2020-05-29 12:45:20', null);

@@ -1,0 +1,89 @@
+<style>
+    #order-submit-injection {
+        padding: 20px 25px 25px 0;
+    }
+
+    #order-submit-injection .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #order-submit-injection #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+
+</style>
+<div class="layui-fluid" id="order-submit-injection">
+    <form class="layui-form" action="" lay-filter="order-audit-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require" th:text="#{order.id}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="orderId" data-th-value="${orderId}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{remark.colon}"></label>
+            <div class="layui-input-block">
+                <textarea
+                        lay-filter="myTextarea"
+                        name="submitInfo"
+                        id="submitInfo"
+                        th:placeholder="#{optional}"
+                        value=""
+                        class="layui-textarea"
+                        rows="3"
+                        maxlength="100"
+                        οnchange="this.value=this.value.substring(0, 100)"
+                        οnkeydοwn="this.value=this.value.substring(0, 100)"
+                        οnkeyup="this.value=this.value.substring(0, 100)"></textarea>
+                <span id="limitText">0/100</span>
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="order-audit-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            $view = $('#order-submit-injection'),
+            $textarea = $("#submitInfo"),
+            $limitText = $("#limitText"),
+            $maxLen = 100,
+            $audityType = [[${audityType}]];
+
+        validate = layui.validate;
+
+        form.verify(validate);
+        form.render();
+
+        form.on('submit(order-audit-form-submit)', function (data) {
+
+            //验证字数是否超标
+            if ($textarea.val().length > $maxLen) {
+                febs.alert.warn(i18n("order.noMoreThan") + $maxLen);
+                return false;
+            }
+
+            data.field.auditType = $audityType;
+            febs.post(ctx + 'order/submitApply', data.field, function (result) {
+                layer.closeAll();
+                febs.alert.success(i18n("order.submitSuccess"));
+                $('#febs-order').find('#refreshQuery').click();
+            });
+            return false;
+        });
+
+        $("#submitInfo").bind("input propertychange keyup", function () {
+            $limitText.html($(this).val().length + '/' + $maxLen)
+        });
+    });
+</script>

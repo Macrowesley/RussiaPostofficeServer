@@ -1,0 +1,77 @@
+<style>
+    #febs-user-detail #user-img, #febs-user-detail .user-info {
+        display: inline-block;
+        float: left;
+        margin-left: 15px;
+    }
+
+    #febs-user-detail #user-img img {
+        width: 7rem;
+        margin: 10px 10px 0 20px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    #febs-user-detail #user-info-wrapper {
+        margin: 0 0 1rem 0;
+        display: inline-block;
+    }
+
+    #febs-user-detail .user-info div {
+        margin: 10px 15px;
+        max-width: 19rem;
+    }
+
+    #febs-user-detail #options-wrapper a {
+        padding: 4px 6px;
+        color: rgba(0, 0, 0, 0.65);
+        border: 1px solid #d9d9d9;
+        border-radius: 2px;
+    }
+
+    #febs-user-detail #options-wrapper a:hover {
+        color: #40a9ff;
+        border-color: #40a9ff;
+    }
+
+</style>
+<div class="layui-fluid" id="febs-user-detail" th:lay-title="#{userProfile.title}">
+    <div id="user-info-wrapper">
+        <div id="user-img">
+            <img alt="头像" th:title="#{userProfile.changeAvatar}" data-th-src="@{febs/images/avatar/}+${user.avatar}">
+        </div>
+            <div class="user-info">
+                <div><span class="layui-icon layui-icon-user"></span> <span th:text="#{username.colon}"></span>
+                    [[${user.username}]]
+                </div>
+                <div><span class="layui-icon layui-icon-user"></span> <span th:text="#{realname.colon}"></span>
+                    [[${user.realname}]]
+                </div>
+                <div><span class="layui-icon layui-icon-trophy"></span> <span th:text="#{role.colon}"></span>
+                    [[${#strings.defaultString(user.roleName,' ')}]]
+                </div>
+                <div><span class="layui-icon layui-icon-home"></span> <span th:text="#{dept.colon}"></span>
+                    [[${#strings.defaultString(user.deptName,' ')}]]
+
+                </div>
+                <div><span class="layui-icon layui-icon-skin"></span> <span th:text="#{sex.colon}"></span>
+                    [[${user.sex}]]
+                </div>
+         <!--   </div>
+            <div class="user-info">-->
+                <div><span class="layui-icon layui-icon-phone"></span>  <span th:text="#{phone.colon}"></span>
+                    [[${#strings.defaultString(user.mobile,' ')}]]
+                </div>
+                <div><span class="layui-icon layui-icon-mail"></span> <span th:text="#{email.colon}"></span>
+                    [[${#strings.defaultString(user.email,' ')}]]
+                </div>
+                <div><span class="layui-icon layui-icon-time-circle"></span> <span th:text="#{index.lastLoginTime}"></span>
+                    [[${#strings.defaultString(lastLoginTime,' ')}]]
+                </div>
+                <div><span class="layui-icon layui-icon-read"></span>  <span th:text="#{userProfile.introduction}"></span>
+                    [[${#strings.defaultString(user.description,' ')}]]
+                </div>
+            </div>
+
+    </div>
+</div>

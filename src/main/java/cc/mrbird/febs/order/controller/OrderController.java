@@ -1,4 +1,4 @@
-package cc.mrbird.febs.system.controller;
+package cc.mrbird.febs.order.controller;
 
 import cc.mrbird.febs.common.annotation.ControllerEndpoint;
 import cc.mrbird.febs.common.annotation.Limit;
@@ -10,9 +10,10 @@ import cc.mrbird.febs.common.entity.RoleType;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.i18n.MessageUtils;
 import cc.mrbird.febs.common.utils.MD5Util;
+import cc.mrbird.febs.order.entity.Order;
+import cc.mrbird.febs.order.service.IOrderService;
 import cc.mrbird.febs.system.entity.User;
 import cc.mrbird.febs.system.service.IUserService;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -35,15 +37,16 @@ import java.util.Map;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("user")
-@Api(description = "Add, delete, change, search for user, manage password and other operations")
-public class UserController extends BaseController {
+@RequestMapping("order")
+@Api(description = "Add, delete, change, search for order, manage password and other operations")
+public class OrderController extends BaseController {
     @Autowired
     MessageUtils messageUtils;
 
     @Autowired
-    IUserService userService;
+    IOrderService orderService;
 
+    /*
     @GetMapping("{username}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
     @ApiOperation("Get information of a user ")
@@ -86,6 +89,7 @@ public class UserController extends BaseController {
         Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
         return new FebsResponse().success().data(dataTable);
     }
+    */
 
     @PostMapping("list")
     @ResponseBody
@@ -97,12 +101,13 @@ public class UserController extends BaseController {
             @ApiResponse(code = 200, message = "success", response = User.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "内部异常")
     })
-    public FebsResponse userListForAnnotation(QueryRequest request, @RequestBody(required = false)  User user) {
+    public FebsResponse userListForAnnotation(QueryRequest request, @RequestBody(required = false) Order order) {
         log.info("开始查询");
-        Map<String, Object> dataTable = getDataTable(this.userService.findUserDetailList(user, request));
+        Map<String, Object> dataTable = getDataTable(this.orderService.findOrderDetailList(order, request));
         return new FebsResponse().success().data(dataTable);
     }
 
+    /*
     @GetMapping("deptUserList")
     @ControllerEndpoint(operation = "获取机构用户列表", exceptionMessage = "{user.operation.listError}")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_system_User")
@@ -146,7 +151,7 @@ public class UserController extends BaseController {
     @ApiIgnore
     public FebsResponse deleteUsers(@NotBlank(message = "{required}") @PathVariable String userIds) {
         /*String[] ids = userIds.split(StringPool.COMMA);
-        this.userService.deleteUsers(ids);*/
+        this.userService.deleteUsers(ids);
         return new FebsResponse().success();
     }
 
@@ -270,4 +275,5 @@ public class UserController extends BaseController {
         List<User> users = this.userService.findUserDetailList(user, queryRequest).getRecords();
         //ExcelKit.$Export(User.class, response).downXlsx(users, false);
     }
+    */
 }

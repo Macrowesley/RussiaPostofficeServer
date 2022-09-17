@@ -1,0 +1,126 @@
+<style>
+    #order-update {
+        padding: 20px 25px 25px 0;
+    }
+
+    #order-update .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #order-update #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+
+    /*  .left-label {
+          width: 20%;
+      }
+
+      .rigth-view {
+          width: 80%;
+      }*/
+
+</style>
+<div class="layui-fluid" id="order-update">
+    <form class="layui-form" action="" lay-filter="order-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require" th:text="#{order.id}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="orderId" data-th-value="${order.orderId}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{acnum.colon}"></label>
+            <div class="layui-input-block ">
+                <input type="text" class="layui-input" readonly data-th-value="${order.acnum}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{order.auditor.colon}"></label>
+            <div class="layui-input-block ">
+                <input type="text" class="layui-input" readonly data-th-value="${order.auditUserName}">
+            </div>
+        </div>
+        <div class="layui-form-item ">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{amount.colon}"></label>
+            <div class="layui-input-block">
+                <input type="number" step="0.01" id="acmout" name="amount" lay-verify="required" max=""
+                       class="layui-input rigth-view" data-th-value="${order.amount}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{order.expireDays}"></label>
+            <div class="layui-input-block">
+                <input type="number" name="expireDays" lay-verify="number" autocomplete="off"
+                       class="layui-input rigth-view" data-th-value="${order.expireDays}">
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="order-update-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            $view = $('#order-update'),
+            $order = [[${order}]];
+
+        validate = layui.validate;
+
+        form.verify(validate);
+        form.render();
+
+        form.on('submit(order-update-form-submit)', function (data) {
+
+            if (febs.nativeEqual(data.field, $order)) {
+                febs.alert.warn(i18n("noEdit"));
+                return false;
+            }
+
+            if (data.field.expireDays <= 0){
+                febs.alert.warn(i18n("order.expireDaysLess1"));
+                return false;
+            }
+
+            var warnAmount = parseFloat($order.warnAmount);
+            var maxAmount = parseFloat($order.maxAmount);
+            var curAmount = parseFloat(data.field.amount);
+
+            if (curAmount > maxAmount) {
+                febs.alert.warn(i18n("order.amountNoMoreThan") + maxAmount);
+                return false;
+            } else if (curAmount <= 0.00){
+                febs.alert.warn(i18n("order.operation.amountMustOverZero"));
+                return false;
+            } else if (curAmount > warnAmount){
+                febs.modal.confirm(i18n("warn"), i18n("order.moreThanAlarmMoney"), function () {
+                    //开始添加
+                    febs.post(ctx + 'order/update', data.field, function (result) {
+                        layer.closeAll();
+                        febs.alert.success(i18n("order.editOrderSuccess"));
+                        $('#febs-order').find('#refreshQuery').click();
+                    });
+                });
+            } else {
+                /*echoObject(data);
+                return false;*/
+                //开始添加
+                febs.post(ctx + 'order/update', data.field, function (result) {
+                    layer.closeAll();
+                    febs.alert.success(i18n("order.editOrderSuccess"));
+                    $('#febs-order').find('#refreshQuery').click();
+                });
+            }
+            return false;
+        });
+
+    });
+</script>

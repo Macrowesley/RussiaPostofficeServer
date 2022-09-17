@@ -1,0 +1,45 @@
+2022-07-17 15:31:05 INFO  http-nio-0.0.0.0-88-exec-10 p6spy 2022-07-17 15:31:05 | 耗时 110 ms | SQL 语句：
+SELECT u.user_id userId, u.username, u.realname, u.parent_id, u.email, u.mobile, u.password, u.status, u.create_time createTime, u.ssex sex, u.dept_id deptId, u.last_login_time lastLoginTime, u.modify_time modifyTime, u.description, u.avatar, u.theme, u.is_tab isTab, d.dept_name deptName, GROUP_CONCAT(r.role_id) roleId, GROUP_CONCAT(r.ROLE_NAME) roleName FROM t_user u LEFT JOIN t_dept d ON (u.dept_id = d.dept_id) LEFT JOIN t_user_role ur ON (u.user_id = ur.user_id) LEFT JOIN t_role r ON r.role_id = ur.role_id WHERE 1=1 AND u.username = 'admin' GROUP BY u.username, u.realname, u.parent_id, u.user_id, u.email, u.mobile, u.password, u.status, u.create_time, u.ssex, u.dept_id, u.last_login_time, u.modify_time, u.description, u.avatar, u.theme, u.is_tab Limit 1;
+2022-07-17 15:31:05 INFO  http-nio-0.0.0.0-88-exec-10 p6spy 2022-07-17 15:31:05 | 耗时 7 ms | SQL 语句：
+SELECT USER_ID,DEPT_ID FROM t_user_data_permission WHERE (USER_ID = '8');
+2022-07-17 15:31:05 INFO  http-nio-0.0.0.0-88-exec-10 p6spy 2022-07-17 15:31:05 | 耗时 63 ms | SQL 语句：
+INSERT INTO t_login_log ( USERNAME, LOGIN_TIME, LOCATION, IP, `SYSTEM`, BROWSER ) VALUES ( 'admin', '2022-07-17T15:31:05.175+0800', '内网IP|0|0|内网IP|内网IP', '127.0.0.1', 'Windows 10', 'Chrome 96' );
+2022-07-17 15:31:05 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.license.LicenseVerifyUtils 开始校验
+2022-07-17 15:31:06 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.license.CustomLicenseManager serverInfos不为null = LicenseCheckModel{ipAddress=[192.168.2.119], macAddress=[38-D5-47-AB-24-C0], cpuSerial='BFEBFBFF000306C3', mainBoardSerial='160881918021870'}
+2022-07-17 15:31:06 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.license.LicenseVerifyUtils 证书校验通过，证书有效期：2022-01-27 00:00:00 - 2026-04-01 00:00:00
+2022-07-17 15:31:06 INFO  http-nio-0.0.0.0-88-exec-9 p6spy 2022-07-17 15:31:06 | 耗时 0 ms | SQL 语句：
+SELECT r.* FROM t_role r LEFT JOIN t_user_role ur ON (r.role_id = ur.role_id) LEFT JOIN t_user u ON (u.user_id = ur.user_id) WHERE u.username = 'admin';
+2022-07-17 15:31:06 INFO  http-nio-0.0.0.0-88-exec-9 p6spy 2022-07-17 15:31:06 | 耗时 1 ms | SQL 语句：
+SELECT m.perms FROM t_role r LEFT JOIN t_user_role ur ON (r.role_id = ur.role_id) LEFT JOIN t_user u ON (u.user_id = ur.user_id) LEFT JOIN t_role_menu rm ON (rm.role_id = r.role_id) LEFT JOIN t_menu m ON (m.menu_id = rm.menu_id) WHERE u.username = 'admin' AND m.perms is not null AND m.perms <> '';
+2022-07-17 15:31:06 INFO  http-nio-0.0.0.0-88-exec-9 p6spy 2022-07-17 15:31:06 | 耗时 1 ms | SQL 语句：
+SELECT u.user_id userId, u.username, u.realname, u.parent_id, u.email, u.mobile, u.password, u.status, u.create_time createTime, u.ssex sex, u.dept_id deptId, u.last_login_time lastLoginTime, u.modify_time modifyTime, u.description, u.avatar, u.theme, u.is_tab isTab, d.dept_name deptName, GROUP_CONCAT(r.role_id) roleId, GROUP_CONCAT(r.ROLE_NAME) roleName FROM t_user u LEFT JOIN t_dept d ON (u.dept_id = d.dept_id) LEFT JOIN t_user_role ur ON (u.user_id = ur.user_id) LEFT JOIN t_role r ON r.role_id = ur.role_id WHERE 1=1 AND u.username = 'admin' GROUP BY u.username, u.realname, u.parent_id, u.user_id, u.email, u.mobile, u.password, u.status, u.create_time, u.ssex, u.dept_id, u.last_login_time, u.modify_time, u.description, u.avatar, u.theme, u.is_tab Limit 1;
+2022-07-17 15:31:07 INFO  http-nio-0.0.0.0-88-exec-9 p6spy 2022-07-17 15:31:07 | 耗时 463 ms | SQL 语句：
+SELECT COUNT( 1 ) FROM t_notice WHERE (user_id = 8 AND is_read = '0');
+2022-07-17 15:31:12 INFO  http-nio-0.0.0.0-88-exec-5 p6spy 2022-07-17 15:31:12 | 耗时 478 ms | SQL 语句：
+SELECT m.* FROM t_menu m WHERE m.type <> 1 AND m.MENU_ID IN ( SELECT DISTINCT rm.menu_id FROM t_role_menu rm LEFT JOIN t_role r ON (rm.role_id = r.role_id) LEFT JOIN t_user_role ur ON (ur.role_id = r.role_id) LEFT JOIN t_user u ON (u.user_id = ur.user_id) WHERE u.username = 'admin' ) ORDER BY m.order_num;
+2022-07-17 15:31:13 INFO  http-nio-0.0.0.0-88-exec-2 p6spy 2022-07-17 15:31:13 | 耗时 6 ms | SQL 语句：
+select count(1) from t_login_log;
+2022-07-17 15:31:13 INFO  http-nio-0.0.0.0-88-exec-2 p6spy 2022-07-17 15:31:13 | 耗时 411 ms | SQL 语句：
+SELECT count(1) FROM t_login_log WHERE login_time between CURDATE() and DATE_ADD(CURDATE(), INTERVAL 1 DAY);
+2022-07-17 15:31:13 INFO  http-nio-0.0.0.0-88-exec-2 p6spy 2022-07-17 15:31:13 | 耗时 39 ms | SQL 语句：
+SELECT count(DISTINCT(ip)) FROM t_login_log WHERE login_time between CURDATE() and DATE_ADD(CURDATE(), INTERVAL 1 DAY);
+2022-07-17 15:31:14 INFO  http-nio-0.0.0.0-88-exec-2 p6spy 2022-07-17 15:31:14 | 耗时 307 ms | SQL 语句：
+select date_format(l.login_time, '%m-%d') days, count(1) count from ( select * from t_login_log where date_sub(curdate(), interval 10 day) <= date(login_time) ) as l where 1 = 1 group by days;
+2022-07-17 15:31:14 INFO  http-nio-0.0.0.0-88-exec-2 p6spy 2022-07-17 15:31:14 | 耗时 64 ms | SQL 语句：
+select date_format(l.login_time, '%m-%d') days, count(1) count from ( select * from t_login_log where date_sub(curdate(), interval 10 day) <= date(login_time) ) as l where 1 = 1 and l.username = 'admin' group by days;
+2022-07-17 15:31:14 INFO  Febs-Async-Thread-1 p6spy 2022-07-17 15:31:14 | 耗时 718 ms | SQL 语句：
+UPDATE t_user SET LAST_LOGIN_TIME='2022-07-17T15:31:13.262+0800' WHERE (USERNAME = 'admin');
+2022-07-17 15:31:25 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer 生产环境的websocket配置 cc.mrbird.febs.common.websocket.WebSocketServer@2420f3a8
+2022-07-17 15:31:25 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer 连接用户的id:8,当前在线人数为:1
+2022-07-17 15:31:25 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer 发送消息到:8，报文:连接成功
+2022-07-17 15:31:26 INFO  http-nio-0.0.0.0-88-exec-8 p6spy 2022-07-17 15:31:26 | 耗时 0 ms | SQL 语句：
+SELECT r.* FROM t_role r LEFT JOIN t_user_role ur ON (r.role_id = ur.role_id) LEFT JOIN t_user u ON (u.user_id = ur.user_id) WHERE u.username = 'admin';
+2022-07-17 15:31:26 INFO  http-nio-0.0.0.0-88-exec-8 p6spy 2022-07-17 15:31:26 | 耗时 1 ms | SQL 语句：
+SELECT m.perms FROM t_role r LEFT JOIN t_user_role ur ON (r.role_id = ur.role_id) LEFT JOIN t_user u ON (u.user_id = ur.user_id) LEFT JOIN t_role_menu rm ON (rm.role_id = r.role_id) LEFT JOIN t_menu m ON (m.menu_id = rm.menu_id) WHERE u.username = 'admin' AND m.perms is not null AND m.perms <> '';
+2022-07-17 15:31:28 INFO  http-nio-0.0.0.0-88-exec-4 p6spy 2022-07-17 15:31:28 | 耗时 133 ms | SQL 语句：
+SELECT COUNT(1) FROM rcs_print_job WHERE (type = 2);
+2022-07-17 15:31:28 INFO  http-nio-0.0.0.0-88-exec-4 p6spy 2022-07-17 15:31:28 | 耗时 22 ms | SQL 语句：
+SELECT id,contract_code,foreseen_id,transaction_id,user_id,pc_user_id,frank_machine_id,flow,flow_detail,total_count,total_amount,type,cancel_msg_code,updated_time,created_time FROM rcs_print_job WHERE (type = 2) ORDER BY id DESC LIMIT 0,10;
+2022-07-17 15:31:28 INFO  http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer websocket session = org.apache.tomcat.websocket.WsSession@3966df7b
+2022-07-17 15:48:44 INFO  SessionValidationThread-1 org.apache.shiro.session.mgt.AbstractValidatingSessionManager Validating all active sessions...
+2022-07-17 15:48:44 INFO  SessionValidationThread-1 org.apache.shiro.session.mgt.AbstractValidatingSessionManager Finished session validation.  No sessions were stopped.

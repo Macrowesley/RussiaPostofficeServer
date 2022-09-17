@@ -1,0 +1,19 @@
+2022-04-01 09:32:35 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler AuthenticationException, 用户名或密码错误1次，一天只能错误3次，忘记密码请联系管理员重置密码！
+2022-04-01 09:38:58 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:add]
+2022-04-01 14:54:41 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:delete]
+2022-04-01 14:55:00 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.aspect.ControllerEndpointAspect 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist
+### The error may exist in cc/mrbird/febs/rcs/mapper/TransactionMsgMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM transaction_msg
+### Cause: java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist
+2022-04-01 14:55:00 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 
+### Error updating database.  Cause: java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist
+### The error may exist in cc/mrbird/febs/rcs/mapper/TransactionMsgMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: DELETE FROM transaction_msg
+### Cause: java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist
+; bad SQL grammar []; nested exception is java.sql.SQLSyntaxErrorException: Table 'gdpt_russia_server.transaction_msg' doesn't exist

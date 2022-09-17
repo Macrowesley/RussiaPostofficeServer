@@ -1,0 +1,88 @@
+<style>
+    #audit-submit-reject {
+        padding: 20px 25px 25px 0;
+    }
+
+    #audit-submit-reject .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #audit-submit-reject #data-permission-tree-block {
+        baudit: 1px solid #eee;
+        baudit-radius: 2px;
+        padding: 3px 0;
+    }
+
+</style>
+<div class="layui-fluid" id="audit-submit-reject">
+    <form class="layui-form" action="" lay-filter="audit-audit-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require"  th:text="#{audit.id}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="auditId" data-th-value="${auditId}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{audit.rejectReason}"></label>
+            <div class="layui-input-block">
+                <textarea
+                        lay-filter="myTextarea"
+                        name="checkRemark"
+                        id="checkRemark"
+                        th:placeholder="#{optional}"
+                        value=""
+                        class="layui-textarea"
+                        rows="3"
+                        maxlength="100"
+                        οnchange="this.value=this.value.substring(0, 100)"
+                        οnkeydοwn="this.value=this.value.substring(0, 100)"
+                        οnkeyup="this.value=this.value.substring(0, 100)"></textarea>
+                <span id="limitText">0/100</span>
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="audit-reject-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            $view = $('#audit-submit-reject'),
+            $textarea = $("#checkRemark"),
+            $limitText = $("#limitText"),
+            $maxLen = 100,
+            $auditId = [[${auditId}]];
+
+        validate = layui.validate;
+
+        form.verify(validate);
+        form.render();
+
+        form.on('submit(audit-reject-form-submit)', function (data) {
+
+            //验证字数是否超标
+            if ($textarea.val().length > $maxLen) {
+                febs.alert.warn(i18n("audit.noMoreThan") + $maxLen);
+                return false;
+            }
+
+            febs.post(ctx + 'audit/noPass/', data.field, function (result) {
+                layer.closeAll();
+                febs.alert.success(i18n("operationSuccess"));
+                $('#febs-audit').find('#refreshQuery').click();
+            });
+            return false;
+        });
+
+        $("#checkRemark").bind("input propertychange keyup", function () {
+            $limitText.html($(this).val().length + '/' + $maxLen)
+        });
+    });
+</script>

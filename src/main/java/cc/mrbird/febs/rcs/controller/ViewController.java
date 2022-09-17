@@ -125,6 +125,25 @@ public class ViewController extends BaseController{
         return FebsUtil.view("rcs/printJob/msgDetail");
     }
 
+    @GetMapping("/audit")
+//    @RequiresPermissions("printJob:view")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String audit(Model model) {
+        return FebsUtil.view("audit/audit");
+    }
+
+    @GetMapping("/job")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String job(Model model) {
+        return FebsUtil.view("job/job");
+    }
+
+    @GetMapping("/log")
+    @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
+    public String log(Model model) {
+        return FebsUtil.view("job/jobLog");
+    }
+
     @GetMapping("/foreseen/detail/{foreseenId}")
     public String foreseenInfo(@PathVariable String foreseenId, Model model) {
         Foreseen foreseen = foreseenService.getForeseenDetail(foreseenId);

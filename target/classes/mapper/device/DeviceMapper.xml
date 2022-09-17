@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.device.mapper.DeviceMapper">
+
+    <select id="selectListByUserId" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.*
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+            c.user_id = #{userId}
+        <if test="device.acnum != null and device.acnum != ''">
+            and d.acnum = #{device.acnum}
+        </if>
+        <if test="device.nickname != null and device.nickname != ''">
+            and d.nickname = #{device.nickname}
+        </if>
+        <if test="device.curFmStatus != null and device.curFmStatus != ''">
+            and d.cur_fm_status = #{device.curFmStatus}
+        </if>
+
+
+    </select>
+    <select id="selectAllListByUserId" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.device_id,d.acnum
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+        c.user_id = #{userId}
+        order by
+        d.device_id asc
+    </select>
+
+    <select id="selectSubUserDeviceListExcepBindUserIdByRoleAndParent" resultType="cc.mrbird.febs.device.entity.Device">
+        select
+        d.device_id,d.acnum
+        from
+        t_device d
+        left join t_user_device c on (d.device_id = c.device_id)
+        where
+        c.user_id in ( select u.user_id from t_user u left join t_user_role ur ON ur.user_id = u.user_id where u.parent_id = #{parentUserId} and ur.role_id = #{roleType} and u.user_id != #{bindUserId})
+        ORDER BY d.device_id ASC;
+    </select>
+    <select id="findByDeviceIdAndRoleId" resultType="cc.mrbird.febs.device.vo.UserDeviceVO">
+        select
+            tud.*, u.username, u.realname
+        from
+            t_user_device tud
+        left join
+            t_user_role tur on (tur.user_id = tud.user_id)
+        left join
+            t_user u on (tur.user_id = u.user_id)
+        where
+            tud.device_id = #{deviceId} and tur.role_id = #{roleId}
+    </select>
+
+</mapper>

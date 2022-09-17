@@ -21,5 +21,4 @@ public class Application {
                 .web(WebApplicationType.SERVLET)
                 .run(args);
     }
-
 }

@@ -1,0 +1,173 @@
+<style>
+    #device-update {
+        padding: 20px 25px 25px 0;
+    }
+
+    #device-update .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #device-update #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+
+    .left-label {
+        width: 20%;
+    }
+
+    .rigth-view {
+        width: 80%;
+    }
+
+</style>
+<div class="layui-fluid" id="device-update">
+    <form class="layui-form" action="" lay-filter="device-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require" th:text="#{device.id}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="deviceId" data-th-value="${device.deviceId}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{acnum.colon}"></label>
+            <div class="layui-input-block ">
+                <input type="text" name="acnum" autocomplete="off" class="layui-input rigth-view" readonly/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{device.nickname.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="nickname" minlength="2" maxlength="10" lay-verify="nickname"
+                       autocomplete="off" class="layui-input rigth-view">
+            </div>
+        </div>
+        <div class="layui-form-item ">
+            <label class="layui-form-label left-label" th:text="#{device.warnAmount.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="warnAmount"  autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{device.maxAmount.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="maxAmount"   autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label left-label" th:text="#{device.validDays.colon}"></label>
+            <div class="layui-input-block">
+                <input type="number" name="validDays" lay-verify="number" autocomplete="off"
+                       class="layui-input rigth-view">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.status.colon}"></label>
+            <div class="layui-input-block">
+                <input type="radio" name="deviceStatus" value="1" th:title="#{device.normal}">
+                <input type="radio" name="deviceStatus" value="0" th:title="#{device.freeze}">
+            </div>
+        </div>-->
+        <div class="layui-form-item" th:if="${userDevice} != null">
+            <label class="layui-form-label  left-label" th:text="#{device.bindTo}"></label>
+            <div class="layui-input-block">
+                <label class="layui-form-label  rigth-view" style="text-align:left;" th:text="${userDevice.username}"></label>
+            </div>
+        </div>
+        <!--<div class="layui-form-item" th:if="${userDevice} != null">
+            <label class="layui-form-label febs-form-item-require left-label" th:text="#{device.bindTo}"></label>
+            <div class="layui-input-inline">
+                <select name="bindUserId" id="userList" lay-verify="required" lay-search="" style="width: 500px;">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>-->
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="device-update-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            eleTree = layui.eleTree,
+            device = [[${device}]],
+            userDevice = [[${userDevice}]],
+            $view = $('#device-update'),
+            validate = layui.validate,
+            _deptTree;
+
+        form.verify(validate);
+        form.render();
+        initValue();
+
+        // initSelect();
+
+        /**
+         * 处理下拉框
+         */
+        function initSelect() {
+            if (userDevice == null){
+                return;
+            }
+            $.ajax({
+                url: ctx + "user/deptUserList",
+                type: 'get',
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        //需要知道这个机器绑定的用户是谁 （机构管理员）
+                        if (userDevice.userId == item.userId) {
+                            $('#userList').append("<option value="+item.userId+" selected >"+item.username+"</option>");
+                        }else{
+                            $('#userList').append("<option value="+item.userId+">"+item.username+"</option>");
+                        }
+                    });
+                    layui.form.render("select");
+                }
+            });
+        }
+
+
+        function initValue() {
+            form.val("device-update-form", {
+                "acnum": device.acnum,
+                "nickname": device.nickname,
+                "warnAmount": device.warnAmount,
+                "maxAmount": device.maxAmount,
+                "validDays": device.validDays,
+                "deviceStatus": device.curFmStatus
+            });
+        }
+
+        form.on('submit(device-update-form-submit)', function (data) {
+            if (febs.nativeEqual(data.field, device)) {
+                febs.alert.warn(i18n("noEdit"));
+                return false;
+            }
+
+            //开始修改
+            var userDeviceId = 0;
+            if (userDevice != null){
+                userDeviceId = userDevice.id;
+            }
+
+            data.field.userDeviceId = userDeviceId;
+            febs.post(ctx + 'device/update', data.field, function () {
+                layer.closeAll();
+                febs.alert.success( i18n("device.device")+ device.acnum + i18n("dataEditSuccess"));
+                $('#febs-device').find('#refreshQuery').click();
+            });
+
+            return false;
+        });
+    });
+</script>

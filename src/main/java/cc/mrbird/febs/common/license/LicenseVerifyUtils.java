@@ -43,7 +43,7 @@ public class LicenseVerifyUtils {
         String subject = febsProperties.getLicense().getSubject();
         String publicAlias = febsProperties.getLicense().getPublicAlias();
         String storePass = febsProperties.getLicense().getStorePass();
-        storePass = "public_gdpt@2022";
+        storePass = "12345678A";//public_gdpt@2022
         String publicKeysStorePath = febsProperties.getLicense().getPublicKeysStorePath();
 
         if (StringUtils.isNotBlank(licensePath)) {

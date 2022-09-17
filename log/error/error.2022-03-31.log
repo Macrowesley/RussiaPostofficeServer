@@ -1,0 +1,221 @@
+2022-03-31 09:36:55 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'createdTime': rejected value [2022-03-23 13:08:12]; codes [typeMismatch.transactionMsg.createdTime,typeMismatch.createdTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.createdTime,createdTime]; arguments []; default message [createdTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createdTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value '2022-03-23 13:08:12'; nested exception is java.lang.IllegalArgumentException]
+2022-03-31 09:56:42 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'createdTime': rejected value [2022-03-23 13:08:12]; codes [typeMismatch.transactionMsg.createdTime,typeMismatch.createdTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.createdTime,createdTime]; arguments []; default message [createdTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createdTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value '2022-03-23 13:08:12'; nested exception is java.lang.IllegalArgumentException]
+2022-03-31 10:15:31 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:list]
+2022-03-31 10:16:08 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:list]
+2022-03-31 10:17:45 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:list]
+2022-03-31 10:17:48 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:list]
+2022-03-31 10:39:25 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 No converter found capable of converting from type [org.bson.types.ObjectId] to type [java.lang.Long]
+2022-03-31 10:45:44 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 No converter found capable of converting from type [org.bson.types.ObjectId] to type [java.lang.Long]
+2022-03-31 11:22:01 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 11:22:01 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 11:57:34 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 11:57:34 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 11:59:38 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 No converter found capable of converting from type [org.bson.types.ObjectId] to type [java.lang.Long]
+2022-03-31 12:15:38 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'createdTime': rejected value [2022-03-31T02:38:55.828 00:00]; codes [typeMismatch.transactionMsg.createdTime,typeMismatch.createdTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.createdTime,createdTime]; arguments []; default message [createdTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createdTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value '2022-03-31T02:38:55.828 00:00'; nested exception is java.lang.IllegalArgumentException]
+2022-03-31 12:16:57 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'createdTime': rejected value [2022-03-31T02:38:55.828 00:00]; codes [typeMismatch.transactionMsg.createdTime,typeMismatch.createdTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.createdTime,createdTime]; arguments []; default message [createdTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createdTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value '2022-03-31T02:38:55.828 00:00'; nested exception is java.lang.IllegalArgumentException]
+2022-03-31 12:19:15 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'createdTime': rejected value [2022-3-31]; codes [typeMismatch.transactionMsg.createdTime,typeMismatch.createdTime,typeMismatch.java.util.Date,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.createdTime,createdTime]; arguments []; default message [createdTime]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'java.util.Date' for property 'createdTime'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.baomidou.mybatisplus.annotation.TableField java.util.Date] for value '2022-3-31'; nested exception is java.lang.IllegalArgumentException]
+2022-03-31 12:48:48 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:48:48 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:49:23 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:49:23 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:50:14 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:50:14 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:50:19 ERROR http-nio-0.0.0.0-88-exec-10 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:50:19 ERROR http-nio-0.0.0.0-88-exec-10 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:50:28 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'id': rejected value [1L]; codes [typeMismatch.transactionMsg.id,typeMismatch.id,typeMismatch.long,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.id,id]; arguments []; default message [id]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'long' for property 'id'; nested exception is java.lang.NumberFormatException: For input string: "1L"]
+2022-03-31 12:51:00 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'transactionMsg' on field 'id': rejected value [1.00]; codes [typeMismatch.transactionMsg.id,typeMismatch.id,typeMismatch.long,typeMismatch]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [transactionMsg.id,id]; arguments []; default message [id]]; default message [Failed to convert property value of type 'java.lang.String' to required type 'long' for property 'id'; nested exception is java.lang.NumberFormatException: For input string: "1.00"]
+2022-03-31 12:51:07 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:51:07 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:51:12 ERROR http-nio-0.0.0.0-88-exec-4 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:51:12 ERROR http-nio-0.0.0.0-88-exec-4 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:51:52 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:51:52 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:52:33 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:52:33 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 12:53:11 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 12:53:11 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 13:32:45 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 13:32:45 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 13:35:36 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 13:35:36 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 13:35:46 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()Ljava/lang/Long;
+2022-03-31 13:35:46 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 14:10:34 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler UnauthorizedException, Subject does not have permission [transactionMsg:list]
+2022-03-31 14:13:10 ERROR http-nio-0.0.0.0-88-exec-4 org.thymeleaf.TemplateEngine [THYMELEAF][http-nio-0.0.0.0-88-exec-4] Exception processing template "febs/views/transactionMsg/frank": Error resolving template [febs/views/transactionMsg/frank], template might not exist or might not be accessible by any of the configured Template Resolvers
+org.thymeleaf.exceptions.TemplateInputException: Error resolving template [febs/views/transactionMsg/frank], template might not exist or might not be accessible by any of the configured Template Resolvers
+	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:607)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072)
+	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:362)
+	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:189)
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1373)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1118)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1057)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:61)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:66)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.executeChain(AbstractShiroFilter.java:449)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter$1.call(AbstractShiroFilter.java:365)
+	at org.apache.shiro.subject.support.SubjectCallable.doCall(SubjectCallable.java:90)
+	at org.apache.shiro.subject.support.SubjectCallable.call(SubjectCallable.java:83)
+	at org.apache.shiro.subject.support.DelegatingSubject.execute(DelegatingSubject.java:387)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:362)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:64)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.web.trace.servlet.HttpTraceFilter.doFilterInternal(HttpTraceFilter.java:88)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at cc.mrbird.febs.common.xss.XssFilter.doFilter(XssFilter.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.__invoke(StandardContextValve.java:96)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:41002)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1639)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2022-03-31 14:13:10 ERROR http-nio-0.0.0.0-88-exec-4 org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/posmart].[dispatcherServlet] Servlet.service() for servlet [dispatcherServlet] in context with path [/posmart] threw exception [Request processing failed; nested exception is org.thymeleaf.exceptions.TemplateInputException: Error resolving template [febs/views/transactionMsg/frank], template might not exist or might not be accessible by any of the configured Template Resolvers] with root cause
+org.thymeleaf.exceptions.TemplateInputException: Error resolving template [febs/views/transactionMsg/frank], template might not exist or might not be accessible by any of the configured Template Resolvers
+	at org.thymeleaf.engine.TemplateManager.resolveTemplate(TemplateManager.java:869)
+	at org.thymeleaf.engine.TemplateManager.parseAndProcess(TemplateManager.java:607)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1098)
+	at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:1072)
+	at org.thymeleaf.spring5.view.ThymeleafView.renderFragment(ThymeleafView.java:362)
+	at org.thymeleaf.spring5.view.ThymeleafView.render(ThymeleafView.java:189)
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1373)
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1118)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1057)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:61)
+	at org.apache.shiro.web.servlet.AdviceFilter.executeChain(AdviceFilter.java:108)
+	at org.apache.shiro.web.servlet.AdviceFilter.doFilterInternal(AdviceFilter.java:137)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.shiro.web.servlet.ProxiedFilterChain.doFilter(ProxiedFilterChain.java:66)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.executeChain(AbstractShiroFilter.java:449)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter$1.call(AbstractShiroFilter.java:365)
+	at org.apache.shiro.subject.support.SubjectCallable.doCall(SubjectCallable.java:90)
+	at org.apache.shiro.subject.support.SubjectCallable.call(SubjectCallable.java:83)
+	at org.apache.shiro.subject.support.DelegatingSubject.execute(DelegatingSubject.java:387)
+	at org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:362)
+	at org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:64)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.web.trace.servlet.HttpTraceFilter.doFilterInternal(HttpTraceFilter.java:88)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at cc.mrbird.febs.common.xss.XssFilter.doFilter(XssFilter.java:55)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.__invoke(StandardContextValve.java:96)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:41002)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1639)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+2022-03-31 14:24:46 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getMongoId()Ljava/lang/String;
+2022-03-31 14:24:46 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:51:10 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()J
+2022-03-31 15:51:10 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:53:21 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()J
+2022-03-31 15:53:21 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:54:06 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getId()J
+2022-03-31 15:54:06 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:54:51 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getMongoId()Ljava/lang/String;
+2022-03-31 15:54:51 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:54:59 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.rcs.entity.TransactionMsg.getMongoId()Ljava/lang/String;
+2022-03-31 15:54:59 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 新增TransactionMsg失败
+2022-03-31 15:57:30 ERROR http-nio-0.0.0.0-88-exec-10 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 No converter found capable of converting from type [org.bson.types.ObjectId] to type [long]

@@ -1,0 +1,54 @@
+{
+  "groups": [
+    {
+      "name": "customer",
+      "type": "cc.mrbird.febs.common.configure.IpConfig",
+      "sourceType": "cc.mrbird.febs.common.configure.IpConfig"
+    },
+    {
+      "name": "febs",
+      "type": "cc.mrbird.febs.common.properties.FebsProperties",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "customer.white-ips",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "cc.mrbird.febs.common.configure.IpConfig"
+    },
+    {
+      "name": "febs.auto-open-browser",
+      "type": "java.lang.Boolean",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "febs.code",
+      "type": "cc.mrbird.febs.common.properties.ValidateCodeProperties",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties"
+    },
+    {
+      "name": "febs.license",
+      "type": "cc.mrbird.febs.common.properties.LicenseProperties",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties"
+    },
+    {
+      "name": "febs.max-batch-insert-num",
+      "type": "java.lang.Integer",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties",
+      "defaultValue": 1000
+    },
+    {
+      "name": "febs.shiro",
+      "type": "cc.mrbird.febs.common.properties.ShiroProperties",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties"
+    },
+    {
+      "name": "febs.swagger",
+      "type": "cc.mrbird.febs.common.properties.SwaggerProperties",
+      "sourceType": "cc.mrbird.febs.common.properties.FebsProperties"
+    }
+  ],
+  "hints": []
+}

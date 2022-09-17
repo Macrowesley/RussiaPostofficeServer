@@ -10,6 +10,7 @@ import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -142,42 +143,42 @@ public class CustomLicenseManager extends LicenseManager{
      * @since 1.0.0
      * @param content LicenseContent
      */
-    @Override
-    protected synchronized void validate(final LicenseContent content)
-            throws LicenseContentException {
-        //1. 首先调用父类的validate方法
-        super.validate(content);
-
-        //2. 然后校验自定义的License参数
-        //License中可被允许的参数信息
-        LicenseCheckModel expectedCheckModel = (LicenseCheckModel) content.getExtra();
-        //当前服务器真实的参数信息
-        LicenseCheckModel serverCheckModel = getServerInfos();
-
-        if(expectedCheckModel != null && serverCheckModel != null){
-            //校验IP地址
-            if(!checkIpAddress(expectedCheckModel.getIpAddress(),serverCheckModel.getIpAddress())){
-                throw new LicenseContentException("当前服务器的IP没在授权范围内");
-            }
-
-            //校验Mac地址
-            if(!checkIpAddress(expectedCheckModel.getMacAddress(),serverCheckModel.getMacAddress())){
-                throw new LicenseContentException("当前服务器的Mac地址没在授权范围内");
-            }
-
-            //校验主板序列号
-            if(!checkSerial(expectedCheckModel.getMainBoardSerial(),serverCheckModel.getMainBoardSerial())){
-                throw new LicenseContentException("当前服务器的主板序列号没在授权范围内");
-            }
-
-            //校验CPU序列号
-            if(!checkSerial(expectedCheckModel.getCpuSerial(),serverCheckModel.getCpuSerial())){
-                throw new LicenseContentException("当前服务器的CPU序列号没在授权范围内");
-            }
-        }else{
-            throw new LicenseContentException("不能获取服务器硬件信息");
-        }
-    }
+//    @Override
+//    protected synchronized void validate(final LicenseContent content)
+//            throws LicenseContentException {
+//        //1. 首先调用父类的validate方法
+//        super.validate(content);
+//
+//        //2. 然后校验自定义的License参数
+//        //License中可被允许的参数信息
+//        LicenseCheckModel expectedCheckModel = (LicenseCheckModel) content.getExtra();
+//        //当前服务器真实的参数信息
+//        LicenseCheckModel serverCheckModel = getServerInfos();
+//
+//        if(expectedCheckModel != null && serverCheckModel != null){
+//            //校验IP地址
+//            if(!checkIpAddress(expectedCheckModel.getIpAddress(),serverCheckModel.getIpAddress())){
+//                throw new LicenseContentException("当前服务器的IP没在授权范围内");
+//            }
+//
+//            //校验Mac地址
+//            if(!checkIpAddress(expectedCheckModel.getMacAddress(),serverCheckModel.getMacAddress())){
+//                throw new LicenseContentException("当前服务器的Mac地址没在授权范围内");
+//            }
+//
+//            //校验主板序列号
+//            if(!checkSerial(expectedCheckModel.getMainBoardSerial(),serverCheckModel.getMainBoardSerial())){
+//                throw new LicenseContentException("当前服务器的主板序列号没在授权范围内");
+//            }
+//
+//            //校验CPU序列号
+//            if(!checkSerial(expectedCheckModel.getCpuSerial(),serverCheckModel.getCpuSerial())){
+//                throw new LicenseContentException("当前服务器的CPU序列号没在授权范围内");
+//            }
+//        }else{
+//            throw new LicenseContentException("不能获取服务器硬件信息");
+//        }
+//    }
 
 
     /**
@@ -235,13 +236,26 @@ public class CustomLicenseManager extends LicenseManager{
         //根据不同操作系统类型选择不同的数据获取方法
         if (osName.startsWith("windows")) {
             abstractServerInfos = new WindowsServerInfos();
+            serverInfos = abstractServerInfos.getServerInfos();
         } else if (osName.startsWith("linux")) {
             abstractServerInfos = new LinuxServerInfos();
-        }else{//其他服务器类型
-            abstractServerInfos = new LinuxServerInfos();
+            serverInfos = abstractServerInfos.getServerInfos();
         }
-
-        serverInfos = abstractServerInfos.getServerInfos();
+//        else if (osName.startsWith("macos")){
+//
+//        }
+        else{//其他服务器类型
+            System.out.println("其他服务器类型");
+//            abstractServerInfos = new LinuxServerInfos();
+            LicenseCheckModel result = new LicenseCheckModel();
+            result.setIpAddress(Collections.singletonList("172.20.10.5"));
+            result.setMacAddress(Collections.singletonList("C8-89-F3-BF-73-9C"));
+            result.setCpuSerial("2C76BE71-BA7F-5777-9F88-56D4E506C604");
+            result.setMainBoardSerial("C022312005Z16YPA4");
+            serverInfos = result;
+        }
+        System.out.println(serverInfos);
+//        serverInfos = abstractServerInfos.getServerInfos();
         return serverInfos;
     }
 
@@ -274,7 +288,7 @@ public class CustomLicenseManager extends LicenseManager{
      * @author zifangsky
      * @date 2018/4/24 14:38
      * @since 1.0.0
-     * @param 
+     * @param
      * @return boolean
      */
     private boolean checkSerial(String expectedSerial,String serverSerial){

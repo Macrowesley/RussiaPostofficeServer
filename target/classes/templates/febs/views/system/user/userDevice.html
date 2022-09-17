@@ -1,0 +1,79 @@
+<style>
+/*
+    .layui-transfer-active .layui-btn{background-color:#5FB878;border-color:#5FB878;color:#000;}
+*/
+
+.layui-transfer-active .layui-btn{color:#000;}
+
+</style>
+<div class="layui-fluid" id="user-device">
+    <form class="layui-form" action="" lay-filter="user-device-form" style="text-align: center;">
+        <div id="deviceTransfer" style=""></div>
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="user-device-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+<script data-th-inline="javascript">
+    layui.use(['febs', 'transfer', 'form', 'formSelects'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            form = layui.form,
+            user = [[${user}]],//被绑定的用户id
+            transfer = layui.transfer;
+
+        form.render();
+        // echo(user.userId)
+        //渲染
+        febs.get(ctx + 'device/allList/' + user.userId, null, function (res) {
+            // echo("重新获取")
+            // echoObject(res);
+            var allDevices = res.data.allDevices;
+            var bindDevicesIdArr = res.data.bindDevices;
+            transfer.render({
+                elem: '#deviceTransfer'  //绑定元素
+                , parseData: function (res) {
+                    // echo(res)
+                    //{"deviceId":3,"acnum":"CPU789","nickname":"CPU789","warnAmount":"1000000","maxAmount":"10000000","secretKey":null,"validDays":"7","deviceStatus":"1","useLock":"0","lockInfo":null,"createTime":"2020-05-29 16:42:22","id":3},
+                    return {
+                        "value": res.deviceId //数据值
+                        , "title": res.acnum //数据标题
+                        , "disabled": false  //是否禁用
+                        , "checked": false //是否选中
+                    }
+                }
+                , data: allDevices //左侧数据
+                , value: bindDevicesIdArr //右侧数据value
+                , showSearch: true
+                , title: [i18n("userDevice.deviceList"), user.realname]
+                , id: 'deviceTransfer' //定义索引
+            });
+        });
+
+
+        form.on('submit(user-device-form-submit)', function (data) {
+
+            var getData = transfer.getData('deviceTransfer');
+            if (getData.length == 0) {
+                febs.alert.warn(i18n("userDevice.notBind"))
+                return false;
+            }
+            var deviceIds = [];
+            layui.each(getData, function (key, item) {
+                // echo(item)
+                deviceIds.push(item.value)
+            });
+            // echo(deviceIds);
+            // return false;
+            febs.post(ctx + 'device/sendDevice', {deviceIds: deviceIds.join(","), bindUserId: user.userId},  function () {
+                layer.closeAll();
+                febs.alert.success(user.username + i18n("userDevice.editSuccess"));
+                $('#febs-user').find('#refreshQuery').click();
+            });
+            return false;
+        });
+    });
+</script>

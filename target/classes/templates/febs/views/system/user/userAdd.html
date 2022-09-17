@@ -1,0 +1,140 @@
+<style>
+    #user-add {
+        padding: 20px 25px 25px 0;
+    }
+
+    #user-add .layui-treeSelect .ztree li a, .ztree li span {
+        margin: 0 0 2px 3px !important;
+    }
+
+    #user-add #data-permission-tree-block {
+        border: 1px solid #eee;
+        border-radius: 2px;
+        padding: 3px 0;
+    }
+</style>
+<div class="layui-fluid" id="user-add">
+    <form class="layui-form" action="" lay-filter="user-add-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{username.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="username" minlength="2" maxlength="10" lay-verify="range|username"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{realname.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="realname" minlength="2" maxlength="10" lay-verify="username"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{phone.colon}"></label>
+            <div class="layui-input-block">
+                <input type="tel" name="mobile" lay-verify="phone" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" th:text="#{email.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="email" lay-verify="email" maxlength="50" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{role.colon}"></label>
+            <div class="layui-input-block">
+                <select name="roleId" id="roleId" lay-verify="">
+                </select>
+            </div>
+        </div>
+
+        <!--<div class="layui-form-item" th:if="${roleId} eq 1">
+            <label class="layui-form-label" th:text="#{dept.colon}"></label>
+            <div class="layui-input-block">
+                <input type="text" name="deptId" id="user-add-dept" class="layui-input">
+            </div>
+        </div>-->
+
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{status.colon}"></label>
+            <div class="layui-input-block">
+                <input type="radio" name="status" value="1" th:title="#{user.enable}" checked="">
+                <input type="radio" name="status" value="0" th:title="#{user.disable}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require" th:text="#{sex.colon}" ></label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="0" th:title="#{man}">
+                <input type="radio" name="sex" value="1" th:title="#{woman}">
+                <input type="radio" name="sex" value="2" th:title="#{secrecy}" checked="">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label"  th:text="#{remark.colon}"></label>
+            <div class="layui-input-block">
+                <textarea name="description" maxlength="100" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="user-add-form-submit" id="submit"></button>
+            <button type="reset" class="layui-btn" id="reset"></button>
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'formSelects', 'validate', 'treeSelect', 'eleTree'], function () {
+        var $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            formSelects = layui.formSelects,
+            // treeSelect = layui.treeSelect,
+            form = layui.form,
+            eleTree = layui.eleTree,
+            $view = $('#user-add'),
+            validate = layui.validate,
+            _deptTree;
+
+        form.verify(validate);
+        form.render();
+
+        //处理下拉框
+        $.ajax({
+            url: ctx + "role/selectRole",
+            type: 'get',
+            success: function (data) {
+                $.each(data.data, function (index, item) {
+                    $('#roleId').append("<option value=" + item.roleId + ">" + item.roleName + "</option>");
+                });
+                layui.form.render("select");
+            }
+        });
+
+        // treeSelect.render({
+        //     elem: $view.find('#user-add-dept'),
+        //     type: 'get',
+        //     data: ctx + 'dept/select/tree',
+        //     placeholder: i18n("select"),
+        //     search: false
+        // });
+
+
+        form.on('submit(user-add-form-submit)', function (data) {
+            febs.modal.confirm(i18n("notice"), i18n("user.confirmAddUser"), function () {
+                $.ajaxSetup({
+                    contentType : 'application/json;charset=UTF-8'
+                });
+                febs.post(ctx + 'user', JSON.stringify(data.field), function () {
+                    layer.closeAll();
+                    febs.alert.success(i18n("user.addOk"));
+                    $('#febs-user').find('#refreshQuery').click();
+                });
+            });
+            return false;
+        });
+    });
+</script>

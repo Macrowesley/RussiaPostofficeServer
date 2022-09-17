@@ -1,0 +1,32 @@
+2022-03-01 10:40:15 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.handler.GlobalExceptionHandler AuthenticationException, 用户名或密码错误1次，一天只能错误3次，忘记密码请联系管理员重置密码！
+2022-03-01 10:40:22 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 验证码不正确
+2022-03-01 13:51:49 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:51:59 ERROR http-nio-0.0.0.0-88-exec-4 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:52:07 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:52:34 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:52:56 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:53:00 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 13:53:55 ERROR http-nio-0.0.0.0-88-exec-10 cc.mrbird.febs.common.websocket.WebSocketServer 用户错误:8,原因:cc.mrbird.febs.common.i18n.MessageUtils.getMessage(Ljava/lang/String;)Ljava/lang/String;
+2022-03-01 14:08:14 ERROR http-nio-0.0.0.0-88-exec-10 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:08:21 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:08:46 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:08:49 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:10:11 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:10:13 ERROR http-nio-0.0.0.0-88-exec-2 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:10:32 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.websocket.WebSocketServer 用户:8,网络异常!!!!!!
+2022-03-01 14:46:36 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'menu' on field 'menuName': rejected value [null]; codes [NotBlank.menu.menuName,NotBlank.menuName,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [menu.menuName,menuName]; arguments []; default message [menuName]]; default message [can't be empty]
+2022-03-01 14:51:08 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler 请求参数校验(实体对象传参-form) 错误 org.springframework.validation.BeanPropertyBindingResult: 1 errors
+Field error in object 'menu' on field 'menuName': rejected value [null]; codes [NotBlank.menu.menuName,NotBlank.menuName,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [menu.menuName,menuName]; arguments []; default message [menuName]]; default message [can't be empty]
+2022-03-01 15:11:24 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 Handler dispatch failed; nested exception is java.lang.NoSuchMethodError: cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:11:24 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:11:24 ERROR http-nio-0.0.0.0-88-exec-5 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 获取菜单树失败
+2022-03-01 15:11:27 ERROR http-nio-0.0.0.0-88-exec-7 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 Handler dispatch failed; nested exception is java.lang.NoSuchMethodError: cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:11:28 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:11:28 ERROR http-nio-0.0.0.0-88-exec-9 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 获取菜单树失败
+2022-03-01 15:13:24 ERROR http-nio-0.0.0.0-88-exec-1 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 Handler dispatch failed; nested exception is java.lang.NoSuchMethodError: cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:13:25 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:13:25 ERROR http-nio-0.0.0.0-88-exec-8 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 获取菜单树失败
+2022-03-01 15:13:28 ERROR http-nio-0.0.0.0-88-exec-3 cc.mrbird.febs.common.handler.GlobalExceptionHandler 系统内部异常，异常信息 Handler dispatch failed; nested exception is java.lang.NoSuchMethodError: cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:13:28 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.aspect.ControllerEndpointAspect cc.mrbird.febs.system.entity.Menu.getMenuName()Ljava/lang/String;
+2022-03-01 15:13:28 ERROR http-nio-0.0.0.0-88-exec-6 cc.mrbird.febs.common.handler.GlobalExceptionHandler Febs系统错误 获取菜单树失败
