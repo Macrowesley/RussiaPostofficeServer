@@ -1,0 +1,156 @@
+<style>
+  #printJob-add {
+    padding: 20px 25px 25px 0;
+  }
+
+  #printJob-add .layui-treeSelect .ztree li a, .ztree li span {
+    margin: 0 0 2px 3px !important;
+  }
+
+  #printJob-add #data-permission-tree-block {
+    border: 1px solid #eee;
+    border-radius: 2px;
+    padding: 3px 0;
+  }
+
+  .left-label {
+    width: 20%;
+  }
+
+  .rigth-view {
+    width: 80%;
+  }
+
+  /*.layui-form-select {width: 70%;}*/
+
+
+</style>
+<div class="layui-fluid" id="printJob-add">
+  <form class="layui-form" action="" lay-filter="printJob-add-form">
+
+<!--    <div class="layui-form-item ">-->
+<!--      <label class="layui-form-label left-label" th:text="#{printJob.frankMachineId}+':'"></label>-->
+<!--      <div class="layui-input-block">-->
+<!--        <input type="text" name="frankMachineId" autocomplete="off"-->
+<!--               class="layui-input rigth-view">-->
+<!--      </div>-->
+<!--    </div>-->
+
+
+    <!--<div class="layui-form-item">
+      <label class="layui-form-label left-label" th:text="#{printJob.totalCount}+':'"></label>
+      <div class="layui-input-block">
+        <input type="number" name="totalCount" lay-verify="number" autocomplete="off"
+               class="layui-input rigth-view">
+      </div>
+    </div>-->
+
+
+    <div class="layui-form-item">
+        <div>
+            <a>
+                是关于产品制造方法和操作使用方法
+            </a>
+        </div>
+      <div class="layui-input-block" style="height: 80rem">
+        <input type="radio" name="printObjectType" value="1" th:title="是" checked>
+        <input type="radio" name="printObjectType" value="2" th:title="否">
+          <input type="radio" name="printObjectType" value="2" th:title="不确定，备注相关信息">
+          <div class="layui-input-block">
+             <input type="number" name="totalCount" lay-verify="number" autocomplete="off"
+                 class="layui-input rigth-view">
+          </div>
+      </div>
+    </div>
+
+
+    <div class="layui-form-item febs-hide">
+      <button class="layui-btn" lay-submit="" lay-filter="printJob-add-form-submit" id="submit"></button>
+      <button type="reset" class="layui-btn" id="reset"></button>
+    </div>
+  </form>
+
+</div>
+
+<script>
+layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
+  var $ = layui.$,
+    febs = layui.febs,
+    layer = layui.layer,
+    formSelects = layui.formSelects,
+    form = layui.form,
+    $view = $('#printJob-add'),
+    validate = layui.validate,
+    productIdex = 0
+
+  form.verify(validate)
+  form.render()
+
+  /**
+   * 添加产品事件
+   */
+  $('#addProduct').on('click', function () {
+    productIdex = productIdex + 1
+    $('#products').append(
+      '<div style="margin-left: 21%;" id="productItem' + productIdex + '" class="layui-card-body layui-row layui-col-space12 new-product">' +
+      '<div class="layui-col-md2">\n' +
+      '          <input type="text" name="products[' + productIdex + '].productCode" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+      '                 placeholder="' + i18n('printJob.products.productCode') + '">\n' +
+      '        </div>\n' +
+      '        <div class="layui-col-md2">\n' +
+      '          <input type="number" name="products[' + productIdex + '].count" lay-verify="required|number" autocomplete="off" class="layui-input"\n' +
+      '                 placeholder="' + i18n('printJob.products.count') + '">\n' +
+      '        </div>\n' +
+      '        <div class="layui-col-md2">\n' +
+      '          <input type="text" name="products[' + productIdex + '].weight" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+      '                 placeholder="' + i18n('printJob.products.weight') + '">\n' +
+      '        </div>\n' +
+      '        <div class="layui-col-md2">\n' +
+      '          <input type="text" name="products[' + productIdex + '].address" lay-verify="required" autocomplete="off" class="layui-input"\n' +
+      '                 placeholder="' + i18n('printJob.products.address') + '">\n' +
+      '        </div>' +
+      '        <div class="layui-col-md1">\n' +
+      '          <button class="layui-btn" onclick="removeNode(' + productIdex + ')">' + i18n('rcs.delete') + '</button>' +
+      '        </div>' +
+      '</div>')
+
+    return false
+  })
+
+  /**
+   * 删除最后一行
+   */
+  window.removeNode = function (id) {
+    productIdex = productIdex - 1
+    $('#productItem' + id).remove()
+  }
+
+  /**
+   * 添加订单
+   */
+  form.on('submit(printJob-add-form-submit)', function (data) {
+    //开始添加
+    console.log("ADD:"+JSON.stringify(data.field))
+      febs.modal.open(i18n("printJob.addprintJob"), 'rcs/printJob/add', {
+          btn: [i18n("submit"), i18n("reset")],
+          area: $(window).width() <= 750 ?  ['95%', '95%'] : ['80%', '95%'],
+          offset: '30px',
+          btn: [i18n("submit"), i18n("cancel")],
+          yes: function (index, layero) {
+              $('#printJob-add').find('#submit').trigger('click');
+          },
+          btn2: function () {
+              $('#printJob-add').find('#reset').trigger('click');
+              return false;
+          }
+      })
+    // febs.post(ctx + 'printJob/pc/add', data.field, function () {
+    //   layer.closeAll()
+    //   febs.alert.success(i18n('printJob.addprintJobSuccess'))
+    //   $('#febs-printJob').find('#refreshQuery').click()
+    // })
+
+    return false
+  })
+})
+</script>

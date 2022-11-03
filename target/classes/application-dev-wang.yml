@@ -21,7 +21,7 @@ spring:
           username: root
           password: 123abc!*
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://116.62.155.72:3306/easy_patent?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+          url: jdbc:mysql://localhost:3306/gdpt_russia_server_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   data:
     mongodb:

@@ -1,7 +1,8 @@
 # easy patent项目
 启动需要先开启redis，mongodb
 
-
+启动mongodb指令
+mongod --dbpath /usr/local/mongodb5.0/data --logpath /usr/local/mongodb5.0/log/mongod.log --logappend
 
 ## 关于税率版本
 俄罗斯发新的税率版本给我们服务器，我们通知所有机器

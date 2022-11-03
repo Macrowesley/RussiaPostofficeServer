@@ -35,20 +35,7 @@
 <!--               class="layui-input rigth-view">-->
 <!--      </div>-->
 <!--    </div>-->
-    <div class="layui-form-item ">
-      <label class="layui-form-label left-label" th:text="#{printJob.patentName}+':'"></label>
-      <div class="layui-input-block">
-        <input type="text" name="frankMachineId" autocomplete="off"
-               class="layui-input rigth-view">
-      </div>
-    </div>
-    <div class="layui-form-item">
-      <label class="layui-form-label left-label" th:text="#{printJob.contractCode}+':'"></label>
-      <div class="layui-input-block">
-        <input type="text" name="contractCode" autocomplete="off"
-               class="layui-input rigth-view">
-      </div>
-    </div>
+
 
     <!--<div class="layui-form-item">
       <label class="layui-form-label left-label" th:text="#{printJob.totalCount}+':'"></label>
@@ -60,50 +47,28 @@
 
 
     <div class="layui-form-item">
-      <label class="layui-form-label left-label" th:text="#{printJob.type}+':'"></label>
-      <div class="layui-input-block">
-        <input type="radio" name="printObjectType" value="1" th:title="#{printJob.invent}" checked>
-        <input type="radio" name="printObjectType" value="2" th:title="#{printJob.utility}">
-      </div>
-    </div>
-
-
-    <div class="layui-form-item">
-      <label class="layui-form-label left-label" th:text="#{printJob.commission}+':'"></label>
-      <div class="layui-input-block">
-        <input type="radio" name="totalAmount" value="1" th:title="#{printJob.single}" checked>
-        <input type="radio" name="totalAmount" value="2" th:title="#{printJob.batch}">
-      </div>
-
-      <label class="layui-form-label left-label" th:text="#{printJob.commissionUpload}"></label>
-    </div>
-
-    <!--购物车-->
-    <div class="layui-form-item">
-      <label class="layui-form-label left-label" th:text="#{printJob.materials}+':'"></label>
-
-      <div id="products">
-        <label class="layui-form-label left-label" th:text="#{printJob.disclosureMaterials}"></label>
-        <label class="layui-form-label left-label" th:text="#{printJob.existingTechnology}"></label>
-        <div style="margin-left: 21%;" class="layui-card-body layui-row layui-col-space12">
-          <div class="layui-col-md2">
-            <input type="text" name="products[0].productCode" lay-verify="required" autocomplete="off"
-                   class="layui-input"
-                   th:placeholder="#{printJob.products.productCode}">
-          </div>
+        <div>
+            <a>
+                是否属于以下任何一项的情形，不属于专利保护的客体：
+                </a>
+            <a>
+                违反法律
+                违反社会公德
+                妨害公共利益
+                例外：因滥用而可能造成妨害公共利益的，或者在产生积极效果的同时存在某种缺点
+            </a>
         </div>
+      <div class="layui-input-block" style="height: 80rem">
+        <input type="radio" name="printObjectType" value="1" th:title="是" checked>
+        <input type="radio" name="printObjectType" value="2" th:title="否">
+          <input type="radio" name="printObjectType" value="2" th:title="不确定，备注相关信息">
+          <div class="layui-input-block">
+             <input type="number" name="totalCount" lay-verify="number" autocomplete="off"
+                 class="layui-input rigth-view">
+          </div>
       </div>
-
     </div>
 
-    <!--添加按钮-->
-    <div class="layui-form-item">
-      <label class="layui-form-label left-label"></label>
-      <div class="layui-inline">
-        <button class="layui-btn" id="addProduct" th:text="#{printJob.products.add}"></button>
-      </div>
-
-    </div>
 
     <div class="layui-form-item febs-hide">
       <button class="layui-btn" lay-submit="" lay-filter="printJob-add-form-submit" id="submit"></button>
@@ -111,10 +76,6 @@
     </div>
   </form>
 
-    <div>
-
-        <img src="../../../../../static/febs/images/1663323599803.jpg" width="500" height="600">
-    </div>
 </div>
 
 <script>
@@ -175,12 +136,25 @@ layui.use(['febs', 'form', 'formSelects', 'validate'], function () {
    */
   form.on('submit(printJob-add-form-submit)', function (data) {
     //开始添加
-    //console.log("ADD:"+JSON.stringify(data.field))
-    febs.post(ctx + 'printJob/pc/add', data.field, function () {
-      layer.closeAll()
-      febs.alert.success(i18n('printJob.addprintJobSuccess'))
-      $('#febs-printJob').find('#refreshQuery').click()
-    })
+    console.log("ADD:"+JSON.stringify(data.field))
+      febs.modal.open(i18n("printJob.addprintJob"), 'rcs/printJob/add', {
+          btn: [i18n("submit"), i18n("reset")],
+          area: $(window).width() <= 750 ?  ['95%', '95%'] : ['80%', '95%'],
+          offset: '30px',
+          btn: [i18n("submit"), i18n("cancel")],
+          yes: function (index, layero) {
+              $('#printJob-add').find('#submit').trigger('click');
+          },
+          btn2: function () {
+              $('#printJob-add').find('#reset').trigger('click');
+              return false;
+          }
+      })
+    // febs.post(ctx + 'printJob/pc/add', data.field, function () {
+    //   layer.closeAll()
+    //   febs.alert.success(i18n('printJob.addprintJobSuccess'))
+    //   $('#febs-printJob').find('#refreshQuery').click()
+    // })
 
     return false
   })

@@ -53,6 +53,8 @@ public class ViewController extends BaseController{
     @Autowired
     ITransactionMsgService iTransactionMsgService;
 
+    int i = 0;
+
     @GetMapping("/contract")
     @RequiresPermissions("contract:view")
     public String RcsContract(HttpServletRequest request) {
@@ -90,7 +92,39 @@ public class ViewController extends BaseController{
 //    @RequiresPermissions("printJob:view")
     @Limit(period = LimitConstant.Loose.period, count = LimitConstant.Loose.count, prefix = "limit_contract_view", isApi = false)
     public String printJobAdd(Model model) {
-        return FebsUtil.view("rcs/printJob/printJobAdd");
+        if (i==8){
+            i=0;
+        }
+        ++i;
+        System.out.println("========="+i);
+        switch (i){
+            case 1:
+                return FebsUtil.view("rcs/printJob/printJobAdd");
+//                break;
+            case 2:
+                return FebsUtil.view("rcs/printJob/printJobAdd2");
+//                break;
+            case 3:
+                return FebsUtil.view("rcs/printJob/printJobAdd3");
+//                break;
+            case 4:
+                return FebsUtil.view("rcs/printJob/printJobAdd4");
+//                break;
+            case 5:
+                return FebsUtil.view("rcs/printJob/printJobAdd5");
+//                break;
+            case 6:
+                return FebsUtil.view("rcs/printJob/printJobAdd6");
+//                break;
+            case 7:
+                return FebsUtil.view("rcs/printJob/printJobAdd7");
+//                break;
+            default:
+                return FebsUtil.view("rcs/printJob/printJobAdd8");
+//                break;
+        }
+
+
     }
 
     @GetMapping("/printJob/detail/{printJobId}")
