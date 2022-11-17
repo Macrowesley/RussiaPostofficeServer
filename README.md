@@ -4,6 +4,14 @@
 启动mongodb指令
 mongod --dbpath /usr/local/mongodb5.0/data --logpath /usr/local/mongodb5.0/log/mongod.log --logappend
 
+服务端部署
+yml配置文件改netty ip
+application.yml底下白名单设置
+
+win7下启动mongodb
+mongod --dbpath D:\MongoDB\data --auth
+
+
 ## 关于税率版本
 俄罗斯发新的税率版本给我们服务器，我们通知所有机器
 新增机器的时候，我们出场的时候，把已有的税率版本都刷进新机器中

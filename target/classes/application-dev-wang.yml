@@ -22,11 +22,13 @@ spring:
           password: 123abc!*
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://localhost:3306/gdpt_russia_server_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+#服务器端
+#          url: jdbc:mysql://172.17.0.4:3306/gdpt_russia_server_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
 
   data:
     mongodb:
       uri: mongodb://root:Gdpt2022@localhost:27017/russiadb?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
-
+#      uri: mongodb://root:Gdpt2022@172.17.0.5:27017/russiadb?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
   redis:
     # Redis数据库索引（默认为 0）
     database: 0
@@ -60,7 +62,8 @@ websocket:
 
 netty:
   port: 12800
-  ip: 172.20.10.5
+#  ip: 1.117.149.191
+  ip: 192.168.0.107
   ssl: true
   enable: false
 
